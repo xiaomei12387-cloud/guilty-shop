@@ -92,7 +92,7 @@
     .nav-menu-list { list-style: none; margin-top: 30px; display: flex; flex-direction: column; gap: 16px; }
     .nav-menu-item a { color: var(--text-main); text-decoration: none; font-size: 0.95rem; letter-spacing: 1px; display: block; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 
-    /* 會員認證彈窗 */
+    /* 賽博會員認證彈窗 */
     .auth-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
       background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(16px);
@@ -226,7 +226,7 @@
           <input type="text" id="authName" required placeholder="例如：18X / 支配者 K" />
         </div>
         <div class="form-group">
-          <label>終端聯絡電話（作為個人唯一識別帳號）*</label>
+          <label>終端聯絡電話（個人唯一識別帳號）*</label>
           <input type="tel" id="authPhone" required placeholder="0912-345-678" />
         </div>
         <div class="form-group">
@@ -513,6 +513,12 @@
       console.warn("[FIREBASE] 本地快取模式:", err);
     }
 
+    // 清理電話號碼格式（移除空白、斜線，確保符合作為 Document ID）
+    function sanitizePhone(phone) {
+      if(!phone) return '';
+      return phone.replace(/[^0-9a-zA-Z]/g, '');
+    }
+
     // 開機動畫計時
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
@@ -600,13 +606,15 @@
 
     document.getElementById('authForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const phone = document.getElementById('authPhone').value.trim();
+      const phoneRaw = document.getElementById('authPhone').value.trim();
+      const cleanPhone = sanitizePhone(phoneRaw);
       let name = document.getElementById('authName').value.trim();
       let location = document.getElementById('authLocation').value.trim();
 
       const profileData = {
         name: name,
-        phone: phone,
+        phone: phoneRaw,
+        cleanPhone: cleanPhone,
         lastLocation: location,
         role: currentRole,
         updatedAt: new Date().toISOString()
@@ -615,10 +623,13 @@
       memberProfile = profileData;
       localStorage.setItem('guilty_member', JSON.stringify(profileData));
 
-      if (db) {
-        db.collection("members").doc(phone).set(profileData, { merge: true })
+      if (db && cleanPhone) {
+        db.collection("members").doc(cleanPhone).set(profileData, { merge: true })
           .then(() => console.log("[FIREBASE] 會員資料寫入成功"))
-          .catch(err => console.error("[FIREBASE ERROR] 會員資料寫入失敗:", err));
+          .catch(err => {
+            console.error("[FIREBASE ERROR] 會員寫入失敗:", err);
+            alert("【Firebase 提示】會員資料寫入失敗：" + err.message);
+          });
       }
 
       updateMemberUI();
@@ -748,17 +759,21 @@
     }
 
     // ==========================================
-    // 結帳下單（立刻跳成功頁 + 雙重非同步存檔）
+    // 結帳下單（立刻跳成功頁 + 彈窗除錯監控）
     // ==========================================
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
+      const phoneRaw = document.getElementById('custPhone').value.trim();
+      const cleanPhone = sanitizePhone(phoneRaw);
+
       const orderData = {
         orderId: 'CASE-' + Date.now().toString().slice(-6),
         product: selectedProduct.title,
         price: selectedProduct.price,
         name: document.getElementById('custName').value.trim(),
-        phone: document.getElementById('custPhone').value.trim(),
+        phone: phoneRaw,
+        cleanPhone: cleanPhone,
         engraving: document.getElementById('custEngraving').value.trim() || '無',
         shipping: currentShipping,
         location: document.getElementById('shippingLocation').value.trim(),
@@ -781,15 +796,22 @@
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
 
-      // 3. 寫入 Firebase 雲端 (帶有 Console log 監控)
+      // 3. 寫入 Firebase 雲端 (帶有錯誤提示彈窗)
       if (db) {
         db.collection("orders").doc(orderData.orderId).set(orderData)
           .then(() => console.log("[FIREBASE] 訂單雲端入庫成功:", orderData.orderId))
-          .catch(err => console.error("[FIREBASE ERROR] 訂單寫入失敗:", err));
+          .catch(err => {
+            console.error("[FIREBASE ERROR] 訂單寫入失敗:", err);
+            alert("【Firebase 寫入提示】" + err.message);
+          });
           
-        db.collection("members").doc(orderData.phone).set(memberProfile, { merge: true })
-          .then(() => console.log("[FIREBASE] 特工會員檔已更新"))
-          .catch(err => console.error("[FIREBASE ERROR] 會員寫入失敗:", err));
+        if(cleanPhone) {
+          db.collection("members").doc(cleanPhone).set(memberProfile, { merge: true })
+            .then(() => console.log("[FIREBASE] 特工會員檔已更新"))
+            .catch(console.warn);
+        }
+      } else {
+        alert("【提示】目前未連線至 Firebase，訂單僅存於本機。");
       }
 
       // 4. 立即渲染成功畫面
@@ -827,7 +849,7 @@
     });
 
     // ==========================================
-    // 個人購買紀錄（支援雲端 + 本地雙重查詢與個人隔離）
+    // 個人購買紀錄（支援雲端 + 本地雙重查詢）
     // ==========================================
     async function openOrderHistory() {
       if(countdownInterval) clearInterval(countdownInterval);
@@ -859,7 +881,7 @@
         }
       }
 
-      // 若雲端查無結果或未連線，則回退至 LocalStorage 搜尋
+      // 若雲端查無結果，回退至 LocalStorage 搜尋
       if (myOrders.length === 0) {
         let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
         myOrders = allOrders.filter(o => o.phone === memberProfile.phone);
