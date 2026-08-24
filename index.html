@@ -51,7 +51,7 @@
     }
     body::after {
       content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.02));
       background-size: 100% 3px, 6px 100%; pointer-events: none; z-index: 999;
     }
 
@@ -739,7 +739,7 @@
         location: document.getElementById('shippingLocation').value.trim(),
         payment: currentPayment,
         role: memberProfile ? memberProfile.role : '訪客',
-        status: '排程調用中',
+        status: '[ 排程調用中 ]',
         createdAt: new Date().toLocaleString('zh-TW', { hour12: false })
       };
 
@@ -752,12 +752,12 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
-      // 2. 本地紀錄庫（備份用）
+      // 2. 本地紀錄庫（備份）
       let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
 
-      // 3. 背景自動發送到 Google 試算表 (包含 Gmail / Discord 通知)
+      // 3. 背景自動發送到 Google 試算表
       fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -826,7 +826,7 @@
 
       try {
         const queryUrl = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(memberProfile.phone)}`;
-        const res = await fetch(queryUrl, { method: 'GET', redirect: 'follow' });
+        const res = await fetch(queryUrl);
         const orders = await res.json();
 
         if(!orders || orders.length === 0) {
@@ -849,10 +849,9 @@
           `).join('');
         }
       } catch (err) {
-        console.error("調閱失敗，改用本地紀錄:", err);
-        // 若網路逾時或連線失敗，自動回退顯示本機暫存
+        console.warn("雲端調閱失敗，讀取本地備份:", err);
         let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-        let myOrders = allOrders.filter(o => o.phone === memberProfile.phone);
+        let myOrders = allOrders.filter(o => o.phone.replace(/[^0-9]/g, '') === memberProfile.phone.replace(/[^0-9]/g, ''));
 
         if(myOrders.length === 0) {
           historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name} 尚無任何專屬調用案件。</div>`;
@@ -868,7 +867,7 @@
               <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
               <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
               <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--panel-border); font-size:0.8rem;">
-                <strong>調用狀態：</strong><span style="color:var(--accent-cyan); font-weight:bold;">${o.status || '排程調用中'}</span>
+                <strong>調用狀態：</strong><span style="color:var(--accent-cyan); font-weight:bold;">${o.status || '[ 排程調用中 ]'}</span>
               </div>
             </div>
           `).join('');
