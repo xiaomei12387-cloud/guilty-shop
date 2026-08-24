@@ -752,7 +752,7 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
-      // 2. 本地紀錄庫（用於特工本人查看紀錄）
+      // 2. 本地紀錄庫（備份用）
       let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
@@ -804,7 +804,7 @@
     });
 
     // ==========================================
-    // 個人調用紀錄（依手機號碼隔離顯示）
+    // 個人調用紀錄（即時連線向 Google 試算表查詢最新狀態）
     // ==========================================
     async function openOrderHistory() {
       if(countdownInterval) clearInterval(countdownInterval);
@@ -825,8 +825,8 @@
       window.scrollTo(0, 0);
 
       try {
-        // 向 Google 試算表請求符合該手機號碼的最新資料
-        const res = await fetch(`${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(memberProfile.phone)}`);
+        const queryUrl = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(memberProfile.phone)}`;
+        const res = await fetch(queryUrl, { method: 'GET', redirect: 'follow' });
         const orders = await res.json();
 
         if(!orders || orders.length === 0) {
@@ -849,37 +849,31 @@
           `).join('');
         }
       } catch (err) {
-        console.error("調閱失敗:", err);
-        historyArea.innerHTML = `<div style="color:var(--danger-red); text-align:center; padding:30px 0;">[ 雲端終端連線逾時，請重新整理後再試 ]</div>`;
-      }
-    }
-      // 只篩選出當前特工手機號碼的訂單（個人數據隔離）
-      let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-      let myOrders = allOrders.filter(o => o.phone === memberProfile.phone);
+        console.error("調閱失敗，改用本地紀錄:", err);
+        // 若網路逾時或連線失敗，自動回退顯示本機暫存
+        let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+        let myOrders = allOrders.filter(o => o.phone === memberProfile.phone);
 
-      if(myOrders.length === 0) {
-        historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name} 尚無任何專屬調用案件。</div>`;
-      } else {
-        historyArea.innerHTML = myOrders.map(o => `
-          <div class="history-item">
-            <div class="history-header">
-              <span style="color:var(--accent-cyan); font-weight:bold;">#${o.orderId}</span>
-              <span style="color:var(--text-muted); font-size:0.75rem;">${o.createdAt}</span>
+        if(myOrders.length === 0) {
+          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name} 尚無任何專屬調用案件。</div>`;
+        } else {
+          historyArea.innerHTML = myOrders.map(o => `
+            <div class="history-item">
+              <div class="history-header">
+                <span style="color:var(--accent-cyan); font-weight:bold;">#${o.orderId}</span>
+                <span style="color:var(--text-muted); font-size:0.75rem;">${o.createdAt}</span>
+              </div>
+              <div><strong>裝備：</strong>${o.product}</div>
+              <div><strong>金額：</strong>NT$ ${Number(o.price).toLocaleString()}</div>
+              <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
+              <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
+              <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--panel-border); font-size:0.8rem;">
+                <strong>調用狀態：</strong><span style="color:var(--accent-cyan); font-weight:bold;">${o.status || '排程調用中'}</span>
+              </div>
             </div>
-            <div><strong>裝備：</strong>${o.product}</div>
-            <div><strong>金額：</strong>NT$ ${o.price.toLocaleString()}</div>
-            <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
-            <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
-            <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--panel-border); font-size:0.8rem;">
-              <strong>調用狀態：</strong><span style="color:var(--accent-cyan); font-weight:bold;">${o.status || '排程調用中'}</span>
-            </div>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
-
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-history').classList.add('active');
-      window.scrollTo(0, 0);
     }
 
     renderProductCards();
