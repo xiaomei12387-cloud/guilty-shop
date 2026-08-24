@@ -74,7 +74,7 @@
     }
     body::after {
       content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.02));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
       background-size: 100% 3px, 6px 100%; pointer-events: none; z-index: 999;
     }
 
@@ -160,14 +160,14 @@
     /* Arsenal */
     .section-arsenal { padding: 50px 0; border-top: 1px solid var(--panel-border); }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filter-btn { padding: 6px 12px; background: #141416; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; font-size: 0.75rem; }
+    .filter-btn { padding: 6px 12px; background: #141416; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: font-size: 0.75rem; }
     .filter-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); }
     .product-list-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 600px) { .product-list-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
     .product-card { background: var(--card-bg); border: 1px solid var(--panel-border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.3s; }
     .product-card:hover { border-color: var(--accent-cyan); box-shadow: 0 4px 20px var(--glow-cyan); transform: translateY(-4px); }
-    .card-thumb { height: 180px; background: #000; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; color: var(--text-muted); position: relative; }
-    .badge { position: absolute; top: 8px; right: 8px; font-size: 0.65rem; padding: 2px 6px; background: rgba(0,0,0,0.85); }
+    .card-thumb { height: 180px; background: #000; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; color: var(--text-muted); position: relative; overflow: hidden; }
+    .badge { position: absolute; top: 8px; right: 8px; font-size: 0.65rem; padding: 2px 6px; background: rgba(0,0,0,0.85); z-index: 2; }
     .badge-guilty { border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
     .badge-shushi { border: 1px solid var(--accent-purple); color: var(--accent-purple); }
     .card-body { padding: 16px; }
@@ -712,16 +712,67 @@
       }
     }
 
-    // 商品清單
+    // ==========================================
+    // 裝備目錄 (含束室特選精煉麻繩 13 種規格與動態長度)
+    // ==========================================
     const products = [
-      { id: 'cat-choker', brand: 'guilty', brandName: '欲室｜共犯 GUILTY', badgeClass: 'badge-guilty', title: '【貓痕義體拘束項圈】', desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', price: 2880 },
-      { id: 'shushi-rope-set', brand: 'shushi', brandName: 'shushi束室 繩教室', badgeClass: 'badge-shushi', title: '【束室繩教室｜精煉麻繩組】', desc: '束室精工脫漿、過油打蠟特選麻繩，觸感溫潤柔韌，繩縛教學與實戰指定款。', price: 1680 },
-      { id: 'shushi-cuff-guard', brand: 'shushi', brandName: 'shushi束室 繩教室', badgeClass: 'badge-shushi', title: '【束室繩教室｜防勒皮革護腕墊】', desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。', price: 1280 }
+      { 
+        id: 'cat-choker', 
+        brand: 'guilty', 
+        brandName: '欲室｜共犯 GUILTY', 
+        badgeClass: 'badge-guilty', 
+        title: '【貓痕義體拘束項圈】', 
+        desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
+        price: 2880,
+        isCustomRope: false
+      },
+      { 
+        id: 'shushi-rope', 
+        brand: 'shushi', 
+        brandName: 'shushi束室 繩教室', 
+        badgeClass: 'badge-shushi', 
+        title: '【束室繩教室｜特選精煉麻繩】', 
+        desc: '束室精工脫漿、過油打蠟特選麻繩，13 種配色與生繩規格可選，手感溫潤柔韌。', 
+        price: 600,
+        isCustomRope: true,
+        lengths: [
+          { label: '8 米 (8M)', price: 600 },
+          { label: '10 米 (10M)', price: 700 }
+        ],
+        variants: [
+          '未處理 原色生繩',
+          '未處理 彩色生繩 (請先確認庫存)',
+          '01 原色麻繩',
+          '02 紅色麻繩',
+          '03 粉紅色麻繩',
+          '04 紫色麻繩',
+          '05 深藍色麻繩',
+          '06 藍色麻繩',
+          '07 墨綠色麻繩',
+          '08 軍綠色麻繩',
+          '09 咖啡色麻繩',
+          '10 橘色麻繩',
+          '11 金黃色麻繩',
+          '安全剪刀 (不挑色)'
+        ]
+      },
+      { 
+        id: 'shushi-cuff-guard', 
+        brand: 'shushi', 
+        brandName: 'shushi束室 繩教室', 
+        badgeClass: 'badge-shushi', 
+        title: '【束室繩教室｜防勒皮革護腕墊】', 
+        desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。', 
+        price: 1280,
+        isCustomRope: false
+      }
     ];
 
     let selectedProduct = products[0];
     let currentShipping = '7-11 超商取貨';
     let currentPayment = '超商取貨付款';
+    let currentRopeLength = '8 米 (8M)';
+    let currentRopePrice = 600;
 
     function renderProductCards(filter = 'all') {
       const grid = document.getElementById('productGrid');
@@ -731,6 +782,12 @@
         const card = document.createElement('div');
         card.className = `product-card`;
         card.onclick = () => goToCheckout(p.id);
+
+        let priceText = `NT$ ${p.price.toLocaleString()}`;
+        if(p.isCustomRope) {
+          priceText = `NT$ 600 起`;
+        }
+
         card.innerHTML = `
           <div class="card-thumb">
             <span class="badge ${p.badgeClass}">${p.brandName}</span>
@@ -740,7 +797,7 @@
             <div style="font-size: 0.95rem; margin-bottom: 4px; font-weight: bold;">${p.title}</div>
             <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${p.desc}</div>
             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px;">
-              <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">NT$ ${p.price.toLocaleString()}</span>
+              <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">${priceText}</span>
               <span style="font-size: 0.75rem; color: var(--text-muted);">調用預購 →</span>
             </div>
           </div>
@@ -755,12 +812,56 @@
       renderProductCards(brand);
     }
 
+    function updateRopePrice(lengthSelect) {
+      const selectedOption = selectedProduct.lengths.find(l => l.label === lengthSelect.value);
+      if (selectedOption) {
+        currentRopeLength = selectedOption.label;
+        currentRopePrice = selectedOption.price;
+        const priceEl = document.getElementById('checkoutPriceDisplay');
+        if(priceEl) priceEl.textContent = `NT$ ${currentRopePrice.toLocaleString()}`;
+      }
+    }
+
+    function renderCheckoutSummary() {
+      let customOptionsHtml = '';
+      let displayPrice = selectedProduct.price;
+
+      if (selectedProduct.isCustomRope) {
+        displayPrice = currentRopePrice;
+        customOptionsHtml = `
+          <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size:0.75rem; color:var(--accent-purple);">長度規格*</label>
+              <select id="selectedRopeLength" onchange="updateRopePrice(this)" style="border-color:var(--accent-purple);">
+                ${selectedProduct.lengths.map(l => `<option value="${l.label}">${l.label} - NT$ ${l.price}</option>`).join('')}
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:var(--accent-purple);">款式顏色*</label>
+              <select id="selectedRopeVariant" style="border-color:var(--accent-purple);">
+                ${selectedProduct.variants.map(v => `<option value="${v}">${v}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('orderSummary').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div><strong>裝備：</strong>${selectedProduct.title}</div>
+          <div id="checkoutPriceDisplay" style="color:var(--accent-cyan); font-weight:bold; font-size:1.1rem;">NT$ ${displayPrice.toLocaleString()}</div>
+        </div>
+        ${customOptionsHtml}
+      `;
+    }
+
     function goToCheckout(productId) {
       selectedProduct = products.find(p => p.id === productId);
-      document.getElementById('orderSummary').innerHTML = `
-        <strong>裝備：</strong>${selectedProduct.title}<br>
-        <strong>金額：</strong>NT$ ${selectedProduct.price.toLocaleString()}（早鳥免運）
-      `;
+      currentRopeLength = '8 米 (8M)';
+      currentRopePrice = 600;
+
+      renderCheckoutSummary();
+
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-checkout').classList.add('active');
       updateMemberUI();
@@ -828,10 +929,21 @@
       
       const phoneRaw = document.getElementById('custPhone').value.trim();
 
+      // 動態組裝商品規格與金額
+      let finalTitle = selectedProduct.title;
+      let finalPrice = selectedProduct.price;
+
+      if (selectedProduct.isCustomRope) {
+        const lengthVal = document.getElementById('selectedRopeLength').value;
+        const variantVal = document.getElementById('selectedRopeVariant').value;
+        finalTitle = `${selectedProduct.title} [${variantVal} // ${lengthVal}]`;
+        finalPrice = currentRopePrice;
+      }
+
       const orderData = {
         orderId: 'CASE-' + Date.now().toString().slice(-6),
-        product: selectedProduct.title,
-        price: selectedProduct.price,
+        product: finalTitle,
+        price: finalPrice,
         name: document.getElementById('custName').value.trim(),
         phone: phoneRaw,
         engraving: document.getElementById('custEngraving').value.trim() || '無',
