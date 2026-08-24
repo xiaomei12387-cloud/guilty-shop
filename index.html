@@ -74,7 +74,7 @@
     }
     body::after {
       content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.02));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
       background-size: 100% 3px, 6px 100%; pointer-events: none; z-index: 999;
     }
 
@@ -876,7 +876,7 @@
     });
 
     // ==========================================
-    // 個人調用紀錄（雙軌機制：本地秒顯 ＋ 雲端試算表背景更新）
+    // 個人調用紀錄（雙重保險：本地即時 ＋ 雲端 JSONP 同步）
     // ==========================================
     function openOrderHistory() {
       toggleNav(false);
@@ -888,18 +888,15 @@
       }
 
       const historyArea = document.getElementById('historyListArea');
+      const cleanPhone = String(memberProfile.phone).replace(/[^0-9]/g, '');
       document.getElementById('historyTitle').textContent = `05 // 特工 [ ${memberProfile.name} - ${memberProfile.phone} ] 專屬調用檔案`;
 
-      // 1. 第一步：先立即渲染本地快取（確保一定有畫面，不再卡住）
-      const cleanPhone = String(memberProfile.phone).replace(/[^0-9]/g, '');
-      let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-      let myOrders = localOrders.filter(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
-
-      const renderList = (dataList) => {
-        if(!dataList || dataList.length === 0) {
-          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name} 尚無任何專屬調用案件。</div>`;
+      // 渲染列表的公用函式
+      const renderOrders = (list) => {
+        if(!list || list.length === 0) {
+          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name}（電話：${memberProfile.phone}）尚無任何調用案件。<br><span style="font-size:0.75rem; color:var(--text-muted);">（若剛在試算表手動新增，請確認電話號碼是否完全一致）</span></div>`;
         } else {
-          historyArea.innerHTML = dataList.map(o => `
+          historyArea.innerHTML = list.map(o => `
             <div class="history-item">
               <div class="history-header">
                 <span style="color:var(--accent-cyan); font-weight:bold;">#${o.orderId}</span>
@@ -917,22 +914,27 @@
         }
       };
 
-      renderList(myOrders);
+      // 1. 先讀取本地紀錄（如果下單過就一定看得到）
+      let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+      let myLocalOrders = localOrders.filter(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
+      renderOrders(myLocalOrders);
 
+      // 切換畫面
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-history').classList.add('active');
       window.scrollTo(0, 0);
 
-      // 2. 第二步：背景透過 JSONP 向 Google 試算表同步最新狀態
-      const callbackName = 'syncOrders_' + Date.now();
+      // 2. 透過 JSONP 標籤向 Google 試算表查詢最新資料
+      const callbackName = 'cb_' + Date.now();
       window[callbackName] = function(cloudOrders) {
-        const sEl = document.getElementById(callbackName);
-        if(sEl) sEl.remove();
+        console.log("【雲端試算表回傳訂單】:", cloudOrders);
+        const scriptEl = document.getElementById(callbackName);
+        if(scriptEl) scriptEl.remove();
         delete window[callbackName];
 
         if(cloudOrders && cloudOrders.length > 0) {
-          // 同步覆蓋最新雲端狀態
-          renderList(cloudOrders);
+          renderOrders(cloudOrders);
+          // 同步覆蓋本地緩存
           localStorage.setItem('guilty_orders', JSON.stringify(cloudOrders));
         }
       };
@@ -940,6 +942,9 @@
       const script = document.createElement('script');
       script.id = callbackName;
       script.src = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(cleanPhone)}&callback=${callbackName}`;
+      script.onerror = function() {
+        console.warn("雲端連線失敗，目前顯示本地紀錄。");
+      };
       document.body.appendChild(script);
     }
 
