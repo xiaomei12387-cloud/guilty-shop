@@ -2,52 +2,54 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>欲室｜共犯 GUILTY × shushi束室 繩教室</title>
   <style>
     :root {
       --bg-color: #08080a;
-      --card-bg: rgba(20, 20, 24, 0.75);
+      --card-bg: rgba(20, 20, 24, 0.85);
       --panel-border: #262930;
       --accent-cyan: #00ff88;
       --accent-purple: #b5179e;
       --text-main: #f0f0f0;
-      --text-muted: #737680;
+      --text-muted: #8c8f96;
       --danger-red: #ff334b;
-      --glow-cyan: rgba(0, 255, 136, 0.3);
-      --glow-purple: rgba(181, 23, 158, 0.3);
+      --glow-cyan: rgba(0, 255, 136, 0.25);
+      --glow-purple: rgba(181, 23, 158, 0.25);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Consolas', 'Courier New', 'PingFang TC', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Consolas', 'Courier New', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
       background-color: var(--bg-color);
       color: var(--text-main);
       line-height: 1.6;
-      overflow-x: hidden;
+      scroll-behavior: smooth;
     }
 
-    /* 開機動畫 */
+    /* 開機動畫（防止手機高度跳動） */
     #intro-screen {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
+      width: 100%;
+      height: 100dvh;
       background-color: #050507;
       z-index: 10000;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
+      padding: 20px;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
     }
 
     #intro-screen.fade-out {
@@ -57,13 +59,14 @@
     }
 
     .intro-logo-box {
-      width: 280px;
+      width: 100%;
+      max-width: 260px;
       text-align: center;
     }
 
     .cyber-logo-svg {
-      width: 110px;
-      height: 110px;
+      width: 90px;
+      height: 90px;
       margin: 0 auto 16px;
       display: block;
     }
@@ -74,37 +77,36 @@
       fill: transparent;
       stroke-dasharray: 400;
       stroke-dashoffset: 400;
-      animation: drawStroke 2s ease-in-out forwards;
+      animation: drawStroke 1.8s ease-in-out forwards;
     }
 
     .svg-pupil {
       fill: var(--accent-cyan);
       opacity: 0;
-      animation: pulsePupil 1.2s ease 1.8s forwards;
-      filter: drop-shadow(0 0 8px var(--accent-cyan));
+      animation: pulsePupil 1s ease 1.5s forwards;
+      filter: drop-shadow(0 0 6px var(--accent-cyan));
     }
 
     @keyframes drawStroke { to { stroke-dashoffset: 0; } }
     @keyframes pulsePupil {
       0% { opacity: 0; transform: scaleY(0.1); }
-      50% { opacity: 1; transform: scaleY(1.2); }
-      100% { opacity: 0.9; transform: scaleY(1); }
+      100% { opacity: 1; transform: scaleY(1); }
     }
 
     .intro-title {
-      font-size: 1.4rem;
-      letter-spacing: 6px;
+      font-size: 1.3rem;
+      letter-spacing: 5px;
       color: #fff;
       margin-top: 10px;
       opacity: 0;
-      animation: textAppear 0.5s ease 1.5s forwards;
+      animation: textAppear 0.5s ease 1.2s forwards;
     }
 
     .boot-progress-bar {
       width: 100%;
       height: 2px;
       background: #1a1a1f;
-      margin-top: 24px;
+      margin-top: 20px;
       position: relative;
       overflow: hidden;
     }
@@ -114,13 +116,13 @@
       left: 0; top: 0;
       height: 100%; width: 0%;
       background: var(--accent-cyan);
-      box-shadow: 0 0 10px var(--accent-cyan);
-      animation: fillProgress 2.8s cubic-bezier(0.1, 0.7, 0.1, 1) forwards;
+      box-shadow: 0 0 8px var(--accent-cyan);
+      animation: fillProgress 2.2s cubic-bezier(0.1, 0.7, 0.1, 1) forwards;
     }
 
     .skip-btn {
       position: absolute;
-      bottom: 40px;
+      bottom: 30px;
       font-size: 0.75rem;
       color: var(--text-muted);
       border: 1px solid var(--panel-border);
@@ -133,149 +135,90 @@
     @keyframes textAppear { to { opacity: 1; } }
     @keyframes fillProgress { 0% { width: 0%; } 100% { width: 100%; } }
 
-    /* 背景網格與 CRT 線條 */
+    /* 背景安全修復 */
     body::before {
       content: "";
       position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
+      top: 0; left: 0; width: 100%; height: 100%;
       background: 
-        linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
+        linear-gradient(rgba(0, 255, 136, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.02) 1px, transparent 1px);
+      background-size: 30px 30px;
       z-index: -2;
-      animation: gridMove 20s linear infinite;
-    }
-
-    @keyframes gridMove { 0% { background-position: 0 0; } 100% { background-position: 40px 40px; } }
-
-    body::after {
-      content: " ";
-      position: fixed;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
-      background-size: 100% 3px, 6px 100%;
       pointer-events: none;
-      z-index: 999;
     }
 
     /* 頂部導覽列 */
     header {
-      padding: 14px 24px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--panel-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(8, 8, 10, 0.85);
+      background: rgba(8, 8, 10, 0.9);
       position: sticky;
       top: 0;
       z-index: 500;
-      backdrop-filter: blur(12px);
+      backdrop-filter: blur(10px);
+      width: 100%;
     }
 
     .brand-container {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       cursor: pointer;
     }
 
     .header-logo-icon {
-      width: 26px;
-      height: 26px;
+      width: 24px;
+      height: 24px;
     }
 
-    /* 三條線漢堡選單按鈕 */
     .menu-toggle-btn {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       background: #141416;
       border: 1px solid var(--panel-border);
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 5px;
+      gap: 4px;
       cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .menu-toggle-btn:hover {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 0 10px var(--glow-cyan);
     }
 
     .menu-line {
-      width: 20px;
+      width: 18px;
       height: 2px;
       background-color: var(--accent-cyan);
-      transition: all 0.3s;
     }
 
-    /* 側邊抽屜導覽列 (Side Drawer) */
+    /* 側邊抽屜選單 */
     .side-nav {
       position: fixed;
-      top: 0; right: -320px;
-      width: 300px;
-      height: 100vh;
-      background: rgba(10, 10, 14, 0.95);
+      top: 0; right: -280px;
+      width: 260px;
+      height: 100dvh;
+      background: rgba(10, 10, 14, 0.98);
       border-left: 1px solid var(--panel-border);
-      backdrop-filter: blur(16px);
       z-index: 1000;
-      padding: 32px 24px;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: right 0.3s ease;
     }
 
     .side-nav.open {
       right: 0;
-      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.8);
-    }
-
-    .nav-close-btn {
-      align-self: flex-end;
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    .nav-close-btn:hover {
-      color: var(--accent-cyan);
-    }
-
-    .nav-menu-list {
-      list-style: none;
-      margin-top: 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .nav-menu-item a {
-      color: var(--text-main);
-      text-decoration: none;
-      font-size: 1.1rem;
-      letter-spacing: 2px;
-      display: block;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.2s;
-    }
-
-    .nav-menu-item a:hover {
-      color: var(--accent-cyan);
-      padding-left: 8px;
-      border-color: var(--accent-cyan);
     }
 
     .nav-overlay {
       position: fixed;
       top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.6);
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
       z-index: 999;
       display: none;
     }
@@ -284,163 +227,174 @@
       display: block;
     }
 
-    /* 頁面切換控制 */
+    .nav-menu-list {
+      list-style: none;
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .nav-menu-item a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+      display: block;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* 視圖控制 */
     .view-section {
       display: none;
+      width: 100%;
     }
 
     .view-section.active {
       display: block;
     }
 
-    /* 首頁展廳版面 */
     .landing-container {
-      max-width: 1080px;
+      width: 100%;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 0 20px 80px;
+      padding: 0 16px 60px;
     }
 
-    /* 1. Hero 區塊 */
+    /* 1. Hero 區塊響應式 */
     .hero-fullscreen {
-      min-height: 80vh;
+      min-height: 75dvh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
-      position: relative;
+      padding: 40px 10px;
     }
 
     .hero-code {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: var(--accent-cyan);
-      letter-spacing: 4px;
-      margin-bottom: 16px;
+      letter-spacing: 3px;
+      margin-bottom: 12px;
     }
 
     .hero-heading {
-      font-size: 2.8rem;
-      letter-spacing: 2px;
-      line-height: 1.2;
-      margin-bottom: 20px;
+      font-size: clamp(1.8rem, 6vw, 2.8rem);
+      letter-spacing: 1px;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      word-break: keep-all;
     }
 
     .hero-sub {
-      font-size: 1.1rem;
+      font-size: clamp(0.9rem, 3.5vw, 1.05rem);
       color: var(--text-muted);
-      max-width: 600px;
-      margin-bottom: 36px;
+      max-width: 500px;
+      margin-bottom: 30px;
     }
 
     .hero-scroll-cue {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: var(--text-muted);
       letter-spacing: 2px;
-      animation: bounce 2s infinite;
       cursor: pointer;
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(6px); color: var(--accent-cyan); }
-    }
-
-    /* 2. 品牌理念 Manifesto */
+    /* 2. Manifesto */
     .section-manifesto {
-      padding: 80px 0;
+      padding: 50px 0;
       border-top: 1px solid var(--panel-border);
     }
 
     .manifesto-card {
       background: var(--card-bg);
       border: 1px solid var(--panel-border);
-      padding: 40px;
+      padding: 24px 18px;
       border-radius: 4px;
-      position: relative;
     }
 
     .manifesto-quote {
-      font-size: 1.6rem;
+      font-size: clamp(1.1rem, 4vw, 1.4rem);
       color: var(--accent-cyan);
-      margin-bottom: 20px;
-      letter-spacing: 1px;
+      margin-bottom: 16px;
       line-height: 1.4;
     }
 
-    /* 3. 旗艦單品主打展示區 (The Hook) */
+    /* 3. Flagship */
     .section-flagship {
-      padding: 80px 0;
+      padding: 50px 0;
       border-top: 1px solid var(--panel-border);
     }
 
     .flagship-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 40px;
+      grid-template-columns: 1fr;
+      gap: 24px;
       background: var(--card-bg);
       border: 1px solid var(--panel-border);
-      padding: 32px;
+      padding: 20px;
       border-radius: 4px;
-      align-items: center;
     }
 
-    @media (max-width: 768px) {
-      .flagship-grid { grid-template-columns: 1fr; }
-      .hero-heading { font-size: 2rem; }
+    @media (min-width: 768px) {
+      .flagship-grid {
+        grid-template-columns: 1fr 1fr;
+        padding: 32px;
+      }
     }
 
     .stamp-preview {
-      width: 150px;
-      height: 150px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       border: 2px dashed var(--panel-border);
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 20px auto;
-      transition: all 0.4s ease;
+      margin: 16px auto;
       cursor: pointer;
+      transition: all 0.3s;
     }
 
-    .stamp-preview:hover {
-      border-color: var(--danger-red);
-      background: rgba(255, 51, 75, 0.15);
-      box-shadow: 0 0 25px rgba(255, 51, 75, 0.4);
-      transform: scale(1.05);
-    }
-
-    /* 4. 裝備目錄區塊 */
+    /* 4. Arsenal */
     .section-arsenal {
-      padding: 80px 0;
+      padding: 50px 0;
       border-top: 1px solid var(--panel-border);
     }
 
     .filter-bar {
       display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 8px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
     }
 
     .filter-btn {
-      padding: 8px 16px;
+      padding: 6px 12px;
       background: #141416;
       border: 1px solid var(--panel-border);
       color: var(--text-muted);
       cursor: pointer;
-      font-size: 0.85rem;
-      transition: all 0.2s;
+      font-size: 0.75rem;
     }
 
-    .filter-btn.active, .filter-btn:hover {
+    .filter-btn.active {
       border-color: var(--accent-cyan);
       color: var(--accent-cyan);
     }
 
     .product-list-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 24px;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 600px) {
+      .product-list-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      }
     }
 
     .product-card {
@@ -449,33 +403,25 @@
       border-radius: 4px;
       overflow: hidden;
       cursor: pointer;
-      transition: all 0.35s ease;
-    }
-
-    .product-card:hover {
-      transform: translateY(-6px);
-      border-color: var(--accent-cyan);
-      box-shadow: 0 8px 25px var(--glow-cyan);
     }
 
     .card-thumb {
-      height: 200px;
+      height: 180px;
       background: #000;
       display: flex;
       align-items: center;
       justify-content: center;
       border-bottom: 1px solid var(--panel-border);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
       position: relative;
     }
 
     .badge {
       position: absolute;
-      top: 10px; right: 10px;
-      font-size: 0.7rem;
+      top: 8px; right: 8px;
+      font-size: 0.65rem;
       padding: 2px 6px;
-      border-radius: 2px;
       background: rgba(0,0,0,0.85);
     }
 
@@ -484,102 +430,92 @@
 
     .card-body { padding: 16px; }
 
-    /* 5. 核心團隊區塊 */
+    /* 5. Crew */
     .section-crew {
-      padding: 80px 0;
+      padding: 50px 0;
       border-top: 1px solid var(--panel-border);
     }
 
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 24px;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .team-grid { grid-template-columns: repeat(3, 1fr); }
     }
 
     .team-card {
       background: var(--card-bg);
       border: 1px solid var(--panel-border);
-      padding: 24px;
+      padding: 20px;
       border-radius: 4px;
       text-decoration: none;
       color: inherit;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: all 0.3s ease;
-    }
-
-    .team-card:hover {
-      border-color: var(--accent-cyan);
-      box-shadow: 0 6px 25px var(--glow-cyan);
-      transform: translateY(-5px);
-    }
-
-    .team-card.card-shushi:hover {
-      border-color: var(--accent-purple);
-      box-shadow: 0 6px 25px var(--glow-purple);
+      display: block;
     }
 
     .team-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       margin-bottom: 8px;
     }
 
     .team-role {
-      font-size: 0.75rem;
-      letter-spacing: 2px;
+      font-size: 0.7rem;
       color: var(--accent-cyan);
+      letter-spacing: 1px;
     }
 
     .card-shushi .team-role { color: var(--accent-purple); }
 
-    .team-link-icon {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      border: 1px solid var(--panel-border);
-      padding: 2px 6px;
-    }
-
-    /* 商品預購詳情頁面 */
+    /* 表單與按鈕 */
     .detail-container {
-      max-width: 900px;
+      width: 100%;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 40px 20px 80px;
+      padding: 24px 16px 60px;
     }
 
     .btn-submit {
       width: 100%;
-      padding: 16px;
+      padding: 14px;
       background: var(--accent-cyan);
       color: #000;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: bold;
       border: none;
       cursor: pointer;
-      letter-spacing: 2px;
-      transition: all 0.2s;
+      letter-spacing: 1px;
+      margin-top: 10px;
     }
 
-    .btn-submit:hover {
-      background: #fff;
-      box-shadow: 0 0 20px var(--accent-cyan);
+    input, select {
+      width: 100%;
+      padding: 12px;
+      background: #000;
+      border: 1px solid var(--panel-border);
+      color: #fff;
+      font-size: 0.9rem;
+      border-radius: 0;
+      outline: none;
     }
   </style>
 </head>
 <body>
 
-  <!-- 開機動畫 -->
+  <!-- 開機動畫遮罩 -->
   <div id="intro-screen">
     <div class="intro-logo-box">
       <svg class="cyber-logo-svg" viewBox="0 0 100 100">
         <polygon class="svg-path" points="50,5 92,50 50,95 8,50" />
-        <polygon class="svg-path" points="50,20 80,50 50,80 20,50" style="animation-delay: 0.4s;" />
+        <polygon class="svg-path" points="50,20 80,50 50,80 20,50" style="animation-delay: 0.3s;" />
         <path class="svg-pupil" d="M50,28 Q58,50 50,72 Q42,50 50,28 Z" />
       </svg>
       <div class="intro-title">GUILTY</div>
-      <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:3px; margin-top:6px;">[ SYSTEM INITIALIZING ]</div>
+      <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:4px;">[ SYSTEM INITIALIZING ]</div>
       <div class="boot-progress-bar"><div class="boot-progress-fill"></div></div>
     </div>
     <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
@@ -592,10 +528,11 @@
         <polygon points="50,5 92,50 50,95 8,50" fill="none" stroke="var(--accent-cyan)" stroke-width="6" />
         <path d="M50,25 Q60,50 50,75 Q40,50 50,25 Z" fill="var(--accent-cyan)" />
       </svg>
-      <div style="font-size: 1.05rem; letter-spacing: 2px;">欲室｜共犯 <span style="color:var(--accent-cyan)">GUILTY</span></div>
+      <div style="font-size: 0.95rem; letter-spacing: 1px; font-weight: bold;">
+        欲室｜共犯 <span style="color:var(--accent-cyan)">GUILTY</span>
+      </div>
     </div>
 
-    <!-- 右上角三條線漢堡按鈕 -->
     <div class="menu-toggle-btn" onclick="toggleNav(true)">
       <div class="menu-line"></div>
       <div class="menu-line"></div>
@@ -603,17 +540,17 @@
     </div>
   </header>
 
-  <!-- 側邊抽屜選單 (Side Drawer) -->
+  <!-- 側邊選單 -->
   <div class="nav-overlay" id="navOverlay" onclick="toggleNav(false)"></div>
   <div class="side-nav" id="sideNav">
     <div>
-      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--panel-border); padding-bottom:12px;">
-        <span style="font-size:0.8rem; color:var(--accent-cyan); letter-spacing:2px;">[ TERMINAL MENU ]</span>
-        <button class="nav-close-btn" onclick="toggleNav(false)">✕</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--panel-border); padding-bottom:10px;">
+        <span style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ TERMINAL MENU ]</span>
+        <button onclick="toggleNav(false)" style="background:transparent; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
       </div>
 
       <ul class="nav-menu-list">
-        <li class="nav-menu-item"><a href="#section-hero" onclick="scrollToSection('section-hero')">01 // 終端首頁 (TOP)</a></li>
+        <li class="nav-menu-item"><a href="#section-hero" onclick="scrollToSection('section-hero')">01 // 首頁 (TOP)</a></li>
         <li class="nav-menu-item"><a href="#section-manifesto" onclick="scrollToSection('section-manifesto')">02 // 品牌理念 (MANIFESTO)</a></li>
         <li class="nav-menu-item"><a href="#section-flagship" onclick="scrollToSection('section-flagship')">03 // 旗艦項圈 (FLAGSHIP)</a></li>
         <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">04 // 裝備目錄 (CATALOG)</a></li>
@@ -621,124 +558,118 @@
       </ul>
     </div>
 
-    <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--panel-border); padding-top:16px;">
+    <div style="font-size:0.7rem; color:var(--text-muted); border-top:1px solid var(--panel-border); padding-top:12px;">
       欲室共犯 × shushi束室<br>SYS.VER 01.0
     </div>
   </div>
 
-  <!-- 主頁面：沉浸式展廳視圖 -->
+  <!-- 展廳主頁面 -->
   <div id="view-landing" class="view-section active">
     <div class="landing-container">
       
-      <!-- 1. Hero 區塊 -->
+      <!-- 1. Hero -->
       <section class="hero-fullscreen" id="section-hero">
         <div class="hero-code">[ PROTOCOL // ROOM OF DESIRE ]</div>
         <h1 class="hero-heading">我們不製造傷害，<br>我們定義支配。</h1>
         <p class="hero-sub">硬派賽博外骨骼 × 隱形貓痕印記。去肉慾化的科技美學拘束裝置。</p>
         <div class="hero-scroll-cue" onclick="scrollToSection('section-manifesto')">
-          ▼ 探索核心檔案庫 (SCROLL TO EXPLORE)
+          ▼ 探索核心檔案庫 (EXPLORE)
         </div>
       </section>
 
-      <!-- 2. 品牌理念 Manifesto -->
+      <!-- 2. Manifesto -->
       <section class="section-manifesto" id="section-manifesto">
-        <div style="font-size:0.8rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // BRAND MANIFESTO ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // BRAND MANIFESTO ]</div>
         <div class="manifesto-card">
           <div class="manifesto-quote">「『慾』是內心的渴望，『欲』是外骨骼直接接管你的主權。」</div>
-          <p style="color:var(--text-muted); font-size:0.95rem; margin-bottom:16px;">
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
             【欲室｜共犯 GUILTY】顛覆傳統黏膩的情色符號，採用工業外骨骼、機械倒角與高階 3D 參數化設計，將禁忌關係昇華為冷冽硬派的科技美學。
           </p>
-          <p style="color:var(--text-muted); font-size:0.95rem;">
+          <p style="color:var(--text-muted); font-size:0.85rem;">
             外在是 Dom 的絕對主權宣示，內在是 Sub 的親密壓印烙痕。
           </p>
         </div>
       </section>
 
-      <!-- 3. 旗艦單品主打展示 (The Hook) -->
+      <!-- 3. Flagship -->
       <section class="section-flagship" id="section-flagship">
-        <div style="font-size:0.8rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // FLAGSHIP ARTIFACT ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // FLAGSHIP ARTIFACT ]</div>
         <div class="flagship-grid">
-          <div style="border:1px dashed var(--panel-border); padding:30px; text-align:center; background:#000;">
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">[ 互動體驗：懸停模擬肉球壓印 ]</div>
+          <div style="border:1px dashed var(--panel-border); padding:20px; text-align:center; background:#000;">
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:8px;">[ 點擊/懸停模擬肉球壓印 ]</div>
             <div class="stamp-preview" id="stampBox">
-              <span id="stampText" style="color:var(--text-muted); font-size:0.85rem;">觸控 / 懸停</span>
+              <span id="stampText" style="color:var(--text-muted); font-size:0.8rem;">觸控體驗</span>
             </div>
-            <div style="font-size:0.8rem; color:var(--danger-red); margin-top:8px;">取下後顯影：持續 30–60 分鐘</div>
+            <div style="font-size:0.75rem; color:var(--danger-red);">取下後顯影：持續 30–60 分鐘</div>
           </div>
 
           <div>
-            <div style="font-size:0.8rem; color:var(--accent-cyan); margin-bottom:4px;">SPEC-001</div>
-            <h2 style="font-size:1.8rem; margin-bottom:12px;">貓痕義體拘束項圈</h2>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">
-              SLS 尼龍裝甲外殼結合 TPU 85A 柔性肉球矩陣。兼顧前喉結避空的人體工學安全防線與極致反差互動。
+            <div style="font-size:0.75rem; color:var(--accent-cyan); margin-bottom:4px;">SPEC-001</div>
+            <h2 style="font-size:1.4rem; margin-bottom:8px;">貓痕義體拘束項圈</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">
+              SLS 尼龍裝甲外殼結合 TPU 85A 柔性肉球矩陣。兼顧前喉結避空人體工學與極致反差互動。
             </p>
             <button class="btn-submit" onclick="openProductDetail('cat-choker')">簽署認罪協議・立即預購 (NT$ 2,880)</button>
           </div>
         </div>
       </section>
 
-      <!-- 4. 裝備目錄 (Selected Arsenal) -->
+      <!-- 4. Arsenal -->
       <section class="section-arsenal" id="section-arsenal">
-        <div style="font-size:0.8rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
-        <h2 style="font-size:1.8rem; margin-bottom:20px;">支配・拘束・義體裝備聯邦</h2>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
+        <h2 style="font-size:1.4rem; margin-bottom:16px;">支配・拘束・義體裝備聯邦</h2>
 
         <div class="filter-bar">
-          <button class="filter-btn active" onclick="filterBrand('all')">全部裝備 (ALL)</button>
-          <button class="filter-btn" onclick="filterBrand('guilty')">欲室｜共犯 GUILTY</button>
-          <button class="filter-btn" onclick="filterBrand('shushi')">shushi束室 繩教室</button>
+          <button class="filter-btn active" onclick="filterBrand('all')">全部 (ALL)</button>
+          <button class="filter-btn" onclick="filterBrand('guilty')">欲室｜共犯</button>
+          <button class="filter-btn" onclick="filterBrand('shushi')">shushi束室</button>
         </div>
 
         <div class="product-list-grid" id="productGrid"></div>
       </section>
 
-      <!-- 5. 核心團隊 (Crew Matrix) -->
+      <!-- 5. Crew -->
       <section class="section-crew" id="section-crew">
-        <div style="font-size:0.8rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
-        <h2 style="font-size:1.8rem; margin-bottom:24px;">核心檔案：主理成員與戰略結盟</h2>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
+        <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
 
         <div class="team-grid">
           <!-- 18X -->
           <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div>
-              <div class="team-header">
-                <div class="team-role">FOUNDER / DESIGN DIRECTOR</div>
-                <div class="team-link-icon">X ↗</div>
-              </div>
-              <div style="font-size:1.3rem; font-weight:bold; margin-bottom:4px;">18X</div>
-              <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">@18X_inthc</div>
-              <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
-                主理品牌視覺體系、參數化外骨骼建模（Rhino / GH）與人體工學結構研發。負責將前衛刑具語彙轉化為可量產實體。
-              </div>
+            <div class="team-header">
+              <div class="team-role">DESIGN DIRECTOR</div>
+              <span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span>
+            </div>
+            <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">18X</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@18X_inthc</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+              主理品牌視覺體系、參數化外骨骼建模（Rhino / GH）與結構研發。
             </div>
           </a>
 
           <!-- 老王 -->
           <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div>
-              <div class="team-header">
-                <div class="team-role">CO-FOUNDER / HEAD OF BUSINESS</div>
-                <div class="team-link-icon">X ↗</div>
-              </div>
-              <div style="font-size:1.3rem; font-weight:bold; margin-bottom:4px;">老王</div>
-              <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">@Take1809DL</div>
-              <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
-                深諳次文化圈層與實體場域運作，操盤品牌社群推廣、異業通路拓展、成人選物店洽談及商業化落地。
-              </div>
+            <div class="team-header">
+              <div class="team-role">HEAD OF BUSINESS</div>
+              <span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span>
+            </div>
+            <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">老王</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@Take1809DL</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+              深諳次文化圈層，操盤品牌社群推廣、通路拓展與選物店商業合作。
             </div>
           </a>
 
-          <!-- shushi束室 繩教室 -->
+          <!-- shushi束室 -->
           <a href="https://x.com/220shushi" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
-            <div>
-              <div class="team-header">
-                <div class="team-role">STRATEGIC ALLIANCE</div>
-                <div class="team-link-icon">X ↗</div>
-              </div>
-              <div style="font-size:1.3rem; font-weight:bold; margin-bottom:4px;">shushi束室 繩教室</div>
-              <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">@220shushi</div>
-              <div style="font-size:0.85rem; color:var(--text-muted); line-height:1.6;">
-                專業繩縛教學與技術認證工坊。提供高標準繩材選品、防勒護具監製與繩縛技巧交流。
-              </div>
+            <div class="team-header">
+              <div class="team-role">STRATEGIC ALLIANCE</div>
+              <span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span>
+            </div>
+            <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">shushi束室 繩教室</div>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@220shushi</div>
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
+              專業繩縛教學與技術認證工坊。提供高標準繩材選品與護具監製。
             </div>
           </a>
         </div>
@@ -747,32 +678,32 @@
     </div>
   </div>
 
-  <!-- 單品詳情與預購視圖 -->
+  <!-- 單品詳情視圖 -->
   <div id="view-detail" class="view-section">
     <div class="detail-container">
-      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:8px 16px; cursor:pointer; margin-bottom:24px;">← 返回展廳 (BACK TO SHOWROOM)</button>
+      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
       
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:32px; background:var(--card-bg); border:1px solid var(--panel-border); padding:24px; border-radius:4px; margin-bottom:32px;">
-        <div style="border:1px dashed var(--panel-border); padding:30px; text-align:center; background:#000; display:flex; flex-direction:column; justify-content:center; align-items:center;" id="detailDisplayArea"></div>
+      <div style="background:var(--card-bg); border:1px solid var(--panel-border); padding:16px; border-radius:4px; margin-bottom:24px;">
+        <div style="border:1px dashed var(--panel-border); padding:20px; text-align:center; background:#000; margin-bottom:16px;" id="detailDisplayArea"></div>
 
         <div>
-          <div id="detailBrandBadge" style="margin-bottom:8px;"></div>
-          <h2 id="detailTitle" style="font-size: 1.6rem; margin-bottom: 8px;"></h2>
-          <p id="detailDesc" style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;"></p>
-          <table style="width:100%; border-collapse:collapse; font-size:0.85rem;" id="detailSpecTable"></table>
+          <div id="detailBrandBadge" style="margin-bottom:6px;"></div>
+          <h2 id="detailTitle" style="font-size: 1.3rem; margin-bottom: 6px;"></h2>
+          <p id="detailDesc" style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 12px;"></p>
+          <table style="width:100%; border-collapse:collapse; font-size:0.8rem;" id="detailSpecTable"></table>
         </div>
       </div>
 
-      <div style="background:var(--card-bg); border:1px solid var(--panel-border); padding:24px; border-radius:4px;">
-        <h3 style="color:var(--accent-cyan); margin-bottom:16px;">提交調用協議（訂購登記）</h3>
+      <div style="background:var(--card-bg); border:1px solid var(--panel-border); padding:16px; border-radius:4px;">
+        <h3 style="color:var(--accent-cyan); margin-bottom:12px; font-size:1rem;">提交調用協議（登記）</h3>
         <form id="orderForm">
-          <div style="margin-bottom:16px;">
-            <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:6px;">使用代號 / 嫌疑人代號*</label>
-            <input type="text" id="custName" required placeholder="例如：支配者 K" style="width:100%; padding:12px; background:#000; border:1px solid var(--panel-border); color:#fff;" />
+          <div style="margin-bottom:12px;">
+            <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:4px;">代號*</label>
+            <input type="text" id="custName" required placeholder="例如：支配者 K" />
           </div>
-          <div style="margin-bottom:20px;">
-            <label style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:6px;">聯絡終端（電話）*</label>
-            <input type="tel" id="custPhone" required placeholder="0912-345-678" style="width:100%; padding:12px; background:#000; border:1px solid var(--panel-border); color:#fff;" />
+          <div style="margin-bottom:16px;">
+            <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:4px;">聯絡電話*</label>
+            <input type="tel" id="custPhone" required placeholder="0912-345-678" />
           </div>
           <button type="submit" class="btn-submit" id="submitBtn">確認送出調用協議</button>
         </form>
@@ -781,8 +712,7 @@
   </div>
 
   <script>
-    // 開機動畫計時
-    let introTimer = setTimeout(() => enterSite(), 3200);
+    let introTimer = setTimeout(() => enterSite(), 2800);
 
     function enterSite() {
       clearTimeout(introTimer);
@@ -790,7 +720,6 @@
       if(intro) intro.classList.add('fade-out');
     }
 
-    // 側邊抽屜開關
     function toggleNav(isOpen) {
       const sideNav = document.getElementById('sideNav');
       const overlay = document.getElementById('navOverlay');
@@ -817,7 +746,6 @@
       document.getElementById('view-landing').classList.add('active');
     }
 
-    // 商品資料庫
     const products = [
       {
         id: 'cat-choker',
@@ -839,11 +767,11 @@
         brand: 'shushi',
         brandName: 'shushi束室 繩教室',
         badgeClass: 'badge-shushi',
-        title: '【束室繩教室｜工坊精煉麻繩組】',
-        desc: '束室精工脫漿、過油打蠟特選麻繩，觸感溫潤柔韌，繩縛教學與實戰指定用繩。',
+        title: '【束室繩教室｜精煉麻繩組】',
+        desc: '束室精工脫漿、過油打蠟特選麻繩，觸感溫潤柔韌，繩縛教學與實戰指定款。',
         price: 'NT$ 1,680',
         specs: [
-          ['繩體材質', '天然精梳特級黃麻（經蜂蠟養護）'],
+          ['繩體材質', '天然精梳特級黃麻（蜂蠟養護）'],
           ['規格長度', '直徑 6mm / 長度 8m（三本入）'],
           ['教室監製', 'shushi束室 繩教室 技法對應款']
         ],
@@ -854,8 +782,8 @@
         brand: 'shushi',
         brandName: 'shushi束室 繩教室',
         badgeClass: 'badge-shushi',
-        title: '【束室繩教室｜防勒軟質皮革護腕墊】',
-        desc: '專為高拉力懸吊與複雜繩縛設計，提供肌膚緩衝與關節壓迫保護。',
+        title: '【束室繩教室｜防勒皮革護腕墊】',
+        desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。',
         price: 'NT$ 1,280',
         specs: [
           ['皮革材質', '加厚軟質摔紋牛皮 + 麂皮內襯'],
@@ -884,11 +812,11 @@
             [ ${p.title} 預覽圖 ]
           </div>
           <div class="card-body">
-            <div style="font-size: 1.05rem; margin-bottom: 6px;">${p.title}</div>
-            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">${p.desc}</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:12px;">
-              <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold;">${p.price}</span>
-              <span style="font-size: 0.8rem; color: var(--text-muted);">查看細節 →</span>
+            <div style="font-size: 0.95rem; margin-bottom: 4px; font-weight: bold;">${p.title}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${p.desc}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px;">
+              <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">${p.price}</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">細節 →</span>
             </div>
           </div>
         `;
@@ -910,25 +838,25 @@
       document.getElementById('detailBrandBadge').innerHTML = `<span class="badge ${product.badgeClass}">${product.brandName}</span>`;
       document.getElementById('detailTitle').textContent = product.title;
       document.getElementById('detailDesc').textContent = product.desc;
-      document.getElementById('submitBtn').textContent = `確認送出調用協議 (${product.price})`;
+      document.getElementById('submitBtn').textContent = `確認送出 (${product.price})`;
 
       const specTable = document.getElementById('detailSpecTable');
-      specTable.innerHTML = product.specs.map(s => `<tr><td style="color:var(--text-muted); padding:8px 4px; border-bottom:1px solid var(--panel-border); width:35%;">${s[0]}</td><td style="padding:8px 4px; border-bottom:1px solid var(--panel-border);">${s[1]}</td></tr>`).join('');
+      specTable.innerHTML = product.specs.map(s => `<tr><td style="color:var(--text-muted); padding:6px 0; border-bottom:1px solid var(--panel-border); width:35%;">${s[0]}</td><td style="padding:6px 0; border-bottom:1px solid var(--panel-border);">${s[1]}</td></tr>`).join('');
 
       const displayArea = document.getElementById('detailDisplayArea');
       if(product.isInteractive) {
         displayArea.innerHTML = `
-          <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 12px;">[ 懸停模擬肉球壓印效果 ]</div>
-          <div class="stamp-preview" id="stampBoxDetail" style="width:130px; height:130px; border-radius:50%; border:2px dashed var(--panel-border); display:flex; align-items:center; justify-content:center; cursor:pointer;">
-            <span id="stampTextDetail" style="color: var(--text-muted); font-size: 0.85rem;">觸控 / 懸停</span>
+          <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 8px;">[ 懸停模擬肉球壓印效果 ]</div>
+          <div class="stamp-preview" id="stampBoxDetail" style="width:110px; height:110px;">
+            <span id="stampTextDetail" style="color: var(--text-muted); font-size: 0.75rem;">觸控體驗</span>
           </div>
-          <div style="font-size: 0.8rem; color: var(--danger-red); margin-top:10px;">配戴取下後顯影 30-60 分鐘</div>
+          <div style="font-size: 0.75rem; color: var(--danger-red); margin-top:8px;">配戴取下後顯影 30-60 分鐘</div>
         `;
         initDetailStamp();
       } else {
         displayArea.innerHTML = `
-          <div style="font-size: 0.85rem; color: var(--text-muted);">[ ${product.title} 官方細節圖 ]</div>
-          <div style="margin-top:12px; font-size:0.75rem; color:var(--text-muted);">shushi束室 繩教室 專業認證</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">[ ${product.title} 官方細節圖 ]</div>
+          <div style="margin-top:8px; font-size:0.7rem; color:var(--text-muted);">shushi束室 繩教室 監製</div>
         `;
       }
 
@@ -941,35 +869,48 @@
       const box = document.getElementById('stampBoxDetail');
       const txt = document.getElementById('stampTextDetail');
       if(!box) return;
-      box.addEventListener('mouseenter', () => {
-        txt.textContent = '🐾 貓掌顯影中';
+      const activate = () => {
+        txt.textContent = '🐾 貓掌顯影';
         txt.style.color = '#ff334b';
         box.style.backgroundColor = 'rgba(255, 51, 75, 0.15)';
-      });
-      box.addEventListener('mouseleave', () => {
-        txt.textContent = '觸控 / 懸停';
-        txt.style.color = '#737680';
+        box.style.borderColor = '#ff334b';
+      };
+      const deactivate = () => {
+        txt.textContent = '觸控體驗';
+        txt.style.color = '#8c8f96';
         box.style.backgroundColor = 'transparent';
-      });
+        box.style.borderColor = 'var(--panel-border)';
+      };
+      box.addEventListener('mouseenter', activate);
+      box.addEventListener('mouseleave', deactivate);
+      box.addEventListener('touchstart', activate);
+      box.addEventListener('touchend', deactivate);
     }
 
-    // 旗艦區懸停動效
     const flagStamp = document.getElementById('stampBox');
     const flagText = document.getElementById('stampText');
     if(flagStamp) {
-      flagStamp.addEventListener('mouseenter', () => {
-        flagText.textContent = '🐾 貓掌顯影中';
+      const activate = () => {
+        flagText.textContent = '🐾 貓掌顯影';
         flagText.style.color = '#ff334b';
-      });
-      flagStamp.addEventListener('mouseleave', () => {
-        flagText.textContent = '觸控 / 懸停';
-        flagText.style.color = '#737680';
-      });
+        flagStamp.style.backgroundColor = 'rgba(255, 51, 75, 0.15)';
+        flagStamp.style.borderColor = '#ff334b';
+      };
+      const deactivate = () => {
+        flagText.textContent = '觸控體驗';
+        flagText.style.color = '#8c8f96';
+        flagStamp.style.backgroundColor = 'transparent';
+        flagStamp.style.borderColor = 'var(--panel-border)';
+      };
+      flagStamp.addEventListener('mouseenter', activate);
+      flagStamp.addEventListener('mouseleave', deactivate);
+      flagStamp.addEventListener('touchstart', activate);
+      flagStamp.addEventListener('touchend', deactivate);
     }
 
     document.getElementById('orderForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      alert(`【協議建立完成】\n商品：${currentSelectedProduct.title}\n品牌：${currentSelectedProduct.brandName}\n已分配單號，請等待終端通知。`);
+      alert(`【協議已建立】\n商品：${currentSelectedProduct.title}\n已分配單號，請等待終端通知。`);
     });
 
     renderProductCards();
