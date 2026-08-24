@@ -739,6 +739,7 @@
         location: document.getElementById('shippingLocation').value.trim(),
         payment: currentPayment,
         role: memberProfile ? memberProfile.role : '訪客',
+        status: '排程調用中',
         createdAt: new Date().toLocaleString('zh-TW', { hour12: false })
       };
 
@@ -751,19 +752,19 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
-      // 2. 本地紀錄庫（用於特工本人查看「我的調用紀錄」）
+      // 2. 本地紀錄庫（用於特工本人查看紀錄）
       let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
 
-      // 3. 背景自動將訂單打入 Google 試算表（非同步，不卡住頁面）
+      // 3. 背景自動發送到 Google 試算表 (包含 Gmail / Discord 通知)
       fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(orderData)
       }).then(() => {
-        console.log('[GUILTY LOG] 訂單已成功寫入 Google 試算表庫！', orderData.orderId);
+        console.log('[GUILTY LOG] 訂單已發送至 Google 試算表與推播系統！', orderData.orderId);
       }).catch(err => {
         console.warn('[GUILTY LOG] 試算表傳送提示:', err);
       });
@@ -835,7 +836,9 @@
             <div><strong>金額：</strong>NT$ ${o.price.toLocaleString()}</div>
             <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
             <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
-            <div style="margin-top:4px; font-size:0.75rem; color:var(--accent-cyan);">狀態：[ 檔案已封存 / 排程調用中 ]</div>
+            <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--panel-border); font-size:0.8rem;">
+              <strong>調用狀態：</strong><span style="color:var(--accent-cyan); font-weight:bold;">${o.status || '排程調用中'}</span>
+            </div>
           </div>
         `).join('');
       }
