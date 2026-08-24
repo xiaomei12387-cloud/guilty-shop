@@ -22,6 +22,28 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Consolas', 'PingFang TC', sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { width: 100%; max-width: 100%; overflow-x: hidden; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; scroll-behavior: smooth; }
 
+    /* 原創 GUILTY 幾何骨架 SVG 樣式 */
+    .guilty-vector-logo {
+      display: inline-block;
+      vertical-align: middle;
+      filter: drop-shadow(0 0 6px var(--glow-cyan));
+    }
+    .logo-path {
+      stroke: var(--accent-cyan);
+      stroke-width: 7;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      fill: none;
+    }
+    .logo-path-anim {
+      stroke-dasharray: 600;
+      stroke-dashoffset: 600;
+      animation: drawLogoAnim 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+    @keyframes drawLogoAnim {
+      to { stroke-dashoffset: 0; }
+    }
+
     /* 開機動畫 */
     #intro-screen {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
@@ -30,17 +52,18 @@
       transition: opacity 0.6s ease, visibility 0.6s ease;
     }
     #intro-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
-    .intro-logo-box { width: 100%; max-width: 260px; text-align: center; }
-    .cyber-logo-svg { width: 90px; height: 90px; margin: 0 auto 16px; display: block; }
-    .svg-path { stroke: var(--accent-cyan); stroke-width: 2.5; fill: transparent; stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawStroke 1.8s ease-in-out forwards; }
-    .svg-pupil { fill: var(--accent-cyan); opacity: 0; animation: pulsePupil 1s ease 1.5s forwards; filter: drop-shadow(0 0 6px var(--accent-cyan)); }
+    .intro-logo-box { width: 100%; max-width: 300px; text-align: center; }
+    
+    /* 貓眼 Logo 動畫 */
+    .cyber-cat-eye-svg { width: 84px; height: 84px; margin: 0 auto 12px; display: block; }
+    .svg-eye-path { stroke: var(--accent-cyan); stroke-width: 3; fill: transparent; stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawStroke 1.8s ease-in-out forwards; }
+    .svg-pupil { fill: var(--accent-cyan); opacity: 0; animation: pulsePupil 1s ease 1.3s forwards; filter: drop-shadow(0 0 8px var(--accent-cyan)); }
     @keyframes drawStroke { to { stroke-dashoffset: 0; } }
     @keyframes pulsePupil { 0% { opacity: 0; transform: scaleY(0.1); } 100% { opacity: 1; transform: scaleY(1); } }
-    .intro-title { font-size: 1.3rem; letter-spacing: 5px; color: #fff; margin-top: 10px; opacity: 0; animation: textAppear 0.5s ease 1.2s forwards; }
-    .boot-progress-bar { width: 100%; height: 2px; background: #1a1a1f; margin-top: 20px; position: relative; overflow: hidden; }
+
+    .boot-progress-bar { width: 100%; height: 2px; background: #1a1a1f; margin-top: 25px; position: relative; overflow: hidden; }
     .boot-progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); animation: fillProgress 2.2s cubic-bezier(0.1, 0.7, 0.1, 1) forwards; }
     .skip-btn { position: absolute; bottom: 30px; font-size: 0.75rem; color: var(--text-muted); border: 1px solid var(--panel-border); padding: 6px 14px; cursor: pointer; letter-spacing: 2px; background: transparent; }
-    @keyframes textAppear { to { opacity: 1; } }
     @keyframes fillProgress { 0% { width: 0%; } 100% { width: 100%; } }
 
     /* 背景與掃描線 */
@@ -51,19 +74,19 @@
     }
     body::after {
       content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.02));
       background-size: 100% 3px, 6px 100%; pointer-events: none; z-index: 999;
     }
 
     /* 頂部導覽列 */
     header {
-      padding: 12px 16px; border-bottom: 1px solid var(--panel-border);
+      padding: 10px 16px; border-bottom: 1px solid var(--panel-border);
       display: flex; justify-content: space-between; align-items: center;
       background: rgba(8, 8, 10, 0.9); position: sticky; top: 0; z-index: 500;
       backdrop-filter: blur(10px); width: 100%;
     }
     .brand-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .header-logo-icon { width: 24px; height: 24px; }
+    .header-eye-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 4px var(--accent-cyan)); }
     .header-controls { display: flex; align-items: center; gap: 10px; }
     .user-badge {
       font-size: 0.75rem; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
@@ -118,7 +141,7 @@
 
     /* Hero */
     .hero-fullscreen { min-height: 75dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 10px; }
-    .hero-code { font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 12px; }
+    .hero-code { font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 16px; }
     .hero-heading { font-size: clamp(1.8rem, 6vw, 2.8rem); letter-spacing: 1px; line-height: 1.25; margin-bottom: 16px; }
     .hero-sub { font-size: clamp(0.9rem, 3.5vw, 1.05rem); color: var(--text-muted); max-width: 500px; margin-bottom: 30px; }
     .hero-scroll-cue { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; cursor: pointer; }
@@ -187,16 +210,30 @@
 </head>
 <body>
 
-  <!-- 開機動畫 -->
+  <!-- 開機動畫（貓眼顯影 ＋ GUILTY 幾何骨架雙重動畫） -->
   <div id="intro-screen">
     <div class="intro-logo-box">
-      <svg class="cyber-logo-svg" viewBox="0 0 100 100">
-        <polygon class="svg-path" points="50,5 92,50 50,95 8,50" />
-        <polygon class="svg-path" points="50,20 80,50 50,80 20,50" style="animation-delay: 0.3s;" />
+      <!-- 貓眼圖騰 -->
+      <svg class="cyber-cat-eye-svg" viewBox="0 0 100 100">
+        <polygon class="svg-eye-path" points="50,5 92,50 50,95 8,50" />
+        <polygon class="svg-eye-path" points="50,20 80,50 50,80 20,50" style="animation-delay: 0.3s;" />
         <path class="svg-pupil" d="M50,28 Q58,50 50,72 Q42,50 50,28 Z" />
       </svg>
-      <div class="intro-title">GUILTY</div>
-      <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:4px;">[ SYSTEM INITIALIZING ]</div>
+
+      <!-- 幾何外骨骼 GUILTY 向量標準字動畫 -->
+      <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 260px;">
+        <path class="logo-path logo-path-anim" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
+        <path class="logo-path logo-path-anim" d="M150 35 L110 85 L150 125 L190 85" />
+        <path class="logo-path logo-path-anim" d="M190 85 L230 35 L270 85 L230 135 Z" />
+        <path class="logo-path logo-path-anim" d="M230 35 L230 135" />
+        <path class="logo-path logo-path-anim" d="M270 85 L310 35 L350 85 L390 125" />
+        <path class="logo-path logo-path-anim" d="M390 85 L440 35 L490 85" />
+        <path class="logo-path logo-path-anim" d="M440 35 L440 135" />
+        <path class="logo-path logo-path-anim" d="M500 35 L545 90 L590 35" />
+        <path class="logo-path logo-path-anim" d="M545 90 L545 135" />
+      </svg>
+
+      <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:12px;">[ SYSTEM INITIALIZING ]</div>
       <div class="boot-progress-bar"><div class="boot-progress-fill"></div></div>
     </div>
     <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
@@ -235,16 +272,29 @@
     </div>
   </div>
 
-  <!-- 頂部導覽列 -->
+  <!-- 頂部導覽列（貓眼圖騰 + 欲室共犯 + GUILTY 標準字） -->
   <header>
     <div class="brand-container" onclick="showLandingView()">
-      <svg class="header-logo-icon" viewBox="0 0 100 100">
-        <polygon points="50,5 92,50 50,95 8,50" fill="none" stroke="var(--accent-cyan)" stroke-width="6" />
+      <!-- 貓眼圖騰 -->
+      <svg class="header-eye-icon" viewBox="0 0 100 100">
+        <polygon points="50,5 92,50 50,95 8,50" fill="none" stroke="var(--accent-cyan)" stroke-width="7" />
         <path d="M50,25 Q60,50 50,75 Q40,50 50,25 Z" fill="var(--accent-cyan)" />
       </svg>
-      <div style="font-size: 0.95rem; letter-spacing: 1px; font-weight: bold;">
-        欲室｜共犯 <span style="color:var(--accent-cyan)">GUILTY</span>
-      </div>
+
+      <span style="font-size: 0.95rem; font-weight: bold; letter-spacing: 1px;">欲室｜共犯</span>
+
+      <!-- 導覽列幾何標準字 -->
+      <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100px; height: auto;">
+        <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
+        <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
+        <path class="logo-path" d="M190 85 L230 35 L270 85 L230 135 Z" />
+        <path class="logo-path" d="M230 35 L230 135" />
+        <path class="logo-path" d="M270 85 L310 35 L350 85 L390 125" />
+        <path class="logo-path" d="M390 85 L440 35 L490 85" />
+        <path class="logo-path" d="M440 35 L440 135" />
+        <path class="logo-path" d="M500 35 L545 90 L590 35" />
+        <path class="logo-path" d="M545 90 L545 135" />
+      </svg>
     </div>
 
     <div class="header-controls">
@@ -288,6 +338,20 @@
       <!-- 1. Hero -->
       <section class="hero-fullscreen" id="section-hero">
         <div class="hero-code">[ PROTOCOL // ROOM OF DESIRE ]</div>
+        <div style="margin-bottom: 24px;">
+          <!-- 主頁大標題：幾何 GUILTY 向量字體 -->
+          <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 320px;">
+            <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
+            <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
+            <path class="logo-path" d="M190 85 L230 35 L270 85 L230 135 Z" />
+            <path class="logo-path" d="M230 35 L230 135" />
+            <path class="logo-path" d="M270 85 L310 35 L350 85 L390 125" />
+            <path class="logo-path" d="M390 85 L440 35 L490 85" />
+            <path class="logo-path" d="M440 35 L440 135" />
+            <path class="logo-path" d="M500 35 L545 90 L590 35" />
+            <path class="logo-path" d="M545 90 L545 135" />
+          </svg>
+        </div>
         <h1 class="hero-heading">我們不製造傷害，<br>我們定義支配。</h1>
         <p class="hero-sub">硬派賽博外骨骼 × 隱形貓痕印記。去肉慾化的科技美學拘束裝置。</p>
         <div class="hero-scroll-cue" onclick="scrollToSection('section-manifesto')">
