@@ -92,7 +92,7 @@
     .nav-menu-list { list-style: none; margin-top: 30px; display: flex; flex-direction: column; gap: 16px; }
     .nav-menu-item a { color: var(--text-main); text-decoration: none; font-size: 0.95rem; letter-spacing: 1px; display: block; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 
-    /* 賽博會員認證彈窗 (Cyber Auth Modal) */
+    /* 賽博會員認證彈窗 */
     .auth-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
       background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(16px);
@@ -118,7 +118,9 @@
 
     /* 視圖控制 */
     .view-section { display: none; width: 100%; }
-    .view-section.active { display: block; }
+    .view-section.active { display: block; animation: viewFade 0.35s ease; }
+    @keyframes viewFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
     .landing-container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 16px 60px; }
 
     /* Hero */
@@ -178,6 +180,28 @@
     .radio-card.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,255,136,0.05); }
     .btn-submit { width: 100%; padding: 16px; background: var(--accent-cyan); color: #000; font-size: 1rem; font-weight: bold; border: none; cursor: pointer; letter-spacing: 2px; transition: all 0.2s; }
     .btn-submit:hover { background: #fff; }
+
+    /* =========================================
+       成功下單與購買紀錄專用樣式
+       ========================================= */
+    .success-card {
+      background: var(--card-bg); border: 1px solid var(--accent-cyan);
+      box-shadow: 0 0 35px var(--glow-cyan); padding: 32px 24px; border-radius: 4px;
+      text-align: center; margin-top: 20px;
+    }
+    .success-badge { font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 8px; }
+    .success-title { font-size: 1.8rem; margin-bottom: 12px; color: #fff; }
+    .success-file-box {
+      background: #000; border: 1px dashed var(--panel-border);
+      padding: 20px; text-align: left; margin: 20px 0; font-size: 0.85rem; line-height: 1.8;
+    }
+    .countdown-timer { font-size: 0.9rem; color: var(--danger-red); margin-top: 16px; font-weight: bold; }
+
+    .history-item {
+      background: #000; border: 1px solid var(--panel-border);
+      padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem;
+    }
+    .history-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding-bottom: 8px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -266,6 +290,7 @@
         <li class="nav-menu-item"><a href="#section-flagship" onclick="scrollToSection('section-flagship')">03 // 旗艦項圈 (FLAGSHIP)</a></li>
         <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">04 // 裝備目錄 (CATALOG)</a></li>
         <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">05 // 核心檔案 (CREW)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">06 // 調用紀錄 (ORDERS)</a></li>
       </ul>
     </div>
 
@@ -447,9 +472,45 @@
     </div>
   </div>
 
+  <!-- 成功下單憑證頁面 (Order Success View) -->
+  <div id="view-success" class="view-section">
+    <div class="detail-container">
+      <div class="success-card">
+        <div class="success-badge">[ PROTOCOL // CASE LOCKED ]</div>
+        <h2 class="success-title">認罪協議已簽署完畢</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem;">裝備調用指令已注入終端，檔案已加密封存。</p>
+
+        <div class="success-file-box" id="successDetailArea">
+          <!-- 動態載入訂單摘要 -->
+        </div>
+
+        <div class="countdown-timer" id="countdownNotice">5 秒後自動返回主頁...</div>
+
+        <div style="display:flex; gap:10px; margin-top:20px;">
+          <button class="btn-submit" style="padding:12px; font-size:0.9rem;" onclick="showLandingView()">立即返回展廳 (HOME)</button>
+          <button class="btn-submit" style="padding:12px; font-size:0.9rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);" onclick="openOrderHistory()">檢視歷史檔案 (HISTORY)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 購買紀錄頁面 (Order History View) -->
+  <div id="view-history" class="view-section">
+    <div class="detail-container">
+      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
+      
+      <div class="form-box">
+        <div class="form-title">05 // 嫌疑人調用歷史檔案庫 (ORDER DOSSIER)</div>
+        <div id="historyListArea">
+          <!-- 動態渲染歷史紀錄 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ==========================================
-    // 【Firebase 設定區】已填妥專屬金鑰
+    // 【Firebase 設定區】
     // ==========================================
     const firebaseConfig = {
       apiKey: "AIzaSyCn0vw132QUEo8C-IYc1KRb-1Mv-w2Mnvg",
@@ -499,8 +560,11 @@
       }, 50);
     }
 
+    let countdownInterval = null;
+
     function showLandingView() {
-      document.getElementById('view-checkout').classList.remove('active');
+      if(countdownInterval) clearInterval(countdownInterval);
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-landing').classList.add('active');
       window.scrollTo(0, 0);
     }
@@ -643,7 +707,7 @@
         <strong>裝備：</strong>${selectedProduct.title}<br>
         <strong>金額：</strong>NT$ ${selectedProduct.price.toLocaleString()}（早鳥免運）
       `;
-      document.getElementById('view-landing').classList.remove('active');
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-checkout').classList.add('active');
       updateMemberUI();
       window.scrollTo(0, 0);
@@ -702,6 +766,9 @@
       flagStamp.addEventListener('touchend', deactivate);
     }
 
+    // ==========================================
+    // 結帳下單 ➔ 儲存紀錄 ➔ 顯示成功頁與 5 秒倒數
+    // ==========================================
     document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const orderData = {
@@ -715,9 +782,10 @@
         location: document.getElementById('shippingLocation').value.trim(),
         payment: currentPayment,
         role: memberProfile ? memberProfile.role : '訪客',
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toLocaleString()
       };
 
+      // 1. 更新本地會員檔案
       memberProfile = {
         name: orderData.name,
         phone: orderData.phone,
@@ -726,6 +794,12 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
+      // 2. 儲存至本地歷史訂單庫 (LocalStorage)
+      let orderHistory = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+      orderHistory.unshift(orderData);
+      localStorage.setItem('guilty_orders', JSON.stringify(orderHistory));
+
+      // 3. 寫入 Firebase 雲端
       if (db) {
         try {
           await db.collection("orders").doc(orderData.orderId).set(orderData);
@@ -736,10 +810,72 @@
         }
       }
 
-      alert(`【認罪訂單已生成】\n檔案編號：#${orderData.orderId}\n裝備：${orderData.product}\n收件人：${orderData.name}\n途徑：${orderData.shipping} (${orderData.location})\n資料已永久同步至雲端！`);
-      showLandingView();
+      // 4. 渲染成功下單頁面內容
+      document.getElementById('successDetailArea').innerHTML = `
+        <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
+        <div><strong>調用裝備：</strong>${orderData.product}</div>
+        <div><strong>協議金額：</strong>NT$ ${orderData.price.toLocaleString()}</div>
+        <div><strong>收件特工：</strong>${orderData.name} (${orderData.phone})</div>
+        <div><strong>銘牌雷雕：</strong>${orderData.engraving}</div>
+        <div><strong>交付途徑：</strong>${orderData.shipping} (${orderData.location})</div>
+        <div><strong>支付結算：</strong>${orderData.payment}</div>
+      `;
+
+      // 5. 切換至成功頁面並啟動 5 秒倒數計時
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-success').classList.add('active');
+      window.scrollTo(0, 0);
+
+      let timeLeft = 5;
+      const countdownEl = document.getElementById('countdownNotice');
+      countdownEl.textContent = `${timeLeft} 秒後自動返回主頁...`;
+
+      if(countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        timeLeft--;
+        if(timeLeft > 0) {
+          countdownEl.textContent = `${timeLeft} 秒後自動返回主頁...`;
+        } else {
+          clearInterval(countdownInterval);
+          showLandingView();
+        }
+      }, 1000);
+
       updateMemberUI();
     });
+
+    // ==========================================
+    // 購買紀錄 (Order History) 渲染與切換
+    // ==========================================
+    function openOrderHistory() {
+      if(countdownInterval) clearInterval(countdownInterval);
+      toggleNav(false);
+      
+      const historyArea = document.getElementById('historyListArea');
+      let orderHistory = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+
+      if(orderHistory.length === 0) {
+        historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">尚無任何調用案件紀錄。</div>`;
+      } else {
+        historyArea.innerHTML = orderHistory.map(o => `
+          <div class="history-item">
+            <div class="history-header">
+              <span style="color:var(--accent-cyan); font-weight:bold;">#${o.orderId}</span>
+              <span style="color:var(--text-muted); font-size:0.75rem;">${o.createdAt}</span>
+            </div>
+            <div><strong>裝備：</strong>${o.product}</div>
+            <div><strong>金額：</strong>NT$ ${o.price.toLocaleString()}</div>
+            <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
+            <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
+            <div style="margin-top:4px; font-size:0.75rem; color:var(--accent-cyan);">狀態：[ 檔案封存 / 排程調用中 ]</div>
+          </div>
+        `).join('');
+      }
+
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-history').classList.add('active');
+      window.scrollTo(0, 0);
+    }
 
     renderProductCards();
     updateMemberUI();
