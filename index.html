@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>欲室｜共犯 GUILTY × shushi束室 繩教室</title>
   
-  <!-- 引入 Firebase SDK (CDN) -->
+  <!-- 引入 Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
@@ -23,7 +23,7 @@
       --glow-purple: rgba(181, 23, 158, 0.25);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Consolas', 'Courier New', 'PingFang TC', sans-serif; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Consolas', 'PingFang TC', sans-serif; -webkit-tap-highlight-color: transparent; }
     html, body { width: 100%; max-width: 100%; overflow-x: hidden; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; scroll-behavior: smooth; }
 
     /* 開機動畫 */
@@ -92,14 +92,13 @@
     .nav-menu-list { list-style: none; margin-top: 30px; display: flex; flex-direction: column; gap: 16px; }
     .nav-menu-item a { color: var(--text-main); text-decoration: none; font-size: 0.95rem; letter-spacing: 1px; display: block; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 
-    /* 賽博會員認證彈窗 */
+    /* 會員認證彈窗 */
     .auth-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
       background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(16px);
       z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px;
     }
-    .auth-modal.active { display: flex; animation: modalFade 0.3s ease; }
-    @keyframes modalFade { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    .auth-modal.active { display: flex; }
 
     .auth-box {
       width: 100%; max-width: 380px; background: rgba(15, 15, 18, 0.95);
@@ -111,9 +110,7 @@
     .auth-sub { font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 1px; margin-top: 4px; }
     .auth-close { position: absolute; top: 12px; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; background: none; border: none; }
     .role-toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .role-btn {
-      padding: 8px; font-size: 0.8rem; background: #000; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; text-align: center;
-    }
+    .role-btn { padding: 8px; font-size: 0.8rem; background: #000; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; text-align: center; }
     .role-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 255, 136, 0.1); }
 
     /* 視圖控制 */
@@ -181,26 +178,14 @@
     .btn-submit { width: 100%; padding: 16px; background: var(--accent-cyan); color: #000; font-size: 1rem; font-weight: bold; border: none; cursor: pointer; letter-spacing: 2px; transition: all 0.2s; }
     .btn-submit:hover { background: #fff; }
 
-    /* =========================================
-       成功下單與購買紀錄專用樣式
-       ========================================= */
-    .success-card {
-      background: var(--card-bg); border: 1px solid var(--accent-cyan);
-      box-shadow: 0 0 35px var(--glow-cyan); padding: 32px 24px; border-radius: 4px;
-      text-align: center; margin-top: 20px;
-    }
+    /* 成功下單憑證 */
+    .success-card { background: var(--card-bg); border: 1px solid var(--accent-cyan); box-shadow: 0 0 35px var(--glow-cyan); padding: 32px 20px; border-radius: 4px; text-align: center; }
     .success-badge { font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 8px; }
-    .success-title { font-size: 1.8rem; margin-bottom: 12px; color: #fff; }
-    .success-file-box {
-      background: #000; border: 1px dashed var(--panel-border);
-      padding: 20px; text-align: left; margin: 20px 0; font-size: 0.85rem; line-height: 1.8;
-    }
-    .countdown-timer { font-size: 0.9rem; color: var(--danger-red); margin-top: 16px; font-weight: bold; }
+    .success-title { font-size: 1.6rem; margin-bottom: 12px; color: #fff; }
+    .success-file-box { background: #000; border: 1px dashed var(--panel-border); padding: 18px; text-align: left; margin: 20px 0; font-size: 0.85rem; line-height: 1.8; }
+    .countdown-timer { font-size: 0.95rem; color: var(--danger-red); margin-top: 16px; font-weight: bold; }
 
-    .history-item {
-      background: #000; border: 1px solid var(--panel-border);
-      padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem;
-    }
+    .history-item { background: #000; border: 1px solid var(--panel-border); padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem; }
     .history-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding-bottom: 8px; margin-bottom: 8px; }
   </style>
 </head>
@@ -241,7 +226,7 @@
           <input type="text" id="authName" required placeholder="例如：18X / 支配者 K" />
         </div>
         <div class="form-group">
-          <label>終端聯絡電話*</label>
+          <label>終端聯絡電話（作為個人唯一識別帳號）*</label>
           <input type="tel" id="authPhone" required placeholder="0912-345-678" />
         </div>
         <div class="form-group">
@@ -249,6 +234,7 @@
           <input type="text" id="authLocation" placeholder="例如：7-11 鑫台北門市" />
         </div>
         <button type="submit" class="btn-submit" style="margin-top:12px; padding:12px;">注入身份數據 (VERIFY)</button>
+        <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:10px; cursor:pointer;">[ 斷開當前連結 / 退出身份 ]</button>
       </form>
     </div>
   </div>
@@ -290,7 +276,7 @@
         <li class="nav-menu-item"><a href="#section-flagship" onclick="scrollToSection('section-flagship')">03 // 旗艦項圈 (FLAGSHIP)</a></li>
         <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">04 // 裝備目錄 (CATALOG)</a></li>
         <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">05 // 核心檔案 (CREW)</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">06 // 調用紀錄 (ORDERS)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">06 // 個人調用紀錄 (MY DOSSIER)</a></li>
       </ul>
     </div>
 
@@ -472,7 +458,7 @@
     </div>
   </div>
 
-  <!-- 成功下單憑證頁面 (Order Success View) -->
+  <!-- 成功下單憑證頁面 -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
@@ -480,30 +466,26 @@
         <h2 class="success-title">認罪協議已簽署完畢</h2>
         <p style="color:var(--text-muted); font-size:0.85rem;">裝備調用指令已注入終端，檔案已加密封存。</p>
 
-        <div class="success-file-box" id="successDetailArea">
-          <!-- 動態載入訂單摘要 -->
-        </div>
+        <div class="success-file-box" id="successDetailArea"></div>
 
         <div class="countdown-timer" id="countdownNotice">5 秒後自動返回主頁...</div>
 
         <div style="display:flex; gap:10px; margin-top:20px;">
-          <button class="btn-submit" style="padding:12px; font-size:0.9rem;" onclick="showLandingView()">立即返回展廳 (HOME)</button>
-          <button class="btn-submit" style="padding:12px; font-size:0.9rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);" onclick="openOrderHistory()">檢視歷史檔案 (HISTORY)</button>
+          <button class="btn-submit" style="padding:12px; font-size:0.85rem;" onclick="showLandingView()">返回展廳 (HOME)</button>
+          <button class="btn-submit" style="padding:12px; font-size:0.85rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);" onclick="openOrderHistory()">我的調用紀錄 (DOSSIER)</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 購買紀錄頁面 (Order History View) -->
+  <!-- 個人購買紀錄頁面 -->
   <div id="view-history" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
       
       <div class="form-box">
-        <div class="form-title">05 // 嫌疑人調用歷史檔案庫 (ORDER DOSSIER)</div>
-        <div id="historyListArea">
-          <!-- 動態渲染歷史紀錄 -->
-        </div>
+        <div class="form-title" id="historyTitle">05 // 特工個人調用檔案庫</div>
+        <div id="historyListArea"></div>
       </div>
     </div>
   </div>
@@ -526,9 +508,9 @@
     try {
       firebase.initializeApp(firebaseConfig);
       db = firebase.firestore();
-      console.log("[FIREBASE] 雲端終端已連線。");
+      console.log("[FIREBASE] 雲端已連線。");
     } catch(err) {
-      console.warn("[FIREBASE] 本地快取模式。");
+      console.warn("[FIREBASE] 本地模式。");
     }
 
     // 開機動畫計時
@@ -570,7 +552,7 @@
     }
 
     // ==========================================
-    // 自動登入與會員檔案系統
+    // 個人會員系統（隔離與自動登入）
     // ==========================================
     let currentRole = '支配者 (Dom)';
     let memberProfile = JSON.parse(localStorage.getItem('guilty_member')) || null;
@@ -598,7 +580,7 @@
 
     function updateMemberUI() {
       const btn = document.getElementById('memberBtn');
-      if(memberProfile && memberProfile.name) {
+      if(memberProfile && memberProfile.name && memberProfile.phone) {
         const shortRole = memberProfile.role ? memberProfile.role.split(' ')[0] : '特工';
         btn.textContent = `[ ${shortRole}：${memberProfile.name} ]`;
         btn.style.borderColor = 'var(--accent-cyan)';
@@ -612,6 +594,7 @@
         if(locInput && !locInput.value) locInput.value = memberProfile.lastLocation || '';
       } else {
         btn.textContent = `[ 身份認證：訪客 ]`;
+        btn.style.borderColor = 'var(--accent-cyan)';
       }
     }
 
@@ -620,20 +603,6 @@
       const phone = document.getElementById('authPhone').value.trim();
       let name = document.getElementById('authName').value.trim();
       let location = document.getElementById('authLocation').value.trim();
-
-      if (db && (!name || !location)) {
-        try {
-          const doc = await db.collection("members").doc(phone).get();
-          if (doc.exists) {
-            const cloudData = doc.data();
-            name = name || cloudData.name;
-            location = location || cloudData.lastLocation;
-            currentRole = cloudData.role || currentRole;
-          }
-        } catch(err) {
-          console.warn("雲端查詢略過:", err);
-        }
-      }
 
       const profileData = {
         name: name,
@@ -647,18 +616,28 @@
       localStorage.setItem('guilty_member', JSON.stringify(profileData));
 
       if (db) {
-        try {
-          await db.collection("members").doc(phone).set(profileData, { merge: true });
-        } catch(e) {
-          console.error("雲端同步失敗:", e);
-        }
+        db.collection("members").doc(phone).set(profileData, { merge: true }).catch(console.warn);
       }
 
       updateMemberUI();
       toggleAuthModal(false);
-      alert(`【終端已鎖定】歡迎回來，${profileData.role} // ${profileData.name}。下次連線將自動保持登入。`);
+      alert(`【終端已鎖定】特工：${profileData.name}，個人檔案已建立。`);
     });
 
+    function logoutMember() {
+      if(confirm('確定要斷開此終端的特工身分嗎？')) {
+        localStorage.removeItem('guilty_member');
+        memberProfile = null;
+        document.getElementById('authName').value = '';
+        document.getElementById('authPhone').value = '';
+        document.getElementById('authLocation').value = '';
+        updateMemberUI();
+        toggleAuthModal(false);
+        alert('【已退出】目前為訪客模式。');
+      }
+    }
+
+    // 商品清單
     const products = [
       { id: 'cat-choker', brand: 'guilty', brandName: '欲室｜共犯 GUILTY', badgeClass: 'badge-guilty', title: '【貓痕義體拘束項圈】', desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', price: 2880 },
       { id: 'shushi-rope-set', brand: 'shushi', brandName: 'shushi束室 繩教室', badgeClass: 'badge-shushi', title: '【束室繩教室｜精煉麻繩組】', desc: '束室精工脫漿、過油打蠟特選麻繩，觸感溫潤柔韌，繩縛教學與實戰指定款。', price: 1680 },
@@ -767,10 +746,11 @@
     }
 
     // ==========================================
-    // 結帳下單 ➔ 儲存紀錄 ➔ 顯示成功頁與 5 秒倒數
+    // 結帳下單（必跳成功頁 + 隔離存檔）
     // ==========================================
-    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
       e.preventDefault();
+      
       const orderData = {
         orderId: 'CASE-' + Date.now().toString().slice(-6),
         product: selectedProduct.title,
@@ -785,7 +765,7 @@
         createdAt: new Date().toLocaleString()
       };
 
-      // 1. 更新本地會員檔案
+      // 更新會員身份
       memberProfile = {
         name: orderData.name,
         phone: orderData.phone,
@@ -794,23 +774,18 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
-      // 2. 儲存至本地歷史訂單庫 (LocalStorage)
-      let orderHistory = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-      orderHistory.unshift(orderData);
-      localStorage.setItem('guilty_orders', JSON.stringify(orderHistory));
+      // 儲存至全域歷史
+      let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+      allOrders.unshift(orderData);
+      localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
 
-      // 3. 寫入 Firebase 雲端
+      // 背景發送至雲端（不卡畫面跳轉）
       if (db) {
-        try {
-          await db.collection("orders").doc(orderData.orderId).set(orderData);
-          await db.collection("members").doc(orderData.phone).set(memberProfile, { merge: true });
-          console.log("[FIREBASE] 訂單已入庫:", orderData.orderId);
-        } catch(err) {
-          console.error("訂單雲端寫入失敗:", err);
-        }
+        db.collection("orders").doc(orderData.orderId).set(orderData).catch(console.warn);
+        db.collection("members").doc(orderData.phone).set(memberProfile, { merge: true }).catch(console.warn);
       }
 
-      // 4. 渲染成功下單頁面內容
+      // 1. 渲染成功內容
       document.getElementById('successDetailArea').innerHTML = `
         <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
         <div><strong>調用裝備：</strong>${orderData.product}</div>
@@ -821,11 +796,12 @@
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
 
-      // 5. 切換至成功頁面並啟動 5 秒倒數計時
+      // 2. 切換成功頁面
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-success').classList.add('active');
       window.scrollTo(0, 0);
 
+      // 3. 5 秒倒數
       let timeLeft = 5;
       const countdownEl = document.getElementById('countdownNotice');
       countdownEl.textContent = `${timeLeft} 秒後自動返回主頁...`;
@@ -845,19 +821,29 @@
     });
 
     // ==========================================
-    // 購買紀錄 (Order History) 渲染與切換
+    // 個人購買紀錄（依手機號碼隔離顯示）
     // ==========================================
     function openOrderHistory() {
       if(countdownInterval) clearInterval(countdownInterval);
       toggleNav(false);
-      
-      const historyArea = document.getElementById('historyListArea');
-      let orderHistory = JSON.parse(localStorage.getItem('guilty_orders')) || [];
 
-      if(orderHistory.length === 0) {
-        historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">尚無任何調用案件紀錄。</div>`;
+      if(!memberProfile || !memberProfile.phone) {
+        alert('請先進行【身份認證 / 登入】，系統將調出專屬於您的調用檔案。');
+        toggleAuthModal(true);
+        return;
+      }
+
+      const historyArea = document.getElementById('historyListArea');
+      document.getElementById('historyTitle').textContent = `05 // 特工 [ ${memberProfile.name} - ${memberProfile.phone} ] 專屬調用檔案`;
+
+      // 從所有訂單中只篩選出「符合當前手機號碼」的個人訂單
+      let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+      let myOrders = allOrders.filter(o => o.phone === memberProfile.phone);
+
+      if(myOrders.length === 0) {
+        historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name} 尚無任何專屬調用案件。</div>`;
       } else {
-        historyArea.innerHTML = orderHistory.map(o => `
+        historyArea.innerHTML = myOrders.map(o => `
           <div class="history-item">
             <div class="history-header">
               <span style="color:var(--accent-cyan); font-weight:bold;">#${o.orderId}</span>
