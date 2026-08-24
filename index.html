@@ -4,10 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>欲室｜共犯 GUILTY × shushi束室 繩教室</title>
-  
-  <!-- 引入 Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
 
   <style>
     :root {
@@ -492,32 +488,9 @@
 
   <script>
     // ==========================================
-    // 【Firebase 設定區】
+    // 【Google 試算表收單 API 網址】
     // ==========================================
-    const firebaseConfig = {
-      apiKey: "AIzaSyCn0vw132QUEo8C-IYc1KRb-1Mv-w2Mnvg",
-      authDomain: "guilty-178af.firebaseapp.com",
-      projectId: "guilty-178af",
-      storageBucket: "guilty-178af.firebasestorage.app",
-      messagingSenderId: "287204271889",
-      appId: "1:287204271889:web:4de64b196045ae259d4eb0",
-      measurementId: "G-7C00QHH5X4"
-    };
-
-    let db = null;
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
-      console.log("[FIREBASE] 雲端資料庫連線成功！");
-    } catch(err) {
-      console.warn("[FIREBASE] 本地快取模式:", err);
-    }
-
-    // 清理電話號碼格式（移除空白、斜線，確保符合作為 Document ID）
-    function sanitizePhone(phone) {
-      if(!phone) return '';
-      return phone.replace(/[^0-9a-zA-Z]/g, '');
-    }
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
 
     // 開機動畫計時
     let introTimer = setTimeout(() => enterSite(), 2800);
@@ -604,17 +577,15 @@
       }
     }
 
-    document.getElementById('authForm').addEventListener('submit', async (e) => {
+    document.getElementById('authForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const phoneRaw = document.getElementById('authPhone').value.trim();
-      const cleanPhone = sanitizePhone(phoneRaw);
       let name = document.getElementById('authName').value.trim();
       let location = document.getElementById('authLocation').value.trim();
 
       const profileData = {
         name: name,
         phone: phoneRaw,
-        cleanPhone: cleanPhone,
         lastLocation: location,
         role: currentRole,
         updatedAt: new Date().toISOString()
@@ -622,15 +593,6 @@
 
       memberProfile = profileData;
       localStorage.setItem('guilty_member', JSON.stringify(profileData));
-
-      if (db && cleanPhone) {
-        db.collection("members").doc(cleanPhone).set(profileData, { merge: true })
-          .then(() => console.log("[FIREBASE] 會員資料寫入成功"))
-          .catch(err => {
-            console.error("[FIREBASE ERROR] 會員寫入失敗:", err);
-            alert("【Firebase 提示】會員資料寫入失敗：" + err.message);
-          });
-      }
 
       updateMemberUI();
       toggleAuthModal(false);
@@ -759,13 +721,12 @@
     }
 
     // ==========================================
-    // 結帳下單（立刻跳成功頁 + 彈窗除錯監控）
+    // 結帳下單（寫入 Google 試算表 + 本地個人隔離）
     // ==========================================
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
       const phoneRaw = document.getElementById('custPhone').value.trim();
-      const cleanPhone = sanitizePhone(phoneRaw);
 
       const orderData = {
         orderId: 'CASE-' + Date.now().toString().slice(-6),
@@ -773,16 +734,15 @@
         price: selectedProduct.price,
         name: document.getElementById('custName').value.trim(),
         phone: phoneRaw,
-        cleanPhone: cleanPhone,
         engraving: document.getElementById('custEngraving').value.trim() || '無',
         shipping: currentShipping,
         location: document.getElementById('shippingLocation').value.trim(),
         payment: currentPayment,
         role: memberProfile ? memberProfile.role : '訪客',
-        createdAt: new Date().toLocaleString()
+        createdAt: new Date().toLocaleString('zh-TW', { hour12: false })
       };
 
-      // 1. 更新會員身份
+      // 1. 更新特工會員資訊
       memberProfile = {
         name: orderData.name,
         phone: orderData.phone,
@@ -791,30 +751,24 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
-      // 2. 本地紀錄
+      // 2. 本地紀錄庫（用於特工本人查看「我的調用紀錄」）
       let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
 
-      // 3. 寫入 Firebase 雲端 (帶有錯誤提示彈窗)
-      if (db) {
-        db.collection("orders").doc(orderData.orderId).set(orderData)
-          .then(() => console.log("[FIREBASE] 訂單雲端入庫成功:", orderData.orderId))
-          .catch(err => {
-            console.error("[FIREBASE ERROR] 訂單寫入失敗:", err);
-            alert("【Firebase 寫入提示】" + err.message);
-          });
-          
-        if(cleanPhone) {
-          db.collection("members").doc(cleanPhone).set(memberProfile, { merge: true })
-            .then(() => console.log("[FIREBASE] 特工會員檔已更新"))
-            .catch(console.warn);
-        }
-      } else {
-        alert("【提示】目前未連線至 Firebase，訂單僅存於本機。");
-      }
+      // 3. 背景自動將訂單打入 Google 試算表（非同步，不卡住頁面）
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      }).then(() => {
+        console.log('[GUILTY LOG] 訂單已成功寫入 Google 試算表庫！', orderData.orderId);
+      }).catch(err => {
+        console.warn('[GUILTY LOG] 試算表傳送提示:', err);
+      });
 
-      // 4. 立即渲染成功畫面
+      // 4. 立即渲染成功下單憑證
       document.getElementById('successDetailArea').innerHTML = `
         <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
         <div><strong>調用裝備：</strong>${orderData.product}</div>
@@ -829,7 +783,7 @@
       document.getElementById('view-success').classList.add('active');
       window.scrollTo(0, 0);
 
-      // 5. 倒數 5 秒自動跳回
+      // 5. 倒數 5 秒自動跳回主頁
       let timeLeft = 5;
       const countdownEl = document.getElementById('countdownNotice');
       countdownEl.textContent = `${timeLeft} 秒後自動返回主頁...`;
@@ -849,9 +803,9 @@
     });
 
     // ==========================================
-    // 個人購買紀錄（支援雲端 + 本地雙重查詢）
+    // 個人調用紀錄（依手機號碼隔離顯示）
     // ==========================================
-    async function openOrderHistory() {
+    function openOrderHistory() {
       if(countdownInterval) clearInterval(countdownInterval);
       toggleNav(false);
 
@@ -863,29 +817,10 @@
 
       const historyArea = document.getElementById('historyListArea');
       document.getElementById('historyTitle').textContent = `05 // 特工 [ ${memberProfile.name} - ${memberProfile.phone} ] 專屬調用檔案`;
-      historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">[ 雲端終端搜尋中... ]</div>`;
 
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-history').classList.add('active');
-      window.scrollTo(0, 0);
-
-      let myOrders = [];
-
-      // 優先從 Firebase 雲端依電話號碼查詢
-      if (db) {
-        try {
-          const snapshot = await db.collection("orders").where("phone", "==", memberProfile.phone).get();
-          snapshot.forEach(doc => myOrders.push(doc.data()));
-        } catch(err) {
-          console.warn("[FIREBASE] 雲端查詢失敗，回退至本地搜尋:", err);
-        }
-      }
-
-      // 若雲端查無結果，回退至 LocalStorage 搜尋
-      if (myOrders.length === 0) {
-        let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-        myOrders = allOrders.filter(o => o.phone === memberProfile.phone);
-      }
+      // 只篩選出當前特工手機號碼的訂單（個人數據隔離）
+      let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+      let myOrders = allOrders.filter(o => o.phone === memberProfile.phone);
 
       if(myOrders.length === 0) {
         historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name} 尚無任何專屬調用案件。</div>`;
@@ -900,10 +835,14 @@
             <div><strong>金額：</strong>NT$ ${o.price.toLocaleString()}</div>
             <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
             <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
-            <div style="margin-top:4px; font-size:0.75rem; color:var(--accent-cyan);">狀態：[ 檔案封存 / 排程調用中 ]</div>
+            <div style="margin-top:4px; font-size:0.75rem; color:var(--accent-cyan);">狀態：[ 檔案已封存 / 排程調用中 ]</div>
           </div>
         `).join('');
       }
+
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-history').classList.add('active');
+      window.scrollTo(0, 0);
     }
 
     renderProductCards();
