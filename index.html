@@ -92,9 +92,7 @@
     .nav-menu-list { list-style: none; margin-top: 30px; display: flex; flex-direction: column; gap: 16px; }
     .nav-menu-item a { color: var(--text-main); text-decoration: none; font-size: 0.95rem; letter-spacing: 1px; display: block; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 
-    /* =========================================
-       賽博會員認證彈窗 (Cyber Auth Modal)
-       ========================================= */
+    /* 賽博會員認證彈窗 (Cyber Auth Modal) */
     .auth-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
       background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(16px);
@@ -199,7 +197,7 @@
     <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
   </div>
 
-  <!-- 賽博會員認證彈窗 (Cyber Auth Modal) -->
+  <!-- 賽博會員認證彈窗 -->
   <div class="auth-modal" id="authModal">
     <div class="auth-box">
       <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
@@ -450,328 +448,301 @@
   </div>
 
   <script>
-    <script>
-  // ==========================================
-  // 【Firebase 設定區】已填妥專屬金鑰
-  // ==========================================
-  const firebaseConfig = {
-    apiKey: "AIzaSyCn0vw132QUEo8C-IYc1KRb-1Mv-w2Mnvg",
-    authDomain: "guilty-178af.firebaseapp.com",
-    projectId: "guilty-178af",
-    storageBucket: "guilty-178af.firebasestorage.app",
-    messagingSenderId: "287204271889",
-    appId: "1:287204271889:web:4de64b196045ae259d4eb0",
-    measurementId: "G-7C00QHH5X4"
-  };
-
-  let db = null;
-  try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    console.log("[FIREBASE] 雲端終端已連線。");
-  } catch(err) {
-    console.warn("[FIREBASE] 本地快取模式。");
-  }
-
-  // 開機動畫計時
-  let introTimer = setTimeout(() => enterSite(), 2800);
-  function enterSite() {
-    clearTimeout(introTimer);
-    const intro = document.getElementById('intro-screen');
-    if(intro) intro.classList.add('fade-out');
-  }
-
-  function toggleNav(isOpen) {
-    const sideNav = document.getElementById('sideNav');
-    const overlay = document.getElementById('navOverlay');
-    if(isOpen) {
-      sideNav.classList.add('open');
-      overlay.classList.add('active');
-    } else {
-      sideNav.classList.remove('open');
-      overlay.classList.remove('active');
-    }
-  }
-
-  function scrollToSection(sectionId) {
-    showLandingView();
-    toggleNav(false);
-    setTimeout(() => {
-      const el = document.getElementById(sectionId);
-      if(el) el.scrollIntoView({ behavior: 'smooth' });
-    }, 50);
-  }
-
-  function showLandingView() {
-    document.getElementById('view-checkout').classList.remove('active');
-    document.getElementById('view-landing').classList.add('active');
-    window.scrollTo(0, 0);
-  }
-
-  // ==========================================
-  // 自動登入與會員檔案系統
-  // ==========================================
-  let currentRole = '支配者 (Dom)';
-  // 網頁載入時自動從瀏覽器提取記憶
-  let memberProfile = JSON.parse(localStorage.getItem('guilty_member')) || null;
-
-  function setAuthRole(role) {
-    currentRole = role;
-    document.getElementById('roleDom').classList.toggle('active', role.includes('Dom'));
-    document.getElementById('roleSub').classList.toggle('active', role.includes('Sub'));
-  }
-
-  function toggleAuthModal(isOpen) {
-    const modal = document.getElementById('authModal');
-    if(isOpen) {
-      if(memberProfile) {
-        document.getElementById('authName').value = memberProfile.name || '';
-        document.getElementById('authPhone').value = memberProfile.phone || '';
-        document.getElementById('authLocation').value = memberProfile.lastLocation || '';
-        if(memberProfile.role) setAuthRole(memberProfile.role);
-      }
-      modal.classList.add('active');
-    } else {
-      modal.classList.remove('active');
-    }
-  }
-
-  // 自動更新介面與表單預填
-  function updateMemberUI() {
-    const btn = document.getElementById('memberBtn');
-    if(memberProfile && memberProfile.name) {
-      const shortRole = memberProfile.role ? memberProfile.role.split(' ')[0] : '特工';
-      btn.textContent = `[ ${shortRole}：${memberProfile.name} ]`;
-      btn.style.borderColor = 'var(--accent-cyan)';
-      btn.style.color = 'var(--accent-cyan)';
-
-      // 自動預填結帳欄位（若當前在結帳頁）
-      const nameInput = document.getElementById('custName');
-      const phoneInput = document.getElementById('custPhone');
-      const locInput = document.getElementById('shippingLocation');
-      if(nameInput) nameInput.value = memberProfile.name || '';
-      if(phoneInput) phoneInput.value = memberProfile.phone || '';
-      if(locInput && !locInput.value) locInput.value = memberProfile.lastLocation || '';
-    } else {
-      btn.textContent = `[ 身份認證：訪客 ]`;
-    }
-  }
-
-  // 登入或更新身份
-  document.getElementById('authForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const phone = document.getElementById('authPhone').value.trim();
-    let name = document.getElementById('authName').value.trim();
-    let location = document.getElementById('authLocation').value.trim();
-
-    // 換裝置時：先檢查 Firebase 是否已有此電話的歷史檔案
-    if (db && (!name || !location)) {
-      try {
-        const doc = await db.collection("members").doc(phone).get();
-        if (doc.exists) {
-          const cloudData = doc.data();
-          name = name || cloudData.name;
-          location = location || cloudData.lastLocation;
-          currentRole = cloudData.role || currentRole;
-          console.log("[FIREBASE] 已從雲端還原舊有特工檔案。");
-        }
-      } catch(err) {
-        console.warn("雲端查詢略過:", err);
-      }
-    }
-
-    const profileData = {
-      name: name,
-      phone: phone,
-      lastLocation: location,
-      role: currentRole,
-      updatedAt: new Date().toISOString()
+    // ==========================================
+    // 【Firebase 設定區】已填妥專屬金鑰
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyCn0vw132QUEo8C-IYc1KRb-1Mv-w2Mnvg",
+      authDomain: "guilty-178af.firebaseapp.com",
+      projectId: "guilty-178af",
+      storageBucket: "guilty-178af.firebasestorage.app",
+      messagingSenderId: "287204271889",
+      appId: "1:287204271889:web:4de64b196045ae259d4eb0",
+      measurementId: "G-7C00QHH5X4"
     };
 
-    // 儲存於本地（實現永久自動登入）
-    memberProfile = profileData;
-    localStorage.setItem('guilty_member', JSON.stringify(profileData));
+    let db = null;
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+      console.log("[FIREBASE] 雲端終端已連線。");
+    } catch(err) {
+      console.warn("[FIREBASE] 本地快取模式。");
+    }
 
-    // 同步到 Firebase 雲端
-    if (db) {
-      try {
-        await db.collection("members").doc(phone).set(profileData, { merge: true });
-      } catch(e) {
-        console.error("雲端同步失敗:", e);
+    // 開機動畫計時
+    let introTimer = setTimeout(() => enterSite(), 2800);
+    function enterSite() {
+      clearTimeout(introTimer);
+      const intro = document.getElementById('intro-screen');
+      if(intro) intro.classList.add('fade-out');
+    }
+
+    function toggleNav(isOpen) {
+      const sideNav = document.getElementById('sideNav');
+      const overlay = document.getElementById('navOverlay');
+      if(isOpen) {
+        sideNav.classList.add('open');
+        overlay.classList.add('active');
+      } else {
+        sideNav.classList.remove('open');
+        overlay.classList.remove('active');
       }
     }
 
-    updateMemberUI();
-    toggleAuthModal(false);
-    alert(`【終端已鎖定】歡迎回來，${profileData.role} // ${profileData.name}。下次連線將自動保持登入。`);
-  });
+    function scrollToSection(sectionId) {
+      showLandingView();
+      toggleNav(false);
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if(el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
 
-  // 登出按鈕邏輯（若用戶想切換帳號）
-  function logoutMember() {
-    if(confirm('確定要斷開目前特工身份連結嗎？')) {
-      localStorage.removeItem('guilty_member');
-      memberProfile = null;
-      document.getElementById('authName').value = '';
-      document.getElementById('authPhone').value = '';
-      document.getElementById('authLocation').value = '';
+    function showLandingView() {
+      document.getElementById('view-checkout').classList.remove('active');
+      document.getElementById('view-landing').classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    // ==========================================
+    // 自動登入與會員檔案系統
+    // ==========================================
+    let currentRole = '支配者 (Dom)';
+    let memberProfile = JSON.parse(localStorage.getItem('guilty_member')) || null;
+
+    function setAuthRole(role) {
+      currentRole = role;
+      document.getElementById('roleDom').classList.toggle('active', role.includes('Dom'));
+      document.getElementById('roleSub').classList.toggle('active', role.includes('Sub'));
+    }
+
+    function toggleAuthModal(isOpen) {
+      const modal = document.getElementById('authModal');
+      if(isOpen) {
+        if(memberProfile) {
+          document.getElementById('authName').value = memberProfile.name || '';
+          document.getElementById('authPhone').value = memberProfile.phone || '';
+          document.getElementById('authLocation').value = memberProfile.lastLocation || '';
+          if(memberProfile.role) setAuthRole(memberProfile.role);
+        }
+        modal.classList.add('active');
+      } else {
+        modal.classList.remove('active');
+      }
+    }
+
+    function updateMemberUI() {
+      const btn = document.getElementById('memberBtn');
+      if(memberProfile && memberProfile.name) {
+        const shortRole = memberProfile.role ? memberProfile.role.split(' ')[0] : '特工';
+        btn.textContent = `[ ${shortRole}：${memberProfile.name} ]`;
+        btn.style.borderColor = 'var(--accent-cyan)';
+        btn.style.color = 'var(--accent-cyan)';
+
+        const nameInput = document.getElementById('custName');
+        const phoneInput = document.getElementById('custPhone');
+        const locInput = document.getElementById('shippingLocation');
+        if(nameInput) nameInput.value = memberProfile.name || '';
+        if(phoneInput) phoneInput.value = memberProfile.phone || '';
+        if(locInput && !locInput.value) locInput.value = memberProfile.lastLocation || '';
+      } else {
+        btn.textContent = `[ 身份認證：訪客 ]`;
+      }
+    }
+
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const phone = document.getElementById('authPhone').value.trim();
+      let name = document.getElementById('authName').value.trim();
+      let location = document.getElementById('authLocation').value.trim();
+
+      if (db && (!name || !location)) {
+        try {
+          const doc = await db.collection("members").doc(phone).get();
+          if (doc.exists) {
+            const cloudData = doc.data();
+            name = name || cloudData.name;
+            location = location || cloudData.lastLocation;
+            currentRole = cloudData.role || currentRole;
+          }
+        } catch(err) {
+          console.warn("雲端查詢略過:", err);
+        }
+      }
+
+      const profileData = {
+        name: name,
+        phone: phone,
+        lastLocation: location,
+        role: currentRole,
+        updatedAt: new Date().toISOString()
+      };
+
+      memberProfile = profileData;
+      localStorage.setItem('guilty_member', JSON.stringify(profileData));
+
+      if (db) {
+        try {
+          await db.collection("members").doc(phone).set(profileData, { merge: true });
+        } catch(e) {
+          console.error("雲端同步失敗:", e);
+        }
+      }
+
       updateMemberUI();
       toggleAuthModal(false);
-      alert('【已退出終端】當前恢復為訪客模式。');
-    }
-  }
-
-  // 商品清單
-  const products = [
-    { id: 'cat-choker', brand: 'guilty', brandName: '欲室｜共犯 GUILTY', badgeClass: 'badge-guilty', title: '【貓痕義體拘束項圈】', desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', price: 2880 },
-    { id: 'shushi-rope-set', brand: 'shushi', brandName: 'shushi束室 繩教室', badgeClass: 'badge-shushi', title: '【束室繩教室｜精煉麻繩組】', desc: '束室精工脫漿、過油打蠟特選麻繩，觸感溫潤柔韌，繩縛教學與實戰指定款。', price: 1680 },
-    { id: 'shushi-cuff-guard', brand: 'shushi', brandName: 'shushi束室 繩教室', badgeClass: 'badge-shushi', title: '【束室繩教室｜防勒皮革護腕墊】', desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。', price: 1280 }
-  ];
-
-  let selectedProduct = products[0];
-  let currentShipping = '7-11 超商取貨';
-  let currentPayment = '超商取貨付款';
-
-  function renderProductCards(filter = 'all') {
-    const grid = document.getElementById('productGrid');
-    grid.innerHTML = '';
-    const filtered = filter === 'all' ? products : products.filter(p => p.brand === filter);
-    filtered.forEach(p => {
-      const card = document.createElement('div');
-      card.className = `product-card`;
-      card.onclick = () => goToCheckout(p.id);
-      card.innerHTML = `
-        <div class="card-thumb">
-          <span class="badge ${p.badgeClass}">${p.brandName}</span>
-          [ ${p.title} 預覽圖 ]
-        </div>
-        <div class="card-body">
-          <div style="font-size: 0.95rem; margin-bottom: 4px; font-weight: bold;">${p.title}</div>
-          <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${p.desc}</div>
-          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px;">
-            <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">NT$ ${p.price.toLocaleString()}</span>
-            <span style="font-size: 0.75rem; color: var(--text-muted);">調用預購 →</span>
-          </div>
-        </div>
-      `;
-      grid.appendChild(card);
+      alert(`【終端已鎖定】歡迎回來，${profileData.role} // ${profileData.name}。下次連線將自動保持登入。`);
     });
-  }
 
-  function filterBrand(brand) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    renderProductCards(brand);
-  }
+    const products = [
+      { id: 'cat-choker', brand: 'guilty', brandName: '欲室｜共犯 GUILTY', badgeClass: 'badge-guilty', title: '【貓痕義體拘束項圈】', desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', price: 2880 },
+      { id: 'shushi-rope-set', brand: 'shushi', brandName: 'shushi束室 繩教室', badgeClass: 'badge-shushi', title: '【束室繩教室｜精煉麻繩組】', desc: '束室精工脫漿、過油打蠟特選麻繩，觸感溫潤柔韌，繩縛教學與實戰指定款。', price: 1680 },
+      { id: 'shushi-cuff-guard', brand: 'shushi', brandName: 'shushi束室 繩教室', badgeClass: 'badge-shushi', title: '【束室繩教室｜防勒皮革護腕墊】', desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。', price: 1280 }
+    ];
 
-  function goToCheckout(productId) {
-    selectedProduct = products.find(p => p.id === productId);
-    document.getElementById('orderSummary').innerHTML = `
-      <strong>裝備：</strong>${selectedProduct.title}<br>
-      <strong>金額：</strong>NT$ ${selectedProduct.price.toLocaleString()}（早鳥免運）
-    `;
-    document.getElementById('view-landing').classList.remove('active');
-    document.getElementById('view-checkout').classList.add('active');
-    updateMemberUI();
-    window.scrollTo(0, 0);
-  }
+    let selectedProduct = products[0];
+    let currentShipping = '7-11 超商取貨';
+    let currentPayment = '超商取貨付款';
 
-  function selectShipping(type, el) {
-    el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    const label = document.getElementById('storeLabel');
-    if(type === '711') {
-      currentShipping = '7-11 超商取貨';
-      label.textContent = '7-11 門市名稱 / 店號*';
-    } else if(type === 'family') {
-      currentShipping = '全家 超商取貨';
-      label.textContent = '全家 門市名稱 / 店號*';
-    } else {
-      currentShipping = '黑貓 宅配到府';
-      label.textContent = '收件詳細地址*';
+    function renderProductCards(filter = 'all') {
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+      const filtered = filter === 'all' ? products : products.filter(p => p.brand === filter);
+      filtered.forEach(p => {
+        const card = document.createElement('div');
+        card.className = `product-card`;
+        card.onclick = () => goToCheckout(p.id);
+        card.innerHTML = `
+          <div class="card-thumb">
+            <span class="badge ${p.badgeClass}">${p.brandName}</span>
+            [ ${p.title} 預覽圖 ]
+          </div>
+          <div class="card-body">
+            <div style="font-size: 0.95rem; margin-bottom: 4px; font-weight: bold;">${p.title}</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${p.desc}</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px;">
+              <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">NT$ ${p.price.toLocaleString()}</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">調用預購 →</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
     }
-  }
 
-  function selectPayment(type, el) {
-    el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
-    el.classList.add('active');
-    const note = document.getElementById('paymentNote');
-    if(type === 'cod') {
-      currentPayment = '超商取貨付款';
-      note.textContent = '貨物送達超商後，取貨現場付款。';
-    } else if(type === 'linepay') {
-      currentPayment = 'LINE Pay';
-      note.textContent = '送出訂單後將生成 LINE Pay 專屬支付憑證。';
-    } else {
-      currentPayment = '信用卡線上刷卡';
-      note.textContent = '透過安全加密通道完成線上扣款。';
+    function filterBrand(brand) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      renderProductCards(brand);
     }
-  }
 
-  // 旗艦肉球壓印動效
-  const flagStamp = document.getElementById('stampBox');
-  const flagText = document.getElementById('stampText');
-  if(flagStamp) {
-    const activate = () => {
-      flagText.textContent = '🐾 貓掌顯影';
-      flagText.style.color = '#ff334b';
-      flagStamp.style.backgroundColor = 'rgba(255, 51, 75, 0.15)';
-      flagStamp.style.borderColor = '#ff334b';
-    };
-    const deactivate = () => {
-      flagText.textContent = '觸控體驗';
-      flagText.style.color = '#8c8f96';
-      flagStamp.style.backgroundColor = 'transparent';
-      flagStamp.style.borderColor = 'var(--panel-border)';
-    };
-    flagStamp.addEventListener('mouseenter', activate);
-    flagStamp.addEventListener('mouseleave', deactivate);
-    flagStamp.addEventListener('touchstart', activate);
-    flagStamp.addEventListener('touchend', deactivate);
-  }
+    function goToCheckout(productId) {
+      selectedProduct = products.find(p => p.id === productId);
+      document.getElementById('orderSummary').innerHTML = `
+        <strong>裝備：</strong>${selectedProduct.title}<br>
+        <strong>金額：</strong>NT$ ${selectedProduct.price.toLocaleString()}（早鳥免運）
+      `;
+      document.getElementById('view-landing').classList.remove('active');
+      document.getElementById('view-checkout').classList.add('active');
+      updateMemberUI();
+      window.scrollTo(0, 0);
+    }
 
-  // 結帳下單（自動存入 Firebase & 更新門市記憶）
-  document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const orderData = {
-      orderId: 'CASE-' + Date.now().toString().slice(-6),
-      product: selectedProduct.title,
-      price: selectedProduct.price,
-      name: document.getElementById('custName').value.trim(),
-      phone: document.getElementById('custPhone').value.trim(),
-      engraving: document.getElementById('custEngraving').value.trim() || '無',
-      shipping: currentShipping,
-      location: document.getElementById('shippingLocation').value.trim(),
-      payment: currentPayment,
-      role: memberProfile ? memberProfile.role : '訪客',
-      createdAt: new Date().toISOString()
-    };
-
-    // 自動加強會員記憶
-    memberProfile = {
-      name: orderData.name,
-      phone: orderData.phone,
-      lastLocation: orderData.location,
-      role: orderData.role
-    };
-    localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
-
-    // 寫入雲端
-    if (db) {
-      try {
-        await db.collection("orders").doc(orderData.orderId).set(orderData);
-        await db.collection("members").doc(orderData.phone).set(memberProfile, { merge: true });
-        console.log("[FIREBASE] 訂單已入庫:", orderData.orderId);
-      } catch(err) {
-        console.error("訂單雲端寫入失敗:", err);
+    function selectShipping(type, el) {
+      el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      const label = document.getElementById('storeLabel');
+      if(type === '711') {
+        currentShipping = '7-11 超商取貨';
+        label.textContent = '7-11 門市名稱 / 店號*';
+      } else if(type === 'family') {
+        currentShipping = '全家 超商取貨';
+        label.textContent = '全家 門市名稱 / 店號*';
+      } else {
+        currentShipping = '黑貓 宅配到府';
+        label.textContent = '收件詳細地址*';
       }
     }
 
-    alert(`【認罪訂單已生成】\n檔案編號：#${orderData.orderId}\n裝備：${orderData.product}\n收件人：${orderData.name}\n途徑：${orderData.shipping} (${orderData.location})\n資料已永久同步至雲端！`);
-    showLandingView();
-    updateMemberUI();
-  });
+    function selectPayment(type, el) {
+      el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
+      el.classList.add('active');
+      const note = document.getElementById('paymentNote');
+      if(type === 'cod') {
+        currentPayment = '超商取貨付款';
+        note.textContent = '貨物送達超商後，取貨現場付款。';
+      } else if(type === 'linepay') {
+        currentPayment = 'LINE Pay';
+        note.textContent = '送出訂單後將生成 LINE Pay 專屬支付憑證。';
+      } else {
+        currentPayment = '信用卡線上刷卡';
+        note.textContent = '透過安全加密通道完成線上扣款。';
+      }
+    }
 
-  // 頁面初始化：直接執行自動登入偵測
-  renderProductCards();
-  updateMemberUI();
-</script>
+    const flagStamp = document.getElementById('stampBox');
+    const flagText = document.getElementById('stampText');
+    if(flagStamp) {
+      const activate = () => {
+        flagText.textContent = '🐾 貓掌顯影';
+        flagText.style.color = '#ff334b';
+        flagStamp.style.backgroundColor = 'rgba(255, 51, 75, 0.15)';
+        flagStamp.style.borderColor = '#ff334b';
+      };
+      const deactivate = () => {
+        flagText.textContent = '觸控體驗';
+        flagText.style.color = '#8c8f96';
+        flagStamp.style.backgroundColor = 'transparent';
+        flagStamp.style.borderColor = 'var(--panel-border)';
+      };
+      flagStamp.addEventListener('mouseenter', activate);
+      flagStamp.addEventListener('mouseleave', deactivate);
+      flagStamp.addEventListener('touchstart', activate);
+      flagStamp.addEventListener('touchend', deactivate);
+    }
+
+    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const orderData = {
+        orderId: 'CASE-' + Date.now().toString().slice(-6),
+        product: selectedProduct.title,
+        price: selectedProduct.price,
+        name: document.getElementById('custName').value.trim(),
+        phone: document.getElementById('custPhone').value.trim(),
+        engraving: document.getElementById('custEngraving').value.trim() || '無',
+        shipping: currentShipping,
+        location: document.getElementById('shippingLocation').value.trim(),
+        payment: currentPayment,
+        role: memberProfile ? memberProfile.role : '訪客',
+        createdAt: new Date().toISOString()
+      };
+
+      memberProfile = {
+        name: orderData.name,
+        phone: orderData.phone,
+        lastLocation: orderData.location,
+        role: orderData.role
+      };
+      localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
+
+      if (db) {
+        try {
+          await db.collection("orders").doc(orderData.orderId).set(orderData);
+          await db.collection("members").doc(orderData.phone).set(memberProfile, { merge: true });
+          console.log("[FIREBASE] 訂單已入庫:", orderData.orderId);
+        } catch(err) {
+          console.error("訂單雲端寫入失敗:", err);
+        }
+      }
+
+      alert(`【認罪訂單已生成】\n檔案編號：#${orderData.orderId}\n裝備：${orderData.product}\n收件人：${orderData.name}\n途徑：${orderData.shipping} (${orderData.location})\n資料已永久同步至雲端！`);
+      showLandingView();
+      updateMemberUI();
+    });
+
+    renderProductCards();
+    updateMemberUI();
+  </script>
+</body>
+</html>
