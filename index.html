@@ -202,7 +202,7 @@
     .success-badge { font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 8px; }
     .success-title { font-size: 1.6rem; margin-bottom: 12px; color: #fff; }
     .success-file-box { background: #000; border: 1px dashed var(--panel-border); padding: 18px; text-align: left; margin: 20px 0; font-size: 0.85rem; line-height: 1.8; }
-    .countdown-timer { font-size: 0.95rem; color: var(--danger-red); margin-top: 16px; font-weight: bold; }
+    .pay-instruction-box { background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan); padding: 14px; text-align: left; margin-top: 14px; font-size: 0.85rem; }
 
     .history-item { background: #000; border: 1px solid var(--panel-border); padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem; }
     .history-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding-bottom: 8px; margin-bottom: 8px; }
@@ -210,7 +210,7 @@
 </head>
 <body>
 
-  <!-- 開機動畫（貓眼顯影 ＋ GUILTY 幾何骨架雙重動畫） -->
+  <!-- 開機動畫 -->
   <div id="intro-screen">
     <div class="intro-logo-box">
       <!-- 貓眼圖騰 -->
@@ -272,7 +272,7 @@
     </div>
   </div>
 
-  <!-- 頂部導覽列（貓眼圖騰 + 欲室共犯 + GUILTY 標準字） -->
+  <!-- 頂部導覽列 -->
   <header>
     <div class="brand-container" onclick="showLandingView()">
       <!-- 貓眼圖騰 -->
@@ -284,7 +284,7 @@
       <span style="font-size: 0.95rem; font-weight: bold; letter-spacing: 1px;">欲室｜共犯</span>
 
       <!-- 導覽列幾何標準字 -->
-      <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100px; height: auto;">
+      <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 95px; height: auto;">
         <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
         <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
         <path class="logo-path" d="M190 85 L230 35 L270 85 L230 135 Z" />
@@ -507,10 +507,10 @@
           <div class="form-title">04 // 支付結算通道</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
             <div class="radio-card active" onclick="selectPayment('cod', this)">超商取貨付款</div>
-            <div class="radio-card" onclick="selectPayment('linepay', this)">LINE Pay</div>
-            <div class="radio-card" onclick="selectPayment('card', this)">信用卡線上刷卡</div>
+            <div class="radio-card" onclick="selectPayment('linepay', this)">LINE Pay 轉帳</div>
+            <div class="radio-card" onclick="selectPayment('bank', this)">銀行 ATM 匯款</div>
           </div>
-          <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted);">貨物送達超商後，取貨時現場支付現金或刷卡。</div>
+          <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted);">貨物送達超商後，取貨現場付款即可。</div>
         </div>
 
         <button type="submit" class="btn-submit">確認協議並送出訂單</button>
@@ -528,9 +528,10 @@
 
         <div class="success-file-box" id="successDetailArea"></div>
 
-        <div class="countdown-timer" id="countdownNotice">5 秒後自動返回主頁...</div>
+        <!-- 動態支付指引 -->
+        <div id="payInstructionArea"></div>
 
-        <div style="display:flex; gap:10px; margin-top:20px;">
+        <div style="display:flex; gap:10px; margin-top:24px;">
           <button class="btn-submit" style="padding:12px; font-size:0.85rem;" onclick="showLandingView()">返回展廳 (HOME)</button>
           <button class="btn-submit" style="padding:12px; font-size:0.85rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);" onclick="openOrderHistory()">我的調用紀錄 (DOSSIER)</button>
         </div>
@@ -544,7 +545,10 @@
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
       
       <div class="form-box">
-        <div class="form-title" id="historyTitle">05 // 特工個人調用檔案庫</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--panel-border); padding-bottom:8px; margin-bottom:14px;">
+          <div class="form-title" id="historyTitle" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">05 // 特工個人調用檔案庫</div>
+          <button onclick="openOrderHistory()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); font-size:0.75rem; padding:4px 8px; cursor:pointer;">[ 重新連線整理 ↻ ]</button>
+        </div>
         <div id="historyListArea"></div>
       </div>
     </div>
@@ -585,10 +589,7 @@
       }, 50);
     }
 
-    let countdownInterval = null;
-
     function showLandingView() {
-      if(countdownInterval) clearInterval(countdownInterval);
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-landing').classList.add('active');
       window.scrollTo(0, 0);
@@ -753,13 +754,13 @@
       const note = document.getElementById('paymentNote');
       if(type === 'cod') {
         currentPayment = '超商取貨付款';
-        note.textContent = '貨物送達超商後，取貨現場付款。';
+        note.textContent = '貨物送達超商後，取貨現場付款即可。';
       } else if(type === 'linepay') {
-        currentPayment = 'LINE Pay';
-        note.textContent = '送出訂單後將生成 LINE Pay 專屬支付憑證。';
+        currentPayment = 'LINE Pay 轉帳';
+        note.textContent = '送出訂單後，將提供官方 LINE Pay 轉帳代碼進行付款。';
       } else {
-        currentPayment = '信用卡線上刷卡';
-        note.textContent = '透過安全加密通道完成線上扣款。';
+        currentPayment = '銀行 ATM 匯款';
+        note.textContent = '送出訂單後，將提供銀行虛擬帳號，匯款後自動對帳。';
       }
     }
 
@@ -816,7 +817,7 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
-      // 2. 本地紀錄庫（備份）
+      // 2. 本地紀錄庫（確保個人頁面秒開）
       let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
@@ -837,41 +838,47 @@
       document.getElementById('successDetailArea').innerHTML = `
         <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
         <div><strong>調用裝備：</strong>${orderData.product}</div>
-        <div><strong>協議金額：</strong>NT$ ${orderData.price.toLocaleString()}</div>
+        <div><strong>協議金額：</strong>NT$ ${Number(orderData.price).toLocaleString()}</div>
         <div><strong>收件特工：</strong>${orderData.name} (${orderData.phone})</div>
         <div><strong>銘牌雷雕：</strong>${orderData.engraving}</div>
         <div><strong>交付途徑：</strong>${orderData.shipping} (${orderData.location})</div>
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
 
+      // 5. 針對非貨到付款的指引
+      const payArea = document.getElementById('payInstructionArea');
+      if(orderData.payment === 'LINE Pay 轉帳') {
+        payArea.innerHTML = `
+          <div class="pay-instruction-box">
+            <strong style="color:var(--accent-cyan);">💳 LINE Pay 支付指引：</strong><br>
+            請開啟 LINE ➔ 掃描轉帳 / 搜尋官方帳號或好友轉帳，金額 <strong>NT$ ${Number(orderData.price).toLocaleString()}</strong>。<br>
+            轉帳備註請務必填寫：<strong style="color:#fff;">#${orderData.orderId}</strong>
+          </div>
+        `;
+      } else if(orderData.payment === '銀行 ATM 匯款') {
+        payArea.innerHTML = `
+          <div class="pay-instruction-box">
+            <strong style="color:var(--accent-cyan);">🏦 ATM 匯款帳號：</strong><br>
+            銀行代碼：<strong>822（中國信託）</strong><br>
+            轉帳帳號：<strong>9015-4000-8888</strong><br>
+            轉帳備註請填寫案件編號：<strong style="color:#fff;">#${orderData.orderId}</strong>
+          </div>
+        `;
+      } else {
+        payArea.innerHTML = ``;
+      }
+
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-success').classList.add('active');
       window.scrollTo(0, 0);
-
-      // 5. 倒數 5 秒自動跳回主頁
-      let timeLeft = 5;
-      const countdownEl = document.getElementById('countdownNotice');
-      countdownEl.textContent = `${timeLeft} 秒後自動返回主頁...`;
-
-      if(countdownInterval) clearInterval(countdownInterval);
-      countdownInterval = setInterval(() => {
-        timeLeft--;
-        if(timeLeft > 0) {
-          countdownEl.textContent = `${timeLeft} 秒後自動返回主頁...`;
-        } else {
-          clearInterval(countdownInterval);
-          showLandingView();
-        }
-      }, 1000);
 
       updateMemberUI();
     });
 
     // ==========================================
-    // 個人調用紀錄（使用 JSONP 避開 CORS 阻擋，即時調閱試算表最新狀態）
+    // 個人調用紀錄（雙軌機制：本地秒顯 ＋ 雲端試算表背景更新）
     // ==========================================
     function openOrderHistory() {
-      if(countdownInterval) clearInterval(countdownInterval);
       toggleNav(false);
 
       if(!memberProfile || !memberProfile.phone) {
@@ -882,52 +889,17 @@
 
       const historyArea = document.getElementById('historyListArea');
       document.getElementById('historyTitle').textContent = `05 // 特工 [ ${memberProfile.name} - ${memberProfile.phone} ] 專屬調用檔案`;
-      historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">[ 正在連線雲端資料庫調閱檔案... ]</div>`;
 
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-history').classList.add('active');
-      window.scrollTo(0, 0);
+      // 1. 第一步：先立即渲染本地快取（確保一定有畫面，不再卡住）
+      const cleanPhone = String(memberProfile.phone).replace(/[^0-9]/g, '');
+      let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+      let myOrders = localOrders.filter(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
 
-      const callbackName = 'handleOrders_' + Date.now();
-
-      window[callbackName] = function(orders) {
-        const scriptEl = document.getElementById(callbackName);
-        if(scriptEl) scriptEl.remove();
-        delete window[callbackName];
-
-        if(!orders || orders.length === 0) {
+      const renderList = (dataList) => {
+        if(!dataList || dataList.length === 0) {
           historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name} 尚無任何專屬調用案件。</div>`;
         } else {
-          historyArea.innerHTML = orders.map(o => `
-            <div class="history-item">
-              <div class="history-header">
-                <span style="color:var(--accent-cyan); font-weight:bold;">#${o.orderId}</span>
-                <span style="color:var(--text-muted); font-size:0.75rem;">${o.createdAt}</span>
-              </div>
-              <div><strong>裝備：</strong>${o.product}</div>
-              <div><strong>金額：</strong>NT$ ${Number(o.price).toLocaleString()}</div>
-              <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
-              <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
-              <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--panel-border); font-size:0.8rem;">
-                <strong>調用狀態：</strong><span style="color:var(--accent-cyan); font-weight:bold;">${o.status}</span>
-              </div>
-            </div>
-          `).join('');
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = callbackName;
-      script.src = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(memberProfile.phone)}&callback=${callbackName}`;
-      script.onerror = function() {
-        console.warn("JSONP 調閱失敗，改用本地紀錄備份");
-        let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-        let myOrders = allOrders.filter(o => o.phone.replace(/[^0-9]/g, '') === memberProfile.phone.replace(/[^0-9]/g, ''));
-
-        if(myOrders.length === 0) {
-          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name} 尚無任何專屬調用案件。</div>`;
-        } else {
-          historyArea.innerHTML = myOrders.map(o => `
+          historyArea.innerHTML = dataList.map(o => `
             <div class="history-item">
               <div class="history-header">
                 <span style="color:var(--accent-cyan); font-weight:bold;">#${o.orderId}</span>
@@ -945,6 +917,29 @@
         }
       };
 
+      renderList(myOrders);
+
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-history').classList.add('active');
+      window.scrollTo(0, 0);
+
+      // 2. 第二步：背景透過 JSONP 向 Google 試算表同步最新狀態
+      const callbackName = 'syncOrders_' + Date.now();
+      window[callbackName] = function(cloudOrders) {
+        const sEl = document.getElementById(callbackName);
+        if(sEl) sEl.remove();
+        delete window[callbackName];
+
+        if(cloudOrders && cloudOrders.length > 0) {
+          // 同步覆蓋最新雲端狀態
+          renderList(cloudOrders);
+          localStorage.setItem('guilty_orders', JSON.stringify(cloudOrders));
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = callbackName;
+      script.src = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(cleanPhone)}&callback=${callbackName}`;
       document.body.appendChild(script);
     }
 
