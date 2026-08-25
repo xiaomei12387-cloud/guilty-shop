@@ -166,16 +166,42 @@
     .hero-sub { font-size: clamp(0.9rem, 3.5vw, 1.05rem); color: var(--text-muted); max-width: 500px; margin-bottom: 30px; }
     .hero-scroll-cue { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; cursor: pointer; }
 
-    /* Manifesto */
+    /* Manifesto & Lore */
     .section-manifesto { padding: 50px 0; border-top: 1px solid var(--panel-border); }
     .manifesto-card { background: var(--card-bg); border: 1px solid var(--panel-border); padding: 24px 18px; border-radius: 4px; }
     .manifesto-quote { font-size: clamp(1.1rem, 4vw, 1.4rem); color: var(--accent-cyan); margin-bottom: 16px; line-height: 1.4; }
 
-    /* Flagship */
-    .section-flagship { padding: 50px 0; border-top: 1px solid var(--panel-border); }
-    .flagship-grid { display: grid; grid-template-columns: 1fr; gap: 24px; background: var(--card-bg); border: 1px solid var(--panel-border); padding: 20px; border-radius: 4px; }
-    @media (min-width: 768px) { .flagship-grid { grid-template-columns: 1fr 1fr; padding: 32px; } }
-    .stamp-preview { width: 130px; height: 130px; border-radius: 50%; border: 2px dashed var(--panel-border); display: flex; align-items: center; justify-content: center; margin: 16px auto; cursor: pointer; transition: all 0.3s; }
+    /* 藍圖規格 Blueprint Card */
+    .blueprint-card {
+      background: #000; border: 1px solid var(--accent-cyan); padding: 20px;
+      margin: 20px 0; position: relative; font-family: 'Consolas', monospace;
+    }
+    .blueprint-tag {
+      position: absolute; top: -10px; right: 12px; background: #000;
+      border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
+      font-size: 0.65rem; padding: 2px 8px; letter-spacing: 1px;
+    }
+    .spec-row {
+      display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border);
+      padding: 8px 0; font-size: 0.85rem;
+    }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-label { color: var(--text-muted); }
+    .spec-val { color: #fff; font-weight: bold; text-align: right; }
+
+    /* FAQ 模組 */
+    .faq-item {
+      background: var(--card-bg); border: 1px solid var(--panel-border);
+      padding: 16px; margin-bottom: 12px; border-radius: 4px;
+    }
+    .faq-q { color: var(--accent-cyan); font-weight: bold; font-size: 0.95rem; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+    .faq-a { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; }
+
+    /* 隱私保證徽章 */
+    .stealth-badge-card {
+      background: rgba(0, 255, 136, 0.03); border: 1px dashed var(--accent-cyan);
+      padding: 16px; margin: 24px 0; border-radius: 4px; display: flex; align-items: center; gap: 14px;
+    }
 
     /* Arsenal */
     .section-arsenal { padding: 50px 0; border-top: 1px solid var(--panel-border); }
@@ -286,7 +312,7 @@
         <path class="logo-path logo-path-anim" d="M545 90 L545 135" />
       </svg>
 
-      <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:12px;">[ SYSTEM INITIALIZING ]</div>
+      <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:12px;">[ SYSTEM INITIALIZING // A.D. 2678 ]</div>
       <div class="boot-progress-bar"><div class="boot-progress-fill"></div></div>
     </div>
     <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
@@ -316,7 +342,7 @@
         <span style="font-size:0.85rem; color:var(--text-muted);">裝備小計 (未含運)：</span>
         <span id="cartDrawerSubtotal" style="font-size:1.1rem; color:var(--accent-cyan); font-weight:bold;">NT$ 0</span>
       </div>
-      <button class="btn-submit" onclick="proceedToCheckoutFromCart()">進入終端簽署結帳 (CHECKOUT)</button>
+      <button class="btn-submit" onclick="proceedToCheckoutFromCart()">進入終端簽署協議 (CHECKOUT)</button>
     </div>
   </div>
 
@@ -400,11 +426,13 @@
 
       <ul class="nav-menu-list">
         <li class="nav-menu-item"><a href="#section-hero" onclick="scrollToSection('section-hero')">01 // 首頁 (TOP)</a></li>
-        <li class="nav-menu-item"><a href="#section-manifesto" onclick="scrollToSection('section-manifesto')">02 // 品牌理念 (MANIFESTO)</a></li>
+        <li class="nav-menu-item"><a href="#section-manifesto" onclick="scrollToSection('section-manifesto')">02 // 世界觀理念 (LORE)</a></li>
         <li class="nav-menu-item"><a href="#section-flagship" onclick="scrollToSection('section-flagship')">03 // 旗艦項圈 (FLAGSHIP)</a></li>
-        <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">04 // 裝備目錄 (CATALOG)</a></li>
-        <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">05 // 核心檔案 (CREW)</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">06 // 個人調用紀錄 (MY DOSSIER)</a></li>
+        <li class="nav-menu-item"><a href="#section-blueprint" onclick="scrollToSection('section-blueprint')">04 // 核心工藝藍圖 (SPEC)</a></li>
+        <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">05 // 特工安全指引 (FAQ)</a></li>
+        <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">06 // 裝備目錄 (CATALOG)</a></li>
+        <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">07 // 核心檔案 (CREW)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">08 // 個人調用紀錄 (MY DOSSIER)</a></li>
       </ul>
     </div>
 
@@ -422,7 +450,7 @@
       
       <!-- 1. Hero -->
       <section class="hero-fullscreen" id="section-hero">
-        <div class="hero-code">[ PROTOCOL // ROOM OF DESIRE ]</div>
+        <div class="hero-code">[ PROTOCOL // A.D. 2678 CYBERNETICS ]</div>
         <div style="margin-bottom: 24px;">
           <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 320px;">
             <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
@@ -443,17 +471,20 @@
         </div>
       </section>
 
-      <!-- 2. Manifesto -->
+      <!-- 2. 世界觀脈絡 (Worldview & Protocol Guilty 提案 A) -->
       <section class="section-manifesto" id="section-manifesto">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // BRAND MANIFESTO ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // WORLDVIEW & LORE ]</div>
         <div class="manifesto-card">
-          <div class="manifesto-quote">「『慾』是內心的渴望，『欲』是外骨骼直接接管你的主權。」</div>
+          <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們用外骨骼接管神經，用隱形印記銘刻主權。」</div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
-            【欲室｜共犯 GUILTY】顛覆傳統黏膩的情色符號，採用工業外骨骼、機械倒角與高階 3D 參數化設計，將禁忌關係昇華為冷冽硬派的科技美學。
+            【欲室｜共犯 GUILTY】作為地下義體武裝研究所，顛覆傳統黏膩的情色符號。為支配者（Dom）提供具備絕對主權的神經外骨骼，為服從者（Sub）提供親密溫存的隱形顯影印記。
           </p>
-          <p style="color:var(--text-muted); font-size:0.85rem;">
-            外在是 Dom 的絕對主權宣示，內在是 Sub 的親密壓印烙痕。
-          </p>
+          <div style="border-left: 2px solid var(--accent-cyan); padding-left: 12px; margin-top: 14px; background: rgba(0, 255, 136, 0.03); padding-top: 8px; padding-bottom: 8px;">
+            <span style="color:var(--accent-cyan); font-weight:bold; font-size:0.85rem;">【認罪協議 Protocol Guilty】</span>
+            <p style="color:var(--text-main); font-size:0.8rem; margin-top:6px; line-height:1.7;">
+              在 2678 年的地下網絡，拘束不再是野蠻的皮肉束縛，而是雙方主權的讓渡契約。下單即代表支配者（Dom）啟動神經調用權限，服從者（Sub）自願接納義體烙印。每一份協議皆載入專屬識別碼，自按下確認鍵起，主權接管正式生效。
+            </p>
+          </div>
         </div>
       </section>
 
@@ -470,7 +501,7 @@
           </div>
 
           <div>
-            <div style="font-size:0.75rem; color:var(--accent-cyan); margin-bottom:4px;">SPEC-001</div>
+            <div style="font-size:0.75rem; color:var(--accent-cyan); margin-bottom:4px;">SPEC-001 // BATCH-01</div>
             <h2 style="font-size:1.4rem; margin-bottom:8px;">貓痕義體拘束項圈</h2>
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">
               SLS 尼龍裝甲外殼結合 TPU 85A 柔性肉球矩陣。兼顧前喉結避空人體工學與極致反差互動。
@@ -480,9 +511,87 @@
         </div>
       </section>
 
-      <!-- 4. Arsenal -->
+      <!-- 4. 核心工藝藍圖 (Blueprint / Spec Sheet) -->
+      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-blueprint">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // SPEC BLUEPRINT ]</div>
+        <h2 style="font-size:1.4rem; margin-bottom:16px;">旗艦義體・工藝參數剖析</h2>
+
+        <div class="blueprint-card">
+          <div class="blueprint-tag">SLS-TPU // BLUEPRINT VER 1.0</div>
+          <div class="spec-row">
+            <span class="spec-label">外骨骼裝甲外殼</span>
+            <span class="spec-val">工業級 SLS 尼龍 3D 參數化列印（耐磨刮・輕量化・消光微粒）</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">內襯印記模組</span>
+            <span class="spec-val">TPU 85A 親膚柔性體（立體貓掌凸點矩陣・壓印顯影專用）</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">人體工學結構</span>
+            <span class="spec-val">前喉結避空幾何凹槽（長時間配戴無壓迫窒息感）</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">快拆安全鎖扣</span>
+            <span class="spec-val">軍規快拆磁吸插銷機構（支援緊急單手極速脫離）</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-label">專屬特工銘牌</span>
+            <span class="spec-val">航太級金屬銘牌（客製 10 碼精密光纖雷雕序號）</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 特工安全指引與 FAQ -->
+      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-faq">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // PROTOCOL FAQ & SAFETY ]</div>
+        <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用安全守則・常見問題</h2>
+
+        <div class="faq-item">
+          <div class="faq-q">Q1. 脖圍尺寸如何選擇？（S 碼 vs M 碼）</div>
+          <div class="faq-a">
+            請使用軟尺貼合喉結下方一圈測量（勿勒緊）：<br>
+            • <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態／女性特工（官方 Model 淨脖圍 30cm 完美貼合著用）。<br>
+            • <strong>M 碼（34 – 38 cm）</strong>：適合標準體態／男性特工。<br>
+            * 若脖圍小於 29cm 或大於 38cm，請在結帳雷雕備註欄註明「實際淨脖圍」，主理人 18X 將為您微調參數列印。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">Q2. 貓痕肉球印記能維持多久？</div>
+          <div class="faq-a">
+            建議貼合配戴 15–30 分鐘以上，取下後肌膚將浮現清晰立體的貓掌印記，顯影時間約持續 <strong>30–60 分鐘</strong>（依個人體質血液循環速度略有差異）。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">Q3. 安全防護與緊急脫離機制？</div>
+          <div class="faq-a">
+            遵循 SSC (Safe, Sane, Consensual) 安全原則，項圈採用後置軍規快拆機構，在任何緊急狀況下皆可單手瞬間解開脫離，絕無鎖死風險。
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">Q4. 裝備該如何清潔與保養？</div>
+          <div class="faq-a">
+            SLS 尼龍外殼與 TPU 內襯具備優異耐水性。使用後請以常溫清水或微量中性清潔劑手洗擦拭，並置於通風陰涼處陰乾即可，請勿高溫烘烤。
+          </div>
+        </div>
+
+        <!-- 100% 隱私交付承諾卡 -->
+        <div class="stealth-badge-card">
+          <div style="font-size: 1.8rem;">🔒</div>
+          <div>
+            <div style="color: var(--accent-cyan); font-weight: bold; font-size: 0.9rem;">100% 絕密隱私交付承諾 (STEALTH SHIPPING)</div>
+            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 2px;">
+              外箱包裹絕無「GUILTY / BDSM / 項圈 / 拘束」等敏感字樣，超商寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>，取貨隱私無懈可擊。
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. Arsenal -->
       <section class="section-arsenal" id="section-arsenal">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
           <h2 style="font-size:1.4rem;">支配・拘束・義體裝備聯邦</h2>
           <span style="font-size:0.8rem; color:var(--accent-cyan); border:1px dashed var(--accent-cyan); padding:2px 8px;">全館滿 NT$ 1,800 免運費</span>
@@ -497,9 +606,9 @@
         <div class="product-list-grid" id="productGrid"></div>
       </section>
 
-      <!-- 5. Crew -->
+      <!-- 7. Crew -->
       <section class="section-crew" id="section-crew">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 06 // CREW DOSSIER ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
 
         <div class="team-grid">
@@ -541,9 +650,9 @@
         </div>
       </section>
 
-      <!-- 6. 通訊頻寬 -->
+      <!-- 8. 通訊頻寬 -->
       <section style="padding: 40px 0 20px; border-top: 1px solid var(--panel-border); text-align: center;">
-        <div style="font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 8px;">[ 05 // SECURE COMMS ]</div>
+        <div style="font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 8px;">[ 07 // SECURE COMMS ]</div>
         <h2 style="font-size: 1.3rem; margin-bottom: 8px;">特工通訊・官方頻寬</h2>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 24px;">加入特工終端取得第一手裝備更新、排程調用進度與社群互動。</p>
 
@@ -591,7 +700,7 @@
         <div class="form-title" id="detailProductTitle">裝備檔案配置</div>
         <div id="detailProductDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;"></div>
         
-        <!-- 動態規格選項 -->
+        <!-- 動態規格選項（尺寸／麻繩長度款式） -->
         <div id="detailDynamicOptions"></div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:14px; margin-top:14px;">
@@ -601,7 +710,7 @@
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:18px;">
           <button class="btn-secondary" onclick="addCurrentProductToCart()">＋ 加入裝備庫 (CART)</button>
-          <button class="btn-submit" onclick="buyNowFromDetail()">立即調用結帳 →</button>
+          <button class="btn-submit" onclick="buyNowFromDetail()">立即簽署協議結帳 →</button>
         </div>
       </div>
     </div>
@@ -634,14 +743,14 @@
             <input type="tel" id="custPhone" required placeholder="0912-345-678" />
           </div>
           <div class="form-group">
-            <label>金屬銘牌特製雷雕（限英數 10 字，留空則為隨機序號）</label>
-            <input type="text" id="custEngraving" maxlength="10" placeholder="例如：GUILTY-01" />
+            <label>金屬銘牌特製雷雕（限英數 10 字，或填寫特殊淨脖圍客製）</label>
+            <input type="text" id="custEngraving" maxlength="15" placeholder="例如：GUILTY-01 或 淨脖圍28cm" />
           </div>
         </div>
 
         <!-- 物流方式 -->
         <div class="form-box">
-          <div class="form-title">03 // 物流交付途徑</div>
+          <div class="form-title">03 // 物流交付途徑 (100% 絕密隱密包裝)</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
             <div class="radio-card active" onclick="selectShipping('711', this)">7-11 超商 (+NT$60)</div>
             <div class="radio-card" onclick="selectShipping('family', this)">全家 超商 (+NT$60)</div>
@@ -663,7 +772,7 @@
           <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted); line-height:1.6;">貨物送達超商後，取貨現場付款即可。</div>
         </div>
 
-        <button type="submit" class="btn-submit">確認協議並送出訂單</button>
+        <button type="submit" class="btn-submit">確認協議並鎖定調用 (LOCK)</button>
       </form>
     </div>
   </div>
@@ -830,7 +939,7 @@
     }
 
     // ==========================================
-    // 裝備目錄資料庫 (項圈已調整為 NT$ 1,690)
+    // 裝備目錄資料庫 (項圈已整合 S/M 分碼與 1690 價格)
     // ==========================================
     const products = [
       { 
@@ -839,9 +948,14 @@
         brandName: '欲室｜共犯 GUILTY', 
         badgeClass: 'badge-guilty', 
         title: '【貓痕義體拘束項圈】', 
-        desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
+        desc: '消光 SLS 外骨骼裝甲與 TPU 85A 柔性肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
         price: 1690,
         img: '',
+        hasSizes: true,
+        sizes: [
+          'S 碼（淨脖圍 29–33 cm，Model 著用）',
+          'M 碼（淨脖圍 34–38 cm）'
+        ],
         isCustomRope: false
       },
       { 
@@ -935,7 +1049,6 @@
 
       subtotalEl.textContent = `NT$ ${subtotal.toLocaleString()}`;
 
-      // 免運進度提示 (滿 NT$ 1,800)
       if (subtotal >= FREE_SHIPPING_THRESHOLD) {
         freeShippingBanner.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">⚡ 已解鎖全館滿 NT$ 1,800 免運特權！</span>`;
       } else {
@@ -1045,7 +1158,6 @@
       currentDetailRopeLength = '8 米 (8M)';
       currentDetailRopePrice = 600;
 
-      // 渲染大圖
       const heroArea = document.getElementById('detailHeroImgArea');
       if (currentDetailProduct.img && currentDetailProduct.img.trim() !== '') {
         heroArea.innerHTML = `<img src="${currentDetailProduct.img}" alt="${currentDetailProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${currentDetailProduct.title} 3D 義體檔案庫 ]</span>';" />`;
@@ -1053,7 +1165,6 @@
         heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${currentDetailProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
       }
 
-      // 重置掃描光效
       const heroBox = document.getElementById('detailHeroBox');
       heroBox.style.animation = 'none';
       heroBox.offsetHeight;
@@ -1063,7 +1174,18 @@
       document.getElementById('detailProductDesc').textContent = currentDetailProduct.desc;
 
       const dynamicArea = document.getElementById('detailDynamicOptions');
-      if(currentDetailProduct.isCustomRope) {
+      
+      if(currentDetailProduct.hasSizes) {
+        dynamicArea.innerHTML = `
+          <div style="margin-bottom: 12px;">
+            <label style="font-size:0.75rem; color:var(--accent-cyan);">義體尺寸規格（Model 淨脖圍 30cm 著用 S 碼）*</label>
+            <select id="detailChokerSizeSelect" style="border-color:var(--accent-cyan);">
+              ${currentDetailProduct.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select>
+          </div>
+        `;
+        document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
+      } else if(currentDetailProduct.isCustomRope) {
         dynamicArea.innerHTML = `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
             <div>
@@ -1106,7 +1228,9 @@
       let specText = '標準規格';
       let itemPrice = currentDetailProduct.price;
 
-      if(currentDetailProduct.isCustomRope) {
+      if(currentDetailProduct.hasSizes) {
+        specText = document.getElementById('detailChokerSizeSelect').value;
+      } else if(currentDetailProduct.isCustomRope) {
         const lengthVal = document.getElementById('detailRopeLengthSelect').value;
         const variantVal = document.getElementById('detailRopeVariantSelect').value;
         specText = `${variantVal} // ${lengthVal}`;
@@ -1351,7 +1475,7 @@
         <div><strong>物流運費：</strong>${shippingFeeDisplay}</div>
         <div><strong>結算總金額：</strong><strong style="color:var(--accent-cyan); font-size:1.05rem;">NT$ ${Number(orderData.price).toLocaleString()}</strong></div>
         <div><strong>收件特工：</strong>${orderData.name} (${orderData.phone})</div>
-        <div><strong>銘牌雷雕：</strong>${orderData.engraving}</div>
+        <div><strong>銘牌／客製備註：</strong>${orderData.engraving}</div>
         <div><strong>交付途徑：</strong>${orderData.shipping} (${orderData.location})</div>
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
