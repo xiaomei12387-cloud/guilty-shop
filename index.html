@@ -187,7 +187,7 @@
     /* 結帳視圖與賽博動畫 */
     .detail-container { width: 100%; max-width: 800px; margin: 0 auto; padding: 24px 16px 60px; }
     
-    /* 商品詳情高科技大圖展示區 */
+    /* 商品詳情大圖展示區 */
     .checkout-hero-img-box {
       width: 100%; 
       height: 360px; 
@@ -255,9 +255,9 @@
     label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
     input, select { width: 100%; padding: 12px; background: #000; border: 1px solid var(--panel-border); color: #fff; font-size: 0.9rem; outline: none; }
     input:focus, select:focus { border-color: var(--accent-cyan); }
-    .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
-    .radio-card { border: 1px solid var(--panel-border); padding: 10px 6px; text-align: center; cursor: pointer; font-size: 0.8rem; background: #0c0c0e; }
-    .radio-card.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,255,136,0.05); }
+    .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
+    .radio-card { border: 1px solid var(--panel-border); padding: 12px 8px; text-align: center; cursor: pointer; font-size: 0.85rem; background: #0c0c0e; transition: all 0.2s; }
+    .radio-card.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,255,136,0.08); font-weight: bold; }
     .btn-submit { width: 100%; padding: 16px; background: var(--accent-cyan); color: #000; font-size: 1rem; font-weight: bold; border: none; cursor: pointer; letter-spacing: 2px; transition: all 0.2s; }
     .btn-submit:hover { background: #fff; }
 
@@ -266,7 +266,7 @@
     .success-badge { font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 8px; }
     .success-title { font-size: 1.6rem; margin-bottom: 12px; color: #fff; }
     .success-file-box { background: #000; border: 1px dashed var(--panel-border); padding: 18px; text-align: left; margin: 20px 0; font-size: 0.85rem; line-height: 1.8; }
-    .pay-instruction-box { background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan); padding: 16px; text-align: left; margin-top: 14px; font-size: 0.85rem; }
+    .pay-instruction-box { background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan); padding: 16px; text-align: left; margin-top: 14px; font-size: 0.85rem; line-height: 1.7; }
 
     .history-item { background: #000; border: 1px solid var(--panel-border); padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem; }
     .history-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding-bottom: 8px; margin-bottom: 8px; }
@@ -552,7 +552,7 @@
     </div>
   </div>
 
-  <!-- 結帳視圖（已整合 4 大支付途徑） -->
+  <!-- 結帳視圖（已簡化為取貨付款與銀行轉帳） -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem; transition: all 0.2s;">← 返回展廳</button>
@@ -603,16 +603,14 @@
           </div>
         </div>
 
-        <!-- 支付方式（全通道整合） -->
+        <!-- 支付方式（保留取貨付款與銀行轉帳） -->
         <div class="form-box">
           <div class="form-title">04 // 支付結算通道</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
             <div class="radio-card active" onclick="selectPayment('cod', this)">超商取貨付款</div>
-            <div class="radio-card" onclick="selectPayment('ecpay', this)">綠界線上刷卡</div>
-            <div class="radio-card" onclick="selectPayment('linepay', this)">LINE Pay 轉帳</div>
             <div class="radio-card" onclick="selectPayment('bank', this)">銀行 ATM 匯款</div>
           </div>
-          <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted);">貨物送達超商後，取貨現場付款即可。</div>
+          <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted); line-height:1.6;">貨物送達超商後，取貨現場付款即可。</div>
         </div>
 
         <button type="submit" class="btn-submit">確認協議並送出訂單</button>
@@ -630,7 +628,7 @@
 
         <div class="success-file-box" id="successDetailArea"></div>
 
-        <!-- 動態支付指引與綠界跳轉區 -->
+        <!-- 動態支付指引區 -->
         <div id="payInstructionArea"></div>
 
         <div style="display:flex; gap:10px; margin-top:24px;">
@@ -661,9 +659,6 @@
     // 【系統串接設定】
     // ==========================================
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
-    
-    // 綠界 ECPay 快捷收款連結（請替換為你在綠界後台建立的賣場/快捷連結）
-    const ECPAY_PAYMENT_URL = "https://p.ecpay.com.tw/XXXXXX";
 
     // 開機動畫計時
     let introTimer = setTimeout(() => enterSite(), 2800);
@@ -979,16 +974,10 @@
       const note = document.getElementById('paymentNote');
       if(type === 'cod') {
         currentPayment = '超商取貨付款';
-        note.textContent = '貨物送達超商後，取貨現場付款即可。';
-      } else if(type === 'ecpay') {
-        currentPayment = '綠界線上刷卡';
-        note.textContent = '送出訂單後，可直接跳轉至綠界安全交易通道進行線上刷卡或轉帳。';
-      } else if(type === 'linepay') {
-        currentPayment = 'LINE Pay 轉帳';
-        note.textContent = '送出訂單後，將提供官方 LINE Pay 轉帳代碼進行付款。';
+        note.innerHTML = `貨物送達超商後，取貨現場付款即可。`;
       } else {
         currentPayment = '銀行 ATM 匯款';
-        note.textContent = '送出訂單後，將提供銀行虛擬帳號，匯款後自動對帳。';
+        note.innerHTML = `送出訂單後將顯示銀行帳號。匯款後請前往 <strong style="color:#5865F2;">Discord 開啟客服單</strong> 或 <strong style="color:#fff;">X 私訊</strong> 上傳匯款明細以利對帳。`;
       }
     }
 
@@ -1083,35 +1072,31 @@
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
 
-      // 5. 針對 4 大支付管道渲染動態指引
+      // 5. 銀行 ATM 匯款指引（含 DC 開單與 X 私訊直達按鈕）
       const payArea = document.getElementById('payInstructionArea');
-      if(orderData.payment === '綠界線上刷卡') {
+      if(orderData.payment === '銀行 ATM 匯款') {
         payArea.innerHTML = `
           <div class="pay-instruction-box">
-            <strong style="color:var(--accent-cyan);">💳 綠界 ECPay 安全線上支付：</strong><br>
-            您的訂單已建立，請點擊下方按鈕前往綠界安全金流頁面完成刷卡或付款：<br><br>
-            <a href="${ECPAY_PAYMENT_URL}" target="_blank" rel="noopener noreferrer" 
-               style="display:inline-block; background:var(--accent-cyan); color:#000; font-weight:bold; padding:10px 18px; text-decoration:none; border-radius:3px; font-size:0.85rem; letter-spacing:1px;">
-               ➔ 前往綠界完成線上支付 (NT$ ${Number(orderData.price).toLocaleString()})
-            </a>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">* 付款時請在備註填寫案件編號：<strong>#${orderData.orderId}</strong></div>
-          </div>
-        `;
-      } else if(orderData.payment === 'LINE Pay 轉帳') {
-        payArea.innerHTML = `
-          <div class="pay-instruction-box">
-            <strong style="color:var(--accent-cyan);">💳 LINE Pay 支付指引：</strong><br>
-            請開啟 LINE ➔ 掃描轉帳 / 好友轉帳，金額 <strong>NT$ ${Number(orderData.price).toLocaleString()}</strong>。<br>
-            轉帳備註請務必填寫案件編號：<strong style="color:#fff;">#${orderData.orderId}</strong>
-          </div>
-        `;
-      } else if(orderData.payment === '銀行 ATM 匯款') {
-        payArea.innerHTML = `
-          <div class="pay-instruction-box">
-            <strong style="color:var(--accent-cyan);">🏦 ATM 匯款帳號：</strong><br>
+            <strong style="color:var(--accent-cyan); font-size:0.95rem;">🏦 ATM 匯款帳號資料：</strong><br>
             銀行代碼：<strong>822（中國信託）</strong><br>
             轉帳帳號：<strong>9015-4000-8888</strong><br>
+            匯款金額：<strong style="color:var(--accent-cyan);">NT$ ${Number(orderData.price).toLocaleString()}</strong><br>
             轉帳備註請填寫案件編號：<strong style="color:#fff;">#${orderData.orderId}</strong>
+            
+            <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--panel-border);">
+              <span style="color:#ff334b; font-weight:bold;">⚠️ 匯款完成後請回報明細：</span><br>
+              請至官方頻道上傳<strong>「匯款收據截圖」</strong>或<strong>「帳號末五碼」</strong>以完成案件解鎖：<br>
+              <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
+                <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" 
+                   style="background:rgba(88,101,242,0.15); border:1px solid #5865F2; color:#fff; padding:6px 12px; font-size:0.75rem; text-decoration:none; border-radius:3px;">
+                   👾 前往 Discord 開啟客服單 ↗
+                </a>
+                <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" 
+                   style="background:rgba(255,255,255,0.08); border:1px solid var(--panel-border); color:#fff; padding:6px 12px; font-size:0.75rem; text-decoration:none; border-radius:3px;">
+                   𝕏 私訊官方客服上傳 ↗
+                </a>
+              </div>
+            </div>
           </div>
         `;
       } else {
