@@ -160,13 +160,14 @@
     /* Arsenal */
     .section-arsenal { padding: 50px 0; border-top: 1px solid var(--panel-border); }
     .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filter-btn { padding: 6px 12px; background: #141416; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: font-size: 0.75rem; }
+    .filter-btn { padding: 6px 12px; background: #141416; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; font-size: 0.75rem; }
     .filter-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); }
     .product-list-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
     @media (min-width: 600px) { .product-list-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
     .product-card { background: var(--card-bg); border: 1px solid var(--panel-border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.3s; }
     .product-card:hover { border-color: var(--accent-cyan); box-shadow: 0 4px 20px var(--glow-cyan); transform: translateY(-4px); }
-    .card-thumb { height: 180px; background: #000; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; color: var(--text-muted); position: relative; overflow: hidden; }
+    .card-thumb { height: 200px; background: #000; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; color: var(--text-muted); position: relative; overflow: hidden; }
+    .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .badge { position: absolute; top: 8px; right: 8px; font-size: 0.65rem; padding: 2px 6px; background: rgba(0,0,0,0.85); z-index: 2; }
     .badge-guilty { border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
     .badge-shushi { border: 1px solid var(--accent-purple); color: var(--accent-purple); }
@@ -713,7 +714,7 @@
     }
 
     // ==========================================
-    // 裝備目錄 (含束室特選精煉麻繩 13 種規格與動態長度)
+    // 裝備目錄 (已配置 ./images/image_rope.jpg 圖片路徑)
     // ==========================================
     const products = [
       { 
@@ -724,6 +725,7 @@
         title: '【貓痕義體拘束項圈】', 
         desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
         price: 2880,
+        img: '',
         isCustomRope: false
       },
       { 
@@ -734,7 +736,7 @@
         title: '【束室繩教室｜特選精煉麻繩】', 
         desc: '束室精工脫漿、過油打蠟特選麻繩，13 種配色與生繩規格可選，手感溫潤柔韌。', 
         price: 600,
-        img: './images/image_rope.jpg', // 直接讀取倉庫內的圖片
+        img: './images/image_rope.jpg',
         isCustomRope: true,
         lengths: [
           { label: '8 米 (8M)', price: 600 },
@@ -765,6 +767,7 @@
         title: '【束室繩教室｜防勒皮革護腕墊】', 
         desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。', 
         price: 1280,
+        img: '',
         isCustomRope: false
       }
     ];
@@ -789,10 +792,15 @@
           priceText = `NT$ 600 起`;
         }
 
+        // 判斷是否有圖片網址或本地相對路徑
+        const thumbContent = (p.img && p.img.trim() !== '')
+          ? `<img src="${p.img}" alt="${p.title}" onerror="this.parentElement.innerHTML='[ ${p.title} 預覽圖 ]';" />`
+          : `[ ${p.title} 預覽圖 ]`;
+
         card.innerHTML = `
           <div class="card-thumb">
             <span class="badge ${p.badgeClass}">${p.brandName}</span>
-            [ ${p.title} 預覽圖 ]
+            ${thumbContent}
           </div>
           <div class="card-body">
             <div style="font-size: 0.95rem; margin-bottom: 4px; font-weight: bold;">${p.title}</div>
