@@ -457,7 +457,7 @@
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">
               SLS 尼龍裝甲外殼結合 TPU 85A 柔性肉球矩陣。兼顧前喉結避空人體工學與極致反差互動。
             </p>
-            <button class="btn-submit" onclick="goToCheckout('cat-choker')">簽署認罪協議・立即預購 (NT$ 2,880)</button>
+            <button class="btn-submit" onclick="goToCheckout('cat-choker')">簽署認罪協議・立即預購 (NT$ 1,590)</button>
           </div>
         </div>
       </section>
@@ -465,7 +465,10 @@
       <!-- 4. Arsenal -->
       <section class="section-arsenal" id="section-arsenal">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:16px;">支配・拘束・義體裝備聯邦</h2>
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+          <h2 style="font-size:1.4rem;">支配・拘束・義體裝備聯邦</h2>
+          <span style="font-size:0.8rem; color:var(--accent-cyan); border:1px dashed var(--accent-cyan); padding:2px 8px;">全館滿 NT$ 2,500 免運費</span>
+        </div>
 
         <div class="filter-bar">
           <button class="filter-btn active" onclick="filterBrand('all')">全部 (ALL)</button>
@@ -552,7 +555,7 @@
     </div>
   </div>
 
-  <!-- 結帳視圖（已簡化為取貨付款與銀行轉帳） -->
+  <!-- 結帳視圖 -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem; transition: all 0.2s;">← 返回展廳</button>
@@ -589,13 +592,13 @@
           </div>
         </div>
 
-        <!-- 物流方式 -->
+        <!-- 物流方式 (自動聯動運費) -->
         <div class="form-box">
           <div class="form-title">03 // 物流交付途徑</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
-            <div class="radio-card active" onclick="selectShipping('711', this)">7-11 超商取貨</div>
-            <div class="radio-card" onclick="selectShipping('family', this)">全家 超商取貨</div>
-            <div class="radio-card" onclick="selectShipping('home', this)">黑貓 宅配到府</div>
+            <div class="radio-card active" onclick="selectShipping('711', this)">7-11 超商 (+NT$60)</div>
+            <div class="radio-card" onclick="selectShipping('family', this)">全家 超商 (+NT$60)</div>
+            <div class="radio-card" onclick="selectShipping('home', this)">黑貓 宅配 (+NT$120)</div>
           </div>
           <div class="form-group">
             <label id="storeLabel">7-11 門市名稱 / 店號*</label>
@@ -603,7 +606,7 @@
           </div>
         </div>
 
-        <!-- 支付方式（保留取貨付款與銀行轉帳） -->
+        <!-- 支付方式 -->
         <div class="form-box">
           <div class="form-title">04 // 支付結算通道</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
@@ -628,7 +631,6 @@
 
         <div class="success-file-box" id="successDetailArea"></div>
 
-        <!-- 動態支付指引區 -->
         <div id="payInstructionArea"></div>
 
         <div style="display:flex; gap:10px; margin-top:24px;">
@@ -778,7 +780,7 @@
     }
 
     // ==========================================
-    // 裝備目錄
+    // 裝備目錄 (項圈已調整為 NT$ 1,590)
     // ==========================================
     const products = [
       { 
@@ -788,7 +790,7 @@
         badgeClass: 'badge-guilty', 
         title: '【貓痕義體拘束項圈】', 
         desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
-        price: 2880,
+        price: 1590,
         img: '',
         isCustomRope: false
       },
@@ -837,10 +839,23 @@
     ];
 
     let selectedProduct = products[0];
-    let currentShipping = '7-11 超商取貨';
+    let currentShippingType = '711'; // '711', 'family', 'home'
+    let currentShippingName = '7-11 超商取貨';
     let currentPayment = '超商取貨付款';
     let currentRopeLength = '8 米 (8M)';
     let currentRopePrice = 600;
+
+    // 運費與免運門檻計算函式
+    const FREE_SHIPPING_THRESHOLD = 2500;
+    function calculateShippingFee(subtotal, shippingType) {
+      if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+        return 0;
+      }
+      if (shippingType === 'home') {
+        return 120;
+      }
+      return 60; // 711 與 全家 為 60
+    }
 
     function renderProductCards(filter = 'all') {
       const grid = document.getElementById('productGrid');
@@ -889,23 +904,22 @@
       if (selectedOption) {
         currentRopeLength = selectedOption.label;
         currentRopePrice = selectedOption.price;
-        const priceEl = document.getElementById('checkoutPriceDisplay');
-        if(priceEl) priceEl.textContent = `NT$ ${currentRopePrice.toLocaleString()}`;
+        renderCheckoutSummary();
       }
     }
 
     function renderCheckoutSummary() {
       let customOptionsHtml = '';
-      let displayPrice = selectedProduct.price;
+      let subtotal = selectedProduct.price;
 
       if (selectedProduct.isCustomRope) {
-        displayPrice = currentRopePrice;
+        subtotal = currentRopePrice;
         customOptionsHtml = `
           <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <div>
               <label style="font-size:0.75rem; color:var(--accent-purple);">長度規格*</label>
               <select id="selectedRopeLength" onchange="updateRopePrice(this)" style="border-color:var(--accent-purple);">
-                ${selectedProduct.lengths.map(l => `<option value="${l.label}">${l.label} - NT$ ${l.price}</option>`).join('')}
+                ${selectedProduct.lengths.map(l => `<option value="${l.label}" ${l.label === currentRopeLength ? 'selected' : ''}>${l.label} - NT$ ${l.price}</option>`).join('')}
               </select>
             </div>
             <div>
@@ -918,10 +932,29 @@
         `;
       }
 
+      const shippingFee = calculateShippingFee(subtotal, currentShippingType);
+      const finalTotal = subtotal + shippingFee;
+
+      let shippingStatusHtml = '';
+      if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+        shippingStatusHtml = `<span style="color:var(--accent-cyan); font-weight:bold;">已達滿額免運 (NT$ 0)</span>`;
+      } else {
+        const diff = FREE_SHIPPING_THRESHOLD - subtotal;
+        shippingStatusHtml = `<span>NT$ ${shippingFee} <small style="color:var(--text-muted);">(再調用 NT$ ${diff.toLocaleString()} 即享免運)</small></span>`;
+      }
+
       document.getElementById('orderSummary').innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <div><strong>裝備：</strong>${selectedProduct.title}</div>
-          <div id="checkoutPriceDisplay" style="color:var(--accent-cyan); font-weight:bold; font-size:1.1rem;">NT$ ${displayPrice.toLocaleString()}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
+          <div><strong>裝備品項：</strong>${selectedProduct.title}</div>
+          <div style="color:var(--text-main);">小計：NT$ ${subtotal.toLocaleString()}</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; color:var(--text-muted); margin-bottom: 8px;">
+          <div><strong>交付運費：</strong>${currentShippingName}</div>
+          <div>${shippingStatusHtml}</div>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:8px;">
+          <div style="font-weight:bold; color:var(--text-main);">結算總額：</div>
+          <div id="checkoutPriceDisplay" style="color:var(--accent-cyan); font-weight:bold; font-size:1.2rem;">NT$ ${finalTotal.toLocaleString()}</div>
         </div>
         ${customOptionsHtml}
       `;
@@ -955,17 +988,22 @@
     function selectShipping(type, el) {
       el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
+      currentShippingType = type;
       const label = document.getElementById('storeLabel');
+      
       if(type === '711') {
-        currentShipping = '7-11 超商取貨';
+        currentShippingName = '7-11 超商取貨';
         label.textContent = '7-11 門市名稱 / 店號*';
       } else if(type === 'family') {
-        currentShipping = '全家 超商取貨';
+        currentShippingName = '全家 超商取貨';
         label.textContent = '全家 門市名稱 / 店號*';
       } else {
-        currentShipping = '黑貓 宅配到府';
+        currentShippingName = '黑貓 宅配到府';
         label.textContent = '收件詳細地址*';
       }
+
+      // 重新計算運費與總額
+      renderCheckoutSummary();
     }
 
     function selectPayment(type, el) {
@@ -1003,7 +1041,7 @@
     }
 
     // ==========================================
-    // 結帳下單（寫入 Google 試算表 + 本地備份）
+    // 結帳下單（含運費計算並寫入 Google 試算表）
     // ==========================================
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -1011,23 +1049,28 @@
       const phoneRaw = document.getElementById('custPhone').value.trim();
 
       let finalTitle = selectedProduct.title;
-      let finalPrice = selectedProduct.price;
+      let subtotal = selectedProduct.price;
 
       if (selectedProduct.isCustomRope) {
         const lengthVal = document.getElementById('selectedRopeLength').value;
         const variantVal = document.getElementById('selectedRopeVariant').value;
         finalTitle = `${selectedProduct.title} [${variantVal} // ${lengthVal}]`;
-        finalPrice = currentRopePrice;
+        subtotal = currentRopePrice;
       }
+
+      const shippingFee = calculateShippingFee(subtotal, currentShippingType);
+      const totalAmount = subtotal + shippingFee;
 
       const orderData = {
         orderId: 'CASE-' + Date.now().toString().slice(-6),
         product: finalTitle,
-        price: finalPrice,
+        subtotal: subtotal,
+        shippingFee: shippingFee,
+        price: totalAmount, // 最終含運結算金額
         name: document.getElementById('custName').value.trim(),
         phone: phoneRaw,
         engraving: document.getElementById('custEngraving').value.trim() || '無',
-        shipping: currentShipping,
+        shipping: currentShippingName,
         location: document.getElementById('shippingLocation').value.trim(),
         payment: currentPayment,
         role: memberProfile ? memberProfile.role : '訪客',
@@ -1062,17 +1105,23 @@
       });
 
       // 4. 渲染成功明細
+      const shippingFeeDisplay = orderData.shippingFee === 0 
+        ? '<span style="color:var(--accent-cyan);">免運費 (NT$ 0)</span>' 
+        : `NT$ ${orderData.shippingFee}`;
+
       document.getElementById('successDetailArea').innerHTML = `
         <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
         <div><strong>調用裝備：</strong>${orderData.product}</div>
-        <div><strong>協議金額：</strong>NT$ ${Number(orderData.price).toLocaleString()}</div>
+        <div><strong>商品小計：</strong>NT$ ${Number(orderData.subtotal).toLocaleString()}</div>
+        <div><strong>物流運費：</strong>${shippingFeeDisplay}</div>
+        <div><strong>結算總金額：</strong><strong style="color:var(--accent-cyan); font-size:1.05rem;">NT$ ${Number(orderData.price).toLocaleString()}</strong></div>
         <div><strong>收件特工：</strong>${orderData.name} (${orderData.phone})</div>
         <div><strong>銘牌雷雕：</strong>${orderData.engraving}</div>
         <div><strong>交付途徑：</strong>${orderData.shipping} (${orderData.location})</div>
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
 
-      // 5. 銀行 ATM 匯款指引（含 DC 開單與 X 私訊直達按鈕）
+      // 5. 銀行 ATM 匯款指引
       const payArea = document.getElementById('payInstructionArea');
       if(orderData.payment === '銀行 ATM 匯款') {
         payArea.innerHTML = `
@@ -1080,7 +1129,7 @@
             <strong style="color:var(--accent-cyan); font-size:0.95rem;">🏦 ATM 匯款帳號資料：</strong><br>
             銀行代碼：<strong>822（中國信託）</strong><br>
             轉帳帳號：<strong>9015-4000-8888</strong><br>
-            匯款金額：<strong style="color:var(--accent-cyan);">NT$ ${Number(orderData.price).toLocaleString()}</strong><br>
+            應匯總額：<strong style="color:var(--accent-cyan);">NT$ ${Number(orderData.price).toLocaleString()}</strong>（含運費）<br>
             轉帳備註請填寫案件編號：<strong style="color:#fff;">#${orderData.orderId}</strong>
             
             <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--panel-border);">
@@ -1137,7 +1186,7 @@
                 <span style="color:var(--text-muted); font-size:0.75rem;">${o.createdAt}</span>
               </div>
               <div><strong>裝備：</strong>${o.product}</div>
-              <div><strong>金額：</strong>NT$ ${Number(o.price).toLocaleString()}</div>
+              <div><strong>金額：</strong>NT$ ${Number(o.price).toLocaleString()} (含運)</div>
               <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
               <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
               <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--panel-border); font-size:0.8rem;">
