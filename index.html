@@ -134,8 +134,8 @@
 
     /* 視圖控制 */
     .view-section { display: none; width: 100%; }
-    .view-section.active { display: block; animation: viewFade 0.35s ease; }
-    @keyframes viewFade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .view-section.active { display: block; animation: viewFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+    @keyframes viewFade { from { opacity: 0; transform: translateY(12px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
     .landing-container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 16px 60px; }
 
@@ -184,9 +184,58 @@
     .team-role { font-size: 0.7rem; color: var(--accent-cyan); letter-spacing: 1px; }
     .card-shushi .team-role { color: var(--accent-purple); }
 
-    /* 結帳視圖 */
+    /* 結帳視圖與賽博動畫 */
     .detail-container { width: 100%; max-width: 800px; margin: 0 auto; padding: 24px 16px 60px; }
-    .form-box { background: var(--card-bg); border: 1px solid var(--panel-border); padding: 20px; border-radius: 4px; margin-bottom: 20px; }
+    
+    /* 商品詳情高科技大圖展示區 */
+    .checkout-hero-img-box {
+      width: 100%; height: 280px; background: #000; border: 1px solid var(--panel-border);
+      position: relative; overflow: hidden; border-radius: 4px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center;
+      animation: heroScanIn 0.6s ease forwards;
+    }
+    @keyframes heroScanIn {
+      0% { opacity: 0; transform: scale(0.96); filter: brightness(2) contrast(1.5); }
+      100% { opacity: 1; transform: scale(1); filter: brightness(1) contrast(1); }
+    }
+    .checkout-hero-img-box img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    
+    /* HUD 掃描光效 */
+    .checkout-hero-img-box::before {
+      content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 136, 0.18) 50%, transparent 100%);
+      transform: translateY(-100%);
+      animation: scanLaser 2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
+      pointer-events: none; z-index: 3;
+    }
+    @keyframes scanLaser {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    /* 瞄準括角裝飾 */
+    .hud-corner {
+      position: absolute; width: 14px; height: 14px; border: 2px solid var(--accent-cyan);
+      pointer-events: none; z-index: 4;
+    }
+    .hud-tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+    .hud-tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+    .hud-bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+    .hud-br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+
+    .form-box { 
+      background: var(--card-bg); border: 1px solid var(--panel-border); 
+      padding: 20px; border-radius: 4px; margin-bottom: 20px;
+      animation: cardSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .form-box:nth-child(2) { animation-delay: 0.08s; }
+    .form-box:nth-child(3) { animation-delay: 0.16s; }
+    .form-box:nth-child(4) { animation-delay: 0.24s; }
+    @keyframes cardSlideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .form-title { font-size: 1rem; color: var(--accent-cyan); margin-bottom: 14px; border-bottom: 1px solid var(--panel-border); padding-bottom: 6px; }
     .form-group { margin-bottom: 14px; }
     label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
@@ -344,7 +393,6 @@
       <section class="hero-fullscreen" id="section-hero">
         <div class="hero-code">[ PROTOCOL // ROOM OF DESIRE ]</div>
         <div style="margin-bottom: 24px;">
-          <!-- 主頁大標題：幾何 GUILTY 向量字體 -->
           <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 320px;">
             <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
             <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
@@ -496,11 +544,20 @@
     </div>
   </div>
 
-  <!-- 結帳視圖 -->
+  <!-- 結帳視圖（已升級賽博動態大圖預覽） -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
-      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
+      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem; transition: all 0.2s;">← 返回展廳</button>
       
+      <!-- 頂部裝備大圖預覽區（含 HUD 準心與掃描光線） -->
+      <div class="checkout-hero-img-box" id="checkoutHeroBox">
+        <div class="hud-corner hud-tl"></div>
+        <div class="hud-corner hud-tr"></div>
+        <div class="hud-corner hud-bl"></div>
+        <div class="hud-corner hud-br"></div>
+        <div id="checkoutHeroImgArea" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"></div>
+      </div>
+
       <div class="form-box">
         <div class="form-title">01 // 調用裝備明細</div>
         <div id="orderSummary" style="font-size: 0.9rem; margin-bottom: 8px;"></div>
@@ -564,7 +621,6 @@
 
         <div class="success-file-box" id="successDetailArea"></div>
 
-        <!-- 動態支付指引 -->
         <div id="payInstructionArea"></div>
 
         <div style="display:flex; gap:10px; margin-top:24px;">
@@ -714,7 +770,7 @@
     }
 
     // ==========================================
-    // 裝備目錄 (已配置 ./images/image_rope.jpg 圖片路徑)
+    // 裝備目錄 (含本地圖片相對路徑)
     // ==========================================
     const products = [
       { 
@@ -792,7 +848,6 @@
           priceText = `NT$ 600 起`;
         }
 
-        // 判斷是否有圖片網址或本地相對路徑
         const thumbContent = (p.img && p.img.trim() !== '')
           ? `<img src="${p.img}" alt="${p.title}" onerror="this.parentElement.innerHTML='[ ${p.title} 預覽圖 ]';" />`
           : `[ ${p.title} 預覽圖 ]`;
@@ -868,6 +923,20 @@
       selectedProduct = products.find(p => p.id === productId);
       currentRopeLength = '8 米 (8M)';
       currentRopePrice = 600;
+
+      // 渲染頂部大圖預覽
+      const heroArea = document.getElementById('checkoutHeroImgArea');
+      if (selectedProduct.img && selectedProduct.img.trim() !== '') {
+        heroArea.innerHTML = `<img src="${selectedProduct.img}" alt="${selectedProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${selectedProduct.title} 3D 義體檔案庫 ]</span>';" />`;
+      } else {
+        heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${selectedProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
+      }
+
+      // 重置大圖掃描動畫
+      const heroBox = document.getElementById('checkoutHeroBox');
+      heroBox.style.animation = 'none';
+      heroBox.offsetHeight; /* 觸發重繪 */
+      heroBox.style.animation = 'heroScanIn 0.6s ease forwards';
 
       renderCheckoutSummary();
 
@@ -1047,7 +1116,6 @@
       const cleanPhone = String(memberProfile.phone).replace(/[^0-9]/g, '');
       document.getElementById('historyTitle').textContent = `05 // 特工 [ ${memberProfile.name} - ${memberProfile.phone} ] 專屬調用檔案`;
 
-      // 渲染列表的公用函式
       const renderOrders = (list) => {
         if(!list || list.length === 0) {
           historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name}（電話：${memberProfile.phone}）尚無任何調用案件。<br><span style="font-size:0.75rem; color:var(--text-muted);">（若剛在試算表手動新增，請確認電話號碼是否完全一致）</span></div>`;
@@ -1070,17 +1138,14 @@
         }
       };
 
-      // 1. 先讀取本地紀錄（如果下單過就一定看得到）
       let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       let myLocalOrders = localOrders.filter(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
       renderOrders(myLocalOrders);
 
-      // 切換畫面
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-history').classList.add('active');
       window.scrollTo(0, 0);
 
-      // 2. 透過 JSONP 標籤向 Google 試算表查詢最新資料
       const callbackName = 'cb_' + Date.now();
       window[callbackName] = function(cloudOrders) {
         console.log("【雲端試算表回傳訂單】:", cloudOrders);
@@ -1090,7 +1155,6 @@
 
         if(cloudOrders && cloudOrders.length > 0) {
           renderOrders(cloudOrders);
-          // 同步覆蓋本地緩存
           localStorage.setItem('guilty_orders', JSON.stringify(cloudOrders));
         }
       };
