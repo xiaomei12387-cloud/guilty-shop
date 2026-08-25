@@ -155,7 +155,7 @@
     /* 視圖控制 */
     .view-section { display: none; width: 100%; }
     .view-section.active { display: block; animation: viewFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes viewFade { from { opacity: 0; transform: translateY(12px) scale(0.99); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes viewFade { from { opacity: 0; transform: translateY(12px) scale(0.99); } to { opacity: 1; transform: translateY(0); } }
 
     .landing-container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 16px 60px; }
 
@@ -303,7 +303,7 @@
         <button onclick="toggleCart(false)" style="background:transparent; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
       </div>
       
-      <!-- 滿額免運進度條 -->
+      <!-- 滿額免運進度條 (滿 NT$ 1,800) -->
       <div id="cartFreeShippingBanner" style="padding:10px 0; border-bottom:1px dashed var(--panel-border); font-size:0.75rem;"></div>
     </div>
 
@@ -475,7 +475,7 @@
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">
               SLS 尼龍裝甲外殼結合 TPU 85A 柔性肉球矩陣。兼顧前喉結避空人體工學與極致反差互動。
             </p>
-            <button class="btn-submit" onclick="openProductDetail('cat-choker')">檢視裝備配置・調用 (NT$ 1,590)</button>
+            <button class="btn-submit" onclick="openProductDetail('cat-choker')">檢視裝備配置・調用 (NT$ 1,690)</button>
           </div>
         </div>
       </section>
@@ -485,7 +485,7 @@
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
           <h2 style="font-size:1.4rem;">支配・拘束・義體裝備聯邦</h2>
-          <span style="font-size:0.8rem; color:var(--accent-cyan); border:1px dashed var(--accent-cyan); padding:2px 8px;">全館滿 NT$ 2,500 免運費</span>
+          <span style="font-size:0.8rem; color:var(--accent-cyan); border:1px dashed var(--accent-cyan); padding:2px 8px;">全館滿 NT$ 1,800 免運費</span>
         </div>
 
         <div class="filter-bar">
@@ -707,7 +707,7 @@
     // 【系統串接設定】
     // ==========================================
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
-    const FREE_SHIPPING_THRESHOLD = 2500;
+    const FREE_SHIPPING_THRESHOLD = 1800; // 滿 NT$ 1,800 免運
 
     // 開機動畫
     let introTimer = setTimeout(() => enterSite(), 2800);
@@ -830,7 +830,7 @@
     }
 
     // ==========================================
-    // 裝備目錄資料庫
+    // 裝備目錄資料庫 (項圈已調整為 NT$ 1,690)
     // ==========================================
     const products = [
       { 
@@ -840,7 +840,7 @@
         badgeClass: 'badge-guilty', 
         title: '【貓痕義體拘束項圈】', 
         desc: '消光外骨骼裝甲與內襯立體貓掌肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
-        price: 1590,
+        price: 1690,
         img: '',
         isCustomRope: false
       },
@@ -935,9 +935,9 @@
 
       subtotalEl.textContent = `NT$ ${subtotal.toLocaleString()}`;
 
-      // 免運即時進度提示
+      // 免運進度提示 (滿 NT$ 1,800)
       if (subtotal >= FREE_SHIPPING_THRESHOLD) {
-        freeShippingBanner.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">⚡ 已解鎖全館滿額免運特權！</span>`;
+        freeShippingBanner.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">⚡ 已解鎖全館滿 NT$ 1,800 免運特權！</span>`;
       } else {
         const diff = FREE_SHIPPING_THRESHOLD - subtotal;
         freeShippingBanner.innerHTML = `<span style="color:var(--text-muted);">差 <strong style="color:var(--accent-cyan);">NT$ ${diff.toLocaleString()}</strong> 即可享有免運交付</span>`;
@@ -1190,7 +1190,6 @@
       const shippingFee = calculateShippingFee(subtotal, currentShippingType);
       const totalAmount = subtotal + shippingFee;
 
-      // 渲染裝備品項條目
       itemsListEl.innerHTML = cart.map(item => `
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--panel-border); padding:6px 0; font-size:0.85rem;">
           <div>
@@ -1295,7 +1294,6 @@
       const shippingFee = calculateShippingFee(subtotal, currentShippingType);
       const totalAmount = subtotal + shippingFee;
 
-      // 整併多商品為字串
       const productsSummaryText = cart.map(item => `${item.title} (${item.specText}) × ${item.qty}`).join(' + ');
 
       const orderData = {
@@ -1358,14 +1356,14 @@
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
 
-      // 5. 銀行 ATM 指引
+      // 5. 華南銀行 ATM 指引
       const payArea = document.getElementById('payInstructionArea');
       if(orderData.payment === '銀行 ATM 匯款') {
         payArea.innerHTML = `
           <div class="pay-instruction-box">
             <strong style="color:var(--accent-cyan); font-size:0.95rem;">🏦 ATM 匯款帳號資料：</strong><br>
-            銀行代碼：<strong>822（中國信託）</strong><br>
-            轉帳帳號：<strong>9015-4000-8888</strong><br>
+            銀行代碼：<strong>008（華南銀行）</strong><br>
+            轉帳帳號：<strong>106200758151</strong><br>
             應匯總額：<strong style="color:var(--accent-cyan);">NT$ ${Number(orderData.price).toLocaleString()}</strong>（含運費）<br>
             轉帳備註請填寫案件編號：<strong style="color:#fff;">#${orderData.orderId}</strong>
             
