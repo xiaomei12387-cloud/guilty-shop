@@ -74,7 +74,7 @@
     }
     body::after {
       content: " "; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 255, 0, 0.02));
       background-size: 100% 3px, 6px 100%; pointer-events: none; z-index: 999;
     }
 
@@ -187,7 +187,7 @@
     /* 結帳視圖與賽博動畫 */
     .detail-container { width: 100%; max-width: 800px; margin: 0 auto; padding: 24px 16px 60px; }
     
-    /* 商品詳情高科技大圖展示區（修正置中與視覺重心） */
+    /* 商品詳情高科技大圖展示區 */
     .checkout-hero-img-box {
       width: 100%; 
       height: 360px; 
@@ -210,7 +210,7 @@
       width: 100%; 
       height: 100%; 
       object-fit: cover; 
-      object-position: center 65%; /* 焦點下移至麻繩本體 */
+      object-position: center 65%;
       display: block; 
     }
     
@@ -266,7 +266,7 @@
     .success-badge { font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 8px; }
     .success-title { font-size: 1.6rem; margin-bottom: 12px; color: #fff; }
     .success-file-box { background: #000; border: 1px dashed var(--panel-border); padding: 18px; text-align: left; margin: 20px 0; font-size: 0.85rem; line-height: 1.8; }
-    .pay-instruction-box { background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan); padding: 14px; text-align: left; margin-top: 14px; font-size: 0.85rem; }
+    .pay-instruction-box { background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan); padding: 16px; text-align: left; margin-top: 14px; font-size: 0.85rem; }
 
     .history-item { background: #000; border: 1px solid var(--panel-border); padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem; }
     .history-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding-bottom: 8px; margin-bottom: 8px; }
@@ -390,7 +390,6 @@
       </ul>
     </div>
 
-    <!-- 側邊選單底部通訊入口 -->
     <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--panel-border); padding-top:14px;">
       <div style="margin-bottom:8px; color:var(--accent-cyan);">[ SECURE COMMS ]</div>
       <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" style="color:#5865F2; text-decoration:none; display:block; margin-bottom:4px;">👾 加入特工 Discord 伺服器 ↗</a>
@@ -483,7 +482,6 @@
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
 
         <div class="team-grid">
-          <!-- 18X -->
           <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
             <div class="team-header">
               <div class="team-role">DESIGN DIRECTOR</div>
@@ -496,7 +494,6 @@
             </div>
           </a>
 
-          <!-- 老王 -->
           <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
             <div class="team-header">
               <div class="team-role">HEAD OF BUSINESS</div>
@@ -509,7 +506,6 @@
             </div>
           </a>
 
-          <!-- shushi束室 -->
           <a href="https://x.com/220shushi" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
             <div class="team-header">
               <div class="team-role">STRATEGIC ALLIANCE</div>
@@ -524,14 +520,13 @@
         </div>
       </section>
 
-      <!-- 6. 通訊頻寬 / 聯繫我們 (COMMS) -->
+      <!-- 6. 通訊頻寬 -->
       <section style="padding: 40px 0 20px; border-top: 1px solid var(--panel-border); text-align: center;">
         <div style="font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 8px;">[ 05 // SECURE COMMS ]</div>
         <h2 style="font-size: 1.3rem; margin-bottom: 8px;">特工通訊・官方頻寬</h2>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 24px;">加入特工終端取得第一手裝備更新、排程調用進度與社群互動。</p>
 
         <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; max-width: 500px; margin: 0 auto 30px;">
-          <!-- Discord 專屬按鈕 -->
           <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" 
              style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(88, 101, 242, 0.12); border: 1px solid #5865F2; color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px; transition: all 0.2s;">
             <svg style="width: 20px; height: 20px; fill: #5865F2;" viewBox="0 0 24 24">
@@ -540,7 +535,6 @@
             DISCORD 終端庫
           </a>
 
-          <!-- 官方 X (Twitter) 按鈕 -->
           <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" 
              style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px; transition: all 0.2s;">
             <svg style="width: 18px; height: 18px; fill: #fff;" viewBox="0 0 24 24">
@@ -558,12 +552,12 @@
     </div>
   </div>
 
-  <!-- 結帳視圖（已升級賽博動態大圖預覽與精準置中） -->
+  <!-- 結帳視圖（已整合 4 大支付途徑） -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem; transition: all 0.2s;">← 返回展廳</button>
       
-      <!-- 頂部裝備大圖預覽區（含 HUD 準心與掃描光線） -->
+      <!-- 頂部裝備大圖預覽區 -->
       <div class="checkout-hero-img-box" id="checkoutHeroBox">
         <div class="hud-corner hud-tl"></div>
         <div class="hud-corner hud-tr"></div>
@@ -609,11 +603,12 @@
           </div>
         </div>
 
-        <!-- 支付方式 -->
+        <!-- 支付方式（全通道整合） -->
         <div class="form-box">
           <div class="form-title">04 // 支付結算通道</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
             <div class="radio-card active" onclick="selectPayment('cod', this)">超商取貨付款</div>
+            <div class="radio-card" onclick="selectPayment('ecpay', this)">綠界線上刷卡</div>
             <div class="radio-card" onclick="selectPayment('linepay', this)">LINE Pay 轉帳</div>
             <div class="radio-card" onclick="selectPayment('bank', this)">銀行 ATM 匯款</div>
           </div>
@@ -635,6 +630,7 @@
 
         <div class="success-file-box" id="successDetailArea"></div>
 
+        <!-- 動態支付指引與綠界跳轉區 -->
         <div id="payInstructionArea"></div>
 
         <div style="display:flex; gap:10px; margin-top:24px;">
@@ -662,9 +658,12 @@
 
   <script>
     // ==========================================
-    // 【Google 試算表收單 API 網址】
+    // 【系統串接設定】
     // ==========================================
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
+    
+    // 綠界 ECPay 快捷收款連結（請替換為你在綠界後台建立的賣場/快捷連結）
+    const ECPAY_PAYMENT_URL = "https://p.ecpay.com.tw/XXXXXX";
 
     // 開機動畫計時
     let introTimer = setTimeout(() => enterSite(), 2800);
@@ -784,7 +783,7 @@
     }
 
     // ==========================================
-    // 裝備目錄 (已配置 ./images/image_rope.jpg 圖片路徑)
+    // 裝備目錄
     // ==========================================
     const products = [
       { 
@@ -938,7 +937,6 @@
       currentRopeLength = '8 米 (8M)';
       currentRopePrice = 600;
 
-      // 渲染頂部大圖預覽
       const heroArea = document.getElementById('checkoutHeroImgArea');
       if (selectedProduct.img && selectedProduct.img.trim() !== '') {
         heroArea.innerHTML = `<img src="${selectedProduct.img}" alt="${selectedProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${selectedProduct.title} 3D 義體檔案庫 ]</span>';" />`;
@@ -946,10 +944,9 @@
         heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${selectedProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
       }
 
-      // 重置大圖掃描動畫
       const heroBox = document.getElementById('checkoutHeroBox');
       heroBox.style.animation = 'none';
-      heroBox.offsetHeight; /* 觸發重繪 */
+      heroBox.offsetHeight;
       heroBox.style.animation = 'heroScanIn 0.6s ease forwards';
 
       renderCheckoutSummary();
@@ -983,6 +980,9 @@
       if(type === 'cod') {
         currentPayment = '超商取貨付款';
         note.textContent = '貨物送達超商後，取貨現場付款即可。';
+      } else if(type === 'ecpay') {
+        currentPayment = '綠界線上刷卡';
+        note.textContent = '送出訂單後，可直接跳轉至綠界安全交易通道進行線上刷卡或轉帳。';
       } else if(type === 'linepay') {
         currentPayment = 'LINE Pay 轉帳';
         note.textContent = '送出訂單後，將提供官方 LINE Pay 轉帳代碼進行付款。';
@@ -1046,6 +1046,7 @@
         createdAt: new Date().toLocaleString('zh-TW', { hour12: false })
       };
 
+      // 1. 更新會員
       memberProfile = {
         name: orderData.name,
         phone: orderData.phone,
@@ -1054,10 +1055,12 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
+      // 2. 本地備份
       let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
 
+      // 3. 發送至 Google 試算表
       fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -1069,6 +1072,7 @@
         console.warn('[GUILTY LOG] 試算表傳送提示:', err);
       });
 
+      // 4. 渲染成功明細
       document.getElementById('successDetailArea').innerHTML = `
         <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
         <div><strong>調用裝備：</strong>${orderData.product}</div>
@@ -1079,13 +1083,26 @@
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
 
+      // 5. 針對 4 大支付管道渲染動態指引
       const payArea = document.getElementById('payInstructionArea');
-      if(orderData.payment === 'LINE Pay 轉帳') {
+      if(orderData.payment === '綠界線上刷卡') {
+        payArea.innerHTML = `
+          <div class="pay-instruction-box">
+            <strong style="color:var(--accent-cyan);">💳 綠界 ECPay 安全線上支付：</strong><br>
+            您的訂單已建立，請點擊下方按鈕前往綠界安全金流頁面完成刷卡或付款：<br><br>
+            <a href="${ECPAY_PAYMENT_URL}" target="_blank" rel="noopener noreferrer" 
+               style="display:inline-block; background:var(--accent-cyan); color:#000; font-weight:bold; padding:10px 18px; text-decoration:none; border-radius:3px; font-size:0.85rem; letter-spacing:1px;">
+               ➔ 前往綠界完成線上支付 (NT$ ${Number(orderData.price).toLocaleString()})
+            </a>
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:8px;">* 付款時請在備註填寫案件編號：<strong>#${orderData.orderId}</strong></div>
+          </div>
+        `;
+      } else if(orderData.payment === 'LINE Pay 轉帳') {
         payArea.innerHTML = `
           <div class="pay-instruction-box">
             <strong style="color:var(--accent-cyan);">💳 LINE Pay 支付指引：</strong><br>
-            請開啟 LINE ➔ 掃描轉帳 / 搜尋官方帳號或好友轉帳，金額 <strong>NT$ ${Number(orderData.price).toLocaleString()}</strong>。<br>
-            轉帳備註請務必填寫：<strong style="color:#fff;">#${orderData.orderId}</strong>
+            請開啟 LINE ➔ 掃描轉帳 / 好友轉帳，金額 <strong>NT$ ${Number(orderData.price).toLocaleString()}</strong>。<br>
+            轉帳備註請務必填寫案件編號：<strong style="color:#fff;">#${orderData.orderId}</strong>
           </div>
         `;
       } else if(orderData.payment === '銀行 ATM 匯款') {
@@ -1109,7 +1126,7 @@
     });
 
     // ==========================================
-    // 個人調用紀錄（雙重保險：本地即時 ＋ 雲端 JSONP 同步）
+    // 個人調用紀錄
     // ==========================================
     function openOrderHistory() {
       toggleNav(false);
