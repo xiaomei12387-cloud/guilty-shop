@@ -23,26 +23,10 @@
     html, body { width: 100%; max-width: 100%; overflow-x: hidden; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; scroll-behavior: smooth; }
 
     /* 原創 GUILTY 幾何骨架 SVG 樣式 */
-    .guilty-vector-logo {
-      display: inline-block;
-      vertical-align: middle;
-      filter: drop-shadow(0 0 6px var(--glow-cyan));
-    }
-    .logo-path {
-      stroke: var(--accent-cyan);
-      stroke-width: 7;
-      stroke-linecap: square;
-      stroke-linejoin: miter;
-      fill: none;
-    }
-    .logo-path-anim {
-      stroke-dasharray: 600;
-      stroke-dashoffset: 600;
-      animation: drawLogoAnim 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-    }
-    @keyframes drawLogoAnim {
-      to { stroke-dashoffset: 0; }
-    }
+    .guilty-vector-logo { display: inline-block; vertical-align: middle; filter: drop-shadow(0 0 6px var(--glow-cyan)); }
+    .logo-path { stroke: var(--accent-cyan); stroke-width: 7; stroke-linecap: square; stroke-linejoin: miter; fill: none; }
+    .logo-path-anim { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawLogoAnim 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+    @keyframes drawLogoAnim { to { stroke-dashoffset: 0; } }
 
     /* 開機動畫 */
     #intro-screen {
@@ -88,11 +72,24 @@
     .brand-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .header-eye-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 4px var(--accent-cyan)); }
     .header-controls { display: flex; align-items: center; gap: 10px; }
-    .user-badge {
-      font-size: 0.75rem; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
-      padding: 4px 8px; cursor: pointer; background: rgba(0, 255, 136, 0.05); transition: all 0.2s;
+    
+    .cart-btn-header {
+      background: #141416; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
+      padding: 5px 10px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px;
+      transition: all 0.2s; position: relative;
     }
-    .user-badge:hover { background: var(--accent-cyan); color: #000; }
+    .cart-btn-header:hover { background: var(--accent-cyan); color: #000; }
+    .cart-count-badge {
+      background: var(--danger-red); color: #fff; font-size: 0.65rem; padding: 1px 5px;
+      border-radius: 10px; font-weight: bold;
+    }
+
+    .user-badge {
+      font-size: 0.75rem; border: 1px solid var(--panel-border); color: var(--text-muted);
+      padding: 5px 8px; cursor: pointer; background: rgba(0, 255, 136, 0.05); transition: all 0.2s;
+    }
+    .user-badge:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
+    
     .menu-toggle-btn {
       width: 36px; height: 36px; background: #141416; border: 1px solid var(--panel-border);
       display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; cursor: pointer;
@@ -111,6 +108,30 @@
     .nav-menu-list { list-style: none; margin-top: 30px; display: flex; flex-direction: column; gap: 16px; }
     .nav-menu-item a { color: var(--text-main); text-decoration: none; font-size: 0.95rem; letter-spacing: 1px; display: block; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
 
+    /* 賽博購物車側邊抽屜 */
+    .cart-drawer {
+      position: fixed; top: 0; right: -360px; width: 100%; max-width: 350px; height: 100dvh;
+      background: rgba(12, 12, 16, 0.98); border-left: 1px solid var(--accent-cyan); box-shadow: -10px 0 30px rgba(0,0,0,0.8);
+      z-index: 1100; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cart-drawer.open { right: 0; }
+    .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
+    .cart-items-box { flex: 1; overflow-y: auto; padding: 16px 0; display: flex; flex-direction: column; gap: 12px; }
+    .cart-item-card {
+      background: #000; border: 1px solid var(--panel-border); padding: 12px; border-radius: 4px;
+      display: flex; gap: 10px; align-items: center; position: relative;
+    }
+    .cart-item-thumb { width: 55px; height: 55px; background: #141416; object-fit: cover; border-radius: 3px; cursor: pointer; flex-shrink: 0; }
+    .cart-item-info { flex: 1; min-width: 0; }
+    .cart-item-title { font-size: 0.85rem; font-weight: bold; color: #fff; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cart-item-spec { font-size: 0.7rem; color: var(--text-muted); margin: 2px 0; }
+    .cart-item-price { font-size: 0.8rem; color: var(--accent-cyan); font-weight: bold; }
+    .cart-qty-ctrl { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+    .qty-btn { width: 22px; height: 22px; background: #141416; border: 1px solid var(--panel-border); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+    .qty-num { font-size: 0.8rem; min-width: 18px; text-align: center; }
+    .cart-item-del { position: absolute; top: 8px; right: 8px; color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.9rem; }
+    .cart-item-del:hover { color: var(--danger-red); }
+
     /* 賽博會員認證彈窗 */
     .auth-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
@@ -118,7 +139,6 @@
       z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px;
     }
     .auth-modal.active { display: flex; }
-
     .auth-box {
       width: 100%; max-width: 380px; background: rgba(15, 15, 18, 0.95);
       border: 1px solid var(--accent-cyan); box-shadow: 0 0 30px var(--glow-cyan);
@@ -184,54 +204,26 @@
     .team-role { font-size: 0.7rem; color: var(--accent-cyan); letter-spacing: 1px; }
     .card-shushi .team-role { color: var(--accent-purple); }
 
-    /* 結帳視圖與賽博動畫 */
+    /* 商品詳情與配置頁 */
     .detail-container { width: 100%; max-width: 800px; margin: 0 auto; padding: 24px 16px 60px; }
-    
-    /* 商品詳情大圖展示區 */
     .checkout-hero-img-box {
-      width: 100%; 
-      height: 360px; 
-      background: #000; 
-      border: 1px solid var(--panel-border);
-      position: relative; 
-      overflow: hidden; 
-      border-radius: 4px; 
-      margin-bottom: 20px;
-      display: flex; 
-      align-items: center; 
-      justify-content: center;
-      animation: heroScanIn 0.6s ease forwards;
+      width: 100%; height: 360px; background: #000; border: 1px solid var(--panel-border);
+      position: relative; overflow: hidden; border-radius: 4px; margin-bottom: 20px;
+      display: flex; align-items: center; justify-content: center; animation: heroScanIn 0.6s ease forwards;
     }
     @keyframes heroScanIn {
       0% { opacity: 0; transform: scale(0.96); filter: brightness(2) contrast(1.5); }
       100% { opacity: 1; transform: scale(1); filter: brightness(1) contrast(1); }
     }
-    .checkout-hero-img-box img { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: cover; 
-      object-position: center 65%;
-      display: block; 
-    }
-    
-    /* HUD 掃描光效 */
+    .checkout-hero-img-box img { width: 100%; height: 100%; object-fit: cover; object-position: center 65%; display: block; }
     .checkout-hero-img-box::before {
       content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 136, 0.18) 50%, transparent 100%);
-      transform: translateY(-100%);
-      animation: scanLaser 2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards;
-      pointer-events: none; z-index: 3;
+      transform: translateY(-100%); animation: scanLaser 2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; pointer-events: none; z-index: 3;
     }
-    @keyframes scanLaser {
-      0% { transform: translateY(-100%); }
-      100% { transform: translateY(100%); }
-    }
+    @keyframes scanLaser { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
 
-    /* 瞄準括角裝飾 */
-    .hud-corner {
-      position: absolute; width: 14px; height: 14px; border: 2px solid var(--accent-cyan);
-      pointer-events: none; z-index: 4;
-    }
+    .hud-corner { position: absolute; width: 14px; height: 14px; border: 2px solid var(--accent-cyan); pointer-events: none; z-index: 4; }
     .hud-tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
     .hud-tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
     .hud-bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
@@ -242,13 +234,7 @@
       padding: 20px; border-radius: 4px; margin-bottom: 20px;
       animation: cardSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    .form-box:nth-child(2) { animation-delay: 0.08s; }
-    .form-box:nth-child(3) { animation-delay: 0.16s; }
-    .form-box:nth-child(4) { animation-delay: 0.24s; }
-    @keyframes cardSlideUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes cardSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
     .form-title { font-size: 1rem; color: var(--accent-cyan); margin-bottom: 14px; border-bottom: 1px solid var(--panel-border); padding-bottom: 6px; }
     .form-group { margin-bottom: 14px; }
@@ -258,8 +244,11 @@
     .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
     .radio-card { border: 1px solid var(--panel-border); padding: 12px 8px; text-align: center; cursor: pointer; font-size: 0.85rem; background: #0c0c0e; transition: all 0.2s; }
     .radio-card.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,255,136,0.08); font-weight: bold; }
+    
     .btn-submit { width: 100%; padding: 16px; background: var(--accent-cyan); color: #000; font-size: 1rem; font-weight: bold; border: none; cursor: pointer; letter-spacing: 2px; transition: all 0.2s; }
     .btn-submit:hover { background: #fff; }
+    .btn-secondary { width: 100%; padding: 14px; background: #141416; color: var(--accent-cyan); border: 1px solid var(--panel-border); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
+    .btn-secondary:hover { border-color: var(--accent-cyan); }
 
     /* 成功下單憑證 */
     .success-card { background: var(--card-bg); border: 1px solid var(--accent-cyan); box-shadow: 0 0 35px var(--glow-cyan); padding: 32px 20px; border-radius: 4px; text-align: center; }
@@ -303,6 +292,34 @@
     <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
   </div>
 
+  <!-- 賽博購物車側邊抽屜 (Arsenal Cart Drawer) -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div>
+      <div class="cart-header">
+        <div>
+          <span style="font-size:0.9rem; font-weight:bold; color:var(--accent-cyan);">[ ARSENAL CART ]</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">待調用裝備庫存</span>
+        </div>
+        <button onclick="toggleCart(false)" style="background:transparent; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      
+      <!-- 滿額免運進度條 -->
+      <div id="cartFreeShippingBanner" style="padding:10px 0; border-bottom:1px dashed var(--panel-border); font-size:0.75rem;"></div>
+    </div>
+
+    <!-- 購物車清單 -->
+    <div class="cart-items-box" id="cartItemsContainer"></div>
+
+    <!-- 底部小計與結帳按鈕 -->
+    <div style="border-top:1px solid var(--panel-border); padding-top:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-size:0.85rem; color:var(--text-muted);">裝備小計 (未含運)：</span>
+        <span id="cartDrawerSubtotal" style="font-size:1.1rem; color:var(--accent-cyan); font-weight:bold;">NT$ 0</span>
+      </div>
+      <button class="btn-submit" onclick="proceedToCheckoutFromCart()">進入終端簽署結帳 (CHECKOUT)</button>
+    </div>
+  </div>
+
   <!-- 賽博會員認證彈窗 -->
   <div class="auth-modal" id="authModal">
     <div class="auth-box">
@@ -339,15 +356,11 @@
   <!-- 頂部導覽列 -->
   <header>
     <div class="brand-container" onclick="showLandingView()">
-      <!-- 貓眼圖騰 -->
       <svg class="header-eye-icon" viewBox="0 0 100 100">
         <polygon points="50,5 92,50 50,95 8,50" fill="none" stroke="var(--accent-cyan)" stroke-width="7" />
         <path d="M50,25 Q60,50 50,75 Q40,50 50,25 Z" fill="var(--accent-cyan)" />
       </svg>
-
       <span style="font-size: 0.95rem; font-weight: bold; letter-spacing: 1px;">欲室｜共犯</span>
-
-      <!-- 導覽列幾何標準字 -->
       <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 95px; height: auto;">
         <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
         <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
@@ -362,7 +375,12 @@
     </div>
 
     <div class="header-controls">
-      <div class="user-badge" id="memberBtn" onclick="toggleAuthModal(true)">[ 身份認證：訪客 ]</div>
+      <!-- 購物車快捷鍵 -->
+      <div class="cart-btn-header" onclick="toggleCart(true)">
+        <span>🛒 裝備庫</span>
+        <span class="cart-count-badge" id="headerCartCount">0</span>
+      </div>
+      <div class="user-badge" id="memberBtn" onclick="toggleAuthModal(true)">[ 訪客 ]</div>
       <div class="menu-toggle-btn" onclick="toggleNav(true)">
         <div class="menu-line"></div>
         <div class="menu-line"></div>
@@ -372,7 +390,7 @@
   </header>
 
   <!-- 側邊選單 -->
-  <div class="nav-overlay" id="navOverlay" onclick="toggleNav(false)"></div>
+  <div class="nav-overlay" id="navOverlay" onclick="toggleNav(false); toggleCart(false);"></div>
   <div class="side-nav" id="sideNav">
     <div>
       <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--panel-border); padding-bottom:10px;">
@@ -457,7 +475,7 @@
             <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:16px;">
               SLS 尼龍裝甲外殼結合 TPU 85A 柔性肉球矩陣。兼顧前喉結避空人體工學與極致反差互動。
             </p>
-            <button class="btn-submit" onclick="goToCheckout('cat-choker')">簽署認罪協議・立即預購 (NT$ 1,590)</button>
+            <button class="btn-submit" onclick="openProductDetail('cat-choker')">檢視裝備配置・調用 (NT$ 1,590)</button>
           </div>
         </div>
       </section>
@@ -555,23 +573,52 @@
     </div>
   </div>
 
-  <!-- 結帳視圖 -->
-  <div id="view-checkout" class="view-section">
+  <!-- 商品詳細配置頁 (Product Config View) -->
+  <div id="view-product-detail" class="view-section">
     <div class="detail-container">
-      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem; transition: all 0.2s;">← 返回展廳</button>
+      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
       
       <!-- 頂部裝備大圖預覽區 -->
-      <div class="checkout-hero-img-box" id="checkoutHeroBox">
+      <div class="checkout-hero-img-box" id="detailHeroBox">
         <div class="hud-corner hud-tl"></div>
         <div class="hud-corner hud-tr"></div>
         <div class="hud-corner hud-bl"></div>
         <div class="hud-corner hud-br"></div>
-        <div id="checkoutHeroImgArea" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"></div>
+        <div id="detailHeroImgArea" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"></div>
       </div>
 
       <div class="form-box">
-        <div class="form-title">01 // 調用裝備明細</div>
-        <div id="orderSummary" style="font-size: 0.9rem; margin-bottom: 8px;"></div>
+        <div class="form-title" id="detailProductTitle">裝備檔案配置</div>
+        <div id="detailProductDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;"></div>
+        
+        <!-- 動態規格選項 -->
+        <div id="detailDynamicOptions"></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:14px; margin-top:14px;">
+          <div style="font-size:0.85rem; color:var(--text-muted);">調用單價：</div>
+          <div id="detailPriceDisplay" style="color:var(--accent-cyan); font-weight:bold; font-size:1.3rem;">NT$ 0</div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:18px;">
+          <button class="btn-secondary" onclick="addCurrentProductToCart()">＋ 加入裝備庫 (CART)</button>
+          <button class="btn-submit" onclick="buyNowFromDetail()">立即調用結帳 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 終端結帳視圖 (Checkout View) -->
+  <div id="view-checkout" class="view-section">
+    <div class="detail-container">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; font-size:0.8rem;">← 返回展廳</button>
+        <button onclick="toggleCart(true)" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; cursor:pointer; font-size:0.8rem;">檢視購物車清單 ↗</button>
+      </div>
+
+      <div class="form-box">
+        <div class="form-title">01 // 調用裝備清單明細</div>
+        <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
+        <div id="checkoutFinancialSummary"></div>
       </div>
 
       <form id="checkoutForm">
@@ -592,7 +639,7 @@
           </div>
         </div>
 
-        <!-- 物流方式 (自動聯動運費) -->
+        <!-- 物流方式 -->
         <div class="form-box">
           <div class="form-title">03 // 物流交付途徑</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
@@ -630,7 +677,6 @@
         <p style="color:var(--text-muted); font-size:0.85rem;">裝備調用指令已注入終端，檔案已加密封存。</p>
 
         <div class="success-file-box" id="successDetailArea"></div>
-
         <div id="payInstructionArea"></div>
 
         <div style="display:flex; gap:10px; margin-top:24px;">
@@ -661,8 +707,9 @@
     // 【系統串接設定】
     // ==========================================
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
+    const FREE_SHIPPING_THRESHOLD = 2500;
 
-    // 開機動畫計時
+    // 開機動畫
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
       clearTimeout(introTimer);
@@ -678,7 +725,9 @@
         overlay.classList.add('active');
       } else {
         sideNav.classList.remove('open');
-        overlay.classList.remove('active');
+        if(!document.getElementById('cartDrawer').classList.contains('open')) {
+          overlay.classList.remove('active');
+        }
       }
     }
 
@@ -739,8 +788,9 @@
         if(phoneInput) phoneInput.value = memberProfile.phone || '';
         if(locInput && !locInput.value) locInput.value = memberProfile.lastLocation || '';
       } else {
-        btn.textContent = `[ 身份認證：訪客 ]`;
-        btn.style.borderColor = 'var(--accent-cyan)';
+        btn.textContent = `[ 訪客 ]`;
+        btn.style.borderColor = 'var(--panel-border)';
+        btn.style.color = 'var(--text-muted)';
       }
     }
 
@@ -780,7 +830,7 @@
     }
 
     // ==========================================
-    // 裝備目錄 (項圈已調整為 NT$ 1,590)
+    // 裝備目錄資料庫
     // ==========================================
     const products = [
       { 
@@ -838,24 +888,112 @@
       }
     ];
 
-    let selectedProduct = products[0];
-    let currentShippingType = '711'; // '711', 'family', 'home'
-    let currentShippingName = '7-11 超商取貨';
-    let currentPayment = '超商取貨付款';
-    let currentRopeLength = '8 米 (8M)';
-    let currentRopePrice = 600;
+    // ==========================================
+    // 購物車系統 (Arsenal Cart Engine)
+    // ==========================================
+    let cart = JSON.parse(localStorage.getItem('guilty_cart')) || [];
 
-    // 運費與免運門檻計算函式
-    const FREE_SHIPPING_THRESHOLD = 2500;
-    function calculateShippingFee(subtotal, shippingType) {
-      if (subtotal >= FREE_SHIPPING_THRESHOLD) {
-        return 0;
-      }
-      if (shippingType === 'home') {
-        return 120;
-      }
-      return 60; // 711 與 全家 為 60
+    function saveCart() {
+      localStorage.setItem('guilty_cart', JSON.stringify(cart));
+      updateCartUI();
     }
+
+    function toggleCart(isOpen) {
+      const drawer = document.getElementById('cartDrawer');
+      const overlay = document.getElementById('navOverlay');
+      if(isOpen) {
+        drawer.classList.add('open');
+        overlay.classList.add('active');
+        renderCartDrawer();
+      } else {
+        drawer.classList.remove('open');
+        if(!document.getElementById('sideNav').classList.contains('open')) {
+          overlay.classList.remove('active');
+        }
+      }
+    }
+
+    function getCartTotalCount() {
+      return cart.reduce((sum, item) => sum + item.qty, 0);
+    }
+
+    function getCartSubtotal() {
+      return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    }
+
+    function updateCartUI() {
+      const count = getCartTotalCount();
+      document.getElementById('headerCartCount').textContent = count;
+      renderCartDrawer();
+    }
+
+    function renderCartDrawer() {
+      const container = document.getElementById('cartItemsContainer');
+      const subtotalEl = document.getElementById('cartDrawerSubtotal');
+      const freeShippingBanner = document.getElementById('cartFreeShippingBanner');
+      const subtotal = getCartSubtotal();
+
+      subtotalEl.textContent = `NT$ ${subtotal.toLocaleString()}`;
+
+      // 免運即時進度提示
+      if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+        freeShippingBanner.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">⚡ 已解鎖全館滿額免運特權！</span>`;
+      } else {
+        const diff = FREE_SHIPPING_THRESHOLD - subtotal;
+        freeShippingBanner.innerHTML = `<span style="color:var(--text-muted);">差 <strong style="color:var(--accent-cyan);">NT$ ${diff.toLocaleString()}</strong> 即可享有免運交付</span>`;
+      }
+
+      if (cart.length === 0) {
+        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px 0; font-size:0.85rem;">[ 裝備庫目前為空 ]<br>點擊裝備目錄即可添加調用</div>`;
+        return;
+      }
+
+      container.innerHTML = cart.map((item, index) => {
+        const thumbSrc = item.img && item.img.trim() !== '' ? item.img : '';
+        const thumbHtml = thumbSrc 
+          ? `<img src="${thumbSrc}" class="cart-item-thumb" onclick="openProductDetail('${item.productId}')" alt="${item.title}" />`
+          : `<div class="cart-item-thumb" onclick="openProductDetail('${item.productId}')" style="display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-muted);">SPEC</div>`;
+
+        return `
+          <div class="cart-item-card">
+            ${thumbHtml}
+            <div class="cart-item-info">
+              <div class="cart-item-title" onclick="openProductDetail('${item.productId}')">${item.title}</div>
+              <div class="cart-item-spec">${item.specText || '標準規格'}</div>
+              <div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div>
+              <div class="cart-qty-ctrl">
+                <button class="qty-btn" onclick="changeCartItemQty(${index}, -1)">-</button>
+                <span class="qty-num">${item.qty}</span>
+                <button class="qty-btn" onclick="changeCartItemQty(${index}, 1)">+</button>
+              </div>
+            </div>
+            <button class="cart-item-del" onclick="removeCartItem(${index})" title="移除裝備">✕</button>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function changeCartItemQty(index, delta) {
+      if (cart[index]) {
+        cart[index].qty += delta;
+        if (cart[index].qty <= 0) {
+          cart.splice(index, 1);
+        }
+        saveCart();
+      }
+    }
+
+    function removeCartItem(index) {
+      cart.splice(index, 1);
+      saveCart();
+    }
+
+    // ==========================================
+    // 商品展示與配置視圖
+    // ==========================================
+    let currentDetailProduct = null;
+    let currentDetailRopeLength = '8 米 (8M)';
+    let currentDetailRopePrice = 600;
 
     function renderProductCards(filter = 'all') {
       const grid = document.getElementById('productGrid');
@@ -864,7 +1002,7 @@
       filtered.forEach(p => {
         const card = document.createElement('div');
         card.className = `product-card`;
-        card.onclick = () => goToCheckout(p.id);
+        card.onclick = () => openProductDetail(p.id);
 
         let priceText = `NT$ ${p.price.toLocaleString()}`;
         if(p.isCustomRope) {
@@ -885,7 +1023,7 @@
             <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${p.desc}</div>
             <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px;">
               <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">${priceText}</span>
-              <span style="font-size: 0.75rem; color: var(--text-muted);">調用預購 →</span>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">檢視裝備配置 →</span>
             </div>
           </div>
         `;
@@ -899,90 +1037,192 @@
       renderProductCards(brand);
     }
 
-    function updateRopePrice(lengthSelect) {
-      const selectedOption = selectedProduct.lengths.find(l => l.label === lengthSelect.value);
-      if (selectedOption) {
-        currentRopeLength = selectedOption.label;
-        currentRopePrice = selectedOption.price;
-        renderCheckoutSummary();
+    function openProductDetail(productId) {
+      toggleCart(false);
+      currentDetailProduct = products.find(p => p.id === productId);
+      if(!currentDetailProduct) return;
+
+      currentDetailRopeLength = '8 米 (8M)';
+      currentDetailRopePrice = 600;
+
+      // 渲染大圖
+      const heroArea = document.getElementById('detailHeroImgArea');
+      if (currentDetailProduct.img && currentDetailProduct.img.trim() !== '') {
+        heroArea.innerHTML = `<img src="${currentDetailProduct.img}" alt="${currentDetailProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${currentDetailProduct.title} 3D 義體檔案庫 ]</span>';" />`;
+      } else {
+        heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${currentDetailProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
       }
-    }
 
-    function renderCheckoutSummary() {
-      let customOptionsHtml = '';
-      let subtotal = selectedProduct.price;
+      // 重置掃描光效
+      const heroBox = document.getElementById('detailHeroBox');
+      heroBox.style.animation = 'none';
+      heroBox.offsetHeight;
+      heroBox.style.animation = 'heroScanIn 0.6s ease forwards';
 
-      if (selectedProduct.isCustomRope) {
-        subtotal = currentRopePrice;
-        customOptionsHtml = `
-          <div style="margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+      document.getElementById('detailProductTitle').textContent = currentDetailProduct.title;
+      document.getElementById('detailProductDesc').textContent = currentDetailProduct.desc;
+
+      const dynamicArea = document.getElementById('detailDynamicOptions');
+      if(currentDetailProduct.isCustomRope) {
+        dynamicArea.innerHTML = `
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
             <div>
               <label style="font-size:0.75rem; color:var(--accent-purple);">長度規格*</label>
-              <select id="selectedRopeLength" onchange="updateRopePrice(this)" style="border-color:var(--accent-purple);">
-                ${selectedProduct.lengths.map(l => `<option value="${l.label}" ${l.label === currentRopeLength ? 'selected' : ''}>${l.label} - NT$ ${l.price}</option>`).join('')}
+              <select id="detailRopeLengthSelect" onchange="onDetailRopeLengthChange(this)" style="border-color:var(--accent-purple);">
+                ${currentDetailProduct.lengths.map(l => `<option value="${l.label}">${l.label} - NT$ ${l.price}</option>`).join('')}
               </select>
             </div>
             <div>
               <label style="font-size:0.75rem; color:var(--accent-purple);">款式顏色*</label>
-              <select id="selectedRopeVariant" style="border-color:var(--accent-purple);">
-                ${selectedProduct.variants.map(v => `<option value="${v}">${v}</option>`).join('')}
+              <select id="detailRopeVariantSelect" style="border-color:var(--accent-purple);">
+                ${currentDetailProduct.variants.map(v => `<option value="${v}">${v}</option>`).join('')}
               </select>
             </div>
           </div>
         `;
+        document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailRopePrice.toLocaleString()}`;
+      } else {
+        dynamicArea.innerHTML = ``;
+        document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
       }
 
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-product-detail').classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function onDetailRopeLengthChange(selectEl) {
+      const selectedOption = currentDetailProduct.lengths.find(l => l.label === selectEl.value);
+      if(selectedOption) {
+        currentDetailRopeLength = selectedOption.label;
+        currentDetailRopePrice = selectedOption.price;
+        document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailRopePrice.toLocaleString()}`;
+      }
+    }
+
+    function getCurrentConfiguredCartItem() {
+      if(!currentDetailProduct) return null;
+
+      let specText = '標準規格';
+      let itemPrice = currentDetailProduct.price;
+
+      if(currentDetailProduct.isCustomRope) {
+        const lengthVal = document.getElementById('detailRopeLengthSelect').value;
+        const variantVal = document.getElementById('detailRopeVariantSelect').value;
+        specText = `${variantVal} // ${lengthVal}`;
+        itemPrice = currentDetailRopePrice;
+      }
+
+      const cartKey = `${currentDetailProduct.id}_${specText}`;
+
+      return {
+        key: cartKey,
+        productId: currentDetailProduct.id,
+        title: currentDetailProduct.title,
+        specText: specText,
+        price: itemPrice,
+        img: currentDetailProduct.img,
+        qty: 1
+      };
+    }
+
+    function addCurrentProductToCart() {
+      const item = getCurrentConfiguredCartItem();
+      if(!item) return;
+
+      const existingIndex = cart.findIndex(c => c.key === item.key);
+      if(existingIndex > -1) {
+        cart[existingIndex].qty += 1;
+      } else {
+        cart.push(item);
+      }
+
+      saveCart();
+      toggleCart(true);
+    }
+
+    function buyNowFromDetail() {
+      const item = getCurrentConfiguredCartItem();
+      if(!item) return;
+
+      const existingIndex = cart.findIndex(c => c.key === item.key);
+      if(existingIndex > -1) {
+        cart[existingIndex].qty += 1;
+      } else {
+        cart.push(item);
+      }
+
+      saveCart();
+      proceedToCheckoutFromCart();
+    }
+
+    // ==========================================
+    // 結帳系統 (Checkout Engine)
+    // ==========================================
+    let currentShippingType = '711';
+    let currentShippingName = '7-11 超商取貨';
+    let currentPayment = '超商取貨付款';
+
+    function calculateShippingFee(subtotal, shippingType) {
+      if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+        return 0;
+      }
+      return shippingType === 'home' ? 120 : 60;
+    }
+
+    function proceedToCheckoutFromCart() {
+      if(cart.length === 0) {
+        alert('裝備庫為空，請先選擇裝備！');
+        return;
+      }
+      toggleCart(false);
+      renderCheckoutView();
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-checkout').classList.add('active');
+      updateMemberUI();
+      window.scrollTo(0, 0);
+    }
+
+    function renderCheckoutView() {
+      const itemsListEl = document.getElementById('checkoutOrderItemsList');
+      const summaryEl = document.getElementById('checkoutFinancialSummary');
+      const subtotal = getCartSubtotal();
       const shippingFee = calculateShippingFee(subtotal, currentShippingType);
-      const finalTotal = subtotal + shippingFee;
+      const totalAmount = subtotal + shippingFee;
+
+      // 渲染裝備品項條目
+      itemsListEl.innerHTML = cart.map(item => `
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--panel-border); padding:6px 0; font-size:0.85rem;">
+          <div>
+            <strong>${item.title}</strong>
+            <span style="font-size:0.75rem; color:var(--text-muted); display:block;">規格：${item.specText} × ${item.qty}</span>
+          </div>
+          <div style="color:var(--accent-cyan); font-weight:bold;">NT$ ${(item.price * item.qty).toLocaleString()}</div>
+        </div>
+      `).join('');
 
       let shippingStatusHtml = '';
       if (subtotal >= FREE_SHIPPING_THRESHOLD) {
         shippingStatusHtml = `<span style="color:var(--accent-cyan); font-weight:bold;">已達滿額免運 (NT$ 0)</span>`;
       } else {
         const diff = FREE_SHIPPING_THRESHOLD - subtotal;
-        shippingStatusHtml = `<span>NT$ ${shippingFee} <small style="color:var(--text-muted);">(再調用 NT$ ${diff.toLocaleString()} 即享免運)</small></span>`;
+        shippingStatusHtml = `<span>NT$ ${shippingFee} <small style="color:var(--text-muted);">(差 NT$ ${diff.toLocaleString()} 免運)</small></span>`;
       }
 
-      document.getElementById('orderSummary').innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
-          <div><strong>裝備品項：</strong>${selectedProduct.title}</div>
-          <div style="color:var(--text-main);">小計：NT$ ${subtotal.toLocaleString()}</div>
+      summaryEl.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:0.85rem;">
+          <span style="color:var(--text-muted);">裝備小計：</span>
+          <span>NT$ ${subtotal.toLocaleString()}</span>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; color:var(--text-muted); margin-bottom: 8px;">
-          <div><strong>交付運費：</strong>${currentShippingName}</div>
-          <div>${shippingStatusHtml}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; margin-top:4px;">
+          <span style="color:var(--text-muted);">交付運費 (${currentShippingName})：</span>
+          <span>${shippingStatusHtml}</span>
         </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:8px;">
-          <div style="font-weight:bold; color:var(--text-main);">結算總額：</div>
-          <div id="checkoutPriceDisplay" style="color:var(--accent-cyan); font-weight:bold; font-size:1.2rem;">NT$ ${finalTotal.toLocaleString()}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--panel-border); padding-top:10px; margin-top:10px;">
+          <span style="font-weight:bold; color:#fff;">結算總金額：</span>
+          <span style="color:var(--accent-cyan); font-weight:bold; font-size:1.25rem;">NT$ ${totalAmount.toLocaleString()}</span>
         </div>
-        ${customOptionsHtml}
       `;
-    }
-
-    function goToCheckout(productId) {
-      selectedProduct = products.find(p => p.id === productId);
-      currentRopeLength = '8 米 (8M)';
-      currentRopePrice = 600;
-
-      const heroArea = document.getElementById('checkoutHeroImgArea');
-      if (selectedProduct.img && selectedProduct.img.trim() !== '') {
-        heroArea.innerHTML = `<img src="${selectedProduct.img}" alt="${selectedProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${selectedProduct.title} 3D 義體檔案庫 ]</span>';" />`;
-      } else {
-        heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${selectedProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
-      }
-
-      const heroBox = document.getElementById('checkoutHeroBox');
-      heroBox.style.animation = 'none';
-      heroBox.offsetHeight;
-      heroBox.style.animation = 'heroScanIn 0.6s ease forwards';
-
-      renderCheckoutSummary();
-
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-checkout').classList.add('active');
-      updateMemberUI();
-      window.scrollTo(0, 0);
     }
 
     function selectShipping(type, el) {
@@ -1002,8 +1242,7 @@
         label.textContent = '收件詳細地址*';
       }
 
-      // 重新計算運費與總額
-      renderCheckoutSummary();
+      renderCheckoutView();
     }
 
     function selectPayment(type, el) {
@@ -1041,32 +1280,30 @@
     }
 
     // ==========================================
-    // 結帳下單（含運費計算並寫入 Google 試算表）
+    // 結帳下單（整併多品項至 Google 試算表）
     // ==========================================
     document.getElementById('checkoutForm').addEventListener('submit', function(e) {
       e.preventDefault();
       
-      const phoneRaw = document.getElementById('custPhone').value.trim();
-
-      let finalTitle = selectedProduct.title;
-      let subtotal = selectedProduct.price;
-
-      if (selectedProduct.isCustomRope) {
-        const lengthVal = document.getElementById('selectedRopeLength').value;
-        const variantVal = document.getElementById('selectedRopeVariant').value;
-        finalTitle = `${selectedProduct.title} [${variantVal} // ${lengthVal}]`;
-        subtotal = currentRopePrice;
+      if(cart.length === 0) {
+        alert('裝備庫為空，無法簽署協議！');
+        return;
       }
 
+      const phoneRaw = document.getElementById('custPhone').value.trim();
+      const subtotal = getCartSubtotal();
       const shippingFee = calculateShippingFee(subtotal, currentShippingType);
       const totalAmount = subtotal + shippingFee;
 
+      // 整併多商品為字串
+      const productsSummaryText = cart.map(item => `${item.title} (${item.specText}) × ${item.qty}`).join(' + ');
+
       const orderData = {
         orderId: 'CASE-' + Date.now().toString().slice(-6),
-        product: finalTitle,
+        product: productsSummaryText,
         subtotal: subtotal,
         shippingFee: shippingFee,
-        price: totalAmount, // 最終含運結算金額
+        price: totalAmount,
         name: document.getElementById('custName').value.trim(),
         phone: phoneRaw,
         engraving: document.getElementById('custEngraving').value.trim() || '無',
@@ -1078,7 +1315,7 @@
         createdAt: new Date().toLocaleString('zh-TW', { hour12: false })
       };
 
-      // 1. 更新會員
+      // 1. 更新特工資訊
       memberProfile = {
         name: orderData.name,
         phone: orderData.phone,
@@ -1087,12 +1324,12 @@
       };
       localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
 
-      // 2. 本地備份
+      // 2. 本地紀錄庫備份
       let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
 
-      // 3. 發送至 Google 試算表
+      // 3. 送出至 Google 試算表
       fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -1104,14 +1341,14 @@
         console.warn('[GUILTY LOG] 試算表傳送提示:', err);
       });
 
-      // 4. 渲染成功明細
+      // 4. 渲染成功憑證
       const shippingFeeDisplay = orderData.shippingFee === 0 
         ? '<span style="color:var(--accent-cyan);">免運費 (NT$ 0)</span>' 
         : `NT$ ${orderData.shippingFee}`;
 
       document.getElementById('successDetailArea').innerHTML = `
         <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
-        <div><strong>調用裝備：</strong>${orderData.product}</div>
+        <div style="margin:4px 0;"><strong>調用裝備清單：</strong><br><span style="color:#fff;">${orderData.product}</span></div>
         <div><strong>商品小計：</strong>NT$ ${Number(orderData.subtotal).toLocaleString()}</div>
         <div><strong>物流運費：</strong>${shippingFeeDisplay}</div>
         <div><strong>結算總金額：</strong><strong style="color:var(--accent-cyan); font-size:1.05rem;">NT$ ${Number(orderData.price).toLocaleString()}</strong></div>
@@ -1121,7 +1358,7 @@
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
 
-      // 5. 銀行 ATM 匯款指引
+      // 5. 銀行 ATM 指引
       const payArea = document.getElementById('payInstructionArea');
       if(orderData.payment === '銀行 ATM 匯款') {
         payArea.innerHTML = `
@@ -1152,6 +1389,10 @@
         payArea.innerHTML = ``;
       }
 
+      // 下單後清空購物車
+      cart = [];
+      saveCart();
+
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-success').classList.add('active');
       window.scrollTo(0, 0);
@@ -1164,6 +1405,7 @@
     // ==========================================
     function openOrderHistory() {
       toggleNav(false);
+      toggleCart(false);
 
       if(!memberProfile || !memberProfile.phone) {
         alert('請先進行【身份認證 / 登入】，系統將調出專屬於您的調用檔案。');
@@ -1177,7 +1419,7 @@
 
       const renderOrders = (list) => {
         if(!list || list.length === 0) {
-          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name}（電話：${memberProfile.phone}）尚無任何調用案件。<br><span style="font-size:0.75rem; color:var(--text-muted);">（若剛在試算表手動新增，請確認電話號碼是否完全一致）</span></div>`;
+          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name}（電話：${memberProfile.phone}）尚無任何調用案件。</div>`;
         } else {
           historyArea.innerHTML = list.map(o => `
             <div class="history-item">
@@ -1229,6 +1471,7 @@
 
     renderProductCards();
     updateMemberUI();
+    updateCartUI();
   </script>
 </body>
 </html>
