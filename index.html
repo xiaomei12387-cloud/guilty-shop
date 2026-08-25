@@ -185,10 +185,10 @@
     .matrix-title { font-size: 1.05rem; font-weight: bold; margin: 6px 0; color: #fff; }
     .matrix-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
 
-    /* 藍圖規格 Blueprint Card */
+    /* 藍圖規格 Blueprint Card (商品頁專用) */
     .blueprint-card {
-      background: #000; border: 1px solid var(--accent-cyan); padding: 20px;
-      margin: 20px 0; position: relative; font-family: 'Consolas', monospace;
+      background: #000; border: 1px solid var(--accent-cyan); padding: 18px 16px;
+      margin: 16px 0; position: relative; font-family: 'Consolas', monospace;
     }
     .blueprint-tag {
       position: absolute; top: -10px; right: 12px; background: #000;
@@ -197,11 +197,14 @@
     }
     .spec-row {
       display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border);
-      padding: 8px 0; font-size: 0.85rem;
+      padding: 8px 0; font-size: 0.82rem;
     }
     .spec-row:last-child { border-bottom: none; }
     .spec-label { color: var(--text-muted); }
     .spec-val { color: #fff; font-weight: bold; text-align: right; }
+
+    /* 項圈肉球壓印互動印記框 (商品頁專用) */
+    .stamp-preview { width: 120px; height: 120px; border-radius: 50%; border: 2px dashed var(--panel-border); display: flex; align-items: center; justify-content: center; margin: 12px auto; cursor: pointer; transition: all 0.3s; }
 
     /* FAQ 模組 */
     .faq-item {
@@ -436,11 +439,10 @@
         <li class="nav-menu-item"><a href="#section-hero" onclick="scrollToSection('section-hero')">01 // 首頁 (TOP)</a></li>
         <li class="nav-menu-item"><a href="#section-manifesto" onclick="scrollToSection('section-manifesto')">02 // 世界觀理念 (LORE)</a></li>
         <li class="nav-menu-item"><a href="#section-matrix" onclick="scrollToSection('section-matrix')">03 // 裝備研發矩陣 (MATRIX)</a></li>
-        <li class="nav-menu-item"><a href="#section-blueprint" onclick="scrollToSection('section-blueprint')">04 // 工藝與安全標準 (SPEC)</a></li>
-        <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">05 // 裝備目錄庫 (CATALOG)</a></li>
-        <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">06 // 特工指南 (FAQ)</a></li>
-        <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">07 // 主理核心 (CREW)</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">08 // 個人調用紀錄 (MY DOSSIER)</a></li>
+        <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">04 // 裝備目錄庫 (CATALOG)</a></li>
+        <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">05 // 特工指南 (FAQ)</a></li>
+        <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">06 // 主理核心 (CREW)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">07 // 個人調用紀錄 (MY DOSSIER)</a></li>
       </ul>
     </div>
 
@@ -456,7 +458,7 @@
   <div id="view-landing" class="view-section active">
     <div class="landing-container">
       
-      <!-- 1. Hero (品牌高度拉升) -->
+      <!-- 1. Hero -->
       <section class="hero-fullscreen" id="section-hero">
         <div class="hero-code">[ PROTOCOL // A.D. 2678 HARDWARE ARSENAL ]</div>
         <div style="margin-bottom: 24px;">
@@ -496,7 +498,7 @@
         </div>
       </section>
 
-      <!-- 3. 三大裝備研發矩陣 (三大產品線展示) -->
+      <!-- 3. 三大裝備研發矩陣 (全系列展示) -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-matrix">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // ARSENAL MATRIX ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:6px;">支配・拘束・義體三大研發矩陣</h2>
@@ -510,7 +512,9 @@
             <div class="matrix-desc">
               主理人 18X 參數化建模。工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。
             </div>
-            <div style="margin-top:14px; font-size:0.75rem; color:var(--accent-cyan);">✦ 貓痕拘束項圈 / 義體拘束器</div>
+            <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">
+              ✦ 貓痕拘束項圈 <span style="color:#ff334b; font-size:0.7rem;">[ 09.11 開放預購 ]</span>
+            </div>
           </div>
 
           <!-- 矩陣 2: 束室繩藝 -->
@@ -520,7 +524,9 @@
             <div class="matrix-desc">
               shushi束室工坊監製。經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌、抗拉力強韌。
             </div>
-            <div style="margin-top:14px; font-size:0.75rem; color:var(--accent-purple);">✦ 13 色精煉麻繩 / 原色生繩</div>
+            <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-purple); font-weight:bold;">
+              ✦ 13 色精煉麻繩 / 原色生繩 <span style="color:var(--accent-cyan); font-size:0.7rem;">[ 現貨正常調用 ]</span>
+            </div>
           </div>
 
           <!-- 矩陣 3: 戰術護具 -->
@@ -530,46 +536,18 @@
             <div class="matrix-desc">
               專為高拉力懸吊與重度束縛打造。加厚抗磨緩衝皮革與軍規快拆機構，嚴格貫徹 SSC 安全脫離標準。
             </div>
-            <div style="margin-top:14px; font-size:0.75rem; color:var(--accent-cyan);">✦ 防勒護腕墊 / 安全剪刀</div>
+            <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">
+              ✦ 防勒皮革護腕墊 / 安全剪刀 <span style="color:var(--accent-cyan); font-size:0.7rem;">[ 現貨正常調用 ]</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- 4. 全方位工藝與安全標準規範 (Spec Blueprint) -->
-      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-blueprint">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ENGINEERING STANDARDS ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:16px;">工藝材質與安全防護標準</h2>
-
-        <div class="blueprint-card">
-          <div class="blueprint-tag">GUILTY × SHUSHI // STANDARDS VER 2.0</div>
-          <div class="spec-row">
-            <span class="spec-label">外骨骼參數化製程</span>
-            <span class="spec-val">SLS 尼龍粉末燒結（高剛性・輕量消光・親膚耐磨）</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-label">顯影內襯模組技術</span>
-            <span class="spec-val">TPU 85A 彈性體（避空喉結工學・貓痕顯影 30-60 分鐘）</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-label">束室繩材精工處理</span>
-            <span class="spec-val">特選天然黃麻（13 道工序脫漿・手工油蠟防生澀處理）</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-label">緊急脫離安全機制</span>
-            <span class="spec-val">全系列硬體配置軍規快拆扣具，支援單手緊急安全脫離</span>
-          </div>
-          <div class="spec-row">
-            <span class="spec-label">專屬特工識別銘牌</span>
-            <span class="spec-val">航太級金屬銘牌（客製 10 碼精密光纖雷雕序號）</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- 5. 裝備目錄庫 (Arsenal Catalog) -->
+      <!-- 4. 裝備目錄庫 (Arsenal Catalog) -->
       <section class="section-arsenal" id="section-arsenal">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // ARSENAL CATALOG ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
-          <h2 style="font-size:1.4rem;">全系列裝備目錄</h2>
+          <h2 style="font-size:1.4rem;">全系列裝備目錄庫</h2>
           <span style="font-size:0.8rem; color:var(--accent-cyan); border:1px dashed var(--accent-cyan); padding:2px 8px;">全館滿 NT$ 1,800 免運費</span>
         </div>
 
@@ -582,16 +560,16 @@
         <div class="product-list-grid" id="productGrid"></div>
       </section>
 
-      <!-- 6. 特工指南與 FAQ -->
+      <!-- 5. 特工指南與 FAQ -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-faq">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // AGENT DOSSIER FAQ ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // AGENT DOSSIER FAQ ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
 
         <div class="faq-item">
-          <div class="faq-q">Q1. 項圈脖圍尺寸如何挑選？（S 碼 vs M 碼）</div>
+          <div class="faq-q">Q1. 旗艦項圈尺寸如何挑選？（S 碼 vs M 碼）</div>
           <div class="faq-a">
             請使用軟尺貼合喉結下方一圈測量（勿勒緊）：<br>
-            • <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態（官方 Model 淨脖圍 30cm 完美貼合）。<br>
+            • <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態（官方 Model 淨脖圍 30cm 完美貼合著用）。<br>
             • <strong>M 碼（34 – 38 cm）</strong>：適合標準體態。<br>
             * 若脖圍小於 29cm 或大於 38cm，可在結帳備註「實際淨脖圍」，主理人 18X 將為您微調參數列印。
           </div>
@@ -632,9 +610,9 @@
         </div>
       </section>
 
-      <!-- 7. 主理核心 (Crew) -->
+      <!-- 6. 主理核心 (Crew) -->
       <section class="section-crew" id="section-crew">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 06 // CREW DOSSIER ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
 
         <div class="team-grid">
@@ -676,9 +654,9 @@
         </div>
       </section>
 
-      <!-- 8. 通訊頻寬 -->
+      <!-- 7. 通訊頻寬 -->
       <section style="padding: 40px 0 20px; border-top: 1px solid var(--panel-border); text-align: center;">
-        <div style="font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 8px;">[ 07 // SECURE COMMS ]</div>
+        <div style="font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 8px;">[ 06 // SECURE COMMS ]</div>
         <h2 style="font-size: 1.3rem; margin-bottom: 8px;">特工通訊・官方頻寬</h2>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 24px;">加入特工終端取得第一手裝備更新、排程調用進度與社群互動。</p>
 
@@ -708,7 +686,7 @@
     </div>
   </div>
 
-  <!-- 商品詳細配置頁 (Product Config View) -->
+  <!-- 商品詳細配置頁 (Product Config View - 深度內容整合至此) -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
@@ -726,8 +704,11 @@
         <div class="form-title" id="detailProductTitle">裝備檔案配置</div>
         <div id="detailProductDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;"></div>
         
-        <!-- 動態規格選項 -->
+        <!-- 動態規格選項（尺寸／麻繩長度款式） -->
         <div id="detailDynamicOptions"></div>
+
+        <!-- 項圈專屬深度介紹區（藍圖剖析與肉球模擬壓印） -->
+        <div id="detailChokerSpecificArea"></div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:14px; margin-top:14px;">
           <div style="font-size:0.85rem; color:var(--text-muted);">調用單價：</div>
@@ -736,7 +717,7 @@
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:18px;">
           <button class="btn-secondary" onclick="addCurrentProductToCart()">＋ 加入裝備庫 (CART)</button>
-          <button class="btn-submit" onclick="buyNowFromDetail()">立即簽署協議結帳 →</button>
+          <button class="btn-submit" id="detailCheckoutBtn" onclick="buyNowFromDetail()">立即簽署協議結帳 →</button>
         </div>
       </div>
     </div>
@@ -965,7 +946,7 @@
     }
 
     // ==========================================
-    // 裝備目錄資料庫
+    // 裝備目錄資料庫 (已標註 09.11 預購備註)
     // ==========================================
     const products = [
       { 
@@ -975,9 +956,11 @@
         badgeClass: 'badge-guilty', 
         title: '【貓痕義體拘束項圈】', 
         desc: '消光 SLS 外骨骼裝甲與 TPU 85A 柔性肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
+        note: '🚨 09.11 正式解鎖預購調用 (Batch 01)',
         price: 1690,
         img: '',
         hasSizes: true,
+        isPreorder: true,
         sizes: [
           'S 碼（淨脖圍 29–33 cm，Model 著用）',
           'M 碼（淨脖圍 34–38 cm）'
@@ -991,9 +974,11 @@
         badgeClass: 'badge-shushi', 
         title: '【束室繩教室｜特選精煉麻繩】', 
         desc: '束室精工脫漿、過油打蠟特選麻繩，13 種配色與生繩規格可選，手感溫潤柔韌。', 
+        note: '⚡ 現貨正常調用發貨',
         price: 600,
         img: './images/image_rope.jpg',
         isCustomRope: true,
+        isPreorder: false,
         lengths: [
           { label: '8 米 (8M)', price: 600 },
           { label: '10 米 (10M)', price: 700 }
@@ -1022,9 +1007,11 @@
         badgeClass: 'badge-shushi', 
         title: '【束室繩教室｜防勒皮革護腕墊】', 
         desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。', 
+        note: '⚡ 現貨正常調用發貨',
         price: 1280,
         img: '',
-        isCustomRope: false
+        isCustomRope: false,
+        isPreorder: false
       }
     ];
 
@@ -1152,6 +1139,10 @@
           ? `<img src="${p.img}" alt="${p.title}" onerror="this.parentElement.innerHTML='[ ${p.title} 預覽圖 ]';" />`
           : `[ ${p.title} 預覽圖 ]`;
 
+        const statusNoteHtml = p.isPreorder 
+          ? `<div style="font-size:0.7rem; color:#ff334b; margin-top:4px; font-weight:bold;">${p.note}</div>`
+          : `<div style="font-size:0.7rem; color:var(--accent-cyan); margin-top:4px;">${p.note}</div>`;
+
         card.innerHTML = `
           <div class="card-thumb">
             <span class="badge ${p.badgeClass}">${p.brandName}</span>
@@ -1159,8 +1150,9 @@
           </div>
           <div class="card-body">
             <div style="font-size: 0.95rem; margin-bottom: 4px; font-weight: bold;">${p.title}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">${p.desc}</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">${p.desc}</div>
+            ${statusNoteHtml}
+            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px; margin-top:8px;">
               <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">${priceText}</span>
               <span style="font-size: 0.75rem; color: var(--text-muted);">檢視裝備配置 →</span>
             </div>
@@ -1184,6 +1176,7 @@
       currentDetailRopeLength = '8 米 (8M)';
       currentDetailRopePrice = 600;
 
+      // 渲染大圖
       const heroArea = document.getElementById('detailHeroImgArea');
       if (currentDetailProduct.img && currentDetailProduct.img.trim() !== '') {
         heroArea.innerHTML = `<img src="${currentDetailProduct.img}" alt="${currentDetailProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${currentDetailProduct.title} 3D 義體檔案庫 ]</span>';" />`;
@@ -1191,17 +1184,26 @@
         heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${currentDetailProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
       }
 
+      // 重置掃描光效
       const heroBox = document.getElementById('detailHeroBox');
       heroBox.style.animation = 'none';
       heroBox.offsetHeight;
       heroBox.style.animation = 'heroScanIn 0.6s ease forwards';
 
       document.getElementById('detailProductTitle').textContent = currentDetailProduct.title;
-      document.getElementById('detailProductDesc').textContent = currentDetailProduct.desc;
+      
+      // 顯示預購或現貨通知
+      let descNoteHtml = currentDetailProduct.isPreorder 
+        ? `<div style="color:#ff334b; font-weight:bold; font-size:0.8rem; margin-bottom:8px; border-left:2px solid #ff334b; padding-left:8px;">[ 官方公關解鎖中 // 9/11 正式開啟預購調用排產 ]</div>`
+        : `<div style="color:var(--accent-cyan); font-size:0.75rem; margin-bottom:8px; border-left:2px solid var(--accent-cyan); padding-left:8px;">[ 束室工坊特選現貨 // 正常調用交付 ]</div>`;
+
+      document.getElementById('detailProductDesc').innerHTML = descNoteHtml + currentDetailProduct.desc;
 
       const dynamicArea = document.getElementById('detailDynamicOptions');
+      const chokerSpecificArea = document.getElementById('detailChokerSpecificArea');
       
-      if(currentDetailProduct.hasSizes) {
+      if(currentDetailProduct.id === 'cat-choker') {
+        // 1. 項圈尺寸選單
         dynamicArea.innerHTML = `
           <div style="margin-bottom: 12px;">
             <label style="font-size:0.75rem; color:var(--accent-cyan);">義體尺寸規格（Model 淨脖圍 30cm 著用 S 碼）*</label>
@@ -1210,8 +1212,49 @@
             </select>
           </div>
         `;
+
+        // 2. 項圈專屬「觸控模擬肉球顯影互動區」+「5 大工業藍圖工藝表」
+        chokerSpecificArea.innerHTML = `
+          <div style="background:#000; border:1px dashed var(--panel-border); padding:16px; text-align:center; margin:16px 0;">
+            <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:4px;">[ 點擊/懸停模擬肉球壓印觸感 ]</div>
+            <div class="stamp-preview" id="detailStampBox">
+              <span id="detailStampText" style="color:var(--text-muted); font-size:0.75rem;">觸控體驗</span>
+            </div>
+            <div style="font-size:0.75rem; color:var(--danger-red);">取下後肌膚顯影：持續 30–60 分鐘</div>
+          </div>
+
+          <div class="blueprint-card">
+            <div class="blueprint-tag">SPEC-001 // BLUEPRINT</div>
+            <div class="spec-row">
+              <span class="spec-label">外骨骼裝甲外殼</span>
+              <span class="spec-val">工業級 SLS 尼龍（耐刮・輕量・消光霧面）</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">內襯印記模組</span>
+              <span class="spec-val">TPU 85A 柔性體（立體貓掌凸點矩陣）</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">人體工學結構</span>
+              <span class="spec-val">前喉結避空幾何凹槽（無壓迫窒息感）</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">快拆安全鎖扣</span>
+              <span class="spec-val">軍規快拆磁吸插銷（支援單手緊急脫離）</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">專屬特工銘牌</span>
+              <span class="spec-val">航太級金屬銘牌（客製 10 碼精密光纖雷雕）</span>
+            </div>
+          </div>
+        `;
         document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
+        document.getElementById('detailCheckoutBtn').textContent = '9/11 開放預購・調用結帳 →';
+
+        // 綁定項圈顯影互動事件
+        bindChokerStampInteractive();
+
       } else if(currentDetailProduct.isCustomRope) {
+        chokerSpecificArea.innerHTML = ``;
         dynamicArea.innerHTML = `
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
             <div>
@@ -1229,14 +1272,40 @@
           </div>
         `;
         document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailRopePrice.toLocaleString()}`;
+        document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
       } else {
+        chokerSpecificArea.innerHTML = ``;
         dynamicArea.innerHTML = ``;
         document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
+        document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
       }
 
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       document.getElementById('view-product-detail').classList.add('active');
       window.scrollTo(0, 0);
+    }
+
+    function bindChokerStampInteractive() {
+      const stamp = document.getElementById('detailStampBox');
+      const text = document.getElementById('detailStampText');
+      if(stamp && text) {
+        const act = () => {
+          text.textContent = '🐾 貓掌顯影';
+          text.style.color = '#ff334b';
+          stamp.style.backgroundColor = 'rgba(255, 51, 75, 0.15)';
+          stamp.style.borderColor = '#ff334b';
+        };
+        const deact = () => {
+          text.textContent = '觸控體驗';
+          text.style.color = '#8c8f96';
+          stamp.style.backgroundColor = 'transparent';
+          stamp.style.borderColor = 'var(--panel-border)';
+        };
+        stamp.addEventListener('mouseenter', act);
+        stamp.addEventListener('mouseleave', deact);
+        stamp.addEventListener('touchstart', act);
+        stamp.addEventListener('touchend', deact);
+      }
     }
 
     function onDetailRopeLengthChange(selectEl) {
