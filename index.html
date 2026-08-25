@@ -186,7 +186,7 @@
     .matrix-title { font-size: 1.05rem; font-weight: bold; margin: 6px 0; color: #fff; }
     .matrix-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
 
-    /* 藍圖規格 Blueprint Card */
+    /* 藍圖規格 Blueprint Card (商品頁專用) */
     .blueprint-card {
       background: #000; border: 1px solid var(--accent-cyan); padding: 18px 16px;
       margin: 16px 0; position: relative; font-family: 'Consolas', monospace;
@@ -320,12 +320,12 @@
         <path class="logo-path logo-path-anim" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
         <path class="logo-path logo-path-anim" d="M150 35 L110 85 L150 125 L190 85" />
         <path class="logo-path logo-path-anim" d="M190 85 L230 35 L270 85 L230 135 Z" />
-        <path class="logo-path" d="M230 35 L230 135" />
-        <path class="logo-path" d="M270 85 L310 35 L350 85 L390 125" />
-        <path class="logo-path" d="M390 85 L440 35 L490 85" />
-        <path class="logo-path" d="M440 35 L440 135" />
-        <path class="logo-path" d="M500 35 L545 90 L590 35" />
-        <path class="logo-path" d="M545 90 L545 135" />
+        <path class="logo-path logo-path-anim" d="M230 35 L230 135" />
+        <path class="logo-path logo-path-anim" d="M270 85 L310 35 L350 85 L390 125" />
+        <path class="logo-path logo-path-anim" d="M390 85 L440 35 L490 85" />
+        <path class="logo-path logo-path-anim" d="M440 35 L440 135" />
+        <path class="logo-path logo-path-anim" d="M500 35 L545 90 L590 35" />
+        <path class="logo-path logo-path-anim" d="M545 90 L545 135" />
       </svg>
 
       <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:12px;">[ SYSTEM INITIALIZING // A.D. 2678 ]</div>
@@ -612,7 +612,7 @@
         </div>
       </section>
 
-      <!-- 6. 主理核心 (Crew - 老王介紹已更新為 Option A 長文版) -->
+      <!-- 6. 主理核心 (Crew) -->
       <section class="section-crew" id="section-crew">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
@@ -631,7 +631,7 @@
             </div>
           </a>
 
-          <!-- 老王 (更新後的務實長文版) -->
+          <!-- 老王 -->
           <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
             <div class="team-header">
               <div class="team-role">COMMUNITY & OPERATIONS</div>
@@ -952,7 +952,7 @@
     }
 
     // ==========================================
-    // 裝備目錄資料庫
+    // 裝備目錄資料庫 (項圈調整為 NT$ 1,990)
     // ==========================================
     const products = [
       { 
@@ -963,7 +963,7 @@
         title: '【貓痕義體拘束項圈】', 
         desc: '消光 SLS 外骨骼裝甲與 TPU 85A 柔性肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
         note: '🚨 09.11 正式解鎖預購調用 (Batch 01)',
-        price: 1690,
+        price: 1990,
         img: '',
         hasSizes: true,
         isPreorder: true,
