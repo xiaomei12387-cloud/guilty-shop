@@ -132,7 +132,7 @@
     .cart-item-del { position: absolute; top: 8px; right: 8px; color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.9rem; }
     .cart-item-del:hover { color: var(--danger-red); }
 
-    /* 會員認證彈窗 */
+    /* 會員認證彈窗（已升級三欄網格包含 Switch） */
     .auth-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
       background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(16px);
@@ -140,17 +140,18 @@
     }
     .auth-modal.active { display: flex; }
     .auth-box {
-      width: 100%; max-width: 380px; background: rgba(15, 15, 18, 0.95);
+      width: 100%; max-width: 400px; background: rgba(15, 15, 18, 0.95);
       border: 1px solid var(--accent-cyan); box-shadow: 0 0 30px var(--glow-cyan);
-      padding: 28px 24px; position: relative;
+      padding: 28px 22px; position: relative;
     }
     .auth-header { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed var(--panel-border); padding-bottom: 12px; }
     .auth-title { font-size: 1.15rem; letter-spacing: 2px; color: #fff; }
     .auth-sub { font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 1px; margin-top: 4px; }
     .auth-close { position: absolute; top: 12px; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; background: none; border: none; }
-    .role-toggle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .role-btn { padding: 8px; font-size: 0.8rem; background: #000; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; text-align: center; }
-    .role-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 255, 136, 0.1); }
+    
+    .role-toggle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+    .role-btn { padding: 8px 4px; font-size: 0.75rem; background: #000; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; text-align: center; border-radius: 2px; transition: all 0.2s; }
+    .role-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 255, 136, 0.1); font-weight: bold; }
 
     /* 視圖控制 */
     .view-section { display: none; width: 100%; }
@@ -203,7 +204,7 @@
     .spec-label { color: var(--text-muted); }
     .spec-val { color: #fff; font-weight: bold; text-align: right; }
 
-    /* 項圈肉球壓印互動印記框 (商品頁專用) */
+    /* 項圈肉球壓印互動印記框 */
     .stamp-preview { width: 120px; height: 120px; border-radius: 50%; border: 2px dashed var(--panel-border); display: flex; align-items: center; justify-content: center; margin: 12px auto; cursor: pointer; transition: all 0.3s; }
 
     /* FAQ 模組 */
@@ -358,7 +359,7 @@
     </div>
   </div>
 
-  <!-- 會員認證彈窗 -->
+  <!-- 會員認證彈窗（已加入 Switch 切換者選項） -->
   <div class="auth-modal" id="authModal">
     <div class="auth-box">
       <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
@@ -368,8 +369,9 @@
       </div>
 
       <div class="role-toggle-grid">
-        <div class="role-btn active" id="roleDom" onclick="setAuthRole('支配者 (Dom)')">支配者 [Dom]</div>
-        <div class="role-btn" id="roleSub" onclick="setAuthRole('服從者 (Sub)')">服從者 [Sub]</div>
+        <div class="role-btn active" id="roleDom" onclick="setAuthRole('支配者 (Dom)')">支配 [Dom]</div>
+        <div class="role-btn" id="roleSwitch" onclick="setAuthRole('切換者 (Switch)')">切換 [Switch]</div>
+        <div class="role-btn" id="roleSub" onclick="setAuthRole('服從者 (Sub)')">服從 [Sub]</div>
       </div>
 
       <form id="authForm">
@@ -686,7 +688,7 @@
     </div>
   </div>
 
-  <!-- 商品詳細配置頁 (Product Config View - 深度內容整合至此) -->
+  <!-- 商品詳細配置頁 (Product Config View) -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
@@ -704,10 +706,10 @@
         <div class="form-title" id="detailProductTitle">裝備檔案配置</div>
         <div id="detailProductDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;"></div>
         
-        <!-- 動態規格選項（尺寸／麻繩長度款式） -->
+        <!-- 動態規格選項 -->
         <div id="detailDynamicOptions"></div>
 
-        <!-- 項圈專屬深度介紹區（藍圖剖析與肉球模擬壓印） -->
+        <!-- 項圈專屬深度介紹區 -->
         <div id="detailChokerSpecificArea"></div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:14px; margin-top:14px;">
@@ -863,7 +865,7 @@
     }
 
     // ==========================================
-    // 個人會員系統
+    // 個人會員系統（含 Switch 切換者）
     // ==========================================
     let currentRole = '支配者 (Dom)';
     let memberProfile = JSON.parse(localStorage.getItem('guilty_member')) || null;
@@ -871,6 +873,7 @@
     function setAuthRole(role) {
       currentRole = role;
       document.getElementById('roleDom').classList.toggle('active', role.includes('Dom'));
+      document.getElementById('roleSwitch').classList.toggle('active', role.includes('Switch'));
       document.getElementById('roleSub').classList.toggle('active', role.includes('Sub'));
     }
 
@@ -1192,7 +1195,6 @@
 
       document.getElementById('detailProductTitle').textContent = currentDetailProduct.title;
       
-      // 顯示預購或現貨通知
       let descNoteHtml = currentDetailProduct.isPreorder 
         ? `<div style="color:#ff334b; font-weight:bold; font-size:0.8rem; margin-bottom:8px; border-left:2px solid #ff334b; padding-left:8px;">[ 官方公關解鎖中 // 9/11 正式開啟預購調用排產 ]</div>`
         : `<div style="color:var(--accent-cyan); font-size:0.75rem; margin-bottom:8px; border-left:2px solid var(--accent-cyan); padding-left:8px;">[ 束室工坊特選現貨 // 正常調用交付 ]</div>`;
@@ -1203,7 +1205,6 @@
       const chokerSpecificArea = document.getElementById('detailChokerSpecificArea');
       
       if(currentDetailProduct.id === 'cat-choker') {
-        // 1. 項圈尺寸選單
         dynamicArea.innerHTML = `
           <div style="margin-bottom: 12px;">
             <label style="font-size:0.75rem; color:var(--accent-cyan);">義體尺寸規格（Model 淨脖圍 30cm 著用 S 碼）*</label>
@@ -1213,7 +1214,6 @@
           </div>
         `;
 
-        // 2. 項圈專屬「觸控模擬肉球顯影互動區」+「5 大工業藍圖工藝表」
         chokerSpecificArea.innerHTML = `
           <div style="background:#000; border:1px dashed var(--panel-border); padding:16px; text-align:center; margin:16px 0;">
             <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:4px;">[ 點擊/懸停模擬肉球壓印觸感 ]</div>
@@ -1250,7 +1250,6 @@
         document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
         document.getElementById('detailCheckoutBtn').textContent = '9/11 開放預購・調用結帳 →';
 
-        // 綁定項圈顯影互動事件
         bindChokerStampInteractive();
 
       } else if(currentDetailProduct.isCustomRope) {
