@@ -186,7 +186,7 @@
     .matrix-title { font-size: 1.05rem; font-weight: bold; margin: 6px 0; color: #fff; }
     .matrix-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
 
-    /* 藍圖規格 Blueprint Card (商品頁專用) */
+    /* 藍圖規格 Blueprint Card */
     .blueprint-card {
       background: #000; border: 1px solid var(--accent-cyan); padding: 18px 16px;
       margin: 16px 0; position: relative; font-family: 'Consolas', monospace;
@@ -861,11 +861,56 @@
       }, 50);
     }
 
-    function showLandingView() {
+    // ==========================================
+    // 視圖狀態與返回手勢接管 (History API)
+    // ==========================================
+    function setActiveView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-landing').classList.add('active');
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
       window.scrollTo(0, 0);
     }
+
+    function showLandingView(push = true) {
+      setActiveView('view-landing');
+      if (push && (!history.state || history.state.view !== 'landing')) {
+        history.pushState({ view: 'landing' }, '', '#landing');
+      }
+    }
+
+    window.addEventListener('popstate', function (event) {
+      const cartDrawer = document.getElementById('cartDrawer');
+      const sideNav = document.getElementById('sideNav');
+      const authModal = document.getElementById('authModal');
+
+      if (cartDrawer && cartDrawer.classList.contains('open')) {
+        toggleCart(false);
+        return;
+      }
+      if (sideNav && sideNav.classList.contains('open')) {
+        toggleNav(false);
+        return;
+      }
+      if (authModal && authModal.classList.contains('active')) {
+        toggleAuthModal(false);
+        return;
+      }
+
+      if (event.state && event.state.view) {
+        if (event.state.view === 'product-detail' && event.state.productId) {
+          openProductDetail(event.state.productId, false);
+        } else if (event.state.view === 'checkout') {
+          renderCheckoutView();
+          setActiveView('view-checkout');
+        } else if (event.state.view === 'history') {
+          setActiveView('view-history');
+        } else {
+          showLandingView(false);
+        }
+      } else {
+        showLandingView(false);
+      }
+    });
 
     // ==========================================
     // 個人會員系統（含 Switch 切換者）
@@ -952,7 +997,7 @@
     }
 
     // ==========================================
-    // 裝備目錄資料庫 (項圈調整為 NT$ 1,990)
+    // 裝備目錄資料庫 (項圈 NT$ 1,990)
     // ==========================================
     const products = [
       { 
@@ -1174,7 +1219,7 @@
       renderProductCards(brand);
     }
 
-    function openProductDetail(productId) {
+    function openProductDetail(productId, push = true) {
       toggleCart(false);
       currentDetailProduct = products.find(p => p.id === productId);
       if(!currentDetailProduct) return;
@@ -1282,9 +1327,10 @@
         document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
       }
 
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-product-detail').classList.add('active');
-      window.scrollTo(0, 0);
+      setActiveView('view-product-detail');
+      if (push) {
+        history.pushState({ view: 'product-detail', productId: productId }, '', `#product-${productId}`);
+      }
     }
 
     function bindChokerStampInteractive() {
@@ -1391,17 +1437,18 @@
       return shippingType === 'home' ? 120 : 60;
     }
 
-    function proceedToCheckoutFromCart() {
+    function proceedToCheckoutFromCart(push = true) {
       if(cart.length === 0) {
         alert('裝備庫為空，請先選擇裝備！');
         return;
       }
       toggleCart(false);
       renderCheckoutView();
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-checkout').classList.add('active');
+      setActiveView('view-checkout');
       updateMemberUI();
-      window.scrollTo(0, 0);
+      if (push) {
+        history.pushState({ view: 'checkout' }, '', '#checkout');
+      }
     }
 
     function renderCheckoutView() {
@@ -1588,17 +1635,15 @@
       cart = [];
       saveCart();
 
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-success').classList.add('active');
-      window.scrollTo(0, 0);
-
+      setActiveView('view-success');
+      history.pushState({ view: 'success' }, '', '#success');
       updateMemberUI();
     });
 
     // ==========================================
     // 個人調用紀錄
     // ==========================================
-    function openOrderHistory() {
+    function openOrderHistory(push = true) {
       toggleNav(false);
       toggleCart(false);
 
@@ -1638,9 +1683,10 @@
       let myLocalOrders = localOrders.filter(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
       renderOrders(myLocalOrders);
 
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      document.getElementById('view-history').classList.add('active');
-      window.scrollTo(0, 0);
+      setActiveView('view-history');
+      if (push) {
+        history.pushState({ view: 'history' }, '', '#dossier');
+      }
 
       const callbackName = 'cb_' + Date.now();
       window[callbackName] = function(cloudOrders) {
@@ -1663,6 +1709,9 @@
       };
       document.body.appendChild(script);
     }
+
+    // 初始歷史狀態建立
+    history.replaceState({ view: 'landing' }, '', '#landing');
 
     renderProductCards();
     updateMemberUI();
