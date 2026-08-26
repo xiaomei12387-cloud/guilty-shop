@@ -288,6 +288,7 @@
     .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
     .radio-card { border: 1px solid var(--panel-border); padding: 12px 8px; text-align: center; cursor: pointer; font-size: 0.85rem; background: #0c0c0e; transition: all 0.2s; }
     .radio-card.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,255,136,0.08); font-weight: bold; }
+    .radio-card.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; border-color: #333; }
     
     .btn-submit { width: 100%; padding: 16px; background: var(--accent-cyan); color: #000; font-size: 1rem; font-weight: bold; border: none; cursor: pointer; letter-spacing: 2px; transition: all 0.2s; }
     .btn-submit:hover { background: #fff; }
@@ -320,12 +321,12 @@
         <path class="logo-path logo-path-anim" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
         <path class="logo-path logo-path-anim" d="M150 35 L110 85 L150 125 L190 85" />
         <path class="logo-path logo-path-anim" d="M190 85 L230 35 L270 85 L230 135 Z" />
-        <path class="logo-path logo-path-anim" d="M230 35 L230 135" />
-        <path class="logo-path logo-path-anim" d="M270 85 L310 35 L350 85 L390 125" />
-        <path class="logo-path logo-path-anim" d="M390 85 L440 35 L490 85" />
-        <path class="logo-path logo-path-anim" d="M440 35 L440 135" />
-        <path class="logo-path logo-path-anim" d="M500 35 L545 90 L590 35" />
-        <path class="logo-path logo-path-anim" d="M545 90 L545 135" />
+        <path class="logo-path" d="M230 35 L230 135" />
+        <path class="logo-path" d="M270 85 L310 35 L350 85 L390 125" />
+        <path class="logo-path" d="M390 85 L440 35 L490 85" />
+        <path class="logo-path" d="M440 35 L440 135" />
+        <path class="logo-path" d="M500 35 L545 90 L590 35" />
+        <path class="logo-path" d="M545 90 L545 135" />
       </svg>
 
       <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:12px;">[ SYSTEM INITIALIZING // A.D. 2678 ]</div>
@@ -736,14 +737,27 @@
         <button onclick="toggleCart(true)" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; cursor:pointer; font-size:0.8rem;">檢視購物車清單 ↗</button>
       </div>
 
+      <!-- 1. 調用清單 -->
       <div class="form-box">
         <div class="form-title">01 // 調用裝備清單明細</div>
         <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
+        
+        <!-- 折扣碼輸入模組 -->
+        <div style="border-top:1px dashed var(--panel-border); padding-top:12px; margin-top:12px;">
+          <label style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ 終端優惠協議 // PROMO CODE ]</label>
+          <div style="display:flex; gap:8px; margin-top:4px;">
+            <input type="text" id="promoCodeInput" placeholder="輸入折扣碼（例如：LOVEGUILTY）" style="text-transform:uppercase; font-size:0.85rem; padding:10px;" />
+            <button type="button" onclick="applyPromoCode()" style="background:var(--accent-cyan); color:#000; border:none; padding:0 16px; font-weight:bold; cursor:pointer; font-size:0.85rem; white-space:nowrap;">套用</button>
+            <button type="button" id="removePromoBtn" onclick="removePromoCode()" style="background:#222; color:var(--danger-red); border:1px solid var(--panel-border); padding:0 12px; cursor:pointer; font-size:0.8rem; display:none;">✕ 取消</button>
+          </div>
+          <div id="promoStatusMsg" style="font-size:0.75rem; margin-top:6px;"></div>
+        </div>
+
         <div id="checkoutFinancialSummary"></div>
       </div>
 
       <form id="checkoutForm">
-        <!-- 會員與收件人資訊 -->
+        <!-- 2. 收件人資訊 -->
         <div class="form-box">
           <div class="form-title">02 // 嫌疑人 / 收件終端資料</div>
           <div class="form-group">
@@ -752,7 +766,7 @@
           </div>
           <div class="form-group">
             <label>聯絡終端（手機號碼）*</label>
-            <input type="tel" id="custPhone" required placeholder="0912-345-678" />
+            <input type="tel" id="custPhone" required placeholder="0912-345-678" onchange="onPhoneChanged()" />
           </div>
           <div class="form-group">
             <label>金屬銘牌特製雷雕（限英數 10 字，或填寫特殊淨脖圍客製）</label>
@@ -760,7 +774,7 @@
           </div>
         </div>
 
-        <!-- 物流方式 -->
+        <!-- 3. 物流方式 -->
         <div class="form-box">
           <div class="form-title">03 // 物流交付途徑 (100% 絕密隱密包裝)</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
@@ -774,12 +788,12 @@
           </div>
         </div>
 
-        <!-- 支付方式 -->
+        <!-- 4. 支付方式 -->
         <div class="form-box">
           <div class="form-title">04 // 支付結算通道</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
-            <div class="radio-card active" onclick="selectPayment('cod', this)">超商取貨付款</div>
-            <div class="radio-card" onclick="selectPayment('bank', this)">銀行 ATM 匯款</div>
+            <div class="radio-card active" id="payMethodCod" onclick="selectPayment('cod', this)">超商取貨付款</div>
+            <div class="radio-card" id="payMethodBank" onclick="selectPayment('bank', this)">銀行 ATM 匯款</div>
           </div>
           <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted); line-height:1.6;">貨物送達超商後，取貨現場付款即可。</div>
         </div>
@@ -825,7 +839,7 @@
 
   <script>
     // ==========================================
-    // 【系統串接設定】
+    // 【系統串接與優惠設定】
     // ==========================================
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
     const FREE_SHIPPING_THRESHOLD = 1800; // 滿 NT$ 1,800 免運
@@ -913,7 +927,7 @@
     });
 
     // ==========================================
-    // 個人會員系統（含 Switch 切換者）
+    // 個人會員系統
     // ==========================================
     let currentRole = '支配者 (Dom)';
     let memberProfile = JSON.parse(localStorage.getItem('guilty_member')) || null;
@@ -997,7 +1011,7 @@
     }
 
     // ==========================================
-    // 裝備目錄資料庫 (項圈 NT$ 1,990)
+    // 裝備目錄資料庫
     // ==========================================
     const products = [
       { 
@@ -1424,11 +1438,12 @@
     }
 
     // ==========================================
-    // 結帳系統 (Checkout Engine)
+    // 結帳與折扣碼系統 (Promo Engine)
     // ==========================================
     let currentShippingType = '711';
     let currentShippingName = '7-11 超商取貨';
     let currentPayment = '超商取貨付款';
+    let appliedPromo = null; // { code, type: 'blind' | 'first' | 'early', desc, forceBankTransfer }
 
     function calculateShippingFee(subtotal, shippingType) {
       if (subtotal >= FREE_SHIPPING_THRESHOLD) {
@@ -1451,43 +1466,291 @@
       }
     }
 
+    function onPhoneChanged() {
+      // 若有套用首購折扣碼，更換電話時重新驗證
+      if(appliedPromo && appliedPromo.code === 'IAMSUB') {
+        applyPromoCode();
+      }
+    }
+
+    async function checkIsFirstPurchase(phone) {
+      const cleanPhone = String(phone).replace(/[^0-9]/g, '');
+      if(!cleanPhone) return false;
+
+      // 1. 先查本地紀錄
+      let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
+      const hasLocalOrder = localOrders.some(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
+      if(hasLocalOrder) return false;
+
+      // 2. 查雲端試算表紀錄
+      try {
+        const res = await new Promise((resolve) => {
+          const callbackName = 'checkFirst_' + Date.now();
+          window[callbackName] = function(cloudOrders) {
+            const scriptEl = document.getElementById(callbackName);
+            if(scriptEl) scriptEl.remove();
+            delete window[callbackName];
+            if(cloudOrders && cloudOrders.length > 0) {
+              resolve(false); // 已有歷史訂單，非首購
+            } else {
+              resolve(true); // 首次購買
+            }
+          };
+          const script = document.createElement('script');
+          script.id = callbackName;
+          script.src = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(cleanPhone)}&callback=${callbackName}`;
+          script.onerror = () => resolve(true); // 若連線失敗則從寬認定
+          document.body.appendChild(script);
+        });
+        return res;
+      } catch(e) {
+        return true;
+      }
+    }
+
+    async function applyPromoCode() {
+      const input = document.getElementById('promoCodeInput');
+      const msg = document.getElementById('promoStatusMsg');
+      const code = input.value.trim().toUpperCase();
+
+      if(!code) {
+        msg.innerHTML = `<span style="color:var(--danger-red);">請輸入折扣碼！</span>`;
+        return;
+      }
+
+      const now = new Date();
+
+      // 1. 盲鳥優惠：LOVEGUILTY (9/6 00:00 - 9/11 19:00) -> 項圈 NT$ 990，限匯款
+      if (code === 'LOVEGUILTY') {
+        const start = new Date('2026-09-06T00:00:00+08:00');
+        const end = new Date('2026-09-11T19:00:00+08:00');
+
+        if (now < start || now > end) {
+          msg.innerHTML = `<span style="color:var(--danger-red);">【LOVEGUILTY】盲鳥優惠協議尚未開啟或已逾期！(有效期限: 9/6 00:00 - 9/11 19:00)</span>`;
+          return;
+        }
+
+        const hasChoker = cart.some(item => item.productId === 'cat-choker');
+        if (!hasChoker) {
+          msg.innerHTML = `<span style="color:var(--danger-red);">此折扣碼僅適用於【貓痕義體拘束項圈】！</span>`;
+          return;
+        }
+
+        appliedPromo = {
+          code: 'LOVEGUILTY',
+          type: 'blind',
+          desc: '盲鳥優惠協議：項圈特惠 NT$ 990（限 ATM 匯款）',
+          forceBankTransfer: true
+        };
+
+        // 強制鎖定為銀行匯款
+        forceBankPayment(true);
+        msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用盲鳥優惠！項圈已折抵為 NT$ 990（支付管道已強制鎖定為 ATM 匯款）。</span>`;
+        document.getElementById('removePromoBtn').style.display = 'inline-block';
+        renderCheckoutView();
+        return;
+      }
+
+      // 2. 首購優惠：IAMSUB (全單 8 折) -> 驗證電話是否為首購
+      if (code === 'IAMSUB') {
+        const phone = document.getElementById('custPhone').value.trim();
+        if(!phone) {
+          msg.innerHTML = `<span style="color:var(--danger-red);">請先填寫下方「聯絡終端（手機號碼）」以驗證特工首購資格！</span>`;
+          return;
+        }
+
+        msg.innerHTML = `<span style="color:var(--text-muted);">正在驗證特工首購檔案...</span>`;
+        const isFirst = await checkIsFirstPurchase(phone);
+
+        if (!isFirst) {
+          msg.innerHTML = `<span style="color:var(--danger-red);">【IAMSUB】驗證失敗：此終端電話已有調用案件紀錄，非首購特工。</span>`;
+          return;
+        }
+
+        appliedPromo = {
+          code: 'IAMSUB',
+          type: 'first',
+          desc: '首購特工協議：全單調用金額享 8 折 (20% OFF)',
+          forceBankTransfer: false
+        };
+
+        forceBankPayment(false);
+        msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 特工首購資格驗證通過！全單已套用 8 折優惠。</span>`;
+        document.getElementById('removePromoBtn').style.display = 'inline-block';
+        renderCheckoutView();
+        return;
+      }
+
+      // 3. 早鳥優惠：WANG18X (9/11 19:00 起為期一個月) -> 項圈 NT$ 1,580
+      if (code === 'WANG18X') {
+        const start = new Date('2026-09-11T19:00:00+08:00');
+        const end = new Date('2026-10-11T19:00:00+08:00');
+
+        if (now < start || now > end) {
+          msg.innerHTML = `<span style="color:var(--danger-red);">【WANG18X】早鳥優惠協議將於 9/11 19:00 開啟！(為期 1 個月)</span>`;
+          return;
+        }
+
+        const hasChoker = cart.some(item => item.productId === 'cat-choker');
+        if (!hasChoker) {
+          msg.innerHTML = `<span style="color:var(--danger-red);">此折扣碼僅適用於【貓痕義體拘束項圈】！</span>`;
+          return;
+        }
+
+        appliedPromo = {
+          code: 'WANG18X',
+          type: 'early',
+          desc: '早鳥專屬協議：項圈特惠 NT$ 1,580',
+          forceBankTransfer: false
+        };
+
+        forceBankPayment(false);
+        msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用早鳥優惠！項圈已折抵為 NT$ 1,580。</span>`;
+        document.getElementById('removePromoBtn').style.display = 'inline-block';
+        renderCheckoutView();
+        return;
+      }
+
+      // 無效折扣碼
+      msg.innerHTML = `<span style="color:var(--danger-red);">無效的協議折扣碼，請確認後重新輸入。</span>`;
+    }
+
+    function removePromoCode() {
+      appliedPromo = null;
+      document.getElementById('promoCodeInput').value = '';
+      document.getElementById('promoStatusMsg').innerHTML = `<span style="color:var(--text-muted);">已取消優惠代碼。</span>`;
+      document.getElementById('removePromoBtn').style.display = 'none';
+      forceBankPayment(false);
+      renderCheckoutView();
+    }
+
+    function forceBankPayment(isForce) {
+      const codBtn = document.getElementById('payMethodCod');
+      const bankBtn = document.getElementById('payMethodBank');
+      const note = document.getElementById('paymentNote');
+
+      if (isForce) {
+        codBtn.classList.remove('active');
+        codBtn.classList.add('disabled');
+        bankBtn.classList.add('active');
+        currentPayment = '銀行 ATM 匯款';
+        note.innerHTML = `<strong style="color:#ff334b;">⚡ 盲鳥特惠協議限定：本單僅限「銀行 ATM 匯款」支付。</strong>送出訂單後將顯示匯款帳號資料。`;
+      } else {
+        codBtn.classList.remove('disabled');
+        if (!codBtn.classList.contains('active') && !bankBtn.classList.contains('active')) {
+          codBtn.classList.add('active');
+          currentPayment = '超商取貨付款';
+          note.innerHTML = `貨物送達超商後，取貨現場付款即可。`;
+        }
+      }
+    }
+
+    function calculateOrderFinancials() {
+      let originalSubtotal = getCartSubtotal();
+      let discountedSubtotal = 0;
+      let discountAmount = 0;
+
+      if (!appliedPromo) {
+        discountedSubtotal = originalSubtotal;
+      } else if (appliedPromo.type === 'blind') {
+        // 項圈降為 990
+        cart.forEach(item => {
+          if (item.productId === 'cat-choker') {
+            discountedSubtotal += 990 * item.qty;
+          } else {
+            discountedSubtotal += item.price * item.qty;
+          }
+        });
+        discountAmount = originalSubtotal - discountedSubtotal;
+      } else if (appliedPromo.type === 'early') {
+        // 項圈降為 1580
+        cart.forEach(item => {
+          if (item.productId === 'cat-choker') {
+            discountedSubtotal += 1580 * item.qty;
+          } else {
+            discountedSubtotal += item.price * item.qty;
+          }
+        });
+        discountAmount = originalSubtotal - discountedSubtotal;
+      } else if (appliedPromo.type === 'first') {
+        // 全單 8 折 (20% off)
+        discountedSubtotal = Math.round(originalSubtotal * 0.8);
+        discountAmount = originalSubtotal - discountedSubtotal;
+      }
+
+      const shippingFee = calculateShippingFee(discountedSubtotal, currentShippingType);
+      const totalAmount = discountedSubtotal + shippingFee;
+
+      return {
+        originalSubtotal,
+        discountedSubtotal,
+        discountAmount,
+        shippingFee,
+        totalAmount
+      };
+    }
+
     function renderCheckoutView() {
       const itemsListEl = document.getElementById('checkoutOrderItemsList');
       const summaryEl = document.getElementById('checkoutFinancialSummary');
-      const subtotal = getCartSubtotal();
-      const shippingFee = calculateShippingFee(subtotal, currentShippingType);
-      const totalAmount = subtotal + shippingFee;
+      const fin = calculateOrderFinancials();
 
-      itemsListEl.innerHTML = cart.map(item => `
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--panel-border); padding:6px 0; font-size:0.85rem;">
-          <div>
-            <strong>${item.title}</strong>
-            <span style="font-size:0.75rem; color:var(--text-muted); display:block;">規格：${item.specText} × ${item.qty}</span>
+      itemsListEl.innerHTML = cart.map(item => {
+        let displayPrice = item.price * item.qty;
+        let originalPriceHtml = '';
+
+        if (appliedPromo && appliedPromo.type === 'blind' && item.productId === 'cat-choker') {
+          originalPriceHtml = `<del style="color:var(--text-muted); font-size:0.75rem; margin-right:6px;">NT$ ${(item.price * item.qty).toLocaleString()}</del>`;
+          displayPrice = 990 * item.qty;
+        } else if (appliedPromo && appliedPromo.type === 'early' && item.productId === 'cat-choker') {
+          originalPriceHtml = `<del style="color:var(--text-muted); font-size:0.75rem; margin-right:6px;">NT$ ${(item.price * item.qty).toLocaleString()}</del>`;
+          displayPrice = 1580 * item.qty;
+        }
+
+        return `
+          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--panel-border); padding:6px 0; font-size:0.85rem;">
+            <div>
+              <strong>${item.title}</strong>
+              <span style="font-size:0.75rem; color:var(--text-muted); display:block;">規格：${item.specText} × ${item.qty}</span>
+            </div>
+            <div style="color:var(--accent-cyan); font-weight:bold;">
+              ${originalPriceHtml}NT$ ${displayPrice.toLocaleString()}
+            </div>
           </div>
-          <div style="color:var(--accent-cyan); font-weight:bold;">NT$ ${(item.price * item.qty).toLocaleString()}</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
+
+      let discountRowHtml = '';
+      if (appliedPromo && fin.discountAmount > 0) {
+        discountRowHtml = `
+          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; margin-top:4px; color:#ff334b;">
+            <span>[ 折扣減免 // ${appliedPromo.code} ]：</span>
+            <span>- NT$ ${fin.discountAmount.toLocaleString()}</span>
+          </div>
+        `;
+      }
 
       let shippingStatusHtml = '';
-      if (subtotal >= FREE_SHIPPING_THRESHOLD) {
+      if (fin.discountedSubtotal >= FREE_SHIPPING_THRESHOLD) {
         shippingStatusHtml = `<span style="color:var(--accent-cyan); font-weight:bold;">已達滿額免運 (NT$ 0)</span>`;
       } else {
-        const diff = FREE_SHIPPING_THRESHOLD - subtotal;
-        shippingStatusHtml = `<span>NT$ ${shippingFee} <small style="color:var(--text-muted);">(差 NT$ ${diff.toLocaleString()} 免運)</small></span>`;
+        const diff = FREE_SHIPPING_THRESHOLD - fin.discountedSubtotal;
+        shippingStatusHtml = `<span>NT$ ${fin.shippingFee} <small style="color:var(--text-muted);">(差 NT$ ${diff.toLocaleString()} 免運)</small></span>`;
       }
 
       summaryEl.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:0.85rem;">
-          <span style="color:var(--text-muted);">裝備小計：</span>
-          <span>NT$ ${subtotal.toLocaleString()}</span>
+          <span style="color:var(--text-muted);">裝備原價小計：</span>
+          <span>NT$ ${fin.originalSubtotal.toLocaleString()}</span>
         </div>
+        ${discountRowHtml}
         <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; margin-top:4px;">
           <span style="color:var(--text-muted);">交付運費 (${currentShippingName})：</span>
           <span>${shippingStatusHtml}</span>
         </div>
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--panel-border); padding-top:10px; margin-top:10px;">
           <span style="font-weight:bold; color:#fff;">結算總金額：</span>
-          <span style="color:var(--accent-cyan); font-weight:bold; font-size:1.25rem;">NT$ ${totalAmount.toLocaleString()}</span>
+          <span style="color:var(--accent-cyan); font-weight:bold; font-size:1.25rem;">NT$ ${fin.totalAmount.toLocaleString()}</span>
         </div>
       `;
     }
@@ -1513,6 +1776,11 @@
     }
 
     function selectPayment(type, el) {
+      if (appliedPromo && appliedPromo.forceBankTransfer && type === 'cod') {
+        alert('【盲鳥優惠限定】此折扣碼僅支援「銀行 ATM 匯款」！');
+        return;
+      }
+
       el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       const note = document.getElementById('paymentNote');
@@ -1535,18 +1803,19 @@
       }
 
       const phoneRaw = document.getElementById('custPhone').value.trim();
-      const subtotal = getCartSubtotal();
-      const shippingFee = calculateShippingFee(subtotal, currentShippingType);
-      const totalAmount = subtotal + shippingFee;
+      const fin = calculateOrderFinancials();
 
       const productsSummaryText = cart.map(item => `${item.title} (${item.specText}) × ${item.qty}`).join(' + ');
 
       const orderData = {
         orderId: 'CASE-' + Date.now().toString().slice(-6),
         product: productsSummaryText,
-        subtotal: subtotal,
-        shippingFee: shippingFee,
-        price: totalAmount,
+        originalSubtotal: fin.originalSubtotal,
+        promoCode: appliedPromo ? appliedPromo.code : '無',
+        discountAmount: fin.discountAmount,
+        subtotal: fin.discountedSubtotal,
+        shippingFee: fin.shippingFee,
+        price: fin.totalAmount,
         name: document.getElementById('custName').value.trim(),
         phone: phoneRaw,
         engraving: document.getElementById('custEngraving').value.trim() || '無',
@@ -1589,10 +1858,15 @@
         ? '<span style="color:var(--accent-cyan);">免運費 (NT$ 0)</span>' 
         : `NT$ ${orderData.shippingFee}`;
 
+      const promoDisplay = orderData.promoCode !== '無' 
+        ? `<span style="color:#ff334b;">${orderData.promoCode} (-NT$ ${Number(orderData.discountAmount).toLocaleString()})</span>` 
+        : '無';
+
       document.getElementById('successDetailArea').innerHTML = `
         <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
         <div style="margin:4px 0;"><strong>調用裝備清單：</strong><br><span style="color:#fff;">${orderData.product}</span></div>
-        <div><strong>商品小計：</strong>NT$ ${Number(orderData.subtotal).toLocaleString()}</div>
+        <div><strong>折扣協議代碼：</strong>${promoDisplay}</div>
+        <div><strong>裝備實計金額：</strong>NT$ ${Number(orderData.subtotal).toLocaleString()}</div>
         <div><strong>物流運費：</strong>${shippingFeeDisplay}</div>
         <div><strong>結算總金額：</strong><strong style="color:var(--accent-cyan); font-size:1.05rem;">NT$ ${Number(orderData.price).toLocaleString()}</strong></div>
         <div><strong>收件特工：</strong>${orderData.name} (${orderData.phone})</div>
@@ -1633,6 +1907,7 @@
       }
 
       cart = [];
+      appliedPromo = null;
       saveCart();
 
       setActiveView('view-success');
