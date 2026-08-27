@@ -304,6 +304,10 @@
 
     .history-item { background: #000; border: 1px solid var(--panel-border); padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem; }
     .history-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding-bottom: 8px; margin-bottom: 8px; }
+
+    /* 長鞭色票選單輔助樣式 */
+    .whip-color-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 6px; }
+    .whip-color-pill { background: #101014; border: 1px solid var(--panel-border); padding: 8px; border-radius: 3px; font-size: 0.75rem; text-align: center; }
   </style>
 </head>
 <body>
@@ -360,7 +364,7 @@
     </div>
   </div>
 
-  <!-- 會員認證彈窗（含 Switch 切換者選項） -->
+  <!-- 會員認證彈窗 -->
   <div class="auth-modal" id="authModal">
     <div class="auth-box">
       <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
@@ -484,7 +488,7 @@
         </div>
       </section>
 
-      <!-- 2. 世界觀脈絡 (Worldview & 提案 A 認罪協議) -->
+      <!-- 2. 世界觀脈絡 -->
       <section class="section-manifesto" id="section-manifesto">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // WORLDVIEW & PROTOCOL ]</div>
         <div class="manifesto-card">
@@ -501,7 +505,7 @@
         </div>
       </section>
 
-      <!-- 3. 三大裝備研發矩陣 (全系列展示) -->
+      <!-- 3. 三大裝備研發矩陣 -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-matrix">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // ARSENAL MATRIX ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:6px;">支配・拘束・義體三大研發矩陣</h2>
@@ -532,21 +536,21 @@
             </div>
           </div>
 
-          <!-- 矩陣 3: 戰術護具 -->
+          <!-- 矩陣 3: 行為校準與戰術裝備 -->
           <div class="matrix-card">
-            <div class="matrix-num">DIVISION 03 // TACTICAL GEAR</div>
-            <div class="matrix-title">戰術防護與擴充模組</div>
+            <div class="matrix-num">DIVISION 03 // CALIBRATION & TACTICAL</div>
+            <div class="matrix-title">神經校準與戰術裝備</div>
             <div class="matrix-desc">
-              專為高拉力懸吊與重度束縛打造。加厚抗磨緩衝皮革與軍規快拆機構，嚴格貫徹 SSC 安全脫離標準。
+              重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹 SSC 安全脫離與精準神經回饋。
             </div>
             <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">
-              ✦ 防勒皮革護腕墊 / 安全剪刀 <span style="color:var(--accent-cyan); font-size:0.7rem;">[ 現貨正常調用 ]</span>
+              ✦ 神經突觸長鞭 / 護腕墊 <span style="color:var(--accent-cyan); font-size:0.7rem;">[ 現貨/預製調用 ]</span>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- 4. 裝備目錄庫 (Arsenal Catalog) -->
+      <!-- 4. 裝備目錄庫 -->
       <section class="section-arsenal" id="section-arsenal">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
@@ -579,10 +583,10 @@
         </div>
 
         <div class="faq-item">
-          <div class="faq-q">Q2. 束室精煉麻繩長度（8M vs 10M）如何選擇？</div>
+          <div class="faq-q">Q2. 神經突觸長鞭（1.2M vs 1.5M）如何選擇？</div>
           <div class="faq-a">
-            • <strong>8 米 (8M)</strong>：最泛用規格，適合單肢體拘束、上半身龜甲縛、日常練習。<br>
-            • <strong>10 米 (10M)</strong>：適合全身性大架構捆綁或需要充裕繩長的高階懸吊固定。
+            • <strong>1.2 米 [CQB]</strong>：適合室內近身掌控、落點極度精準、揮動迅速。<br>
+            • <strong>1.5 米 [EXTENDED]</strong>：力矩飽滿、破空聲響威懾力極強，適合大空間重度發力。
           </div>
         </div>
 
@@ -591,13 +595,6 @@
           <div class="faq-a">
             • <strong>SLS / TPU 項圈</strong>：使用後以常溫清水或微量中性清潔劑擦拭陰乾。<br>
             • <strong>束室精煉麻繩</strong>：麻繩已完成打蠟過油，切勿水洗！受潮請自然陰乾，定期過蠟可維持溫潤滑順感。
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-q">Q4. 安全防護與緊急脫離原則？</div>
-          <div class="faq-a">
-            全系列硬體遵循 SSC 原則。項圈採軍規快拆機構；施縛時建議身邊常備「安全剪刀」，以備緊急情況瞬間脫離。
           </div>
         </div>
 
@@ -613,7 +610,7 @@
         </div>
       </section>
 
-      <!-- 6. 主理核心 (Crew) -->
+      <!-- 6. 主理核心 -->
       <section class="section-crew" id="section-crew">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
@@ -628,7 +625,7 @@
             <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">18X</div>
             <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@18X_inthc</div>
             <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-              主理品牌視覺體系、參數化外骨骼建模（Rhino / GH）與結構研發。
+              主理品牌視覺體系、參數化外骨骼建模（Rhino / Fusion 360）與結構研發。
             </div>
           </a>
 
@@ -669,17 +666,11 @@
         <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; max-width: 500px; margin: 0 auto 30px;">
           <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" 
              style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(88, 101, 242, 0.12); border: 1px solid #5865F2; color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px; transition: all 0.2s;">
-            <svg style="width: 20px; height: 20px; fill: #5865F2;" viewBox="0 0 24 24">
-              <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.929 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.894.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-            </svg>
-            DISCORD 終端庫
+            👾 DISCORD 終端庫
           </a>
 
           <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" 
              style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px; transition: all 0.2s;">
-            <svg style="width: 18px; height: 18px; fill: #fff;" viewBox="0 0 24 24">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-            </svg>
             𝕏 官方情報局
           </a>
         </div>
@@ -713,7 +704,7 @@
         <!-- 動態規格選項 -->
         <div id="detailDynamicOptions"></div>
 
-        <!-- 項圈專屬深度介紹區 -->
+        <!-- 專屬深度介紹區 -->
         <div id="detailChokerSpecificArea"></div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:14px; margin-top:14px;">
@@ -769,8 +760,8 @@
             <input type="tel" id="custPhone" required placeholder="0912-345-678" onchange="onPhoneChanged()" />
           </div>
           <div class="form-group">
-            <label>金屬銘牌特製雷雕（限英數 10 字，或填寫特殊淨脖圍客製）</label>
-            <input type="text" id="custEngraving" maxlength="15" placeholder="例如：GUILTY-01 或 淨脖圍28cm" />
+            <label>客製需求 / 訂製配色 / 銘牌備註（限英數或自訂色票）</label>
+            <input type="text" id="custEngraving" maxlength="30" placeholder="例如：自訂色系-狼灰配緋紅 / GUILTY-01" />
           </div>
         </div>
 
@@ -1011,7 +1002,7 @@
     }
 
     // ==========================================
-    // 裝備目錄資料庫
+    // 裝備目錄資料庫 (已整合神經突觸長鞭)
     // ==========================================
     const products = [
       { 
@@ -1030,7 +1021,34 @@
           'S 碼（淨脖圍 29–33 cm，Model 著用）',
           'M 碼（淨脖圍 34–38 cm）'
         ],
-        isCustomRope: false
+        isCustomRope: false,
+        isWhip: false
+      },
+      { 
+        id: 'synapse-whip', 
+        brand: 'guilty', 
+        brandName: '欲室｜共犯 GUILTY', 
+        badgeClass: 'badge-guilty', 
+        title: '【神經突觸戰術長鞭】', 
+        desc: '一體化重磅緊密編織，精準配重實心鞭芯，傳遞純粹的神經校準訊號。', 
+        note: '⚡ 預製/客製配色排產調用',
+        price: 980,
+        img: '',
+        isWhip: true,
+        isCustomRope: false,
+        isPreorder: false,
+        lengths: [
+          { label: '1.2 米 (1.2M) [CQB // 近距校準型]', price: 980 },
+          { label: '1.5 米 (1.5M) [EXTENDED // 遠距壓制型]', price: 1180 }
+        ],
+        colors: [
+          { label: '極夜黑 [VOID BLACK]', extra: 0 },
+          { label: '幽靈白 [GHOST WHITE]', extra: 0 },
+          { label: '信號藍 [SIGNAL BLUE]', extra: 0 },
+          { label: '紫黑混編 [NEURAL PURPLE]', extra: 0 },
+          { label: '小丑魚 [CLOWNFISH]', extra: 0 },
+          { label: '自訂特殊光譜（請備註 / 聯繫客服）(+NT$100)', extra: 100 }
+        ]
       },
       { 
         id: 'shushi-rope', 
@@ -1043,6 +1061,7 @@
         price: 600,
         img: './images/image_rope.jpg',
         isCustomRope: true,
+        isWhip: false,
         isPreorder: false,
         lengths: [
           { label: '8 米 (8M)', price: 600 },
@@ -1076,6 +1095,7 @@
         price: 1280,
         img: '',
         isCustomRope: false,
+        isWhip: false,
         isPreorder: false
       }
     ];
@@ -1186,6 +1206,11 @@
     let currentDetailRopeLength = '8 米 (8M)';
     let currentDetailRopePrice = 600;
 
+    let currentWhipLength = '1.2 米 (1.2M) [CQB // 近距校準型]';
+    let currentWhipBasePrice = 980;
+    let currentWhipColor = '極夜黑 [VOID BLACK]';
+    let currentWhipExtra = 0;
+
     function renderProductCards(filter = 'all') {
       const grid = document.getElementById('productGrid');
       grid.innerHTML = '';
@@ -1196,9 +1221,8 @@
         card.onclick = () => openProductDetail(p.id);
 
         let priceText = `NT$ ${p.price.toLocaleString()}`;
-        if(p.isCustomRope) {
-          priceText = `NT$ 600 起`;
-        }
+        if(p.isCustomRope) priceText = `NT$ 600 起`;
+        if(p.isWhip) priceText = `NT$ 980 起`;
 
         const thumbContent = (p.img && p.img.trim() !== '')
           ? `<img src="${p.img}" alt="${p.title}" onerror="this.parentElement.innerHTML='[ ${p.title} 預覽圖 ]';" />`
@@ -1240,6 +1264,10 @@
 
       currentDetailRopeLength = '8 米 (8M)';
       currentDetailRopePrice = 600;
+      currentWhipLength = '1.2 米 (1.2M) [CQB // 近距校準型]';
+      currentWhipBasePrice = 980;
+      currentWhipColor = '極夜黑 [VOID BLACK]';
+      currentWhipExtra = 0;
 
       // 渲染大圖
       const heroArea = document.getElementById('detailHeroImgArea');
@@ -1259,7 +1287,7 @@
       
       let descNoteHtml = currentDetailProduct.isPreorder 
         ? `<div style="color:#ff334b; font-weight:bold; font-size:0.8rem; margin-bottom:8px; border-left:2px solid #ff334b; padding-left:8px;">[ 官方公關解鎖中 // 9/11 正式開啟預購調用排產 ]</div>`
-        : `<div style="color:var(--accent-cyan); font-size:0.75rem; margin-bottom:8px; border-left:2px solid var(--accent-cyan); padding-left:8px;">[ 束室工坊特選現貨 // 正常調用交付 ]</div>`;
+        : `<div style="color:var(--accent-cyan); font-size:0.75rem; margin-bottom:8px; border-left:2px solid var(--accent-cyan); padding-left:8px;">[ 官方核心研發 // 正常調用交付 ]</div>`;
 
       document.getElementById('detailProductDesc').innerHTML = descNoteHtml + currentDetailProduct.desc;
 
@@ -1313,6 +1341,34 @@
         document.getElementById('detailCheckoutBtn').textContent = '9/11 開放預購・調用結帳 →';
 
         bindChokerStampInteractive();
+
+      } else if(currentDetailProduct.isWhip) {
+        // 長鞭專屬配置模組
+        chokerSpecificArea.innerHTML = `
+          <div style="background:#121216; border:1px solid #27272a; padding:16px; border-radius:4px; margin:16px 0; font-size:0.8rem; color:#d4d4d8; line-height:1.7;">
+            <strong style="color:#fff;">// 神經校準世界觀：</strong><br>
+            「疼痛不是目的，是神經突觸最純粹的校準訊號。」精確配重實心鞭芯自手柄向鞭梢漸進收斂，破空低頻撕裂聲先於接觸前瓦解抵抗意志。
+          </div>
+          <div class="alert-box" style="background:#121216; border:1px dashed #3f3f46; border-radius:4px; padding:14px; margin-bottom:14px; font-size:0.78rem; color:#a1a1aa;">
+            <span style="color:#f59e0b; font-weight:bold;">⚡ 自訂特殊配色協議：</span>除 5 款官方預製配色外，選取「自訂特殊光譜」單件加收 NT$ 100 工藝調配費，請於下單時備註配色或至 Discord 客服確認。
+          </div>
+        `;
+        dynamicArea.innerHTML = `
+          <div style="margin-bottom: 12px;">
+            <label style="font-size:0.75rem; color:var(--accent-cyan);">長度規格 (LENGTH)*</label>
+            <select id="detailWhipLengthSelect" onchange="onDetailWhipChange()" style="border-color:var(--accent-cyan);">
+              ${currentDetailProduct.lengths.map(l => `<option value="${l.label}" data-price="${l.price}">${l.label} - NT$ ${l.price}</option>`).join('')}
+            </select>
+          </div>
+          <div style="margin-bottom: 12px;">
+            <label style="font-size:0.75rem; color:var(--accent-cyan);">配色光譜 (SPECTRUM)*</label>
+            <select id="detailWhipColorSelect" onchange="onDetailWhipChange()" style="border-color:var(--accent-cyan);">
+              ${currentDetailProduct.colors.map(c => `<option value="${c.label}" data-extra="${c.extra}">${c.label}</option>`).join('')}
+            </select>
+          </div>
+        `;
+        updateWhipDetailPrice();
+        document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
 
       } else if(currentDetailProduct.isCustomRope) {
         chokerSpecificArea.innerHTML = ``;
@@ -1379,6 +1435,27 @@
       }
     }
 
+    function onDetailWhipChange() {
+      const lenEl = document.getElementById('detailWhipLengthSelect');
+      const colEl = document.getElementById('detailWhipColorSelect');
+      
+      const optLen = lenEl.options[lenEl.selectedIndex];
+      const optCol = colEl.options[colEl.selectedIndex];
+
+      currentWhipLength = optLen.value;
+      currentWhipBasePrice = parseInt(optLen.getAttribute('data-price')) || 980;
+
+      currentWhipColor = optCol.value;
+      currentWhipExtra = parseInt(optCol.getAttribute('data-extra')) || 0;
+
+      updateWhipDetailPrice();
+    }
+
+    function updateWhipDetailPrice() {
+      const total = currentWhipBasePrice + currentWhipExtra;
+      document.getElementById('detailPriceDisplay').textContent = `NT$ ${total.toLocaleString()}`;
+    }
+
     function getCurrentConfiguredCartItem() {
       if(!currentDetailProduct) return null;
 
@@ -1387,6 +1464,9 @@
 
       if(currentDetailProduct.hasSizes) {
         specText = document.getElementById('detailChokerSizeSelect').value;
+      } else if(currentDetailProduct.isWhip) {
+        specText = `${currentWhipLength.split(' ')[0]} // ${currentWhipColor}`;
+        itemPrice = currentWhipBasePrice + currentWhipExtra;
       } else if(currentDetailProduct.isCustomRope) {
         const lengthVal = document.getElementById('detailRopeLengthSelect').value;
         const variantVal = document.getElementById('detailRopeVariantSelect').value;
@@ -1443,7 +1523,7 @@
     let currentShippingType = '711';
     let currentShippingName = '7-11 超商取貨';
     let currentPayment = '超商取貨付款';
-    let appliedPromo = null; // { code, type: 'blind' | 'first' | 'early', desc, forceBankTransfer }
+    let appliedPromo = null;
 
     function calculateShippingFee(subtotal, shippingType) {
       if (subtotal >= FREE_SHIPPING_THRESHOLD) {
@@ -1467,7 +1547,6 @@
     }
 
     function onPhoneChanged() {
-      // 若有套用首購折扣碼，更換電話時重新驗證
       if(appliedPromo && appliedPromo.code === 'IAMSUB') {
         applyPromoCode();
       }
@@ -1477,12 +1556,10 @@
       const cleanPhone = String(phone).replace(/[^0-9]/g, '');
       if(!cleanPhone) return false;
 
-      // 1. 先查本地紀錄
       let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       const hasLocalOrder = localOrders.some(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
       if(hasLocalOrder) return false;
 
-      // 2. 查雲端試算表紀錄
       try {
         const res = await new Promise((resolve) => {
           const callbackName = 'checkFirst_' + Date.now();
@@ -1491,15 +1568,15 @@
             if(scriptEl) scriptEl.remove();
             delete window[callbackName];
             if(cloudOrders && cloudOrders.length > 0) {
-              resolve(false); // 已有歷史訂單，非首購
+              resolve(false);
             } else {
-              resolve(true); // 首次購買
+              resolve(true);
             }
           };
           const script = document.createElement('script');
           script.id = callbackName;
           script.src = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(cleanPhone)}&callback=${callbackName}`;
-          script.onerror = () => resolve(true); // 若連線失敗則從寬認定
+          script.onerror = () => resolve(true);
           document.body.appendChild(script);
         });
         return res;
@@ -1520,7 +1597,6 @@
 
       const now = new Date();
 
-      // 1. 盲鳥優惠：LOVEGUILTY (9/6 00:00 - 9/11 19:00) -> 項圈 NT$ 990，限匯款
       if (code === 'LOVEGUILTY') {
         const start = new Date('2026-09-06T00:00:00+08:00');
         const end = new Date('2026-09-11T19:00:00+08:00');
@@ -1543,7 +1619,6 @@
           forceBankTransfer: true
         };
 
-        // 強制鎖定為銀行匯款
         forceBankPayment(true);
         msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用盲鳥優惠！項圈已折抵為 NT$ 990（支付管道已強制鎖定為 ATM 匯款）。</span>`;
         document.getElementById('removePromoBtn').style.display = 'inline-block';
@@ -1551,7 +1626,6 @@
         return;
       }
 
-      // 2. 首購優惠：IAMSUB (全單 8 折) -> 驗證電話是否為首購
       if (code === 'IAMSUB') {
         const phone = document.getElementById('custPhone').value.trim();
         if(!phone) {
@@ -1581,7 +1655,6 @@
         return;
       }
 
-      // 3. 早鳥優惠：WANG18X (9/11 19:00 起為期一個月) -> 項圈 NT$ 1,580
       if (code === 'WANG18X') {
         const start = new Date('2026-09-11T19:00:00+08:00');
         const end = new Date('2026-10-11T19:00:00+08:00');
@@ -1611,7 +1684,6 @@
         return;
       }
 
-      // 無效折扣碼
       msg.innerHTML = `<span style="color:var(--danger-red);">無效的協議折扣碼，請確認後重新輸入。</span>`;
     }
 
@@ -1653,7 +1725,6 @@
       if (!appliedPromo) {
         discountedSubtotal = originalSubtotal;
       } else if (appliedPromo.type === 'blind') {
-        // 項圈降為 990
         cart.forEach(item => {
           if (item.productId === 'cat-choker') {
             discountedSubtotal += 990 * item.qty;
@@ -1663,7 +1734,6 @@
         });
         discountAmount = originalSubtotal - discountedSubtotal;
       } else if (appliedPromo.type === 'early') {
-        // 項圈降為 1580
         cart.forEach(item => {
           if (item.productId === 'cat-choker') {
             discountedSubtotal += 1580 * item.qty;
@@ -1673,7 +1743,6 @@
         });
         discountAmount = originalSubtotal - discountedSubtotal;
       } else if (appliedPromo.type === 'first') {
-        // 全單 8 折 (20% off)
         discountedSubtotal = Math.round(originalSubtotal * 0.8);
         discountAmount = originalSubtotal - discountedSubtotal;
       }
@@ -1870,7 +1939,7 @@
         <div><strong>物流運費：</strong>${shippingFeeDisplay}</div>
         <div><strong>結算總金額：</strong><strong style="color:var(--accent-cyan); font-size:1.05rem;">NT$ ${Number(orderData.price).toLocaleString()}</strong></div>
         <div><strong>收件特工：</strong>${orderData.name} (${orderData.phone})</div>
-        <div><strong>銘牌／客製備註：</strong>${orderData.engraving}</div>
+        <div><strong>客製／銘牌備註：</strong>${orderData.engraving}</div>
         <div><strong>交付途徑：</strong>${orderData.shipping} (${orderData.location})</div>
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
@@ -1892,11 +1961,11 @@
               <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
                 <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" 
                    style="background:rgba(88,101,242,0.15); border:1px solid #5865F2; color:#fff; padding:6px 12px; font-size:0.75rem; text-decoration:none; border-radius:3px;">
-                   👾 前往 Discord 開啟客服單 ↗
+                  👾 前往 Discord 開啟客服單 ↗
                 </a>
                 <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" 
                    style="background:rgba(255,255,255,0.08); border:1px solid var(--panel-border); color:#fff; padding:6px 12px; font-size:0.75rem; text-decoration:none; border-radius:3px;">
-                   𝕏 私訊官方客服上傳 ↗
+                  𝕏 私訊官方客服上傳 ↗
                 </a>
               </div>
             </div>
