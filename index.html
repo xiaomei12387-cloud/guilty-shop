@@ -304,10 +304,6 @@
 
     .history-item { background: #000; border: 1px solid var(--panel-border); padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem; }
     .history-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding-bottom: 8px; margin-bottom: 8px; }
-
-    /* 長鞭色票選單輔助樣式 */
-    .whip-color-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 6px; }
-    .whip-color-pill { background: #101014; border: 1px solid var(--panel-border); padding: 8px; border-radius: 3px; font-size: 0.75rem; text-align: center; }
   </style>
 </head>
 <body>
@@ -737,7 +733,7 @@
         <div style="border-top:1px dashed var(--panel-border); padding-top:12px; margin-top:12px;">
           <label style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ 終端優惠協議 // PROMO CODE ]</label>
           <div style="display:flex; gap:8px; margin-top:4px;">
-            <input type="text" id="promoCodeInput" placeholder="輸入折扣碼（例如：LOVEGUILTY）" style="text-transform:uppercase; font-size:0.85rem; padding:10px;" />
+            <input type="text" id="promoCodeInput" placeholder="輸入折扣碼（例如：18LOVEWANG）" style="text-transform:uppercase; font-size:0.85rem; padding:10px;" />
             <button type="button" onclick="applyPromoCode()" style="background:var(--accent-cyan); color:#000; border:none; padding:0 16px; font-weight:bold; cursor:pointer; font-size:0.85rem; white-space:nowrap;">套用</button>
             <button type="button" id="removePromoBtn" onclick="removePromoCode()" style="background:#222; color:var(--danger-red); border:1px solid var(--panel-border); padding:0 12px; cursor:pointer; font-size:0.8rem; display:none;">✕ 取消</button>
           </div>
@@ -833,9 +829,8 @@
     // 【系統串接與優惠設定】
     // ==========================================
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
-    const FREE_SHIPPING_THRESHOLD = 1800; // 滿 NT$ 1,800 免運
+    const FREE_SHIPPING_THRESHOLD = 1800;
 
-    // 開機動畫
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
       clearTimeout(introTimer);
@@ -1002,7 +997,7 @@
     }
 
     // ==========================================
-    // 裝備目錄資料庫 (已整合神經突觸長鞭)
+    // 裝備目錄資料庫
     // ==========================================
     const products = [
       { 
@@ -1032,14 +1027,14 @@
         title: '【神經突觸戰術長鞭】', 
         desc: '一體化重磅緊密編織，精準配重實心鞭芯，傳遞純粹的神經校準訊號。', 
         note: '⚡ 預製/客製配色排產調用',
-        price: 980,
+        price: 1500,
         img: '',
         isWhip: true,
         isCustomRope: false,
         isPreorder: false,
         lengths: [
-          { label: '1.2 米 (1.2M) [CQB // 近距校準型]', price: 980 },
-          { label: '1.5 米 (1.5M) [EXTENDED // 遠距壓制型]', price: 1180 }
+          { label: '1.2 米 (1.2M) [CQB // 近距校準型]', price: 1500 },
+          { label: '1.5 米 (1.5M) [EXTENDED // 遠距壓制型]', price: 1500 }
         ],
         colors: [
           { label: '極夜黑 [VOID BLACK]', extra: 0 },
@@ -1207,7 +1202,7 @@
     let currentDetailRopePrice = 600;
 
     let currentWhipLength = '1.2 米 (1.2M) [CQB // 近距校準型]';
-    let currentWhipBasePrice = 980;
+    let currentWhipBasePrice = 1500;
     let currentWhipColor = '極夜黑 [VOID BLACK]';
     let currentWhipExtra = 0;
 
@@ -1222,7 +1217,6 @@
 
         let priceText = `NT$ ${p.price.toLocaleString()}`;
         if(p.isCustomRope) priceText = `NT$ 600 起`;
-        if(p.isWhip) priceText = `NT$ 980 起`;
 
         const thumbContent = (p.img && p.img.trim() !== '')
           ? `<img src="${p.img}" alt="${p.title}" onerror="this.parentElement.innerHTML='[ ${p.title} 預覽圖 ]';" />`
@@ -1265,7 +1259,7 @@
       currentDetailRopeLength = '8 米 (8M)';
       currentDetailRopePrice = 600;
       currentWhipLength = '1.2 米 (1.2M) [CQB // 近距校準型]';
-      currentWhipBasePrice = 980;
+      currentWhipBasePrice = 1500;
       currentWhipColor = '極夜黑 [VOID BLACK]';
       currentWhipExtra = 0;
 
@@ -1343,7 +1337,6 @@
         bindChokerStampInteractive();
 
       } else if(currentDetailProduct.isWhip) {
-        // 長鞭專屬配置模組
         chokerSpecificArea.innerHTML = `
           <div style="background:#121216; border:1px solid #27272a; padding:16px; border-radius:4px; margin:16px 0; font-size:0.8rem; color:#d4d4d8; line-height:1.7;">
             <strong style="color:#fff;">// 神經校準世界觀：</strong><br>
@@ -1443,7 +1436,7 @@
       const optCol = colEl.options[colEl.selectedIndex];
 
       currentWhipLength = optLen.value;
-      currentWhipBasePrice = parseInt(optLen.getAttribute('data-price')) || 980;
+      currentWhipBasePrice = parseInt(optLen.getAttribute('data-price')) || 1500;
 
       currentWhipColor = optCol.value;
       currentWhipExtra = parseInt(optCol.getAttribute('data-extra')) || 0;
@@ -1597,6 +1590,29 @@
 
       const now = new Date();
 
+      // 1. 長鞭專屬折扣碼：TOMOTACHI -> 折扣至 NT$ 1,200 (每件折 300)
+      if (code === 'TOMOTACHI') {
+        const hasWhip = cart.some(item => item.productId === 'synapse-whip');
+        if (!hasWhip) {
+          msg.innerHTML = `<span style="color:var(--danger-red);">此折扣碼僅適用於【神經突觸戰術長鞭】！</span>`;
+          return;
+        }
+
+        appliedPromo = {
+          code: 'TOMOTACHI',
+          type: 'whip_discount',
+          desc: '長鞭專屬特友協議：單件折抵至 NT$ 1,200',
+          forceBankTransfer: false
+        };
+
+        forceBankPayment(false);
+        msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用 TOMOTACHI 特友協議！長鞭單件已折抵至 NT$ 1,200。</span>`;
+        document.getElementById('removePromoBtn').style.display = 'inline-block';
+        renderCheckoutView();
+        return;
+      }
+
+      // 2. 盲鳥優惠：LOVEGUILTY (9/6 00:00 - 9/11 19:00) -> 項圈 NT$ 990，限匯款
       if (code === 'LOVEGUILTY') {
         const start = new Date('2026-09-06T00:00:00+08:00');
         const end = new Date('2026-09-11T19:00:00+08:00');
@@ -1626,6 +1642,7 @@
         return;
       }
 
+      // 3. 首購優惠：IAMSUB (全單 8 折)
       if (code === 'IAMSUB') {
         const phone = document.getElementById('custPhone').value.trim();
         if(!phone) {
@@ -1655,6 +1672,7 @@
         return;
       }
 
+      // 4. 早鳥優惠：WANG18X (9/11 19:00 起為期一個月)
       if (code === 'WANG18X') {
         const start = new Date('2026-09-11T19:00:00+08:00');
         const end = new Date('2026-10-11T19:00:00+08:00');
@@ -1724,6 +1742,15 @@
 
       if (!appliedPromo) {
         discountedSubtotal = originalSubtotal;
+      } else if (appliedPromo.type === 'whip_discount') {
+        cart.forEach(item => {
+          if (item.productId === 'synapse-whip') {
+            discountedSubtotal += (item.price - 300) * item.qty;
+          } else {
+            discountedSubtotal += item.price * item.qty;
+          }
+        });
+        discountAmount = originalSubtotal - discountedSubtotal;
       } else if (appliedPromo.type === 'blind') {
         cart.forEach(item => {
           if (item.productId === 'cat-choker') {
@@ -1768,7 +1795,10 @@
         let displayPrice = item.price * item.qty;
         let originalPriceHtml = '';
 
-        if (appliedPromo && appliedPromo.type === 'blind' && item.productId === 'cat-choker') {
+        if (appliedPromo && appliedPromo.type === 'whip_discount' && item.productId === 'synapse-whip') {
+          originalPriceHtml = `<del style="color:var(--text-muted); font-size:0.75rem; margin-right:6px;">NT$ ${(item.price * item.qty).toLocaleString()}</del>`;
+          displayPrice = (item.price - 300) * item.qty;
+        } else if (appliedPromo && appliedPromo.type === 'blind' && item.productId === 'cat-choker') {
           originalPriceHtml = `<del style="color:var(--text-muted); font-size:0.75rem; margin-right:6px;">NT$ ${(item.price * item.qty).toLocaleString()}</del>`;
           displayPrice = 990 * item.qty;
         } else if (appliedPromo && appliedPromo.type === 'early' && item.productId === 'cat-choker') {
