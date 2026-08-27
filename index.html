@@ -718,7 +718,7 @@
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; font-size:0.8rem;">← 返回展廳</button>
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:font-size:0.8rem;">← 返回展廳</button>
         <button onclick="toggleCart(true)" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; cursor:pointer; font-size:0.8rem;">檢視購物車清單 ↗</button>
       </div>
 
@@ -759,13 +759,14 @@
           </div>
         </div>
 
-        <!-- 3. 物流方式 -->
+        <!-- 3. 物流方式 (含面交免運) -->
         <div class="form-box">
           <div class="form-title">03 // 物流交付途徑 (100% 絕密隱密包裝)</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
             <div class="radio-card active" onclick="selectShipping('711', this)">7-11 超商 (+NT$60)</div>
             <div class="radio-card" onclick="selectShipping('family', this)">全家 超商 (+NT$60)</div>
             <div class="radio-card" onclick="selectShipping('home', this)">黑貓 宅配 (+NT$120)</div>
+            <div class="radio-card" onclick="selectShipping('meetup', this)" style="border-color: rgba(0, 255, 136, 0.4);">線下面交 (+NT$0)</div>
           </div>
           <div class="form-group">
             <label id="storeLabel">7-11 門市名稱 / 店號*</label>
@@ -1517,6 +1518,9 @@
     let appliedPromo = null;
 
     function calculateShippingFee(subtotal, shippingType) {
+      if (shippingType === 'meetup') {
+        return 0; // 面交一律免運
+      }
       if (subtotal >= FREE_SHIPPING_THRESHOLD) {
         return 0;
       }
@@ -1828,7 +1832,9 @@
       }
 
       let shippingStatusHtml = '';
-      if (fin.discountedSubtotal >= FREE_SHIPPING_THRESHOLD) {
+      if (currentShippingType === 'meetup') {
+        shippingStatusHtml = `<span style="color:var(--accent-cyan); font-weight:bold;">面交免運 (NT$ 0)</span>`;
+      } else if (fin.discountedSubtotal >= FREE_SHIPPING_THRESHOLD) {
         shippingStatusHtml = `<span style="color:var(--accent-cyan); font-weight:bold;">已達滿額免運 (NT$ 0)</span>`;
       } else {
         const diff = FREE_SHIPPING_THRESHOLD - fin.discountedSubtotal;
@@ -1857,16 +1863,24 @@
       el.classList.add('active');
       currentShippingType = type;
       const label = document.getElementById('storeLabel');
+      const locInput = document.getElementById('shippingLocation');
       
       if(type === '711') {
         currentShippingName = '7-11 超商取貨';
         label.textContent = '7-11 門市名稱 / 店號*';
+        locInput.placeholder = '例如：鑫台北門市 / 991182';
       } else if(type === 'family') {
         currentShippingName = '全家 超商取貨';
         label.textContent = '全家 門市名稱 / 店號*';
-      } else {
+        locInput.placeholder = '例如：鑫台北門市 / 991182';
+      } else if(type === 'home') {
         currentShippingName = '黑貓 宅配到府';
         label.textContent = '收件詳細地址*';
+        locInput.placeholder = '例如：台北市中山區南京東路...';
+      } else if(type === 'meetup') {
+        currentShippingName = '親自接頭／線下面交';
+        label.textContent = '面交預約代號 / 預計接頭地點（請主動接入 Discord / X 客服約定時間）*';
+        locInput.placeholder = '例如：台北車站 / 台北市區面交（已私訊客服確認）';
       }
 
       renderCheckoutView();
