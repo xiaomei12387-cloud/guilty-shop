@@ -291,20 +291,12 @@
     .btn-secondary { width: 100%; padding: 14px; background: #141416; color: var(--accent-cyan); border: 1px solid var(--panel-border); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
     .btn-secondary:hover { border-color: var(--accent-cyan); }
 
-    /* 門市即時搜尋推薦下拉面板 */
-    .store-suggestions-box {
-      position: absolute; top: 100%; left: 0; width: 100%; max-height: 220px;
-      background: #0d0d11; border: 1px solid var(--accent-cyan);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.9); z-index: 50; overflow-y: auto;
-      display: none; border-radius: 0 0 4px 4px;
+    /* 三段式下拉選單專用格線與選定資訊卡 */
+    .store-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .store-confirmed-card {
+      background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan);
+      padding: 12px; border-radius: 4px; font-size: 0.82rem; margin-top: 8px; line-height: 1.6;
     }
-    .store-suggestion-item {
-      padding: 10px 12px; border-bottom: 1px dashed #262930; cursor: pointer; font-size: 0.8rem;
-      transition: background 0.2s;
-    }
-    .store-suggestion-item:hover { background: rgba(0, 255, 136, 0.12); }
-    .store-suggestion-item strong { color: #fff; display: block; font-size: 0.85rem; }
-    .store-suggestion-item span { color: var(--text-muted); font-size: 0.72rem; }
 
     /* 成功下單憑證 */
     .success-card { background: var(--card-bg); border: 1px solid var(--accent-cyan); box-shadow: 0 0 35px var(--glow-cyan); padding: 32px 20px; border-radius: 4px; text-align: center; }
@@ -772,7 +764,7 @@
           </div>
         </div>
 
-        <!-- 3. 物流方式 (含門市即時搜尋) -->
+        <!-- 3. 物流方式 (三段式聯動選單 - 連線 StoreDB) -->
         <div class="form-box">
           <div class="form-title">03 // 物流交付途徑 (100% 絕密隱密包裝)</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
@@ -781,13 +773,37 @@
             <div class="radio-card" onclick="selectShipping('home', this)">黑貓 宅配 (+NT$120)</div>
             <div class="radio-card" onclick="selectShipping('meetup', this)" style="border-color: rgba(0, 255, 136, 0.4);">線下面交 (+NT$0)</div>
           </div>
-          <div class="form-group">
-            <label id="storeLabel">7-11 門市查詢 / 搜尋輸入（輸入店名或店號即時過濾）*</label>
-            <input type="text" id="shippingLocation" required placeholder="輸入店名（例如：鑫台北）或 6 碼店號..." oninput="onStoreSearchInput(this.value)" autocomplete="off" />
+
+          <!-- 超商下拉選擇器區塊 (7-11 / 全家) -->
+          <div id="cvsDropdownContainer">
+            <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 請直接下拉選取取貨門市（免打字，即時調用 StoreDB）*</label>
+            <div class="store-select-grid">
+              <select id="cvsCitySelect" onchange="onCityChanged(this.value)">
+                <option value="">-- 連線試算表載入縣市中... --</option>
+              </select>
+              <select id="cvsDistSelect" onchange="onDistChanged(this.value)" disabled>
+                <option value="">-- 選擇區域 --</option>
+              </select>
+            </div>
+            <select id="cvsStoreSelect" onchange="onStorePicked(this.value)" disabled style="margin-bottom: 6px;">
+              <option value="">-- 選擇門市名稱 (店號) --</option>
+            </select>
             
-            <!-- 門市即時推薦清單彈出盒 -->
-            <div class="store-suggestions-box" id="storeSuggestionsBox"></div>
+            <div class="store-confirmed-card" id="storeConfirmedCard" style="display:none;">
+              <div style="color:var(--accent-cyan); font-weight:bold;">✔ 已鎖定取貨門市：</div>
+              <div id="confirmedStoreNameText" style="color:#fff; font-size:0.9rem; font-weight:bold;"></div>
+              <div id="confirmedStoreAddrText" style="color:var(--text-muted); font-size:0.75rem;"></div>
+            </div>
           </div>
+
+          <!-- 宅配/面交/手動備用輸入框 -->
+          <div class="form-group" id="manualLocationGroup" style="display:none; margin-top:10px;">
+            <label id="manualStoreLabel">收件詳細地址*</label>
+            <input type="text" id="manualShippingLocation" placeholder="例如：台北市中山區南京東路一段..." />
+          </div>
+
+          <!-- 隱藏 input 儲存最終送出給試算表的地址 -->
+          <input type="hidden" id="finalShippingLocation" required />
         </div>
 
         <!-- 4. 支付方式 -->
@@ -841,72 +857,7 @@
 
   <script>
     // ==========================================
-    // 【門市資料庫 (方案二)】
-    // ==========================================
-    const STORE_DATABASE = {
-      '711': [
-        { id: '991182', name: '7-11 鑫台北門市', addr: '台北市中正區市民大道一段209號' },
-        { id: '131465', name: '7-11 新台藝門市', addr: '新北市板橋區大觀路一段59號' },
-        { id: '110541', name: '7-11 統佳門市', addr: '台北市大安區忠孝東路四段181巷' },
-        { id: '168231', name: '7-11 西門門市', addr: '台北市萬華區成都路60號' },
-        { id: '194781', name: '7-11 巨蛋門市', addr: '高雄市左營區博愛二路777號' },
-        { id: '210984', name: '7-11 逢甲門市', addr: '台中市西屯區文華路100號' },
-        { id: '154890', name: '7-11 成大門市', addr: '台南市東區大學路1號' },
-        { id: '183920', name: '7-11 竹科門市', addr: '新竹市東區光復路一段360號' }
-      ],
-      'family': [
-        { id: '018823', name: '全家 鑫德門市', addr: '台北市中山區八德路二段200號' },
-        { id: '015672', name: '全家 板橋藝文店', addr: '新北市板橋區中正路435號' },
-        { id: '012948', name: '全家 忠孝東店', addr: '台北市大安區忠孝東路四段216巷' },
-        { id: '019842', name: '全家 西門町店', addr: '台北市萬華區漢中街52號' },
-        { id: '016543', name: '全家 台中逢甲店', addr: '台中市西屯區福星路427號' },
-        { id: '014321', name: '全家 高雄六合店', addr: '高雄市新興區六合二路14號' }
-      ]
-    };
-
-    function onStoreSearchInput(query) {
-      const box = document.getElementById('storeSuggestionsBox');
-      const cleanQ = query.trim().toLowerCase();
-
-      if (!cleanQ || (currentShippingType !== '711' && currentShippingType !== 'family')) {
-        box.style.display = 'none';
-        return;
-      }
-
-      const list = STORE_DATABASE[currentShippingType] || [];
-      const matched = list.filter(s => s.name.toLowerCase().includes(cleanQ) || s.id.includes(cleanQ) || s.addr.toLowerCase().includes(cleanQ));
-
-      if (matched.length === 0) {
-        box.innerHTML = `<div style="padding:10px; color:var(--text-muted); font-size:0.75rem;">查無內建門市，特工可直接手動填寫「門市名稱 + 店號」。</div>`;
-        box.style.display = 'block';
-        return;
-      }
-
-      box.innerHTML = matched.map(s => `
-        <div class="store-suggestion-item" onclick="selectStoreItem('${s.name}', '${s.id}', '${s.addr}')">
-          <strong>${s.name} [ 店號：${s.id} ]</strong>
-          <span>${s.addr}</span>
-        </div>
-      `).join('');
-      box.style.display = 'block';
-    }
-
-    function selectStoreItem(name, id, addr) {
-      document.getElementById('shippingLocation').value = `${name} (${id}) - ${addr}`;
-      document.getElementById('storeSuggestionsBox').style.display = 'none';
-    }
-
-    // 點擊空白處關閉門市選單
-    document.addEventListener('click', function(e) {
-      const box = document.getElementById('storeSuggestionsBox');
-      const input = document.getElementById('shippingLocation');
-      if (box && e.target !== box && e.target !== input) {
-        box.style.display = 'none';
-      }
-    });
-
-    // ==========================================
-    // 【系統串接與優惠設定】
+    // 【核心設定與 Google 試算表串接】
     // ==========================================
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
     const FREE_SHIPPING_THRESHOLD = 1800;
@@ -939,6 +890,143 @@
         const el = document.getElementById(sectionId);
         if(el) el.scrollIntoView({ behavior: 'smooth' });
       }, 50);
+    }
+
+    // ==========================================
+    // 【動態從 Google 試算表 (StoreDB) 載入門市】
+    // ==========================================
+    let currentCityDistMap = {};
+
+    function initCvsDropdowns() {
+      const citySelect = document.getElementById('cvsCitySelect');
+      const distSelect = document.getElementById('cvsDistSelect');
+      const storeSelect = document.getElementById('cvsStoreSelect');
+      const card = document.getElementById('storeConfirmedCard');
+
+      citySelect.innerHTML = '<option value="">-- 連線試算表載入縣市中... --</option>';
+      distSelect.innerHTML = '<option value="">-- 選擇區域 --</option>';
+      storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
+      distSelect.disabled = true;
+      storeSelect.disabled = true;
+      if (card) card.style.display = 'none';
+      document.getElementById('finalShippingLocation').value = '';
+
+      const cbName = 'cvsInit_' + Date.now();
+      window[cbName] = function(data) {
+        const s = document.getElementById(cbName);
+        if(s) s.remove();
+        delete window[cbName];
+
+        currentCityDistMap = {};
+        if (data && data.length > 0) {
+          data.forEach(item => {
+            if (!currentCityDistMap[item.city]) {
+              currentCityDistMap[item.city] = new Set();
+            }
+            if (item.dist) {
+              currentCityDistMap[item.city].add(item.dist);
+            }
+          });
+
+          citySelect.innerHTML = '<option value="">-- 選擇縣市 --</option>';
+          Object.keys(currentCityDistMap).forEach(city => {
+            const opt = document.createElement('option');
+            opt.value = city;
+            opt.textContent = city;
+            citySelect.appendChild(opt);
+          });
+        } else {
+          citySelect.innerHTML = '<option value="">-- 試算表暫無門市資料 --</option>';
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = cbName;
+      script.src = `${GOOGLE_SHEET_URL}?action=getCvsLocations&brand=${currentShippingType}&callback=${cbName}`;
+      script.onerror = () => {
+        citySelect.innerHTML = '<option value="">-- 連線超時，請重新選取 --</option>';
+      };
+      document.body.appendChild(script);
+    }
+
+    function onCityChanged(cityName) {
+      const distSelect = document.getElementById('cvsDistSelect');
+      const storeSelect = document.getElementById('cvsStoreSelect');
+      const card = document.getElementById('storeConfirmedCard');
+      distSelect.innerHTML = '<option value="">-- 選擇區域 --</option>';
+      storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
+      storeSelect.disabled = true;
+      if (card) card.style.display = 'none';
+      document.getElementById('finalShippingLocation').value = '';
+
+      if (!cityName || !currentCityDistMap[cityName]) {
+        distSelect.disabled = true;
+        return;
+      }
+
+      currentCityDistMap[cityName].forEach(dist => {
+        const opt = document.createElement('option');
+        opt.value = dist;
+        opt.textContent = dist;
+        distSelect.appendChild(opt);
+      });
+      distSelect.disabled = false;
+    }
+
+    function onDistChanged(distName) {
+      const cityName = document.getElementById('cvsCitySelect').value;
+      const storeSelect = document.getElementById('cvsStoreSelect');
+      const card = document.getElementById('storeConfirmedCard');
+      storeSelect.innerHTML = '<option value="">-- 門市清單載入中... --</option>';
+      storeSelect.disabled = true;
+      if (card) card.style.display = 'none';
+      document.getElementById('finalShippingLocation').value = '';
+
+      if (!distName) return;
+
+      const cbName = 'cvsStore_' + Date.now();
+      window[cbName] = function(stores) {
+        const s = document.getElementById(cbName);
+        if(s) s.remove();
+        delete window[cbName];
+
+        if (stores && stores.length > 0) {
+          storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
+          stores.forEach(st => {
+            const opt = document.createElement('option');
+            opt.value = JSON.stringify(st);
+            opt.textContent = `${st.name} [店號: ${st.id}]`;
+            storeSelect.appendChild(opt);
+          });
+          storeSelect.disabled = false;
+        } else {
+          storeSelect.innerHTML = '<option value="">-- 該區無門市資料 --</option>';
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = cbName;
+      script.src = `${GOOGLE_SHEET_URL}?action=getCvsLocations&brand=${currentShippingType}&city=${encodeURIComponent(cityName)}&dist=${encodeURIComponent(distName)}&callback=${cbName}`;
+      script.onerror = () => {
+        storeSelect.innerHTML = '<option value="">-- 載入失敗，請重新選取 --</option>';
+      };
+      document.body.appendChild(script);
+    }
+
+    function onStorePicked(storeJsonStr) {
+      const card = document.getElementById('storeConfirmedCard');
+      if (!storeJsonStr) {
+        card.style.display = 'none';
+        document.getElementById('finalShippingLocation').value = '';
+        return;
+      }
+
+      const store = JSON.parse(storeJsonStr);
+      document.getElementById('confirmedStoreNameText').textContent = `${store.name} (店號: ${store.id})`;
+      document.getElementById('confirmedStoreAddrText').textContent = store.addr;
+      card.style.display = 'block';
+
+      document.getElementById('finalShippingLocation').value = `${store.name} (${store.id}) - ${store.addr}`;
     }
 
     // ==========================================
@@ -1030,10 +1118,8 @@
 
         const nameInput = document.getElementById('custName');
         const phoneInput = document.getElementById('custPhone');
-        const locInput = document.getElementById('shippingLocation');
         if(nameInput) nameInput.value = memberProfile.name || '';
         if(phoneInput) phoneInput.value = memberProfile.phone || '';
-        if(locInput && !locInput.value) locInput.value = memberProfile.lastLocation || '';
       } else {
         btn.textContent = `[ 訪客 ]`;
         btn.style.borderColor = 'var(--panel-border)';
@@ -1616,6 +1702,7 @@
       toggleCart(false);
       renderCheckoutView();
       setActiveView('view-checkout');
+      initCvsDropdowns();
       updateMemberUI();
       if (push) {
         history.pushState({ view: 'checkout' }, '', '#checkout');
@@ -1943,27 +2030,34 @@
       el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
       el.classList.add('active');
       currentShippingType = type;
-      const label = document.getElementById('storeLabel');
-      const locInput = document.getElementById('shippingLocation');
-      const box = document.getElementById('storeSuggestionsBox');
-      if(box) box.style.display = 'none';
-      
-      if(type === '711') {
-        currentShippingName = '7-11 超商取貨';
-        label.textContent = '7-11 門市查詢 / 搜尋輸入（輸入店名或店號即時過濾）*';
-        locInput.placeholder = '輸入店名（例如：鑫台北）或 6 碼店號...';
-      } else if(type === 'family') {
-        currentShippingName = '全家 超商取貨';
-        label.textContent = '全家 門市查詢 / 搜尋輸入（輸入店名或店號即時過濾）*';
-        locInput.placeholder = '輸入店名（例如：鑫德）或 6 碼店號...';
+
+      const cvsContainer = document.getElementById('cvsDropdownContainer');
+      const manualGroup = document.getElementById('manualLocationGroup');
+      const manualLabel = document.getElementById('manualStoreLabel');
+      const manualInput = document.getElementById('manualShippingLocation');
+
+      if(type === '711' || type === 'family') {
+        currentShippingName = type === '711' ? '7-11 超商取貨' : '全家 超商取貨';
+        cvsContainer.style.display = 'block';
+        manualGroup.style.display = 'none';
+        manualInput.required = false;
+        initCvsDropdowns();
       } else if(type === 'home') {
         currentShippingName = '黑貓 宅配到府';
-        label.textContent = '收件詳細地址*';
-        locInput.placeholder = '例如：台北市中山區南京東路...';
+        cvsContainer.style.display = 'none';
+        manualGroup.style.display = 'block';
+        manualLabel.textContent = '收件詳細地址*';
+        manualInput.placeholder = '例如：台北市中山區南京東路一段...';
+        manualInput.required = true;
+        document.getElementById('finalShippingLocation').value = '';
       } else if(type === 'meetup') {
         currentShippingName = '親自接頭／線下面交';
-        label.textContent = '面交預約代號 / 預計接頭地點（請主動接入 Discord / X 客服約定時間）*';
-        locInput.placeholder = '例如：台北車站 / 台北市區面交（已私訊客服確認）';
+        cvsContainer.style.display = 'none';
+        manualGroup.style.display = 'block';
+        manualLabel.textContent = '面交預約代號 / 預計接頭地點（請主動接入 Discord / X 客服約定時間）*';
+        manualInput.placeholder = '例如：台北車站 / 台北市區面交（已私訊客服確認）';
+        manualInput.required = true;
+        document.getElementById('finalShippingLocation').value = '';
       }
 
       renderCheckoutView();
@@ -1996,6 +2090,21 @@
         return;
       }
 
+      let locationText = '';
+      if(currentShippingType === '711' || currentShippingType === 'family') {
+        locationText = document.getElementById('finalShippingLocation').value.trim();
+        if(!locationText) {
+          alert('請由下拉選單選取具體的【取貨門市】！');
+          return;
+        }
+      } else {
+        locationText = document.getElementById('manualShippingLocation').value.trim();
+        if(!locationText) {
+          alert('請填寫詳細交付地址或面交約定地點！');
+          return;
+        }
+      }
+
       const phoneRaw = document.getElementById('custPhone').value.trim();
       const fin = calculateOrderFinancials();
 
@@ -2014,7 +2123,7 @@
         phone: phoneRaw,
         engraving: document.getElementById('custEngraving').value.trim() || '無',
         shipping: currentShippingName,
-        location: document.getElementById('shippingLocation').value.trim(),
+        location: locationText,
         payment: currentPayment,
         role: memberProfile ? memberProfile.role : '訪客',
         status: '[ 排程調用中 ]',
