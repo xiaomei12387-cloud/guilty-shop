@@ -50,15 +50,13 @@
     .skip-btn { position: absolute; bottom: 30px; font-size: 0.75rem; color: var(--text-muted); border: 1px solid var(--panel-border); padding: 6px 14px; cursor: pointer; letter-spacing: 2px; background: transparent; }
     @keyframes fillProgress { 0% { width: 0%; } 100% { width: 100%; } }
 
-    /* 背景與掃描線：淡化網格，移除干擾文字的 CRT 橫向掃描線 */
+    /* 背景 */
     body::before {
       content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(rgba(0, 255, 136, 0.008) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 136, 0.008) 1px, transparent 1px);
       background-size: 40px 40px; z-index: -2; pointer-events: none;
     }
-    body::after {
-      display: none;
-    }
+    body::after { display: none; }
 
     /* 頂部導覽列 */
     header {
@@ -279,7 +277,7 @@
     @keyframes cardSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 
     .form-title { font-size: 1rem; color: var(--accent-cyan); margin-bottom: 14px; border-bottom: 1px solid var(--panel-border); padding-bottom: 6px; }
-    .form-group { margin-bottom: 14px; }
+    .form-group { margin-bottom: 14px; position: relative; }
     label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
     input, select { width: 100%; padding: 12px; background: #000; border: 1px solid var(--panel-border); color: #fff; font-size: 0.9rem; outline: none; }
     input:focus, select:focus { border-color: var(--accent-cyan); }
@@ -292,6 +290,21 @@
     .btn-submit:hover { background: #fff; }
     .btn-secondary { width: 100%; padding: 14px; background: #141416; color: var(--accent-cyan); border: 1px solid var(--panel-border); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
     .btn-secondary:hover { border-color: var(--accent-cyan); }
+
+    /* 門市即時搜尋推薦下拉面板 */
+    .store-suggestions-box {
+      position: absolute; top: 100%; left: 0; width: 100%; max-height: 220px;
+      background: #0d0d11; border: 1px solid var(--accent-cyan);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.9); z-index: 50; overflow-y: auto;
+      display: none; border-radius: 0 0 4px 4px;
+    }
+    .store-suggestion-item {
+      padding: 10px 12px; border-bottom: 1px dashed #262930; cursor: pointer; font-size: 0.8rem;
+      transition: background 0.2s;
+    }
+    .store-suggestion-item:hover { background: rgba(0, 255, 136, 0.12); }
+    .store-suggestion-item strong { color: #fff; display: block; font-size: 0.85rem; }
+    .store-suggestion-item span { color: var(--text-muted); font-size: 0.72rem; }
 
     /* 成功下單憑證 */
     .success-card { background: var(--card-bg); border: 1px solid var(--accent-cyan); box-shadow: 0 0 35px var(--glow-cyan); padding: 32px 20px; border-radius: 4px; text-align: center; }
@@ -384,7 +397,7 @@
         </div>
         <div class="form-group">
           <label>預設交付超商 / 寄送地址</label>
-          <input type="text" id="authLocation" placeholder="例如：7-11 鑫台北門市" />
+          <input type="text" id="authLocation" placeholder="例如：7-11 鑫台北門市 (991182)" />
         </div>
         <button type="submit" class="btn-submit" style="margin-top:12px; padding:12px;">注入身份數據 (VERIFY)</button>
         <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:10px; cursor:pointer;">[ 斷開當前連結 / 退出身份 ]</button>
@@ -718,7 +731,7 @@
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:font-size:0.8rem;">← 返回展廳</button>
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; font-size:0.8rem;">← 返回展廳</button>
         <button onclick="toggleCart(true)" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; cursor:pointer; font-size:0.8rem;">檢視購物車清單 ↗</button>
       </div>
 
@@ -759,7 +772,7 @@
           </div>
         </div>
 
-        <!-- 3. 物流方式 (含面交免運) -->
+        <!-- 3. 物流方式 (含門市即時搜尋) -->
         <div class="form-box">
           <div class="form-title">03 // 物流交付途徑 (100% 絕密隱密包裝)</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
@@ -769,8 +782,11 @@
             <div class="radio-card" onclick="selectShipping('meetup', this)" style="border-color: rgba(0, 255, 136, 0.4);">線下面交 (+NT$0)</div>
           </div>
           <div class="form-group">
-            <label id="storeLabel">7-11 門市名稱 / 店號*</label>
-            <input type="text" id="shippingLocation" required placeholder="例如：鑫台北門市 / 991182" />
+            <label id="storeLabel">7-11 門市查詢 / 搜尋輸入（輸入店名或店號即時過濾）*</label>
+            <input type="text" id="shippingLocation" required placeholder="輸入店名（例如：鑫台北）或 6 碼店號..." oninput="onStoreSearchInput(this.value)" autocomplete="off" />
+            
+            <!-- 門市即時推薦清單彈出盒 -->
+            <div class="store-suggestions-box" id="storeSuggestionsBox"></div>
           </div>
         </div>
 
@@ -824,6 +840,71 @@
   </div>
 
   <script>
+    // ==========================================
+    // 【門市資料庫 (方案二)】
+    // ==========================================
+    const STORE_DATABASE = {
+      '711': [
+        { id: '991182', name: '7-11 鑫台北門市', addr: '台北市中正區市民大道一段209號' },
+        { id: '131465', name: '7-11 新台藝門市', addr: '新北市板橋區大觀路一段59號' },
+        { id: '110541', name: '7-11 統佳門市', addr: '台北市大安區忠孝東路四段181巷' },
+        { id: '168231', name: '7-11 西門門市', addr: '台北市萬華區成都路60號' },
+        { id: '194781', name: '7-11 巨蛋門市', addr: '高雄市左營區博愛二路777號' },
+        { id: '210984', name: '7-11 逢甲門市', addr: '台中市西屯區文華路100號' },
+        { id: '154890', name: '7-11 成大門市', addr: '台南市東區大學路1號' },
+        { id: '183920', name: '7-11 竹科門市', addr: '新竹市東區光復路一段360號' }
+      ],
+      'family': [
+        { id: '018823', name: '全家 鑫德門市', addr: '台北市中山區八德路二段200號' },
+        { id: '015672', name: '全家 板橋藝文店', addr: '新北市板橋區中正路435號' },
+        { id: '012948', name: '全家 忠孝東店', addr: '台北市大安區忠孝東路四段216巷' },
+        { id: '019842', name: '全家 西門町店', addr: '台北市萬華區漢中街52號' },
+        { id: '016543', name: '全家 台中逢甲店', addr: '台中市西屯區福星路427號' },
+        { id: '014321', name: '全家 高雄六合店', addr: '高雄市新興區六合二路14號' }
+      ]
+    };
+
+    function onStoreSearchInput(query) {
+      const box = document.getElementById('storeSuggestionsBox');
+      const cleanQ = query.trim().toLowerCase();
+
+      if (!cleanQ || (currentShippingType !== '711' && currentShippingType !== 'family')) {
+        box.style.display = 'none';
+        return;
+      }
+
+      const list = STORE_DATABASE[currentShippingType] || [];
+      const matched = list.filter(s => s.name.toLowerCase().includes(cleanQ) || s.id.includes(cleanQ) || s.addr.toLowerCase().includes(cleanQ));
+
+      if (matched.length === 0) {
+        box.innerHTML = `<div style="padding:10px; color:var(--text-muted); font-size:0.75rem;">查無內建門市，特工可直接手動填寫「門市名稱 + 店號」。</div>`;
+        box.style.display = 'block';
+        return;
+      }
+
+      box.innerHTML = matched.map(s => `
+        <div class="store-suggestion-item" onclick="selectStoreItem('${s.name}', '${s.id}', '${s.addr}')">
+          <strong>${s.name} [ 店號：${s.id} ]</strong>
+          <span>${s.addr}</span>
+        </div>
+      `).join('');
+      box.style.display = 'block';
+    }
+
+    function selectStoreItem(name, id, addr) {
+      document.getElementById('shippingLocation').value = `${name} (${id}) - ${addr}`;
+      document.getElementById('storeSuggestionsBox').style.display = 'none';
+    }
+
+    // 點擊空白處關閉門市選單
+    document.addEventListener('click', function(e) {
+      const box = document.getElementById('storeSuggestionsBox');
+      const input = document.getElementById('shippingLocation');
+      if (box && e.target !== box && e.target !== input) {
+        box.style.display = 'none';
+      }
+    });
+
     // ==========================================
     // 【系統串接與優惠設定】
     // ==========================================
@@ -1519,7 +1600,7 @@
 
     function calculateShippingFee(subtotal, shippingType) {
       if (shippingType === 'meetup') {
-        return 0; // 面交一律免運
+        return 0;
       }
       if (subtotal >= FREE_SHIPPING_THRESHOLD) {
         return 0;
@@ -1592,7 +1673,7 @@
 
       const now = new Date();
 
-      // 1. 長鞭專屬折扣碼：TOMOTACHI -> 折扣至 NT$ 1,200 (每件折 300)
+      // 1. 長鞭專屬折扣碼：TOMOTACHI
       if (code === 'TOMOTACHI') {
         const hasWhip = cart.some(item => item.productId === 'synapse-whip');
         if (!hasWhip) {
@@ -1614,7 +1695,7 @@
         return;
       }
 
-      // 2. 盲鳥優惠：LOVEGUILTY (9/6 00:00 - 9/11 19:00) -> 項圈 NT$ 990，限匯款
+      // 2. 盲鳥優惠：LOVEGUILTY
       if (code === 'LOVEGUILTY') {
         const start = new Date('2026-09-06T00:00:00+08:00');
         const end = new Date('2026-09-11T19:00:00+08:00');
@@ -1644,7 +1725,7 @@
         return;
       }
 
-      // 3. 首購優惠：IAMSUB (全單 8 折)
+      // 3. 首購優惠：IAMSUB
       if (code === 'IAMSUB') {
         const phone = document.getElementById('custPhone').value.trim();
         if(!phone) {
@@ -1674,7 +1755,7 @@
         return;
       }
 
-      // 4. 早鳥優惠：WANG18X (9/11 19:00 起為期一個月)
+      // 4. 早鳥優惠：WANG18X
       if (code === 'WANG18X') {
         const start = new Date('2026-09-11T19:00:00+08:00');
         const end = new Date('2026-10-11T19:00:00+08:00');
@@ -1864,15 +1945,17 @@
       currentShippingType = type;
       const label = document.getElementById('storeLabel');
       const locInput = document.getElementById('shippingLocation');
+      const box = document.getElementById('storeSuggestionsBox');
+      if(box) box.style.display = 'none';
       
       if(type === '711') {
         currentShippingName = '7-11 超商取貨';
-        label.textContent = '7-11 門市名稱 / 店號*';
-        locInput.placeholder = '例如：鑫台北門市 / 991182';
+        label.textContent = '7-11 門市查詢 / 搜尋輸入（輸入店名或店號即時過濾）*';
+        locInput.placeholder = '輸入店名（例如：鑫台北）或 6 碼店號...';
       } else if(type === 'family') {
         currentShippingName = '全家 超商取貨';
-        label.textContent = '全家 門市名稱 / 店號*';
-        locInput.placeholder = '例如：鑫台北門市 / 991182';
+        label.textContent = '全家 門市查詢 / 搜尋輸入（輸入店名或店號即時過濾）*';
+        locInput.placeholder = '輸入店名（例如：鑫德）或 6 碼店號...';
       } else if(type === 'home') {
         currentShippingName = '黑貓 宅配到府';
         label.textContent = '收件詳細地址*';
