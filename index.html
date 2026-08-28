@@ -43,7 +43,7 @@
     .svg-eye-path { stroke: var(--accent-cyan); stroke-width: 3; fill: transparent; stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawStroke 1.8s ease-in-out forwards; }
     .svg-pupil { fill: var(--accent-cyan); opacity: 0; animation: pulsePupil 1s ease 1.3s forwards; filter: drop-shadow(0 0 8px var(--accent-cyan)); }
     @keyframes drawStroke { to { stroke-dashoffset: 0; } }
-    @keyframes pulsePupil { 0% { opacity: 0; transform: scaleY(0.1); } 100% { opacity: 1; transform: scaleY(1); } }
+    @keyframes pulsePupil { 0% { opacity: 0; transform: scaleY(0.1); } 100% { transform: scaleY(1); } }
 
     .boot-progress-bar { width: 100%; height: 2px; background: #1a1a1f; margin-top: 25px; position: relative; overflow: hidden; }
     .boot-progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); animation: fillProgress 2.2s cubic-bezier(0.1, 0.7, 0.1, 1) forwards; }
@@ -764,7 +764,7 @@
           </div>
         </div>
 
-        <!-- 3. 物流方式 (三段式聯動選單 - 連線 StoreDB) -->
+        <!-- 3. 物流方式 (三段式聯動選單 + 路名過濾 - 連線 StoreDB) -->
         <div class="form-box">
           <div class="form-title">03 // 物流交付途徑 (100% 絕密隱密包裝)</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
@@ -776,7 +776,9 @@
 
           <!-- 超商下拉選擇器區塊 (7-11 / 全家) -->
           <div id="cvsDropdownContainer">
-            <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 請直接下拉選取取貨門市（免打字，即時調用 StoreDB）*</label>
+            <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 選擇取貨門市（支援縣市/區域與路名即時檢索）*</label>
+            
+            <!-- 1. 縣市與行政區 -->
             <div class="store-select-grid">
               <select id="cvsCitySelect" onchange="onCityChanged(this.value)">
                 <option value="">-- 連線試算表載入縣市中... --</option>
@@ -785,10 +787,20 @@
                 <option value="">-- 選擇區域 --</option>
               </select>
             </div>
+
+            <!-- 2. 路名/地標關鍵字即時過濾輸入框 -->
+            <div style="margin: 8px 0; position: relative;">
+              <input type="text" id="cvsStreetFilter" placeholder="🔍 輸入路名或地標過濾（例如：南京東路、大觀路）..." 
+                     oninput="filterStoresByKeyword(this.value)" disabled 
+                     style="font-size: 0.82rem; padding: 10px; border-color: #333;" />
+            </div>
+
+            <!-- 3. 門市選單 -->
             <select id="cvsStoreSelect" onchange="onStorePicked(this.value)" disabled style="margin-bottom: 6px;">
               <option value="">-- 選擇門市名稱 (店號) --</option>
             </select>
             
+            <!-- 4. 已鎖定門市資訊卡 -->
             <div class="store-confirmed-card" id="storeConfirmedCard" style="display:none;">
               <div style="color:var(--accent-cyan); font-weight:bold;">✔ 已鎖定取貨門市：</div>
               <div id="confirmedStoreNameText" style="color:#fff; font-size:0.9rem; font-weight:bold;"></div>
@@ -893,14 +905,16 @@
     }
 
     // ==========================================
-    // 【動態從 Google 試算表 (StoreDB) 載入門市】
+    // 【動態從 Google 試算表 (StoreDB) 載入門市 + 路名過濾】
     // ==========================================
     let currentCityDistMap = {};
+    let currentDistrictStores = [];
 
     function initCvsDropdowns() {
       const citySelect = document.getElementById('cvsCitySelect');
       const distSelect = document.getElementById('cvsDistSelect');
       const storeSelect = document.getElementById('cvsStoreSelect');
+      const filterInput = document.getElementById('cvsStreetFilter');
       const card = document.getElementById('storeConfirmedCard');
 
       citySelect.innerHTML = '<option value="">-- 連線試算表載入縣市中... --</option>';
@@ -908,6 +922,11 @@
       storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
       distSelect.disabled = true;
       storeSelect.disabled = true;
+      filterInput.disabled = true;
+      filterInput.value = '';
+      filterInput.style.borderColor = '#333';
+      currentDistrictStores = [];
+
       if (card) card.style.display = 'none';
       document.getElementById('finalShippingLocation').value = '';
 
@@ -952,10 +971,17 @@
     function onCityChanged(cityName) {
       const distSelect = document.getElementById('cvsDistSelect');
       const storeSelect = document.getElementById('cvsStoreSelect');
+      const filterInput = document.getElementById('cvsStreetFilter');
       const card = document.getElementById('storeConfirmedCard');
+      
       distSelect.innerHTML = '<option value="">-- 選擇區域 --</option>';
       storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
       storeSelect.disabled = true;
+      filterInput.disabled = true;
+      filterInput.value = '';
+      filterInput.style.borderColor = '#333';
+      currentDistrictStores = [];
+
       if (card) card.style.display = 'none';
       document.getElementById('finalShippingLocation').value = '';
 
@@ -976,9 +1002,16 @@
     function onDistChanged(distName) {
       const cityName = document.getElementById('cvsCitySelect').value;
       const storeSelect = document.getElementById('cvsStoreSelect');
+      const filterInput = document.getElementById('cvsStreetFilter');
       const card = document.getElementById('storeConfirmedCard');
+      
       storeSelect.innerHTML = '<option value="">-- 門市清單載入中... --</option>';
       storeSelect.disabled = true;
+      filterInput.disabled = true;
+      filterInput.value = '';
+      filterInput.style.borderColor = '#333';
+      currentDistrictStores = [];
+
       if (card) card.style.display = 'none';
       document.getElementById('finalShippingLocation').value = '';
 
@@ -991,15 +1024,12 @@
         delete window[cbName];
 
         if (stores && stores.length > 0) {
-          storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
-          stores.forEach(st => {
-            const opt = document.createElement('option');
-            opt.value = JSON.stringify(st);
-            opt.textContent = `${st.name} [店號: ${st.id}]`;
-            storeSelect.appendChild(opt);
-          });
-          storeSelect.disabled = false;
+          currentDistrictStores = stores;
+          renderStoreOptions(stores);
+          filterInput.disabled = false;
+          filterInput.style.borderColor = 'var(--accent-cyan)';
         } else {
+          currentDistrictStores = [];
           storeSelect.innerHTML = '<option value="">-- 該區無門市資料 --</option>';
         }
       };
@@ -1011,6 +1041,40 @@
         storeSelect.innerHTML = '<option value="">-- 載入失敗，請重新選取 --</option>';
       };
       document.body.appendChild(script);
+    }
+
+    function filterStoresByKeyword(keyword) {
+      const cleanK = keyword.trim().toLowerCase();
+      if (!cleanK) {
+        renderStoreOptions(currentDistrictStores);
+        return;
+      }
+
+      const filtered = currentDistrictStores.filter(s => 
+        s.name.toLowerCase().includes(cleanK) || 
+        s.addr.toLowerCase().includes(cleanK) ||
+        s.id.includes(cleanK)
+      );
+
+      renderStoreOptions(filtered);
+    }
+
+    function renderStoreOptions(list) {
+      const storeSelect = document.getElementById('cvsStoreSelect');
+      if (!list || list.length === 0) {
+        storeSelect.innerHTML = '<option value="">-- 查無相符路名/名稱之門市 --</option>';
+        storeSelect.disabled = true;
+        return;
+      }
+
+      storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
+      list.forEach(st => {
+        const opt = document.createElement('option');
+        opt.value = JSON.stringify(st);
+        opt.textContent = `${st.name} [${st.addr}]`;
+        storeSelect.appendChild(opt);
+      });
+      storeSelect.disabled = false;
     }
 
     function onStorePicked(storeJsonStr) {
