@@ -38,12 +38,11 @@
     #intro-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
     .intro-logo-box { width: 100%; max-width: 300px; text-align: center; }
     
-    /* 貓眼 Logo 動畫 */
     .cyber-cat-eye-svg { width: 84px; height: 84px; margin: 0 auto 12px; display: block; }
     .svg-eye-path { stroke: var(--accent-cyan); stroke-width: 3; fill: transparent; stroke-dasharray: 400; stroke-dashoffset: 400; animation: drawStroke 1.8s ease-in-out forwards; }
     .svg-pupil { fill: var(--accent-cyan); opacity: 0; animation: pulsePupil 1s ease 1.3s forwards; filter: drop-shadow(0 0 8px var(--accent-cyan)); }
     @keyframes drawStroke { to { stroke-dashoffset: 0; } }
-    @keyframes pulsePupil { 0% { opacity: 0; transform: scaleY(0.1); } 100% { transform: scaleY(1); } }
+    @keyframes pulsePupil { 0% { opacity: 0; transform: scaleY(0.1); } 100% { opacity: 1; transform: scaleY(1); } }
 
     .boot-progress-bar { width: 100%; height: 2px; background: #1a1a1f; margin-top: 25px; position: relative; overflow: hidden; }
     .boot-progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); animation: fillProgress 2.2s cubic-bezier(0.1, 0.7, 0.1, 1) forwards; }
@@ -56,7 +55,6 @@
       background: linear-gradient(rgba(0, 255, 136, 0.008) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 136, 0.008) 1px, transparent 1px);
       background-size: 40px 40px; z-index: -2; pointer-events: none;
     }
-    body::after { display: none; }
 
     /* 頂部導覽列 */
     header {
@@ -128,7 +126,7 @@
     .cart-item-del { position: absolute; top: 8px; right: 8px; color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.9rem; }
     .cart-item-del:hover { color: var(--danger-red); }
 
-    /* 會員認證彈窗 */
+    /* 會員認證彈窗與特工檔案中心 */
     .auth-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
       background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(16px);
@@ -136,11 +134,11 @@
     }
     .auth-modal.active { display: flex; }
     .auth-box {
-      width: 100%; max-width: 400px; background: rgba(15, 15, 18, 0.95);
+      width: 100%; max-width: 440px; background: rgba(15, 15, 18, 0.98);
       border: 1px solid var(--accent-cyan); box-shadow: 0 0 30px var(--glow-cyan);
-      padding: 28px 22px; position: relative;
+      padding: 26px 22px; position: relative; max-height: 90dvh; overflow-y: auto;
     }
-    .auth-header { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed var(--panel-border); padding-bottom: 12px; }
+    .auth-header { text-align: center; margin-bottom: 16px; border-bottom: 1px dashed var(--panel-border); padding-bottom: 10px; }
     .auth-title { font-size: 1.15rem; letter-spacing: 2px; color: #fff; }
     .auth-sub { font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 1px; margin-top: 4px; }
     .auth-close { position: absolute; top: 12px; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; background: none; border: none; }
@@ -200,18 +198,13 @@
     .spec-label { color: var(--text-muted); }
     .spec-val { color: #fff; font-weight: bold; text-align: right; }
 
-    /* 項圈肉球壓印互動印記框 */
     .stamp-preview { width: 120px; height: 120px; border-radius: 50%; border: 2px dashed var(--panel-border); display: flex; align-items: center; justify-content: center; margin: 12px auto; cursor: pointer; transition: all 0.3s; }
 
     /* FAQ 模組 */
-    .faq-item {
-      background: var(--card-bg); border: 1px solid var(--panel-border);
-      padding: 16px; margin-bottom: 12px; border-radius: 4px;
-    }
+    .faq-item { background: var(--card-bg); border: 1px solid var(--panel-border); padding: 16px; margin-bottom: 12px; border-radius: 4px; }
     .faq-q { color: var(--accent-cyan); font-weight: bold; font-size: 0.95rem; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
     .faq-a { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; }
 
-    /* 隱私保證徽章 */
     .stealth-badge-card {
       background: rgba(0, 255, 136, 0.03); border: 1px dashed var(--accent-cyan);
       padding: 16px; margin: 24px 0; border-radius: 4px; display: flex; align-items: center; gap: 14px;
@@ -279,8 +272,8 @@
     .form-title { font-size: 1rem; color: var(--accent-cyan); margin-bottom: 14px; border-bottom: 1px solid var(--panel-border); padding-bottom: 6px; }
     .form-group { margin-bottom: 14px; position: relative; }
     label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-    input, select { width: 100%; padding: 12px; background: #000; border: 1px solid var(--panel-border); color: #fff; font-size: 0.9rem; outline: none; }
-    input:focus, select:focus { border-color: var(--accent-cyan); }
+    input, select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid var(--panel-border); color: #fff; font-size: 0.9rem; outline: none; }
+    input:focus, select:focus, textarea:focus { border-color: var(--accent-cyan); }
     .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
     .radio-card { border: 1px solid var(--panel-border); padding: 12px 8px; text-align: center; cursor: pointer; font-size: 0.85rem; background: #0c0c0e; transition: all 0.2s; }
     .radio-card.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,255,136,0.08); font-weight: bold; }
@@ -291,7 +284,6 @@
     .btn-secondary { width: 100%; padding: 14px; background: #141416; color: var(--accent-cyan); border: 1px solid var(--panel-border); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
     .btn-secondary:hover { border-color: var(--accent-cyan); }
 
-    /* 三段式下拉選單專用格線與選定資訊卡 */
     .store-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
     .store-confirmed-card {
       background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan);
@@ -363,37 +355,74 @@
     </div>
   </div>
 
-  <!-- 會員認證彈窗 -->
+  <!-- 會員認證彈窗 (Email OTP ＋ 特工檔案中心) -->
   <div class="auth-modal" id="authModal">
     <div class="auth-box">
       <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
-      <div class="auth-header">
-        <div class="auth-title">終端身份認證</div>
-        <div class="auth-sub">[ PROTOCOL // AGENT REGISTRATION ]</div>
+      
+      <!-- 狀態 A：尚未登入 (Email OTP 驗證流程) -->
+      <div id="authLoginSection">
+        <div class="auth-header">
+          <div class="auth-title">特工身分認證</div>
+          <div class="auth-sub">[ PROTOCOL // AGENT OTP VERIFICATION ]</div>
+        </div>
+
+        <form id="otpRequestForm" onsubmit="handleSendOtp(event)">
+          <div class="form-group">
+            <label>特工安全信箱 (Email)*</label>
+            <div style="display:flex; gap:6px;">
+              <input type="email" id="authEmailInput" required placeholder="agent@guilty-cyber.app" />
+              <button type="submit" id="btnSendOtp" style="background:var(--accent-cyan); color:#000; border:none; padding:0 12px; font-size:0.75rem; font-weight:bold; cursor:pointer; white-space:nowrap;">發送驗證碼</button>
+            </div>
+            <div id="otpTimerNotice" style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;"></div>
+          </div>
+        </form>
+
+        <form id="otpVerifyForm" onsubmit="handleVerifyOtp(event)">
+          <div class="form-group">
+            <label>6 位數驗證碼 (OTP)*</label>
+            <input type="text" id="authOtpInput" required maxlength="6" placeholder="輸入信箱中的 6 碼數字" style="letter-spacing:4px; font-size:1.1rem; text-align:center;" />
+          </div>
+          <button type="submit" class="btn-submit" id="btnVerifySubmit" style="padding:12px; font-size:0.9rem;">驗證並解鎖檔案庫 (VERIFY)</button>
+        </form>
       </div>
 
-      <div class="role-toggle-grid">
-        <div class="role-btn active" id="roleDom" onclick="setAuthRole('支配者 (Dom)')">支配 [Dom]</div>
-        <div class="role-btn" id="roleSwitch" onclick="setAuthRole('切換者 (Switch)')">切換 [Switch]</div>
-        <div class="role-btn" id="roleSub" onclick="setAuthRole('服從者 (Sub)')">服從 [Sub]</div>
+      <!-- 狀態 B：已登入 (特工檔案管理與陣營設定) -->
+      <div id="authProfileSection" style="display:none;">
+        <div class="auth-header">
+          <div class="auth-title">特工檔案中心</div>
+          <div class="auth-sub" id="profileEmailBadge" style="color:var(--accent-cyan);">[ VERIFIED AGENT ]</div>
+        </div>
+
+        <form id="profileSaveForm" onsubmit="handleSaveProfile(event)">
+          <div class="role-toggle-grid">
+            <div class="role-btn active" id="roleDom" onclick="setProfileRole('支配者 (Dom)')">支配 [Dom]</div>
+            <div class="role-btn" id="roleSwitch" onclick="setProfileRole('切換者 (Switch)')">切換 [Switch]</div>
+            <div class="role-btn" id="roleSub" onclick="setProfileRole('服從者 (Sub)')">服從 [Sub]</div>
+          </div>
+
+          <div class="form-group">
+            <label>特工代號 / 嫌疑人名稱*</label>
+            <input type="text" id="profName" required placeholder="例如：18X / 支配者 K" />
+          </div>
+          <div class="form-group">
+            <label>聯絡電話 (手機號碼)*</label>
+            <input type="tel" id="profPhone" required placeholder="0912-345-678" />
+          </div>
+          <div class="form-group">
+            <label>淨脖圍參數 (cm，用於項圈尺寸建議)</label>
+            <input type="text" id="profNeckSize" placeholder="例如：30.5 cm" />
+          </div>
+          <div class="form-group">
+            <label>預設交付超商 (店名/店號/地址)</label>
+            <input type="text" id="profLocation" placeholder="例如：7-11 鑫台北門市 (991182)" />
+          </div>
+
+          <button type="submit" class="btn-submit" style="padding:12px; font-size:0.9rem;">更新檔案數據 (SAVE)</button>
+          <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:12px; cursor:pointer;">[ 斷開神經連結 / 退出登入 ]</button>
+        </form>
       </div>
 
-      <form id="authForm">
-        <div class="form-group">
-          <label>嫌疑人 / 配戴者代號*</label>
-          <input type="text" id="authName" required placeholder="例如：18X / 支配者 K" />
-        </div>
-        <div class="form-group">
-          <label>終端聯絡電話（個人唯一識別帳號）*</label>
-          <input type="tel" id="authPhone" required placeholder="0912-345-678" />
-        </div>
-        <div class="form-group">
-          <label>預設交付超商 / 寄送地址</label>
-          <input type="text" id="authLocation" placeholder="例如：7-11 鑫台北門市 (991182)" />
-        </div>
-        <button type="submit" class="btn-submit" style="margin-top:12px; padding:12px;">注入身份數據 (VERIFY)</button>
-        <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:10px; cursor:pointer;">[ 斷開當前連結 / 退出身份 ]</button>
-      </form>
     </div>
   </div>
 
@@ -449,6 +478,7 @@
         <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">05 // 特工指南 (FAQ)</a></li>
         <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">06 // 主理核心 (CREW)</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">07 // 個人調用紀錄 (MY DOSSIER)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openSellerAuth()" style="color:var(--accent-cyan);">08 // 創作者後台 (SELLER PORTAL) 🔒</a></li>
       </ul>
     </div>
 
@@ -511,37 +541,28 @@
         <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:16px;">全系列裝備皆由主理人團隊親自研發打樣、結構力學驗證與繩藝認證。</p>
 
         <div class="matrix-grid">
-          <!-- 矩陣 1: 義體外骨骼 -->
           <div class="matrix-card">
             <div class="matrix-num">DIVISION 01 // CYBERNETICS</div>
             <div class="matrix-title">義體外骨骼拘束器</div>
-            <div class="matrix-desc">
-              主理人 18X 參數化建模。工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。
-            </div>
+            <div class="matrix-desc">主理人 18X 參數化建模。工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
             <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">
               ✦ 貓痕拘束項圈 <span style="color:#ff334b; font-size:0.7rem;">[ 09.11 開放預購 ]</span>
             </div>
           </div>
 
-          <!-- 矩陣 2: 束室繩藝 -->
           <div class="matrix-card card-shushi">
             <div class="matrix-num">DIVISION 02 // ROPE ART</div>
             <div class="matrix-title">束室特選精煉繩藝</div>
-            <div class="matrix-desc">
-              shushi束室工坊監製。經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌、抗拉力強韌。
-            </div>
+            <div class="matrix-desc">shushi束室工坊監製。經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌、抗拉力強韌。</div>
             <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-purple); font-weight:bold;">
               ✦ 13 色精煉麻繩 / 原色生繩 <span style="color:var(--accent-cyan); font-size:0.7rem;">[ 現貨正常調用 ]</span>
             </div>
           </div>
 
-          <!-- 矩陣 3: 行為校準與戰術裝備 -->
           <div class="matrix-card">
             <div class="matrix-num">DIVISION 03 // CALIBRATION & TACTICAL</div>
             <div class="matrix-title">神經校準與戰術裝備</div>
-            <div class="matrix-desc">
-              重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹 SSC 安全脫離與精準神經回饋。
-            </div>
+            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹 SSC 安全脫離與精準神經回饋。</div>
             <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">
               ✦ 神經突觸長鞭 / 護腕墊 <span style="color:var(--accent-cyan); font-size:0.7rem;">[ 現貨/預製調用 ]</span>
             </div>
@@ -597,7 +618,6 @@
           </div>
         </div>
 
-        <!-- 100% 隱私交付承諾卡 -->
         <div class="stealth-badge-card">
           <div style="font-size: 1.8rem;">🔒</div>
           <div>
@@ -615,7 +635,6 @@
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
 
         <div class="team-grid">
-          <!-- 18X -->
           <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
             <div class="team-header">
               <div class="team-role">DESIGN DIRECTOR</div>
@@ -623,12 +642,9 @@
             </div>
             <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">18X</div>
             <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@18X_inthc</div>
-            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-              主理品牌視覺體系、參數化外骨骼建模（Rhino / Fusion 360）與結構研發。
-            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">主理品牌視覺體系、參數化外骨骼建模與結構研發。</div>
           </a>
 
-          <!-- 老王 -->
           <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
             <div class="team-header">
               <div class="team-role">COMMUNITY & OPERATIONS</div>
@@ -636,12 +652,9 @@
             </div>
             <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">老王</div>
             <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@Take1809DL</div>
-            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-              深耕次文化圈層與實踐社群。專注於特工終端營運、訂單對帳與調用排程，並主理外部商務合作與選物通路對接。
-            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">深耕次文化圈層與實踐社群。專注於特工終端營運與外部通路對接。</div>
           </a>
 
-          <!-- shushi束室 -->
           <a href="https://x.com/220shushi" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
             <div class="team-header">
               <div class="team-role">STRATEGIC ALLIANCE</div>
@@ -649,9 +662,7 @@
             </div>
             <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">shushi束室 繩教室</div>
             <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@220shushi</div>
-            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">
-              專業繩縛教學與技術認證工坊。提供高標準繩材選品與護具監製。
-            </div>
+            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">專業繩縛教學與技術認證工坊。提供高標準繩材選品與護具監製。</div>
           </a>
         </div>
       </section>
@@ -664,12 +675,11 @@
 
         <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; max-width: 500px; margin: 0 auto 30px;">
           <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" 
-             style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(88, 101, 242, 0.12); border: 1px solid #5865F2; color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px; transition: all 0.2s;">
+             style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(88, 101, 242, 0.12); border: 1px solid #5865F2; color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px;">
             👾 DISCORD 終端庫
           </a>
-
           <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" 
-             style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px; transition: all 0.2s;">
+             style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px;">
             𝕏 官方情報局
           </a>
         </div>
@@ -687,7 +697,6 @@
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
       
-      <!-- 頂部裝備大圖預覽區 -->
       <div class="checkout-hero-img-box" id="detailHeroBox">
         <div class="hud-corner hud-tl"></div>
         <div class="hud-corner hud-tr"></div>
@@ -700,10 +709,7 @@
         <div class="form-title" id="detailProductTitle">裝備檔案配置</div>
         <div id="detailProductDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;"></div>
         
-        <!-- 動態規格選項 -->
         <div id="detailDynamicOptions"></div>
-
-        <!-- 專屬深度介紹區 -->
         <div id="detailChokerSpecificArea"></div>
 
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:14px; margin-top:14px;">
@@ -732,7 +738,7 @@
         <div class="form-title">01 // 調用裝備清單明細</div>
         <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
         
-        <!-- 折扣碼輸入模組 -->
+        <!-- 折扣碼模組 -->
         <div style="border-top:1px dashed var(--panel-border); padding-top:12px; margin-top:12px;">
           <label style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ 終端優惠協議 // PROMO CODE ]</label>
           <div style="display:flex; gap:8px; margin-top:4px;">
@@ -755,6 +761,10 @@
             <input type="text" id="custName" required placeholder="超商取貨需核對身分證件" />
           </div>
           <div class="form-group">
+            <label>特工安全信箱 (接收調用通知與認證)*</label>
+            <input type="email" id="custEmail" required placeholder="agent@guilty-cyber.app" />
+          </div>
+          <div class="form-group">
             <label>聯絡終端（手機號碼）*</label>
             <input type="tel" id="custPhone" required placeholder="0912-345-678" onchange="onPhoneChanged()" />
           </div>
@@ -774,11 +784,8 @@
             <div class="radio-card" onclick="selectShipping('meetup', this)" style="border-color: rgba(0, 255, 136, 0.4);">線下面交 (+NT$0)</div>
           </div>
 
-          <!-- 超商下拉選擇器區塊 (7-11 / 全家) -->
           <div id="cvsDropdownContainer">
             <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 選擇取貨門市（支援縣市/區域與路名即時檢索）*</label>
-            
-            <!-- 1. 縣市與行政區 -->
             <div class="store-select-grid">
               <select id="cvsCitySelect" onchange="onCityChanged(this.value)">
                 <option value="">-- 連線試算表載入縣市中... --</option>
@@ -788,19 +795,16 @@
               </select>
             </div>
 
-            <!-- 2. 路名/地標關鍵字即時過濾輸入框 -->
             <div style="margin: 8px 0; position: relative;">
               <input type="text" id="cvsStreetFilter" placeholder="🔍 輸入路名或地標過濾（例如：南京東路、大觀路）..." 
                      oninput="filterStoresByKeyword(this.value)" disabled 
                      style="font-size: 0.82rem; padding: 10px; border-color: #333;" />
             </div>
 
-            <!-- 3. 門市選單 -->
             <select id="cvsStoreSelect" onchange="onStorePicked(this.value)" disabled style="margin-bottom: 6px;">
               <option value="">-- 選擇門市名稱 (店號) --</option>
             </select>
             
-            <!-- 4. 已鎖定門市資訊卡 -->
             <div class="store-confirmed-card" id="storeConfirmedCard" style="display:none;">
               <div style="color:var(--accent-cyan); font-weight:bold;">✔ 已鎖定取貨門市：</div>
               <div id="confirmedStoreNameText" style="color:#fff; font-size:0.9rem; font-weight:bold;"></div>
@@ -808,13 +812,11 @@
             </div>
           </div>
 
-          <!-- 宅配/面交/手動備用輸入框 -->
           <div class="form-group" id="manualLocationGroup" style="display:none; margin-top:10px;">
             <label id="manualStoreLabel">收件詳細地址*</label>
             <input type="text" id="manualShippingLocation" placeholder="例如：台北市中山區南京東路一段..." />
           </div>
 
-          <!-- 隱藏 input 儲存最終送出給試算表的地址 -->
           <input type="hidden" id="finalShippingLocation" required />
         </div>
 
@@ -830,6 +832,55 @@
 
         <button type="submit" class="btn-submit">確認協議並鎖定調用 (LOCK)</button>
       </form>
+    </div>
+  </div>
+
+  <!-- 創作者暗黑後台 (Seller Portal) -->
+  <div id="view-seller" class="view-section">
+    <div class="detail-container">
+      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
+      
+      <div class="form-box">
+        <div class="form-title">08 // 創作者裝備登錄終端 (SELLER PORTAL)</div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:16px;">主理人 / 合作創作者可在此填寫裝備參數，確認後將直接同步發布至 ProductDB 與商城目錄。</p>
+
+        <form id="sellerPublishForm" onsubmit="handlePublishProduct(event)">
+          <div class="form-group">
+            <label>所屬品牌陣營*</label>
+            <select id="newProdBrand">
+              <option value="guilty">欲室｜共犯 GUILTY</option>
+              <option value="shushi">shushi束室 繩教室</option>
+              <option value="guest">客座特工創作者</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>裝備品名*</label>
+            <input type="text" id="newProdTitle" required placeholder="例如：【神經突觸遮斷目鏡】" />
+          </div>
+          <div class="form-group">
+            <label>調用定價 (NT$)*</label>
+            <input type="number" id="newProdPrice" required placeholder="例如：1980" />
+          </div>
+          <div class="form-group">
+            <label>狀態標註 / 交付排程</label>
+            <input type="text" id="newProdNote" placeholder="例如：⚡ 預製/客製排產調用" />
+          </div>
+          <div class="form-group">
+            <label>規格選項（多個規格請用半形逗號分隔）</label>
+            <input type="text" id="newProdSpecs" placeholder="例如：S 碼 (30cm), M 碼 (35cm), L 碼 (40cm)" />
+          </div>
+          <div class="form-group">
+            <label>預覽大圖網址 (Image URL)</label>
+            <input type="url" id="newProdImg" placeholder="https://..." />
+          </div>
+          <div class="form-group">
+            <label>世界觀與規格文案描述*</label>
+            <textarea id="newProdDesc" rows="4" required placeholder="填寫裝備的力學特點、材質工藝與世界觀背景..."></textarea>
+          </div>
+
+          <button type="submit" class="btn-submit" style="padding:14px;">注入 ProductDB 資料庫並公開上架 →</button>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -873,6 +924,7 @@
     // ==========================================
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
     const FREE_SHIPPING_THRESHOLD = 1800;
+    const SELLER_KEY = "GUILTY2678"; // 創作者後台存取金鑰
 
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
@@ -902,6 +954,242 @@
         const el = document.getElementById(sectionId);
         if(el) el.scrollIntoView({ behavior: 'smooth' });
       }, 50);
+    }
+
+    // ==========================================
+    // 【會員驗證與檔案中心 (Email OTP & UserDB)】
+    // ==========================================
+    let memberProfile = JSON.parse(localStorage.getItem('guilty_member')) || null;
+    let currentProfileRole = '服從者 (Sub)';
+    let otpCooldownTimer = null;
+
+    function toggleAuthModal(isOpen) {
+      const modal = document.getElementById('authModal');
+      if (isOpen) {
+        if (memberProfile && memberProfile.email) {
+          // 已登入狀態 -> 顯示檔案編輯
+          document.getElementById('authLoginSection').style.display = 'none';
+          document.getElementById('authProfileSection').style.display = 'block';
+          document.getElementById('profileEmailBadge').textContent = `[ VERIFIED: ${memberProfile.email} ]`;
+          document.getElementById('profName').value = memberProfile.name || '';
+          document.getElementById('profPhone').value = memberProfile.phone || '';
+          document.getElementById('profNeckSize').value = memberProfile.neckSize || '';
+          document.getElementById('profLocation').value = memberProfile.defaultLocation || '';
+          setProfileRole(memberProfile.role || '服從者 (Sub)');
+        } else {
+          // 未登入狀態 -> 顯示 Email OTP 輸入
+          document.getElementById('authLoginSection').style.display = 'block';
+          document.getElementById('authProfileSection').style.display = 'none';
+        }
+        modal.classList.add('active');
+      } else {
+        modal.classList.remove('active');
+      }
+    }
+
+    function setProfileRole(role) {
+      currentProfileRole = role;
+      document.getElementById('roleDom').classList.toggle('active', role.includes('Dom'));
+      document.getElementById('roleSwitch').classList.toggle('active', role.includes('Switch'));
+      document.getElementById('roleSub').classList.toggle('active', role.includes('Sub'));
+    }
+
+    // 發送 Email 驗證碼
+    function handleSendOtp(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmailInput').value.trim();
+      const btn = document.getElementById('btnSendOtp');
+      const notice = document.getElementById('otpTimerNotice');
+
+      if (!email || email.indexOf('@') === -1) {
+        alert('請輸入有效的電子信箱格式！');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '發送中...';
+
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'sendOtp', email: email })
+      }).then(() => {
+        alert(`✔ 驗證碼已發送至 ${email}，請至信箱收取 6 位數代碼！`);
+        let count = 60;
+        notice.textContent = `重新發送冷卻中 (${count}s)...`;
+        clearInterval(otpCooldownTimer);
+        otpCooldownTimer = setInterval(() => {
+          count--;
+          if (count <= 0) {
+            clearInterval(otpCooldownTimer);
+            btn.disabled = false;
+            btn.textContent = '發送驗證碼';
+            notice.textContent = '';
+          } else {
+            notice.textContent = `重新發送冷卻中 (${count}s)...`;
+          }
+        }, 1000);
+      }).catch(err => {
+        alert('發送失敗，請稍後重試。');
+        btn.disabled = false;
+        btn.textContent = '發送驗證碼';
+      });
+    }
+
+    // 驗證 OTP 並登入
+    function handleVerifyOtp(e) {
+      e.preventDefault();
+      const email = document.getElementById('authEmailInput').value.trim();
+      const otp = document.getElementById('authOtpInput').value.trim();
+      const btn = document.getElementById('btnVerifySubmit');
+
+      if (!otp || otp.length !== 6) {
+        alert('請輸入完整的 6 位數驗證碼！');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '檔案解鎖核對中...';
+
+      // 透過 JSONP 取得後端驗證回應
+      const cbName = 'otpVerify_' + Date.now();
+      window[cbName] = function(res) {
+        const s = document.getElementById(cbName);
+        if (s) s.remove();
+        delete window[cbName];
+        btn.disabled = false;
+        btn.textContent = '驗證並解鎖檔案庫 (VERIFY)';
+
+        if (res && res.result === 'success') {
+          memberProfile = res.user;
+          localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
+          updateMemberUI();
+          toggleAuthModal(true); // 切換為已登入之檔案中心檢視
+          alert(`【認證成功】歡迎接入終端，特工 ${memberProfile.name}！`);
+        } else {
+          alert(`❌ 驗證失敗：${res.msg || '代碼錯誤或已過期'}`);
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = cbName;
+      script.src = `${GOOGLE_SHEET_URL}?action=verifyOtpAndSaveProfile&email=${encodeURIComponent(email)}&otp=${encodeURIComponent(otp)}&callback=${cbName}`;
+      document.body.appendChild(script);
+    }
+
+    // 更新特工檔案
+    function handleSaveProfile(e) {
+      e.preventDefault();
+      if (!memberProfile || !memberProfile.email) return;
+
+      const updatedData = {
+        action: 'verifyOtpAndSaveProfile',
+        email: memberProfile.email,
+        name: document.getElementById('profName').value.trim(),
+        phone: document.getElementById('profPhone').value.trim(),
+        role: currentProfileRole,
+        neckSize: document.getElementById('profNeckSize').value.trim(),
+        defaultLocation: document.getElementById('profLocation').value.trim()
+      };
+
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(updatedData)
+      }).then(() => {
+        memberProfile = { ...memberProfile, ...updatedData };
+        localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
+        updateMemberUI();
+        toggleAuthModal(false);
+        alert('✔ 特工個人檔案數據已成功同步至 UserDB！');
+      });
+    }
+
+    function updateMemberUI() {
+      const btn = document.getElementById('memberBtn');
+      if (memberProfile && memberProfile.email) {
+        const shortRole = memberProfile.role ? memberProfile.role.split(' ')[0] : '特工';
+        btn.textContent = `[ ${shortRole}：${memberProfile.name || '特工'} ]`;
+        btn.style.borderColor = 'var(--accent-cyan)';
+        btn.style.color = 'var(--accent-cyan)';
+
+        // 結帳頁面自動代入
+        const nameInput = document.getElementById('custName');
+        const emailInput = document.getElementById('custEmail');
+        const phoneInput = document.getElementById('custPhone');
+        if (nameInput && !nameInput.value) nameInput.value = memberProfile.name || '';
+        if (emailInput && !emailInput.value) emailInput.value = memberProfile.email || '';
+        if (phoneInput && !phoneInput.value) phoneInput.value = memberProfile.phone || '';
+      } else {
+        btn.textContent = `[ 訪客 ]`;
+        btn.style.borderColor = 'var(--panel-border)';
+        btn.style.color = 'var(--text-muted)';
+      }
+    }
+
+    function logoutMember() {
+      if (confirm('確定要中斷連線並退出當前特工身份嗎？')) {
+        localStorage.removeItem('guilty_member');
+        memberProfile = null;
+        updateMemberUI();
+        toggleAuthModal(false);
+        alert('【已退出】目前為訪客模式。');
+      }
+    }
+
+    // ==========================================
+    // 【創作者暗黑後台 (Seller Portal)】
+    // ==========================================
+    function openSellerAuth() {
+      toggleNav(false);
+      const inputKey = prompt("請輸入創作者/主理人存取金鑰 [ ACCESS KEY ]：");
+      if (inputKey === SELLER_KEY) {
+        setActiveView('view-seller');
+        history.pushState({ view: 'seller' }, '', '#seller');
+      } else if (inputKey !== null) {
+        alert("❌ 金鑰錯誤，拒絕存取。");
+      }
+    }
+
+    function handlePublishProduct(e) {
+      e.preventDefault();
+      const brandVal = document.getElementById('newProdBrand').value;
+      let brandName = '欲室｜共犯 GUILTY';
+      if (brandVal === 'shushi') brandName = 'shushi束室 繩教室';
+      if (brandVal === 'guest') brandName = '客座特工創作者';
+
+      const newProd = {
+        action: 'createProduct',
+        id: 'custom-' + Date.now().toString().slice(-6),
+        brand: brandVal,
+        brandName: brandName,
+        title: document.getElementById('newProdTitle').value.trim(),
+        price: Number(document.getElementById('newProdPrice').value) || 0,
+        desc: document.getElementById('newProdDesc').value.trim(),
+        note: document.getElementById('newProdNote').value.trim() || '⚡ 正常調用交付',
+        img: document.getElementById('newProdImg').value.trim(),
+        specs: document.getElementById('newProdSpecs').value.trim()
+      };
+
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(newProd)
+      });
+
+      products.push({
+        ...newProd,
+        badgeClass: brandVal === 'shushi' ? 'badge-shushi' : 'badge-guilty',
+        sizes: newProd.specs ? newProd.specs.split(',').map(s => s.trim()) : [],
+        hasSizes: Boolean(newProd.specs)
+      });
+
+      renderProductCards();
+      alert("✔ 裝備已發布至 ProductDB，前台目錄已同步更新！");
+      showLandingView();
     }
 
     // ==========================================
@@ -1134,6 +1422,8 @@
         } else if (event.state.view === 'checkout') {
           renderCheckoutView();
           setActiveView('view-checkout');
+        } else if (event.state.view === 'seller') {
+          setActiveView('view-seller');
         } else if (event.state.view === 'history') {
           setActiveView('view-history');
         } else {
@@ -1145,91 +1435,9 @@
     });
 
     // ==========================================
-    // 個人會員系統
-    // ==========================================
-    let currentRole = '支配者 (Dom)';
-    let memberProfile = JSON.parse(localStorage.getItem('guilty_member')) || null;
-
-    function setAuthRole(role) {
-      currentRole = role;
-      document.getElementById('roleDom').classList.toggle('active', role.includes('Dom'));
-      document.getElementById('roleSwitch').classList.toggle('active', role.includes('Switch'));
-      document.getElementById('roleSub').classList.toggle('active', role.includes('Sub'));
-    }
-
-    function toggleAuthModal(isOpen) {
-      const modal = document.getElementById('authModal');
-      if(isOpen) {
-        if(memberProfile) {
-          document.getElementById('authName').value = memberProfile.name || '';
-          document.getElementById('authPhone').value = memberProfile.phone || '';
-          document.getElementById('authLocation').value = memberProfile.lastLocation || '';
-          if(memberProfile.role) setAuthRole(memberProfile.role);
-        }
-        modal.classList.add('active');
-      } else {
-        modal.classList.remove('active');
-      }
-    }
-
-    function updateMemberUI() {
-      const btn = document.getElementById('memberBtn');
-      if(memberProfile && memberProfile.name && memberProfile.phone) {
-        const shortRole = memberProfile.role ? memberProfile.role.split(' ')[0] : '特工';
-        btn.textContent = `[ ${shortRole}：${memberProfile.name} ]`;
-        btn.style.borderColor = 'var(--accent-cyan)';
-        btn.style.color = 'var(--accent-cyan)';
-
-        const nameInput = document.getElementById('custName');
-        const phoneInput = document.getElementById('custPhone');
-        if(nameInput) nameInput.value = memberProfile.name || '';
-        if(phoneInput) phoneInput.value = memberProfile.phone || '';
-      } else {
-        btn.textContent = `[ 訪客 ]`;
-        btn.style.borderColor = 'var(--panel-border)';
-        btn.style.color = 'var(--text-muted)';
-      }
-    }
-
-    document.getElementById('authForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const phoneRaw = document.getElementById('authPhone').value.trim();
-      let name = document.getElementById('authName').value.trim();
-      let location = document.getElementById('authLocation').value.trim();
-
-      const profileData = {
-        name: name,
-        phone: phoneRaw,
-        lastLocation: location,
-        role: currentRole,
-        updatedAt: new Date().toISOString()
-      };
-
-      memberProfile = profileData;
-      localStorage.setItem('guilty_member', JSON.stringify(profileData));
-
-      updateMemberUI();
-      toggleAuthModal(false);
-      alert(`【終端已鎖定】特工：${profileData.name}，個人檔案已建立。`);
-    });
-
-    function logoutMember() {
-      if(confirm('確定要斷開此終端的特工身分嗎？')) {
-        localStorage.removeItem('guilty_member');
-        memberProfile = null;
-        document.getElementById('authName').value = '';
-        document.getElementById('authPhone').value = '';
-        document.getElementById('authLocation').value = '';
-        updateMemberUI();
-        toggleAuthModal(false);
-        alert('【已退出】目前為訪客模式。');
-      }
-    }
-
-    // ==========================================
     // 裝備目錄資料庫
     // ==========================================
-    const products = [
+    let products = [
       { 
         id: 'cat-choker', 
         brand: 'guilty', 
@@ -1493,7 +1701,6 @@
       currentWhipColor = '極夜黑 [VOID BLACK]';
       currentWhipExtra = 0;
 
-      // 渲染大圖
       const heroArea = document.getElementById('detailHeroImgArea');
       if (currentDetailProduct.img && currentDetailProduct.img.trim() !== '') {
         heroArea.innerHTML = `<img src="${currentDetailProduct.img}" alt="${currentDetailProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${currentDetailProduct.title} 3D 義體檔案庫 ]</span>';" />`;
@@ -1501,7 +1708,6 @@
         heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${currentDetailProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
       }
 
-      // 重置掃描光效
       const heroBox = document.getElementById('detailHeroBox');
       heroBox.style.animation = 'none';
       heroBox.offsetHeight;
@@ -1572,9 +1778,6 @@
             <strong style="color:#fff;">// 神經校準世界觀：</strong><br>
             「疼痛不是目的，是神經突觸最純粹的校準訊號。」精確配重實心鞭芯自手柄向鞭梢漸進收斂，破空低頻撕裂聲先於接觸前瓦解抵抗意志。
           </div>
-          <div class="alert-box" style="background:#121216; border:1px dashed #3f3f46; border-radius:4px; padding:14px; margin-bottom:14px; font-size:0.78rem; color:#a1a1aa;">
-            <span style="color:#f59e0b; font-weight:bold;">⚡ 自訂特殊配色協議：</span>除 5 款官方預製配色外，選取「自訂特殊光譜」單件加收 NT$ 100 工藝調配費，請於下單時備註配色或至 Discord 客服確認。
-          </div>
         `;
         dynamicArea.innerHTML = `
           <div style="margin-bottom: 12px;">
@@ -1615,7 +1818,14 @@
         document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
       } else {
         chokerSpecificArea.innerHTML = ``;
-        dynamicArea.innerHTML = ``;
+        dynamicArea.innerHTML = currentDetailProduct.sizes && currentDetailProduct.sizes.length > 0 ? `
+          <div style="margin-bottom:12px;">
+            <label style="font-size:0.75rem; color:var(--accent-cyan);">規格選項*</label>
+            <select id="detailCustomSizeSelect">
+              ${currentDetailProduct.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
+            </select>
+          </div>
+        ` : '';
         document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
         document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
       }
@@ -1686,7 +1896,7 @@
       let itemPrice = currentDetailProduct.price;
 
       if(currentDetailProduct.hasSizes) {
-        specText = document.getElementById('detailChokerSizeSelect').value;
+        specText = document.getElementById('detailChokerSizeSelect') ? document.getElementById('detailChokerSizeSelect').value : '標準規格';
       } else if(currentDetailProduct.isWhip) {
         specText = `${currentWhipLength.split(' ')[0]} // ${currentWhipColor}`;
         itemPrice = currentWhipBasePrice + currentWhipExtra;
@@ -1695,6 +1905,8 @@
         const variantVal = document.getElementById('detailRopeVariantSelect').value;
         specText = `${variantVal} // ${lengthVal}`;
         itemPrice = currentDetailRopePrice;
+      } else if(document.getElementById('detailCustomSizeSelect')) {
+        specText = document.getElementById('detailCustomSizeSelect').value;
       }
 
       const cartKey = `${currentDetailProduct.id}_${specText}`;
@@ -1749,12 +1961,8 @@
     let appliedPromo = null;
 
     function calculateShippingFee(subtotal, shippingType) {
-      if (shippingType === 'meetup') {
-        return 0;
-      }
-      if (subtotal >= FREE_SHIPPING_THRESHOLD) {
-        return 0;
-      }
+      if (shippingType === 'meetup') return 0;
+      if (subtotal >= FREE_SHIPPING_THRESHOLD) return 0;
       return shippingType === 'home' ? 120 : 60;
     }
 
@@ -1824,7 +2032,6 @@
 
       const now = new Date();
 
-      // 1. 長鞭專屬折扣碼：TOMOTACHI
       if (code === 'TOMOTACHI') {
         const hasWhip = cart.some(item => item.productId === 'synapse-whip');
         if (!hasWhip) {
@@ -1846,7 +2053,6 @@
         return;
       }
 
-      // 2. 盲鳥優惠：LOVEGUILTY
       if (code === 'LOVEGUILTY') {
         const start = new Date('2026-09-06T00:00:00+08:00');
         const end = new Date('2026-09-11T19:00:00+08:00');
@@ -1876,7 +2082,6 @@
         return;
       }
 
-      // 3. 首購優惠：IAMSUB
       if (code === 'IAMSUB') {
         const phone = document.getElementById('custPhone').value.trim();
         if(!phone) {
@@ -1906,7 +2111,6 @@
         return;
       }
 
-      // 4. 早鳥優惠：WANG18X
       if (code === 'WANG18X') {
         const start = new Date('2026-09-11T19:00:00+08:00');
         const end = new Date('2026-10-11T19:00:00+08:00');
@@ -2170,6 +2374,7 @@
       }
 
       const phoneRaw = document.getElementById('custPhone').value.trim();
+      const emailRaw = document.getElementById('custEmail').value.trim();
       const fin = calculateOrderFinancials();
 
       const productsSummaryText = cart.map(item => `${item.title} (${item.specText}) × ${item.qty}`).join(' + ');
@@ -2184,6 +2389,7 @@
         shippingFee: fin.shippingFee,
         price: fin.totalAmount,
         name: document.getElementById('custName').value.trim(),
+        email: emailRaw,
         phone: phoneRaw,
         engraving: document.getElementById('custEngraving').value.trim() || '無',
         shipping: currentShippingName,
@@ -2194,21 +2400,20 @@
         createdAt: new Date().toLocaleString('zh-TW', { hour12: false })
       };
 
-      // 1. 更新特工資訊
-      memberProfile = {
-        name: orderData.name,
-        phone: orderData.phone,
-        lastLocation: orderData.location,
-        role: orderData.role
-      };
-      localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
+      // 更新本地檔案
+      if (memberProfile) {
+        memberProfile.name = orderData.name;
+        memberProfile.phone = orderData.phone;
+        memberProfile.defaultLocation = orderData.location;
+        localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
+      }
 
-      // 2. 本地紀錄庫備份
+      // 本地訂單備份
       let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
       allOrders.unshift(orderData);
       localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
 
-      // 3. 送出至 Google 試算表
+      // 送出至 Google 試算表
       fetch(GOOGLE_SHEET_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -2220,7 +2425,7 @@
         console.warn('[GUILTY LOG] 試算表傳送提示:', err);
       });
 
-      // 4. 渲染成功憑證
+      // 渲染成功憑證
       const shippingFeeDisplay = orderData.shippingFee === 0 
         ? '<span style="color:var(--accent-cyan);">免運費 (NT$ 0)</span>' 
         : `NT$ ${orderData.shippingFee}`;
@@ -2237,12 +2442,13 @@
         <div><strong>物流運費：</strong>${shippingFeeDisplay}</div>
         <div><strong>結算總金額：</strong><strong style="color:var(--accent-cyan); font-size:1.05rem;">NT$ ${Number(orderData.price).toLocaleString()}</strong></div>
         <div><strong>收件特工：</strong>${orderData.name} (${orderData.phone})</div>
+        <div><strong>安全信箱：</strong>${orderData.email}</div>
         <div><strong>客製／銘牌備註：</strong>${orderData.engraving}</div>
         <div><strong>交付途徑：</strong>${orderData.shipping} (${orderData.location})</div>
         <div><strong>支付結算：</strong>${orderData.payment}</div>
       `;
 
-      // 5. 華南銀行 ATM 指引
+      // 華南銀行 ATM 指引
       const payArea = document.getElementById('payInstructionArea');
       if(orderData.payment === '銀行 ATM 匯款') {
         payArea.innerHTML = `
@@ -2289,19 +2495,20 @@
       toggleNav(false);
       toggleCart(false);
 
-      if(!memberProfile || !memberProfile.phone) {
+      if(!memberProfile || (!memberProfile.phone && !memberProfile.email)) {
         alert('請先進行【身份認證 / 登入】，系統將調出專屬於您的調用檔案。');
         toggleAuthModal(true);
         return;
       }
 
       const historyArea = document.getElementById('historyListArea');
-      const cleanPhone = String(memberProfile.phone).replace(/[^0-9]/g, '');
-      document.getElementById('historyTitle').textContent = `05 // 特工 [ ${memberProfile.name} - ${memberProfile.phone} ] 專屬調用檔案`;
+      const cleanPhone = String(memberProfile.phone || '').replace(/[^0-9]/g, '');
+      const cleanEmail = String(memberProfile.email || '').trim().toLowerCase();
+      document.getElementById('historyTitle').textContent = `05 // 特工 [ ${memberProfile.name || '特工'} ] 專屬調用檔案`;
 
       const renderOrders = (list) => {
         if(!list || list.length === 0) {
-          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name}（電話：${memberProfile.phone}）尚無任何調用案件。</div>`;
+          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name || ''} 尚無任何調用案件。</div>`;
         } else {
           historyArea.innerHTML = list.map(o => `
             <div class="history-item">
@@ -2322,7 +2529,10 @@
       };
 
       let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-      let myLocalOrders = localOrders.filter(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
+      let myLocalOrders = localOrders.filter(o => 
+        (cleanPhone && String(o.phone).replace(/[^0-9]/g, '') === cleanPhone) ||
+        (cleanEmail && String(o.email || '').toLowerCase() === cleanEmail)
+      );
       renderOrders(myLocalOrders);
 
       setActiveView('view-history');
@@ -2332,7 +2542,6 @@
 
       const callbackName = 'cb_' + Date.now();
       window[callbackName] = function(cloudOrders) {
-        console.log("【雲端試算表回傳訂單】:", cloudOrders);
         const scriptEl = document.getElementById(callbackName);
         if(scriptEl) scriptEl.remove();
         delete window[callbackName];
@@ -2345,16 +2554,14 @@
 
       const script = document.createElement('script');
       script.id = callbackName;
-      script.src = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(cleanPhone)}&callback=${callbackName}`;
+      script.src = `${GOOGLE_SHEET_URL}?email=${encodeURIComponent(cleanEmail)}&phone=${encodeURIComponent(cleanPhone)}&callback=${callbackName}`;
       script.onerror = function() {
         console.warn("雲端連線失敗，目前顯示本地紀錄。");
       };
       document.body.appendChild(script);
     }
 
-    // 初始歷史狀態建立
     history.replaceState({ view: 'landing' }, '', '#landing');
-
     renderProductCards();
     updateMemberUI();
     updateCartUI();
