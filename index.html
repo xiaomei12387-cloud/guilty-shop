@@ -150,7 +150,7 @@
     .cart-item-del { position: absolute; top: 8px; right: 8px; color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.9rem; }
     .cart-item-del:hover { color: var(--danger-red); }
 
-    /* 會員認證彈窗（帳密登入 / 註冊 / NDA / 檔案管理） */
+    /* 會員認證彈窗 */
     .auth-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
       background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(16px);
@@ -167,7 +167,6 @@
     .auth-sub { font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 1px; margin-top: 4px; }
     .auth-close { position: absolute; top: 12px; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; background: none; border: none; }
     
-    /* 登入/註冊切換頁籤 */
     .auth-tab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
     .auth-tab-btn { padding: 8px; font-size: 0.8rem; background: #000; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; text-align: center; }
     .auth-tab-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 255, 136, 0.1); font-weight: bold; }
@@ -176,7 +175,7 @@
     .role-btn { padding: 8px 4px; font-size: 0.75rem; background: #000; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; text-align: center; border-radius: 2px; transition: all 0.2s; }
     .role-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 255, 136, 0.1); font-weight: bold; }
 
-    /* NDA 條款協議卡 */
+    /* NDA 條款卡片 */
     .nda-protocol-box {
       background: #000; border: 1px dashed var(--panel-border); padding: 10px 12px;
       font-size: 0.72rem; color: var(--text-muted); line-height: 1.6; margin: 12px 0; border-radius: 3px;
@@ -326,7 +325,6 @@
 </head>
 <body>
 
-  <!-- 開機動畫 -->
   <div id="intro-screen">
     <div class="intro-logo-box">
       <svg class="cyber-cat-eye-svg" viewBox="0 0 100 100">
@@ -353,7 +351,6 @@
     <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
   </div>
 
-  <!-- 購物車抽屜 (Arsenal Cart Drawer) -->
   <div class="cart-drawer" id="cartDrawer">
     <div>
       <div class="cart-header">
@@ -377,12 +374,10 @@
     </div>
   </div>
 
-  <!-- 特工身份認證彈窗（帳密登入 / 註冊 / NDA 條款 / 個人檔案中心） -->
   <div class="auth-modal" id="authModal">
     <div class="auth-box">
       <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
       
-      <!-- 區塊 A：未登入（登入 / 註冊 切換） -->
       <div id="authGuestView">
         <div class="auth-header">
           <div class="auth-title">特工神經認證通道</div>
@@ -394,7 +389,6 @@
           <div class="auth-tab-btn" id="tabBtnRegister" onclick="switchAuthTab('register')">新註冊 (REGISTER)</div>
         </div>
 
-        <!-- 1. 登入表單 -->
         <form id="loginForm" onsubmit="handleLoginSubmit(event)">
           <div class="form-group">
             <label>特工帳號（Email 信箱 或 手機號碼）*</label>
@@ -417,7 +411,6 @@
           <button type="submit" class="btn-submit" id="btnLoginSubmit" style="padding:12px; font-size:0.9rem;">驗證密鑰並登入 (ACCESS)</button>
         </form>
 
-        <!-- 2. 註冊表單 -->
         <form id="registerForm" onsubmit="handleRegisterSubmit(event)" style="display:none;">
           <div class="form-group">
             <label>特工代號 / 嫌疑人稱號*</label>
@@ -425,7 +418,15 @@
           </div>
           <div class="form-group">
             <label>安全信箱 (Email)*</label>
-            <input type="email" id="regEmailInput" required placeholder="agent@guilty-cyber.app" />
+            <div style="display:flex; gap:6px;">
+              <input type="email" id="regEmailInput" required placeholder="agent@guilty-cyber.app" />
+              <button type="button" id="btnSendRegOtp" onclick="sendRegisterOtp()" style="background:var(--accent-cyan); color:#000; border:none; padding:0 12px; font-size:0.75rem; font-weight:bold; cursor:pointer; white-space:nowrap;">發送驗證碼</button>
+            </div>
+            <div id="regOtpNotice" style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;"></div>
+          </div>
+          <div class="form-group">
+            <label>6 位數信箱驗證碼 (OTP)*</label>
+            <input type="text" id="regOtpInput" required maxlength="6" placeholder="輸入信箱 6 位數代碼" style="letter-spacing:4px; font-size:1.1rem; text-align:center; font-weight:bold;" />
           </div>
           <div class="form-group">
             <label>聯絡電話 (手機號碼，亦可作登入帳號)*</label>
@@ -445,11 +446,10 @@
             </label>
           </div>
 
-          <button type="submit" class="btn-submit" id="btnRegSubmit" style="padding:12px; font-size:0.9rem;">建立檔案並注入資料庫 (REGISTER)</button>
+          <button type="submit" class="btn-submit" id="btnRegSubmit" style="padding:12px; font-size:0.9rem;">驗證信箱並建立檔案 (REGISTER)</button>
         </form>
       </div>
 
-      <!-- 區塊 B：已登入（個人特工檔案中心） -->
       <div id="authProfileView" style="display:none;">
         <div class="auth-header">
           <div class="auth-title">特工個人檔案庫</div>
@@ -483,7 +483,6 @@
     </div>
   </div>
 
-  <!-- 頂部導覽列 -->
   <header>
     <div class="brand-container" onclick="showLandingView()">
       <svg class="header-eye-icon" viewBox="0 0 100 100">
@@ -518,7 +517,6 @@
     </div>
   </header>
 
-  <!-- 側邊選單 -->
   <div class="nav-overlay" id="navOverlay" onclick="toggleNav(false); toggleCart(false);"></div>
   <div class="side-nav" id="sideNav">
     <div>
@@ -547,11 +545,9 @@
     </div>
   </div>
 
-  <!-- 1. 展廳主頁面 -->
   <div id="view-landing" class="view-section active">
     <div class="landing-container">
       
-      <!-- Hero -->
       <section class="hero-fullscreen" id="section-hero">
         <div class="hero-code">[ PROTOCOL // A.D. 2678 HARDWARE ARSENAL ]</div>
         <div style="margin-bottom: 24px;">
@@ -574,7 +570,6 @@
         </div>
       </section>
 
-      <!-- 世界觀脈絡 -->
       <section class="section-manifesto" id="section-manifesto">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // WORLDVIEW & PROTOCOL ]</div>
         <div class="manifesto-card">
@@ -591,7 +586,6 @@
         </div>
       </section>
 
-      <!-- 三大裝備研發矩陣 -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-matrix">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // ARSENAL MATRIX ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:6px;">支配・拘束・義體三大研發矩陣</h2>
@@ -627,7 +621,6 @@
         </div>
       </section>
 
-      <!-- 裝備目錄庫 -->
       <section class="section-arsenal" id="section-arsenal">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
@@ -644,7 +637,6 @@
         <div class="product-list-grid" id="productGrid"></div>
       </section>
 
-      <!-- 特工指南與 FAQ -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-faq">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // AGENT DOSSIER FAQ ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
@@ -686,7 +678,6 @@
         </div>
       </section>
 
-      <!-- 主理核心 -->
       <section class="section-crew" id="section-crew">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
@@ -724,7 +715,6 @@
         </div>
       </section>
 
-      <!-- 通訊頻寬 -->
       <section style="padding: 40px 0 20px; border-top: 1px solid var(--panel-border); text-align: center;">
         <div style="font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 8px;">[ 06 // SECURE COMMS ]</div>
         <h2 style="font-size: 1.3rem; margin-bottom: 8px;">特工通訊・官方頻寬</h2>
@@ -749,7 +739,6 @@
     </div>
   </div>
 
-  <!-- 2. 商品詳細配置頁 (Product Config View) -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
@@ -782,7 +771,6 @@
     </div>
   </div>
 
-  <!-- 3. 終端結帳視圖 (Checkout View) -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -790,12 +778,10 @@
         <button onclick="toggleCart(true)" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; cursor:pointer; font-size:0.8rem;">檢視購物車清單 ↗</button>
       </div>
 
-      <!-- 調用清單 -->
       <div class="form-box">
         <div class="form-title">01 // 調用裝備清單明細</div>
         <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
         
-        <!-- 折扣碼模組 -->
         <div style="border-top:1px dashed var(--panel-border); padding-top:12px; margin-top:12px;">
           <label style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ 終端優惠協議 // PROMO CODE ]</label>
           <div style="display:flex; gap:8px; margin-top:4px;">
@@ -810,7 +796,6 @@
       </div>
 
       <form id="checkoutForm">
-        <!-- 收件人資訊 -->
         <div class="form-box">
           <div class="form-title">02 // 嫌疑人 / 收件終端資料</div>
           <div class="form-group">
@@ -831,7 +816,6 @@
           </div>
         </div>
 
-        <!-- 物流方式 (三段式聯動選單 + 路名過濾) -->
         <div class="form-box">
           <div class="form-title">03 // 物流交付途徑 (100% 絕密隱密包裝)</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
@@ -876,7 +860,6 @@
 
           <input type="hidden" id="finalShippingLocation" required />
 
-          <!-- 自動記憶常用門市勾選框 -->
           <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--panel-border);">
             <label style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:var(--text-muted); cursor:pointer;">
               <input type="checkbox" id="saveToProfileCheck" checked style="width:16px; height:16px; accent-color:var(--accent-cyan);" />
@@ -885,7 +868,6 @@
           </div>
         </div>
 
-        <!-- 支付方式 -->
         <div class="form-box">
           <div class="form-title">04 // 支付結算通道</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
@@ -900,12 +882,10 @@
     </div>
   </div>
 
-  <!-- 4. 創作者審核與上架中心 (Seller Portal) -->
   <div id="view-seller" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
       
-      <!-- A. 創作者金鑰登入 / 申請審核切換區 -->
       <div class="form-box" id="sellerAuthBox">
         <div class="form-title">08 // 創作者暗黑終端 (SELLER PORTAL)</div>
         <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:16px;">本實驗室實施【創作者審核加入制】。持有專屬開通金鑰之主理團隊與合作創作者方可登入上架裝備。</p>
@@ -915,7 +895,6 @@
           <div class="auth-tab-btn" id="sellerTabApply" onclick="switchSellerTab('apply')">申請創作者入駐 (APPLY)</div>
         </div>
 
-        <!-- 金鑰登入表單 -->
         <form id="sellerKeyForm" onsubmit="handleSellerKeyLogin(event)">
           <div class="form-group">
             <label>創作者專屬存取金鑰 [ ACCESS KEY ]*</label>
@@ -924,7 +903,6 @@
           <button type="submit" class="btn-submit" style="padding:12px; font-size:0.85rem;">驗證金鑰進入工作台 (ACCESS)</button>
         </form>
 
-        <!-- 入駐申請表單 -->
         <form id="sellerApplyForm" onsubmit="handleSellerApplySubmit(event)" style="display:none;">
           <div class="form-group">
             <label>創作者／品牌名稱*</label>
@@ -942,7 +920,6 @@
         </form>
       </div>
 
-      <!-- B. 創作者上架工作台 (驗證成功後顯示) -->
       <div class="form-box" id="sellerWorkstationBox" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--panel-border); padding-bottom:10px; margin-bottom:14px;">
           <div>
@@ -978,8 +955,20 @@
             <input type="text" id="newProdSpecs" placeholder="例如：S 碼, M 碼, L 碼" />
           </div>
           <div class="form-group">
-            <label>預覽大圖網址 (Image URL)</label>
-            <input type="url" id="newProdImg" placeholder="https://..." />
+            <label>裝備大圖上傳（直接拖曳圖片或點擊選取）*</label>
+            <div id="dropZoneArea" onclick="document.getElementById('fileUploadInput').click()" 
+                 style="border: 2px dashed var(--accent-cyan); background: rgba(0,255,136,0.03); padding: 20px; text-align: center; cursor: pointer; border-radius: 4px;">
+              <div id="dropZoneText" style="font-size: 0.85rem; color: var(--text-muted);">
+                📁 點擊選取本機圖片 或 拖曳圖片至此處<br>
+                <span style="font-size:0.7rem; color:var(--accent-cyan);">支援 JPG、PNG、WebP</span>
+              </div>
+              <img id="imageUploadPreview" style="max-height: 160px; max-width: 100%; display: none; margin: 10px auto 0; border-radius: 4px; border: 1px solid var(--panel-border); object-fit: contain;" />
+            </div>
+            <input type="file" id="fileUploadInput" accept="image/*" style="display: none;" onchange="handleFileSelected(this)" />
+            <input type="hidden" id="newProdBase64" />
+            <div style="margin-top: 6px;">
+              <input type="url" id="newProdImg" placeholder="或手動輸入圖片網址 (https://...)" style="font-size:0.75rem; padding:8px;" />
+            </div>
           </div>
           <div class="form-group">
             <label>世界觀與規格文案描述*</label>
@@ -993,7 +982,6 @@
     </div>
   </div>
 
-  <!-- 5. 成功下單憑證頁面 -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
@@ -1012,7 +1000,6 @@
     </div>
   </div>
 
-  <!-- 6. 個人調用紀錄頁面 -->
   <div id="view-history" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
@@ -1026,7 +1013,7 @@
       </div>
     </div>
   </div>
-<script>
+  <script>
     // ==========================================
     // ⚙️ 核心全域設定
     // ==========================================
@@ -1074,7 +1061,6 @@
       const modal = document.getElementById('authModal');
       if (isOpen) {
         if (memberProfile && (memberProfile.email || memberProfile.phone)) {
-          // 已登入狀態 -> 顯示個人檔案中心
           document.getElementById('authGuestView').style.display = 'none';
           document.getElementById('authProfileView').style.display = 'block';
           document.getElementById('profileAccountBadge').textContent = `[ VERIFIED: ${memberProfile.email || memberProfile.phone} ]`;
@@ -1082,7 +1068,6 @@
           document.getElementById('profLocationInput').value = memberProfile.defaultLocation || '';
           setProfileRole(memberProfile.role || '服從者 (Sub)');
         } else {
-          // 未登入狀態 -> 顯示帳密登入/註冊
           document.getElementById('authGuestView').style.display = 'block';
           document.getElementById('authProfileView').style.display = 'none';
           switchAuthTab('login');
@@ -1119,7 +1104,7 @@
       document.getElementById('roleSub').classList.toggle('active', role.includes('Sub'));
     }
 
-    // 處理特工登入 (支援 Email 或 電話 + 密碼)
+    // 處理特工登入
     function handleLoginSubmit(e) {
       e.preventDefault();
       const account = document.getElementById('loginAccountInput').value.trim();
@@ -1165,11 +1150,55 @@
       document.body.appendChild(script);
     }
 
-    // 處理特工註冊
+    // 處理特工註冊（含發送 OTP 與驗證註冊）
+    let regOtpTimer = null;
+
+    function sendRegisterOtp() {
+      const email = document.getElementById('regEmailInput').value.trim();
+      const btn = document.getElementById('btnSendRegOtp');
+      const notice = document.getElementById('regOtpNotice');
+
+      if (!email || email.indexOf('@') === -1) {
+        alert('請輸入有效的電子信箱！');
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = '發送中...';
+
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'sendOtp', email: email })
+      }).then(() => {
+        alert(`✔ 驗證碼已發送至 ${email}，請至信箱收取 6 位數代碼！`);
+        let count = 60;
+        notice.textContent = `重新發送冷卻中 (${count}s)...`;
+        clearInterval(regOtpTimer);
+        regOtpTimer = setInterval(() => {
+          count--;
+          if (count <= 0) {
+            clearInterval(regOtpTimer);
+            btn.disabled = false;
+            btn.textContent = '發送驗證碼';
+            notice.textContent = '';
+          } else {
+            notice.textContent = `重新發送冷卻中 (${count}s)...`;
+          }
+        }, 1000);
+      }).catch(() => {
+        btn.disabled = false;
+        btn.textContent = '發送驗證碼';
+        alert('發送失敗，請稍後再試。');
+      });
+    }
+
     function handleRegisterSubmit(e) {
       e.preventDefault();
       const name = document.getElementById('regNameInput').value.trim();
       const email = document.getElementById('regEmailInput').value.trim();
+      const otp = document.getElementById('regOtpInput').value.trim();
       const phone = document.getElementById('regPhoneInput').value.trim();
       const password = document.getElementById('regPasswordInput').value.trim();
       const ndaCheck = document.getElementById('regNdaCheckbox').checked;
@@ -1179,14 +1208,19 @@
         alert('請先勾選同意《特工認罪保密協議》！');
         return;
       }
+      if (!otp || otp.length !== 6) {
+        alert('請輸入信箱收到的 6 位數驗證碼！');
+        return;
+      }
 
       btn.disabled = true;
-      btn.textContent = '檔案注入資料庫中...';
+      btn.textContent = '驗證建立檔案中...';
 
       const regPayload = {
-        action: 'register',
+        action: 'registerWithOtp',
         name: name,
         email: email,
+        otp: otp,
         phone: phone,
         password: password
       };
@@ -1198,7 +1232,7 @@
         body: JSON.stringify(regPayload)
       }).then(() => {
         btn.disabled = false;
-        btn.textContent = '建立檔案並注入資料庫 (REGISTER)';
+        btn.textContent = '驗證信箱並建立檔案 (REGISTER)';
         memberProfile = {
           email: email,
           phone: phone,
@@ -1210,10 +1244,10 @@
         updateMemberUI();
         toggleAuthModal(true);
         alert(`✔ 特工檔案已成功建立！歡迎加入 GUILTY 終端庫，${name}。`);
-      }).catch(err => {
+      }).catch(() => {
         btn.disabled = false;
-        btn.textContent = '建立檔案並注入資料庫 (REGISTER)';
-        alert('註冊傳輸失敗，請稍後重試。');
+        btn.textContent = '驗證信箱並建立檔案 (REGISTER)';
+        alert('註冊連線異常，請確認驗證碼是否正確。');
       });
     }
 
@@ -1253,7 +1287,6 @@
         btn.style.borderColor = 'var(--accent-cyan)';
         btn.style.color = 'var(--accent-cyan)';
 
-        // 自動帶入結帳資訊
         const nameInput = document.getElementById('custName');
         const emailInput = document.getElementById('custEmail');
         const phoneInput = document.getElementById('custPhone');
@@ -1307,7 +1340,6 @@
       }
     }
 
-    // 創作者金鑰驗證登入
     function handleSellerKeyLogin(e) {
       e.preventDefault();
       const key = document.getElementById('sellerAccessKeyInput').value.trim();
@@ -1336,7 +1368,6 @@
       document.body.appendChild(script);
     }
 
-    // 提交創作者入駐申請 (審核制)
     function handleSellerApplySubmit(e) {
       e.preventDefault();
       const applyPayload = {
@@ -1358,13 +1389,42 @@
       });
     }
 
-    // 創作者自主發布商品
+    // 創作者工作台：本機圖片讀取與預覽
+    function handleFileSelected(input) {
+      const file = input.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('請上傳圖檔格式 (JPG, PNG, WebP)！');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Str = e.target.result;
+        document.getElementById('newProdBase64').value = base64Str;
+        const preview = document.getElementById('imageUploadPreview');
+        preview.src = base64Str;
+        preview.style.display = 'block';
+        document.getElementById('dropZoneText').innerHTML = `✔ 已選取檔案：<strong>${file.name}</strong><br><span style="color:var(--accent-cyan); font-size:0.7rem;">點擊可重新更換</span>`;
+      };
+      reader.readAsDataURL(file);
+    }
+
     function handlePublishProduct(e) {
       e.preventDefault();
       const brandVal = document.getElementById('newProdBrand').value;
       let brandName = '欲室｜共犯 GUILTY';
       if (brandVal === 'shushi') brandName = 'shushi束室 繩教室';
       if (brandVal === 'guest') brandName = verifiedCreator ? verifiedCreator.brandName : '客座特工創作者';
+
+      const base64Data = document.getElementById('newProdBase64').value;
+      const manualImg = document.getElementById('newProdImg').value.trim();
+
+      if (!base64Data && !manualImg) {
+        alert('請選取上傳圖片檔案或填寫圖片網址！');
+        return;
+      }
 
       const newProd = {
         action: 'createProduct',
@@ -1375,7 +1435,8 @@
         price: Number(document.getElementById('newProdPrice').value) || 0,
         desc: document.getElementById('newProdDesc').value.trim(),
         note: document.getElementById('newProdNote').value.trim() || '⚡ 正常調用交付',
-        img: document.getElementById('newProdImg').value.trim(),
+        img: manualImg || '',
+        imageBase64: base64Data || '',
         specs: document.getElementById('newProdSpecs').value.trim()
       };
 
@@ -1388,6 +1449,7 @@
 
       products.push({
         ...newProd,
+        img: base64Data || manualImg,
         badgeClass: brandVal === 'shushi' ? 'badge-shushi' : 'badge-guilty',
         sizes: newProd.specs ? newProd.specs.split(',').map(s => s.trim()) : [],
         hasSizes: Boolean(newProd.specs)
@@ -1432,7 +1494,6 @@
       if (card) card.style.display = 'none';
       document.getElementById('finalShippingLocation').value = '';
 
-      // 若特工有預設門市，預先帶入提示
       if (memberProfile && memberProfile.defaultLocation) {
         document.getElementById('confirmedStoreNameText').textContent = `[ 常用門市 ] ${memberProfile.defaultLocation}`;
         document.getElementById('confirmedStoreAddrText').textContent = '已自動套用您的常用門市設定';
@@ -2180,8 +2241,7 @@
       setActiveView('view-checkout');
       initCvsDropdowns();
       updateMemberUI();
-      if (push) {
-        history.pushState({ view: 'checkout' }, '', '#checkout');
+      if (push) {history.pushState({ view: 'checkout' }, '', '#checkout');
       }
     }
 
