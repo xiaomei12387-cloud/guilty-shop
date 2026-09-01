@@ -9,6 +9,9 @@
   <!-- 外部樣式模組 -->
   <link rel="stylesheet" href="./css/style.css" />
   <link rel="stylesheet" href="./css/tracker.css" />
+
+  <!-- 輕量即時相機掃碼引擎 (HTML5-QRCode) -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
 
@@ -153,6 +156,30 @@
           <button type="submit" class="btn-submit" style="padding:12px; font-size:0.9rem;">更新檔案數據 (SAVE)</button>
           <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:12px; cursor:pointer;">[ 斷開神經連結 / 退出登入 ]</button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 📷 特工神經掃描彈窗 (Scanner Modal) -->
+  <div class="auth-modal" id="scannerModal">
+    <div class="auth-box" style="max-width: 380px; text-align: center; position: relative;">
+      <button class="auth-close" onclick="closeQrScanner()">✕</button>
+      <div class="auth-header" style="margin-bottom: 12px;">
+        <div class="auth-title" style="font-size: 1rem; color: var(--accent-cyan);">[ NEURAL SCANNER // 掃描名片 ]</div>
+        <div class="auth-sub">對準特工的專屬 QR Code 進行神經同步</div>
+      </div>
+
+      <!-- 相機預覽區域 -->
+      <div id="qrReaderBox" style="width: 100%; min-height: 250px; background: #000; border: 1px solid var(--panel-border); border-radius: 4px; overflow: hidden; position: relative;"></div>
+
+      <div style="margin-top: 14px; display: flex; gap: 8px;">
+        <label style="flex: 1; padding: 10px; background: #141416; border: 1px solid var(--panel-border); color: var(--text-muted); font-size: 0.75rem; border-radius: 3px; cursor: pointer; text-align: center;">
+          📁 選取 QR 截圖
+          <input type="file" accept="image/*" onchange="scanQrFromImageFile(this)" style="display: none;" />
+        </label>
+        <button type="button" class="btn-secondary" onclick="closeQrScanner(); addNewPartnerPrompt();" style="flex: 1; padding: 10px; font-size: 0.75rem;">
+          ⌨️ 手動輸入
+        </button>
       </div>
     </div>
   </div>
@@ -309,11 +336,18 @@
         </div>
       </div>
 
-      <!-- 互動對象清單 (置頂 / 刪除) -->
+      <!-- 互動對象清單 (置頂 / 刪除 / 📷 掃碼新增) -->
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div class="form-title" style="margin-bottom:0; border:none; padding:0;">互動對象清單 (PARTNERS)</div>
-          <button onclick="addNewPartnerPrompt()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 新增對象</button>
+          <div style="display:flex; gap:6px;">
+            <button onclick="openQrScanner()" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px; display:flex; align-items:center; gap:4px;">
+              📷 掃碼新增
+            </button>
+            <button onclick="addNewPartnerPrompt()" style="background:#141416; color:var(--text-muted); border:1px solid var(--panel-border); padding:5px 8px; font-size:0.75rem; cursor:pointer; border-radius:2px;">
+              ＋ 手動
+            </button>
+          </div>
         </div>
         <div id="trackerPartnerList"></div>
       </div>
