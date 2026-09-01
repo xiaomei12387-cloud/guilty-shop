@@ -1,0 +1,8 @@
+{
+  "name": "GUILTY 欲室共犯",
+  "short_name": "GUILTY",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#08080a",
+  "theme_color": "#00ff88"
+}
