@@ -4,333 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>欲室｜共犯 GUILTY × shushi束室 繩教室</title>
+  <link rel="manifest" href="./manifest.json" />
 
-  <style>
-    :root {
-      --bg-color: #08080a;
-      --card-bg: rgba(20, 20, 24, 0.85);
-      --panel-border: #262930;
-      --accent-cyan: #00ff88;
-      --accent-purple: #b5179e;
-      --text-main: #f0f0f0;
-      --text-muted: #8c8f96;
-      --danger-red: #ff334b;
-      --glow-cyan: rgba(0, 255, 136, 0.25);
-      --glow-purple: rgba(181, 23, 158, 0.25);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Consolas', 'PingFang TC', sans-serif; -webkit-tap-highlight-color: transparent; }
-    html, body { width: 100%; max-width: 100%; overflow-x: hidden; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; scroll-behavior: smooth; }
-
-    /* 原創幾何骨架 SVG 樣式 */
-    .guilty-vector-logo { display: inline-block; vertical-align: middle; filter: drop-shadow(0 0 6px var(--glow-cyan)); }
-    .logo-path { stroke: var(--accent-cyan); stroke-width: 7; stroke-linecap: square; stroke-linejoin: miter; fill: none; }
-    .logo-path-anim { stroke-dasharray: 600; stroke-dashoffset: 600; animation: drawLogoAnim 1.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-    @keyframes drawLogoAnim { to { stroke-dashoffset: 0; } }
-
-    /* 開機動畫 */
-    #intro-screen {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
-      background-color: #050507; z-index: 10000;
-      display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;
-      transition: opacity 0.6s ease, visibility 0.6s ease;
-    }
-    #intro-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
-    .intro-logo-box { width: 100%; max-width: 300px; text-align: center; }
-    
-    .cyber-cat-eye-svg { 
-      width: 90px; 
-      height: 90px; 
-      margin: 0 auto 16px; 
-      display: block; 
-      filter: drop-shadow(0 0 10px var(--accent-cyan));
-    }
-    .svg-eye-path { 
-      stroke: var(--accent-cyan); 
-      stroke-width: 4; 
-      fill: rgba(0, 255, 136, 0.05); 
-      stroke-dasharray: 400; 
-      stroke-dashoffset: 400; 
-      animation: drawEyeStroke 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
-    }
-    .svg-pupil { 
-      fill: var(--accent-cyan); 
-      transform-origin: 50px 50px;
-      animation: pulsePupil 1s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards; 
-      opacity: 0;
-      filter: drop-shadow(0 0 6px #fff); 
-    }
-    @keyframes drawEyeStroke { 
-      to { stroke-dashoffset: 0; } 
-    }
-    @keyframes pulsePupil { 
-      0% { opacity: 0; transform: scaleY(0.05); } 
-      100% { opacity: 1; transform: scaleY(1); } 
-    }
-
-    .boot-progress-bar { width: 100%; height: 2px; background: #1a1a1f; margin-top: 25px; position: relative; overflow: hidden; }
-    .boot-progress-fill { position: absolute; left: 0; top: 0; height: 100%; width: 0%; background: var(--accent-cyan); box-shadow: 0 0 8px var(--accent-cyan); animation: fillProgress 2.2s cubic-bezier(0.1, 0.7, 0.1, 1) forwards; }
-    .skip-btn { position: absolute; bottom: 30px; font-size: 0.75rem; color: var(--text-muted); border: 1px solid var(--panel-border); padding: 6px 14px; cursor: pointer; letter-spacing: 2px; background: transparent; }
-    @keyframes fillProgress { 0% { width: 0%; } 100% { width: 100%; } }
-
-    /* 背景格線網格 */
-    body::before {
-      content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(rgba(0, 255, 136, 0.008) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 136, 0.008) 1px, transparent 1px);
-      background-size: 40px 40px; z-index: -2; pointer-events: none;
-    }
-
-    /* 頂部導覽列 */
-    header {
-      padding: 10px 16px; border-bottom: 1px solid var(--panel-border);
-      display: flex; justify-content: space-between; align-items: center;
-      background: rgba(8, 8, 10, 0.9); position: sticky; top: 0; z-index: 500;
-      backdrop-filter: blur(10px); width: 100%;
-    }
-    .brand-container { display: flex; align-items: center; gap: 8px; cursor: pointer; }
-    .header-eye-icon { width: 22px; height: 22px; filter: drop-shadow(0 0 4px var(--accent-cyan)); }
-    .header-controls { display: flex; align-items: center; gap: 10px; }
-    
-    .cart-btn-header {
-      background: #141416; border: 1px solid var(--accent-cyan); color: var(--accent-cyan);
-      padding: 5px 10px; font-size: 0.75rem; cursor: pointer; display: flex; align-items: center; gap: 6px;
-      transition: all 0.2s; position: relative;
-    }
-    .cart-btn-header:hover { background: var(--accent-cyan); color: #000; }
-    .cart-count-badge {
-      background: var(--danger-red); color: #fff; font-size: 0.65rem; padding: 1px 5px;
-      border-radius: 10px; font-weight: bold;
-    }
-
-    .user-badge {
-      font-size: 0.75rem; border: 1px solid var(--panel-border); color: var(--text-muted);
-      padding: 5px 8px; cursor: pointer; background: rgba(0, 255, 136, 0.05); transition: all 0.2s;
-    }
-    .user-badge:hover { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-    
-    .menu-toggle-btn {
-      width: 36px; height: 36px; background: #141416; border: 1px solid var(--panel-border);
-      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; cursor: pointer;
-    }
-    .menu-line { width: 18px; height: 2px; background-color: var(--accent-cyan); }
-
-    /* 側邊抽屜選單 */
-    .side-nav {
-      position: fixed; top: 0; right: -280px; width: 260px; height: 100dvh;
-      background: rgba(10, 10, 14, 0.98); border-left: 1px solid var(--panel-border);
-      z-index: 1000; padding: 24px 20px; display: flex; flex-direction: column; justify-content: space-between; transition: right 0.3s ease;
-    }
-    .side-nav.open { right: 0; }
-    .nav-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; }
-    .nav-overlay.active { display: block; }
-    .nav-menu-list { list-style: none; margin-top: 30px; display: flex; flex-direction: column; gap: 16px; }
-    .nav-menu-item a { color: var(--text-main); text-decoration: none; font-size: 0.95rem; letter-spacing: 1px; display: block; padding: 6px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-
-    /* 購物車抽屜 */
-    .cart-drawer {
-      position: fixed; top: 0; right: -360px; width: 100%; max-width: 350px; height: 100dvh;
-      background: rgba(12, 12, 16, 0.98); border-left: 1px solid var(--accent-cyan); box-shadow: -10px 0 30px rgba(0,0,0,0.8);
-      z-index: 1100; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .cart-drawer.open { right: 0; }
-    .cart-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
-    .cart-items-box { flex: 1; overflow-y: auto; padding: 16px 0; display: flex; flex-direction: column; gap: 12px; }
-    .cart-item-card {
-      background: #000; border: 1px solid var(--panel-border); padding: 12px; border-radius: 4px;
-      display: flex; gap: 10px; align-items: center; position: relative;
-    }
-    .cart-item-thumb { width: 55px; height: 55px; background: #141416; object-fit: cover; border-radius: 3px; cursor: pointer; flex-shrink: 0; }
-    .cart-item-info { flex: 1; min-width: 0; }
-    .cart-item-title { font-size: 0.85rem; font-weight: bold; color: #fff; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cart-item-spec { font-size: 0.7rem; color: var(--text-muted); margin: 2px 0; }
-    .cart-item-price { font-size: 0.8rem; color: var(--accent-cyan); font-weight: bold; }
-    .cart-qty-ctrl { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
-    .qty-btn { width: 22px; height: 22px; background: #141416; border: 1px solid var(--panel-border); color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
-    .qty-num { font-size: 0.8rem; min-width: 18px; text-align: center; }
-    .cart-item-del { position: absolute; top: 8px; right: 8px; color: var(--text-muted); background: none; border: none; cursor: pointer; font-size: 0.9rem; }
-    .cart-item-del:hover { color: var(--danger-red); }
-
-    /* 會員認證彈窗 */
-    .auth-modal {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100dvh;
-      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(16px);
-      z-index: 2000; display: none; justify-content: center; align-items: center; padding: 20px;
-    }
-    .auth-modal.active { display: flex; }
-    .auth-box {
-      width: 100%; max-width: 440px; background: rgba(15, 15, 18, 0.98);
-      border: 1px solid var(--accent-cyan); box-shadow: 0 0 30px var(--glow-cyan);
-      padding: 26px 22px; position: relative; max-height: 90dvh; overflow-y: auto;
-    }
-    .auth-header { text-align: center; margin-bottom: 16px; border-bottom: 1px dashed var(--panel-border); padding-bottom: 10px; }
-    .auth-title { font-size: 1.15rem; letter-spacing: 2px; color: #fff; }
-    .auth-sub { font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 1px; margin-top: 4px; }
-    .auth-close { position: absolute; top: 12px; right: 14px; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; background: none; border: none; }
-    
-    .auth-tab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-    .auth-tab-btn { padding: 8px; font-size: 0.8rem; background: #000; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; text-align: center; }
-    .auth-tab-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 255, 136, 0.1); font-weight: bold; }
-
-    .role-toggle-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
-    .role-btn { padding: 8px 4px; font-size: 0.75rem; background: #000; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; text-align: center; border-radius: 2px; transition: all 0.2s; }
-    .role-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0, 255, 136, 0.1); font-weight: bold; }
-
-    /* NDA 條款卡片 */
-    .nda-protocol-box {
-      background: #000; border: 1px dashed var(--panel-border); padding: 10px 12px;
-      font-size: 0.72rem; color: var(--text-muted); line-height: 1.6; margin: 12px 0; border-radius: 3px;
-    }
-    .nda-checkbox-label { display: flex; align-items: flex-start; gap: 8px; font-size: 0.75rem; color: #fff; cursor: pointer; margin-top: 8px; }
-    .nda-checkbox-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--accent-cyan); margin-top: 2px; }
-
-    /* 視圖控制 */
-    .view-section { display: none; width: 100%; }
-    .view-section.active { display: block; animation: viewFade 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes viewFade { from { opacity: 0; transform: translateY(12px) scale(0.99); } to { opacity: 1; transform: translateY(0); } }
-
-    .landing-container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 0 16px 60px; }
-
-    /* Hero */
-    .hero-fullscreen { min-height: 75dvh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 40px 10px; }
-    .hero-code { font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 16px; }
-    .hero-heading { font-size: clamp(1.8rem, 6vw, 2.8rem); letter-spacing: 1px; line-height: 1.25; margin-bottom: 16px; }
-    .hero-sub { font-size: clamp(0.9rem, 3.5vw, 1.05rem); color: var(--text-muted); max-width: 540px; margin-bottom: 30px; }
-    .hero-scroll-cue { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; cursor: pointer; }
-
-    /* Manifesto & Lore */
-    .section-manifesto { padding: 50px 0; border-top: 1px solid var(--panel-border); }
-    .manifesto-card { background: var(--card-bg); border: 1px solid var(--panel-border); padding: 24px 18px; border-radius: 4px; }
-    .manifesto-quote { font-size: clamp(1.1rem, 4vw, 1.4rem); color: var(--accent-cyan); margin-bottom: 16px; line-height: 1.4; }
-
-    /* 三大裝備研發矩陣 */
-    .matrix-grid { display: grid; grid-template-columns: 1fr; gap: 16px; margin-top: 20px; }
-    @media (min-width: 768px) { .matrix-grid { grid-template-columns: repeat(3, 1fr); } }
-    .matrix-card { background: var(--card-bg); border: 1px solid var(--panel-border); padding: 20px 16px; border-radius: 4px; transition: all 0.3s; }
-    .matrix-card:hover { border-color: var(--accent-cyan); transform: translateY(-4px); }
-    .matrix-card.card-shushi:hover { border-color: var(--accent-purple); }
-    .matrix-num { font-size: 0.7rem; color: var(--accent-cyan); font-family: monospace; letter-spacing: 2px; }
-    .card-shushi .matrix-num { color: var(--accent-purple); }
-    .matrix-title { font-size: 1.05rem; font-weight: bold; margin: 6px 0; color: #fff; }
-    .matrix-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
-
-    /* 藍圖卡片 */
-    .blueprint-card { background: #000; border: 1px solid var(--accent-cyan); padding: 18px 16px; margin: 16px 0; position: relative; font-family: 'Consolas', monospace; }
-    .blueprint-tag { position: absolute; top: -10px; right: 12px; background: #000; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); font-size: 0.65rem; padding: 2px 8px; letter-spacing: 1px; }
-    .spec-row { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding: 8px 0; font-size: 0.82rem; }
-    .spec-row:last-child { border-bottom: none; }
-    .spec-label { color: var(--text-muted); }
-    .spec-val { color: #fff; font-weight: bold; text-align: right; }
-
-    .stamp-preview { width: 120px; height: 120px; border-radius: 50%; border: 2px dashed var(--panel-border); display: flex; align-items: center; justify-content: center; margin: 12px auto; cursor: pointer; transition: all 0.3s; }
-
-    /* FAQ 模組 */
-    .faq-item { background: var(--card-bg); border: 1px solid var(--panel-border); padding: 16px; margin-bottom: 12px; border-radius: 4px; }
-    .faq-q { color: var(--accent-cyan); font-weight: bold; font-size: 0.95rem; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-    .faq-a { color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; }
-
-    .stealth-badge-card {
-      background: rgba(0, 255, 136, 0.03); border: 1px dashed var(--accent-cyan);
-      padding: 16px; margin: 24px 0; border-radius: 4px; display: flex; align-items: center; gap: 14px;
-    }
-
-    /* Arsenal */
-    .section-arsenal { padding: 50px 0; border-top: 1px solid var(--panel-border); }
-    .filter-bar { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-    .filter-btn { padding: 6px 12px; background: #141416; border: 1px solid var(--panel-border); color: var(--text-muted); cursor: pointer; font-size: 0.75rem; }
-    .filter-btn.active { border-color: var(--accent-cyan); color: var(--accent-cyan); }
-    .product-list-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
-    @media (min-width: 600px) { .product-list-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); } }
-    .product-card { background: var(--card-bg); border: 1px solid var(--panel-border); border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.3s; }
-    .product-card:hover { border-color: var(--accent-cyan); box-shadow: 0 4px 20px var(--glow-cyan); transform: translateY(-4px); }
-    .card-thumb { height: 200px; background: #000; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid var(--panel-border); font-size: 0.8rem; color: var(--text-muted); position: relative; overflow: hidden; }
-    .card-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: center 65%; display: block; }
-    .badge { position: absolute; top: 8px; right: 8px; font-size: 0.65rem; padding: 2px 6px; background: rgba(0,0,0,0.85); z-index: 2; }
-    .badge-guilty { border: 1px solid var(--accent-cyan); color: var(--accent-cyan); }
-    .badge-shushi { border: 1px solid var(--accent-purple); color: var(--accent-purple); }
-    .card-body { padding: 16px; }
-
-    /* Crew */
-    .section-crew { padding: 50px 0; border-top: 1px solid var(--panel-border); }
-    .team-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-    @media (min-width: 768px) { .team-grid { grid-template-columns: repeat(3, 1fr); } }
-    .team-card { background: var(--card-bg); border: 1px solid var(--panel-border); padding: 20px; border-radius: 4px; text-decoration: none; color: inherit; display: block; transition: all 0.3s; }
-    .team-card:hover { border-color: var(--accent-cyan); box-shadow: 0 4px 20px var(--glow-cyan); transform: translateY(-4px); }
-    .team-card.card-shushi:hover { border-color: var(--accent-purple); box-shadow: 0 4px 20px var(--glow-purple); }
-    .team-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .team-role { font-size: 0.7rem; color: var(--accent-cyan); letter-spacing: 1px; }
-    .card-shushi .team-role { color: var(--accent-purple); }
-
-    /* 商品詳情與配置頁 */
-    .detail-container { width: 100%; max-width: 800px; margin: 0 auto; padding: 24px 16px 60px; }
-    .checkout-hero-img-box {
-      width: 100%; height: 360px; background: #000; border: 1px solid var(--panel-border);
-      position: relative; overflow: hidden; border-radius: 4px; margin-bottom: 20px;
-      display: flex; align-items: center; justify-content: center; animation: heroScanIn 0.6s ease forwards;
-    }
-    @keyframes heroScanIn {
-      0% { opacity: 0; transform: scale(0.96); filter: brightness(2) contrast(1.5); }
-      100% { opacity: 1; transform: scale(1); filter: brightness(1) contrast(1); }
-    }
-    .checkout-hero-img-box img { width: 100%; height: 100%; object-fit: cover; object-position: center 65%; display: block; }
-    .checkout-hero-img-box::before {
-      content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 136, 0.18) 50%, transparent 100%);
-      transform: translateY(-100%); animation: scanLaser 2s cubic-bezier(0.4, 0, 0.2, 1) 0.3s forwards; pointer-events: none; z-index: 3;
-    }
-    @keyframes scanLaser { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
-
-    .hud-corner { position: absolute; width: 14px; height: 14px; border: 2px solid var(--accent-cyan); pointer-events: none; z-index: 4; }
-    .hud-tl { top: 8px; left: 8px; border-right: none; border-bottom: none; }
-    .hud-tr { top: 8px; right: 8px; border-left: none; border-bottom: none; }
-    .hud-bl { bottom: 8px; left: 8px; border-right: none; border-top: none; }
-    .hud-br { bottom: 8px; right: 8px; border-left: none; border-top: none; }
-
-    .form-box { 
-      background: var(--card-bg); border: 1px solid var(--panel-border); 
-      padding: 20px; border-radius: 4px; margin-bottom: 20px;
-      animation: cardSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    @keyframes cardSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-
-    .form-title { font-size: 1rem; color: var(--accent-cyan); margin-bottom: 14px; border-bottom: 1px solid var(--panel-border); padding-bottom: 6px; }
-    .form-group { margin-bottom: 14px; position: relative; }
-    label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-    input, select, textarea { width: 100%; padding: 12px; background: #000; border: 1px solid var(--panel-border); color: #fff; font-size: 0.9rem; outline: none; }
-    input:focus, select:focus, textarea:focus { border-color: var(--accent-cyan); }
-    .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; }
-    .radio-card { border: 1px solid var(--panel-border); padding: 12px 8px; text-align: center; cursor: pointer; font-size: 0.85rem; background: #0c0c0e; transition: all 0.2s; }
-    .radio-card.active { border-color: var(--accent-cyan); color: var(--accent-cyan); background: rgba(0,255,136,0.08); font-weight: bold; }
-    .radio-card.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; border-color: #333; }
-    
-    .btn-submit { width: 100%; padding: 16px; background: var(--accent-cyan); color: #000; font-size: 1rem; font-weight: bold; border: none; cursor: pointer; letter-spacing: 2px; transition: all 0.2s; }
-    .btn-submit:hover { background: #fff; }
-    .btn-secondary { width: 100%; padding: 14px; background: #141416; color: var(--accent-cyan); border: 1px solid var(--panel-border); font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: all 0.2s; }
-    .btn-secondary:hover { border-color: var(--accent-cyan); }
-
-    .store-select-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-    .store-confirmed-card {
-      background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan);
-      padding: 12px; border-radius: 4px; font-size: 0.82rem; margin-top: 8px; line-height: 1.6;
-    }
-
-    .success-card { background: var(--card-bg); border: 1px solid var(--accent-cyan); box-shadow: 0 0 35px var(--glow-cyan); padding: 32px 20px; border-radius: 4px; text-align: center; }
-    .success-badge { font-size: 0.8rem; color: var(--accent-cyan); letter-spacing: 3px; margin-bottom: 8px; }
-    .success-title { font-size: 1.6rem; margin-bottom: 12px; color: #fff; }
-    .success-file-box { background: #000; border: 1px dashed var(--panel-border); padding: 18px; text-align: left; margin: 20px 0; font-size: 0.85rem; line-height: 1.8; }
-    .pay-instruction-box { background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent-cyan); padding: 16px; text-align: left; margin-top: 14px; font-size: 0.85rem; line-height: 1.7; }
-
-    .history-item { background: #000; border: 1px solid var(--panel-border); padding: 16px; border-radius: 4px; margin-bottom: 12px; font-size: 0.85rem; }
-    .history-header { display: flex; justify-content: space-between; border-bottom: 1px dashed var(--panel-border); padding-bottom: 8px; margin-bottom: 8px; }
-  </style>
+  <!-- 外部樣式模組 -->
+  <link rel="stylesheet" href="./css/style.css" />
+  <link rel="stylesheet" href="./css/tracker.css" />
 </head>
 <body>
 
+  <!-- 開機動畫 -->
   <div id="intro-screen">
     <div class="intro-logo-box">
       <svg class="cyber-cat-eye-svg" viewBox="0 0 100 100">
-        <polygon class="svg-eye-path" points="50,5 92,50 50,95 8,50" />
-        <polygon class="svg-eye-path" points="50,20 80,50 50,80 20,50" style="animation-delay: 0.3s;" />
-        <path class="svg-pupil" d="M50,28 Q58,50 50,72 Q42,50 50,28 Z" />
+        <polygon class="svg-eye-path" points="50,10 90,50 50,90 10,50" />
+        <polygon class="svg-eye-path" points="50,22 78,50 50,78 22,50" style="animation-delay: 0.2s;" />
+        <path class="svg-pupil" d="M50,26 Q57,50 50,74 Q43,50 50,26 Z" />
       </svg>
 
       <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 260px;">
@@ -351,6 +39,7 @@
     <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
   </div>
 
+  <!-- 購物車抽屜 -->
   <div class="cart-drawer" id="cartDrawer">
     <div>
       <div class="cart-header">
@@ -374,6 +63,7 @@
     </div>
   </div>
 
+  <!-- 特工身份認證彈窗 -->
   <div class="auth-modal" id="authModal">
     <div class="auth-box">
       <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
@@ -398,7 +88,6 @@
             <label>加密通行密碼*</label>
             <input type="password" id="loginPasswordInput" required placeholder="請輸入密碼" />
           </div>
-          
           <div class="nda-protocol-box">
             <strong>⚠️ [ NEURAL ACCESS PROTOCOL // 認罪協議與保密條款 ]</strong><br>
             進入本終端代表您已充分知悉並同意遵守 SSC（安全・理智・知情同意）原則，並對本實驗室之一切研發裝備、調用檔案與通訊紀錄負完全保密義務。
@@ -407,7 +96,6 @@
               <span>我已閱讀並自願簽署《特工認罪保密協議》*</span>
             </label>
           </div>
-
           <button type="submit" class="btn-submit" id="btnLoginSubmit" style="padding:12px; font-size:0.9rem;">驗證密鑰並登入 (ACCESS)</button>
         </form>
 
@@ -436,7 +124,6 @@
             <label>設定加密通行密碼*</label>
             <input type="password" id="regPasswordInput" required minlength="6" placeholder="至少 6 碼英數密碼" />
           </div>
-
           <div class="nda-protocol-box">
             <strong>⚠️ [ PROTOCOL // 首次註冊建檔宣告 ]</strong><br>
             建立特工檔案即代表神經權限正式登錄於 UserDB。本實驗室實施嚴格隱私去識別化，您的真實個人資料僅用於包裹安全交付與認罪協議封存。
@@ -445,7 +132,6 @@
               <span>我已閱讀並自願簽署《特工認罪保密協議》*</span>
             </label>
           </div>
-
           <button type="submit" class="btn-submit" id="btnRegSubmit" style="padding:12px; font-size:0.9rem;">驗證信箱並建立檔案 (REGISTER)</button>
         </form>
       </div>
@@ -455,7 +141,6 @@
           <div class="auth-title">特工個人檔案庫</div>
           <div class="auth-sub" id="profileAccountBadge" style="color:var(--accent-cyan);">[ VERIFIED AGENT ]</div>
         </div>
-
         <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)">
           <div class="form-group">
             <label>主權陣營屬性 (ROLE)*</label>
@@ -465,7 +150,6 @@
               <div class="role-btn" id="roleSub" onclick="setProfileRole('服從者 (Sub)')">服從 [Sub]</div>
             </div>
           </div>
-
           <div class="form-group">
             <label>特工代號 / 嫌疑人稱號*</label>
             <input type="text" id="profNameInput" required />
@@ -474,15 +158,14 @@
             <label>常用交付超商（店名／店號／地址）</label>
             <input type="text" id="profLocationInput" placeholder="例如：7-11 鑫台北門市 (991182)" />
           </div>
-
           <button type="submit" class="btn-submit" style="padding:12px; font-size:0.9rem;">更新檔案數據 (SAVE)</button>
           <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:12px; cursor:pointer;">[ 斷開神經連結 / 退出登入 ]</button>
         </form>
       </div>
-
     </div>
   </div>
 
+  <!-- 頂部導覽列 -->
   <header>
     <div class="brand-container" onclick="showLandingView()">
       <svg class="header-eye-icon" viewBox="0 0 100 100">
@@ -517,6 +200,7 @@
     </div>
   </header>
 
+  <!-- 側邊選單 -->
   <div class="nav-overlay" id="navOverlay" onclick="toggleNav(false); toggleCart(false);"></div>
   <div class="side-nav" id="sideNav">
     <div>
@@ -526,6 +210,7 @@
       </div>
 
       <ul class="nav-menu-list">
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">🎮 實踐計數與特工主頁 (TRACKER) ★</a></li>
         <li class="nav-menu-item"><a href="#section-hero" onclick="scrollToSection('section-hero')">01 // 首頁 (TOP)</a></li>
         <li class="nav-menu-item"><a href="#section-manifesto" onclick="scrollToSection('section-manifesto')">02 // 世界觀理念 (LORE)</a></li>
         <li class="nav-menu-item"><a href="#section-matrix" onclick="scrollToSection('section-matrix')">03 // 裝備研發矩陣 (MATRIX)</a></li>
@@ -533,7 +218,6 @@
         <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">05 // 特工指南 (FAQ)</a></li>
         <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">06 // 主理核心 (CREW)</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">07 // 個人調用紀錄 (MY DOSSIER)</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openSellerPortal()" style="color:var(--accent-cyan);">08 // 創作者中心 (SELLER PORTAL) 🔒</a></li>
       </ul>
     </div>
 
@@ -541,13 +225,13 @@
       <div style="margin-bottom:8px; color:var(--accent-cyan);">[ SECURE COMMS ]</div>
       <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" style="color:#5865F2; text-decoration:none; display:block; margin-bottom:4px;">👾 加入特工 Discord 伺服器 ↗</a>
       <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration:none; display:block; margin-bottom:6px;">𝕏 追蹤 GUILTY 官方情報 ↗</a>
-      <span style="color:var(--text-muted);">欲室共犯 × shushi束室 // SYS.VER 01.0</span>
+      <span style="color:var(--text-muted);">欲室共犯 × shushi束室 // SYS.VER 02.0</span>
     </div>
   </div>
 
+  <!-- 1. 展廳主頁面 -->
   <div id="view-landing" class="view-section active">
     <div class="landing-container">
-      
       <section class="hero-fullscreen" id="section-hero">
         <div class="hero-code">[ PROTOCOL // A.D. 2678 HARDWARE ARSENAL ]</div>
         <div style="margin-bottom: 24px;">
@@ -565,11 +249,14 @@
         </div>
         <h1 class="hero-heading">我們不製造傷害，<br>我們定義支配。</h1>
         <p class="hero-sub">工業義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。重塑冷冽硬派的次文化拘束哲學。</p>
-        <div class="hero-scroll-cue" onclick="scrollToSection('section-manifesto')">
-          ▼ 探索核心裝備矩陣 (EXPLORE)
+        
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
+          <button class="btn-submit" onclick="openTrackerAppView()" style="width:auto; padding:12px 24px; font-size:0.85rem;">🎮 進入實踐計數終端 (TRACKER)</button>
+          <button class="btn-secondary" onclick="scrollToSection('section-arsenal')" style="width:auto; padding:12px 24px; font-size:0.85rem;">▼ 調用裝備目錄</button>
         </div>
       </section>
 
+      <!-- 世界觀脈絡 -->
       <section class="section-manifesto" id="section-manifesto">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // WORLDVIEW & PROTOCOL ]</div>
         <div class="manifesto-card">
@@ -577,192 +264,195 @@
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
             【欲室｜共犯 GUILTY】作為地下義體武裝研究所，攜手專業繩縛殿堂【shushi束室 繩教室】，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
           </p>
-          <div style="border-left: 2px solid var(--accent-cyan); padding-left: 12px; margin-top: 14px; background: rgba(0, 255, 136, 0.03); padding-top: 8px; padding-bottom: 8px;">
-            <span style="color:var(--accent-cyan); font-weight:bold; font-size:0.85rem;">【認罪協議 Protocol Guilty】</span>
-            <p style="color:var(--text-main); font-size:0.8rem; margin-top:6px; line-height:1.7;">
-              在 2678 年的地下網絡，拘束不再是野蠻的皮肉束縛，而是雙方主權的讓渡契約。下單即代表支配者（Dom）啟動神經調用權限，服從者（Sub）自願接納義體烙印。每一份協議皆載入專屬識別碼，自按下確認鍵起，主權接管正式生效。
-            </p>
-          </div>
         </div>
       </section>
 
+      <!-- 裝備研發矩陣 -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-matrix">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // ARSENAL MATRIX ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:6px;">支配・拘束・義體三大研發矩陣</h2>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:16px;">全系列裝備皆由主理人團隊親自研發打樣、結構力學驗證與繩藝認證。</p>
-
         <div class="matrix-grid">
           <div class="matrix-card">
             <div class="matrix-num">DIVISION 01 // CYBERNETICS</div>
             <div class="matrix-title">義體外骨骼拘束器</div>
-            <div class="matrix-desc">主理人 18X 參數化建模。工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
-            <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">
-              ✦ 貓痕拘束項圈 <span style="color:#ff334b; font-size:0.7rem;">[ 09.11 開放預購 ]</span>
-            </div>
+            <div class="matrix-desc">工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
           </div>
-
           <div class="matrix-card card-shushi">
             <div class="matrix-num">DIVISION 02 // ROPE ART</div>
             <div class="matrix-title">束室特選精煉繩藝</div>
-            <div class="matrix-desc">shushi束室工坊監製。經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌、抗拉力強韌。</div>
-            <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-purple); font-weight:bold;">
-              ✦ 13 色精煉麻繩 / 原色生繩 <span style="color:var(--accent-cyan); font-size:0.7rem;">[ 現貨正常調用 ]</span>
-            </div>
+            <div class="matrix-desc">經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌。</div>
           </div>
-
           <div class="matrix-card">
             <div class="matrix-num">DIVISION 03 // CALIBRATION & TACTICAL</div>
             <div class="matrix-title">神經校準與戰術裝備</div>
-            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹 SSC 安全脫離與精準神經回饋。</div>
-            <div style="margin-top:12px; font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">
-              ✦ 神經突觸長鞭 / 護腕墊 <span style="color:var(--accent-cyan); font-size:0.7rem;">[ 現貨/預製調用 ]</span>
-            </div>
+            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹精準神經回饋。</div>
           </div>
         </div>
       </section>
 
+      <!-- 裝備目錄庫 -->
       <section class="section-arsenal" id="section-arsenal">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
           <h2 style="font-size:1.4rem;">全系列裝備目錄庫</h2>
           <span style="font-size:0.8rem; color:var(--accent-cyan); border:1px dashed var(--accent-cyan); padding:2px 8px;">全館滿 NT$ 1,800 免運費</span>
         </div>
-
         <div class="filter-bar">
           <button class="filter-btn active" onclick="filterBrand('all')">全部裝備 (ALL)</button>
           <button class="filter-btn" onclick="filterBrand('guilty')">欲室｜共犯 義體</button>
           <button class="filter-btn" onclick="filterBrand('shushi')">shushi束室 繩選</button>
         </div>
-
         <div class="product-list-grid" id="productGrid"></div>
       </section>
 
+      <!-- FAQ -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-faq">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // AGENT DOSSIER FAQ ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
-
         <div class="faq-item">
           <div class="faq-q">Q1. 旗艦項圈尺寸如何挑選？（S 碼 vs M 碼）</div>
-          <div class="faq-a">
-            請使用軟尺貼合喉結下方一圈測量（勿勒緊）：<br>
-            • <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態（官方 Model 淨脖圍 30cm 完美貼合著用）。<br>
-            • <strong>M 碼（34 – 38 cm）</strong>：適合標準體態。<br>
-            * 若脖圍小於 29cm 或大於 38cm，可在結帳備註「實際淨脖圍」，主理人 18X 將為您微調參數列印。
-          </div>
+          <div class="faq-a">• <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態。<br>• <strong>M 碼（34 – 38 cm）</strong>：適合標準體態。</div>
         </div>
-
-        <div class="faq-item">
-          <div class="faq-q">Q2. 神經突觸長鞭（1.2M vs 1.5M）如何選擇？</div>
-          <div class="faq-a">
-            • <strong>1.2 米 [CQB]</strong>：適合室內近身掌控、落點極度精準、揮動迅速。<br>
-            • <strong>1.5 米 [EXTENDED]</strong>：力矩飽滿、破空聲響威懾力極強，適合大空間重度發力。
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-q">Q3. 麻繩與義體裝備如何保養？</div>
-          <div class="faq-a">
-            • <strong>SLS / TPU 裝甲</strong>：使用後以常溫清水或微量中性清潔劑擦拭陰乾。<br>
-            • <strong>束室精煉麻繩</strong>：麻繩已完成打蠟過油，切勿水洗！受潮請自然陰乾，定期過蠟可維持溫潤滑順感。
-          </div>
-        </div>
-
         <div class="stealth-badge-card">
           <div style="font-size: 1.8rem;">🔒</div>
           <div>
             <div style="color: var(--accent-cyan); font-weight: bold; font-size: 0.9rem;">100% 絕密隱私交付承諾 (STEALTH SHIPPING)</div>
-            <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 2px;">
-              外箱包裹絕無「GUILTY / BDSM / 拘束」等敏感字樣，超商寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>，取貨隱私無懈可擊。
-            </div>
+            <div style="color: var(--text-muted); font-size: 0.8rem;">超商寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>。</div>
           </div>
         </div>
       </section>
 
+      <!-- 主理核心 -->
       <section class="section-crew" id="section-crew">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
-
         <div class="team-grid">
           <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div class="team-header">
-              <div class="team-role">DESIGN DIRECTOR</div>
-              <span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span>
-            </div>
-            <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">18X</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@18X_inthc</div>
-            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">主理品牌視覺體系、參數化外骨骼建模與結構研發。</div>
+            <div class="team-header"><div class="team-role">DESIGN DIRECTOR</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
+            <div style="font-size:1.1rem; font-weight:bold;">18X</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">@18X_inthc</div>
           </a>
-
           <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div class="team-header">
-              <div class="team-role">COMMUNITY & OPERATIONS</div>
-              <span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span>
-            </div>
-            <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">老王</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@Take1809DL</div>
-            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">深耕次文化圈層與實踐社群。專注於特工終端營運與外部通路對接。</div>
+            <div class="team-header"><div class="team-role">COMMUNITY & OPERATIONS</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
+            <div style="font-size:1.1rem; font-weight:bold;">老王</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">@Take1809DL</div>
           </a>
-
           <a href="https://x.com/220shushi" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
-            <div class="team-header">
-              <div class="team-role">STRATEGIC ALLIANCE</div>
-              <span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span>
-            </div>
-            <div style="font-size:1.1rem; font-weight:bold; margin-bottom:2px;">shushi束室 繩教室</div>
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">@220shushi</div>
-            <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">專業繩縛教學與技術認證工坊。提供高標準繩材選品與護具監製。</div>
+            <div class="team-header"><div class="team-role">STRATEGIC ALLIANCE</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
+            <div style="font-size:1.1rem; font-weight:bold;">shushi束室 繩教室</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">@220shushi</div>
           </a>
         </div>
       </section>
-
-      <section style="padding: 40px 0 20px; border-top: 1px solid var(--panel-border); text-align: center;">
-        <div style="font-size: 0.75rem; color: var(--accent-cyan); letter-spacing: 2px; margin-bottom: 8px;">[ 06 // SECURE COMMS ]</div>
-        <h2 style="font-size: 1.3rem; margin-bottom: 8px;">特工通訊・官方頻寬</h2>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 24px;">加入特工終端取得第一手裝備更新、排程調用進度與社群互動。</p>
-
-        <div style="display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; max-width: 500px; margin: 0 auto 30px;">
-          <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" 
-             style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(88, 101, 242, 0.12); border: 1px solid #5865F2; color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px;">
-            👾 DISCORD 終端庫
-          </a>
-          <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" 
-             style="flex: 1; min-width: 180px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 12px 18px; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--panel-border); color: #fff; text-decoration: none; font-size: 0.85rem; font-weight: bold; border-radius: 4px;">
-            𝕏 官方情報局
-          </a>
-        </div>
-
-        <div style="font-size: 0.75rem; color: var(--text-muted); letter-spacing: 1px;">
-          欲室｜共犯 GUILTY × shushi束室 繩教室 © 2026. ALL RIGHTS RESERVED.
-        </div>
-      </section>
-
     </div>
   </div>
 
+  <!-- 2. 【全新】實踐計數器與特工主頁視圖 (Tracker View) -->
+  <div id="view-tracker" class="view-section">
+    <div class="detail-container">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; font-size:0.8rem;">← 返回展廳</button>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ PROTOCOL // TRACKER TERMINAL ]</div>
+      </div>
+
+      <!-- 頂部切換主/被動方 -->
+      <div class="mode-switch-grid">
+        <div class="mode-switch-btn active" id="btnModeDom" onclick="switchTrackerMode('dom')">⚔️ 主動方終端 (Dom)</div>
+        <div class="mode-switch-btn" id="btnModeSub" onclick="switchTrackerMode('sub')">⛓️ 被動方終端 (Sub)</div>
+      </div>
+
+      <!-- A. 實時計數板 -->
+      <div class="form-box">
+        <div class="form-title" id="activePartnerNameDisplay">[ 當前對象：載入中... ]</div>
+        
+        <div class="counter-board-grid">
+          <div class="counter-box">
+            <div class="counter-title">SP 實施次數</div>
+            <div class="counter-val" id="spCountVal" style="color:var(--accent-cyan);">0</div>
+            <div class="counter-ctrl-grid">
+              <button class="counter-btn" onclick="adjustCounter('SP', 1)">+1</button>
+              <button class="counter-btn" onclick="adjustCounter('SP', 5)">+5</button>
+              <button class="counter-btn" onclick="adjustCounter('SP', -1)">-1</button>
+              <button class="counter-btn" onclick="resetCounter('SP')" style="color:var(--danger-red);">清零</button>
+            </div>
+          </div>
+
+          <div class="counter-box">
+            <div class="counter-title">神經長鞭擊數</div>
+            <div class="counter-val" id="whipCountVal" style="color:var(--accent-purple);">0</div>
+            <div class="counter-ctrl-grid">
+              <button class="counter-btn" onclick="adjustCounter('WHIP', 1)">+1</button>
+              <button class="counter-btn" onclick="adjustCounter('WHIP', 5)">+5</button>
+              <button class="counter-btn" onclick="adjustCounter('WHIP', -1)">-1</button>
+              <button class="counter-btn" onclick="resetCounter('WHIP')" style="color:var(--danger-red);">清零</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- B. 互動對象清單 (可置頂) -->
+      <div class="form-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="form-title" style="margin-bottom:0; border:none; padding:0;">互動對象清單 (PARTNERS)</div>
+          <button onclick="addNewPartnerPrompt()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 新增對象</button>
+        </div>
+        <div id="trackerPartnerList"></div>
+      </div>
+
+      <!-- C. 個人特工主頁與偏好矩陣 -->
+      <div class="form-box">
+        <div class="form-title">個人特工檔案 // 癖好與雷點矩陣</div>
+        <div style="font-size:0.75rem; color:var(--text-muted);">點擊標籤自由開關您的實踐偏好：</div>
+        
+        <div style="margin-top:10px;">
+          <label style="font-size:0.75rem; color:var(--accent-cyan);">✦ 實踐偏好 (PREFERENCES)：</label>
+          <div class="tags-wrap-box" id="myPrefTagsBox"></div>
+        </div>
+
+        <div>
+          <label style="font-size:0.75rem; color:var(--danger-red);">✦ 絕對雷點 (HARD LIMITS)：</label>
+          <div class="tags-wrap-box" id="myLimitTagsBox"></div>
+        </div>
+
+        <!-- 賽博身份證 QR Code -->
+        <div class="qr-pass-card">
+          <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL PASS // 專屬特工通行證 ]</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">出示此 QR Code 供對方掃描，即可一鍵載入您的偏好與社群資料！</div>
+          <div class="qr-box" id="myQrCodeBox"></div>
+          <button class="btn-secondary" onclick="promptScanOrPaste()" style="padding:8px 14px; font-size:0.75rem;">📷 貼上對方的特工代碼 / 掃碼加好友</button>
+        </div>
+      </div>
+
+      <!-- D. 實踐邀約行事曆 -->
+      <div class="form-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="form-title" style="margin-bottom:0; border:none; padding:0;">實踐邀約行事曆 (SCHEDULE)</div>
+          <button onclick="addCalendarEventPrompt()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 預約實踐</button>
+        </div>
+        <div id="calendarEventsList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 商品詳細配置頁 -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
-      
       <div class="checkout-hero-img-box" id="detailHeroBox">
-        <div class="hud-corner hud-tl"></div>
-        <div class="hud-corner hud-tr"></div>
-        <div class="hud-corner hud-bl"></div>
-        <div class="hud-corner hud-br"></div>
+        <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+        <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
         <div id="detailHeroImgArea" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"></div>
       </div>
 
       <div class="form-box">
         <div class="form-title" id="detailProductTitle">裝備檔案配置</div>
         <div id="detailProductDesc" style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;"></div>
-        
         <div id="detailDynamicOptions"></div>
         <div id="detailChokerSpecificArea"></div>
-
         <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:14px; margin-top:14px;">
           <div style="font-size:0.85rem; color:var(--text-muted);">調用單價：</div>
           <div id="detailPriceDisplay" style="color:var(--accent-cyan); font-weight:bold; font-size:1.3rem;">NT$ 0</div>
         </div>
-
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:18px;">
           <button class="btn-secondary" onclick="addCurrentProductToCart()">＋ 加入裝備庫 (CART)</button>
           <button class="btn-submit" id="detailCheckoutBtn" onclick="buyNowFromDetail()">立即簽署協議結帳 →</button>
@@ -771,6 +461,7 @@
     </div>
   </div>
 
+  <!-- 4. 終端結帳視圖 -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -781,17 +472,15 @@
       <div class="form-box">
         <div class="form-title">01 // 調用裝備清單明細</div>
         <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
-        
         <div style="border-top:1px dashed var(--panel-border); padding-top:12px; margin-top:12px;">
           <label style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ 終端優惠協議 // PROMO CODE ]</label>
           <div style="display:flex; gap:8px; margin-top:4px;">
-            <input type="text" id="promoCodeInput" placeholder="輸入折扣碼（例如：18LOVEWANG）" style="text-transform:uppercase; font-size:0.85rem; padding:10px;" />
+            <input type="text" id="promoCodeInput" placeholder="輸入折扣碼（例如：IAMSUB）" style="text-transform:uppercase; font-size:0.85rem; padding:10px;" />
             <button type="button" onclick="applyPromoCode()" style="background:var(--accent-cyan); color:#000; border:none; padding:0 16px; font-weight:bold; cursor:pointer; font-size:0.85rem; white-space:nowrap;">套用</button>
             <button type="button" id="removePromoBtn" onclick="removePromoCode()" style="background:#222; color:var(--danger-red); border:1px solid var(--panel-border); padding:0 12px; cursor:pointer; font-size:0.8rem; display:none;">✕ 取消</button>
           </div>
           <div id="promoStatusMsg" style="font-size:0.75rem; margin-top:6px;"></div>
         </div>
-
         <div id="checkoutFinancialSummary"></div>
       </div>
 
@@ -811,7 +500,7 @@
             <input type="tel" id="custPhone" required placeholder="0912-345-678" onchange="onPhoneChanged()" />
           </div>
           <div class="form-group">
-            <label>客製需求 / 訂製配色 / 銘牌備註（限英數或自訂色票）</label>
+            <label>客製需求 / 訂製配色 / 銘牌備註</label>
             <input type="text" id="custEngraving" maxlength="30" placeholder="例如：自訂色系-狼灰配緋紅 / GUILTY-01" />
           </div>
         </div>
@@ -824,46 +513,30 @@
             <div class="radio-card" onclick="selectShipping('home', this)">黑貓 宅配 (+NT$120)</div>
             <div class="radio-card" onclick="selectShipping('meetup', this)" style="border-color: rgba(0, 255, 136, 0.4);">線下面交 (+NT$0)</div>
           </div>
-
           <div id="cvsDropdownContainer">
-            <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 選擇取貨門市（支援縣市/區域與路名即時檢索）*</label>
+            <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 選擇取貨門市*</label>
             <div class="store-select-grid">
-              <select id="cvsCitySelect" onchange="onCityChanged(this.value)">
-                <option value="">-- 連線試算表載入縣市中... --</option>
-              </select>
-              <select id="cvsDistSelect" onchange="onDistChanged(this.value)" disabled>
-                <option value="">-- 選擇區域 --</option>
-              </select>
+              <select id="cvsCitySelect" onchange="onCityChanged(this.value)"><option value="">-- 載入縣市中... --</option></select>
+              <select id="cvsDistSelect" onchange="onDistChanged(this.value)" disabled><option value="">-- 選擇區域 --</option></select>
             </div>
-
-            <div style="margin: 8px 0; position: relative;">
-              <input type="text" id="cvsStreetFilter" placeholder="🔍 輸入路名或地標過濾（例如：南京東路、大觀路）..." 
-                     oninput="filterStoresByKeyword(this.value)" disabled 
-                     style="font-size: 0.82rem; padding: 10px; border-color: #333;" />
-            </div>
-
             <select id="cvsStoreSelect" onchange="onStorePicked(this.value)" disabled style="margin-bottom: 6px;">
               <option value="">-- 選擇門市名稱 (店號) --</option>
             </select>
-            
             <div class="store-confirmed-card" id="storeConfirmedCard" style="display:none;">
               <div style="color:var(--accent-cyan); font-weight:bold;">✔ 已鎖定取貨門市：</div>
               <div id="confirmedStoreNameText" style="color:#fff; font-size:0.9rem; font-weight:bold;"></div>
               <div id="confirmedStoreAddrText" style="color:var(--text-muted); font-size:0.75rem;"></div>
             </div>
           </div>
-
           <div class="form-group" id="manualLocationGroup" style="display:none; margin-top:10px;">
-            <label id="manualStoreLabel">收件詳細地址*</label>
+            <label>收件詳細地址 / 面交地點*</label>
             <input type="text" id="manualShippingLocation" placeholder="例如：台北市中山區南京東路一段..." />
           </div>
-
-          <input type="hidden" id="finalShippingLocation" required />
-
+          <input type="hidden" id="finalShippingLocation" />
           <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--panel-border);">
             <label style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:var(--text-muted); cursor:pointer;">
               <input type="checkbox" id="saveToProfileCheck" checked style="width:16px; height:16px; accent-color:var(--accent-cyan);" />
-              <span>儲存為特工預設聯絡人與常用交付門市（下次結帳自動帶入）</span>
+              <span>儲存為特工常用交付門市</span>
             </label>
           </div>
         </div>
@@ -874,153 +547,65 @@
             <div class="radio-card active" id="payMethodCod" onclick="selectPayment('cod', this)">超商取貨付款</div>
             <div class="radio-card" id="payMethodBank" onclick="selectPayment('bank', this)">銀行 ATM 匯款</div>
           </div>
-          <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted); line-height:1.6;">貨物送達超商後，取貨現場付款即可。</div>
+          <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted);">貨物送達超商後，取貨現場付款即可。</div>
         </div>
-
         <button type="submit" class="btn-submit">確認協議並鎖定調用 (LOCK)</button>
       </form>
     </div>
   </div>
 
-  <div id="view-seller" class="view-section">
-    <div class="detail-container">
-      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
-      
-      <div class="form-box" id="sellerAuthBox">
-        <div class="form-title">08 // 創作者暗黑終端 (SELLER PORTAL)</div>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:16px;">本實驗室實施【創作者審核加入制】。持有專屬開通金鑰之主理團隊與合作創作者方可登入上架裝備。</p>
-
-        <div class="auth-tab-grid">
-          <div class="auth-tab-btn active" id="sellerTabKey" onclick="switchSellerTab('key')">輸入專屬金鑰登入</div>
-          <div class="auth-tab-btn" id="sellerTabApply" onclick="switchSellerTab('apply')">申請創作者入駐 (APPLY)</div>
-        </div>
-
-        <form id="sellerKeyForm" onsubmit="handleSellerKeyLogin(event)">
-          <div class="form-group">
-            <label>創作者專屬存取金鑰 [ ACCESS KEY ]*</label>
-            <input type="text" id="sellerAccessKeyInput" required placeholder="例如：GK-ABC123" style="text-transform:uppercase; letter-spacing:2px;" />
-          </div>
-          <button type="submit" class="btn-submit" style="padding:12px; font-size:0.85rem;">驗證金鑰進入工作台 (ACCESS)</button>
-        </form>
-
-        <form id="sellerApplyForm" onsubmit="handleSellerApplySubmit(event)" style="display:none;">
-          <div class="form-group">
-            <label>創作者／品牌名稱*</label>
-            <input type="text" id="applyBrandName" required placeholder="例如：VOID 異體工作室" />
-          </div>
-          <div class="form-group">
-            <label>聯絡管道 (Email 或 Discord ID)*</label>
-            <input type="text" id="applyContact" required placeholder="例如：creator@void.com / discord_tag" />
-          </div>
-          <div class="form-group">
-            <label>作品集／社群連結 (X、IG 或作品網站)*</label>
-            <input type="url" id="applyPortfolio" required placeholder="https://x.com/..." />
-          </div>
-          <button type="submit" class="btn-submit" style="padding:12px; font-size:0.85rem;">提交入駐申請至審核庫 (SUBMIT)</button>
-        </form>
-      </div>
-
-      <div class="form-box" id="sellerWorkstationBox" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--panel-border); padding-bottom:10px; margin-bottom:14px;">
-          <div>
-            <div class="form-title" style="border:none; margin:0; padding:0;">裝備發布終端 // WORKSTATION</div>
-            <div id="verifiedCreatorBadge" style="font-size:0.75rem; color:var(--accent-cyan);">[ VERIFIED CREATOR ]</div>
-          </div>
-          <button type="button" onclick="logoutSeller()" style="background:#141416; border:1px solid var(--panel-border); color:var(--text-muted); font-size:0.75rem; padding:4px 8px; cursor:pointer;">[ 退出工作台 ]</button>
-        </div>
-
-        <form id="sellerPublishForm" onsubmit="handlePublishProduct(event)">
-          <div class="form-group">
-            <label>所屬品牌陣營*</label>
-            <select id="newProdBrand">
-              <option value="guilty">欲室｜共犯 GUILTY</option>
-              <option value="shushi">shushi束室 繩教室</option>
-              <option value="guest">客座特工創作者</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>裝備品名*</label>
-            <input type="text" id="newProdTitle" required placeholder="例如：【神經突觸遮斷目鏡】" />
-          </div>
-          <div class="form-group">
-            <label>調用定價 (NT$)*</label>
-            <input type="number" id="newProdPrice" required placeholder="例如：1980" />
-          </div>
-          <div class="form-group">
-            <label>狀態標註 / 交付排程</label>
-            <input type="text" id="newProdNote" placeholder="例如：⚡ 預製/客製排產調用" />
-          </div>
-          <div class="form-group">
-            <label>規格選項（多個規格請用半形逗號分隔）</label>
-            <input type="text" id="newProdSpecs" placeholder="例如：S 碼, M 碼, L 碼" />
-          </div>
-          <div class="form-group">
-            <label>裝備大圖上傳（直接拖曳圖片或點擊選取）*</label>
-            <div id="dropZoneArea" onclick="document.getElementById('fileUploadInput').click()" 
-                 style="border: 2px dashed var(--accent-cyan); background: rgba(0,255,136,0.03); padding: 20px; text-align: center; cursor: pointer; border-radius: 4px;">
-              <div id="dropZoneText" style="font-size: 0.85rem; color: var(--text-muted);">
-                📁 點擊選取本機圖片 或 拖曳圖片至此處<br>
-                <span style="font-size:0.7rem; color:var(--accent-cyan);">支援 JPG、PNG、WebP</span>
-              </div>
-              <img id="imageUploadPreview" style="max-height: 160px; max-width: 100%; display: none; margin: 10px auto 0; border-radius: 4px; border: 1px solid var(--panel-border); object-fit: contain;" />
-            </div>
-            <input type="file" id="fileUploadInput" accept="image/*" style="display: none;" onchange="handleFileSelected(this)" />
-            <input type="hidden" id="newProdBase64" />
-            <div style="margin-top: 6px;">
-              <input type="url" id="newProdImg" placeholder="或手動輸入圖片網址 (https://...)" style="font-size:0.75rem; padding:8px;" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label>世界觀與規格文案描述*</label>
-            <textarea id="newProdDesc" rows="4" required placeholder="填寫裝備的力學特點、材質工藝與世界觀背景..."></textarea>
-          </div>
-
-          <button type="submit" class="btn-submit" style="padding:14px;">注入 ProductDB 資料庫並公開上架 →</button>
-        </form>
-      </div>
-
-    </div>
-  </div>
-
+  <!-- 5. 成功下單頁面 -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
         <div class="success-badge">[ PROTOCOL // CASE LOCKED ]</div>
         <h2 class="success-title">認罪協議已簽署完畢</h2>
         <p style="color:var(--text-muted); font-size:0.85rem;">裝備調用指令已注入終端，檔案已加密封存。</p>
-
-        <div class="success-file-box" id="successDetailArea"></div>
-        <div id="payInstructionArea"></div>
-
         <div style="display:flex; gap:10px; margin-top:24px;">
-          <button class="btn-submit" style="padding:12px; font-size:0.85rem;" onclick="showLandingView()">返回展廳 (HOME)</button>
-          <button class="btn-submit" style="padding:12px; font-size:0.85rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);" onclick="openOrderHistory()">我的調用紀錄 (DOSSIER)</button>
+          <button class="btn-submit" style="padding:12px 20px;" onclick="showLandingView()">返回展廳 (HOME)</button>
         </div>
       </div>
     </div>
   </div>
 
-  <div id="view-history" class="view-section">
-    <div class="detail-container">
-      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
-      
-      <div class="form-box">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--panel-border); padding-bottom:8px; margin-bottom:14px;">
-          <div class="form-title" id="historyTitle" style="margin-bottom:0; border-bottom:none; padding-bottom:0;">07 // 特工個人調用檔案庫</div>
-          <button onclick="openOrderHistory()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); font-size:0.75rem; padding:4px 8px; cursor:pointer;">[ 重新連線整理 ↻ ]</button>
-        </div>
-        <div id="historyListArea"></div>
-      </div>
-    </div>
-  </div>
+  <!-- 載入所有模組 JS -->
+  <script src="./js/config.js"></script>
+  <script src="./js/auth.js"></script>
+  <script src="./js/shop.js"></script>
+  <script src="./js/tracker.js"></script>
+
   <script>
-    // ==========================================
-    // ⚙️ 核心全域設定
-    // ==========================================
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxjgsD_dsWGl13ai5KNHv3LffrM6JbBINk8wrU57xMNXiuTV__veGLQfCTtJQFqLHJn/exec";
-    const FREE_SHIPPING_THRESHOLD = 1800;
+    // 視圖切換輔助函式
+    function setActiveView(viewId) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(viewId);
+      if (target) target.classList.add('active');
+      window.scrollTo(0, 0);
+    }
 
-    // 開機動畫計時器
+    function showLandingView(push = true) {
+      setActiveView('view-landing');
+      if (push && (!history.state || history.state.view !== 'landing')) {
+        history.pushState({ view: 'landing' }, '', '#landing');
+      }
+    }
+
+    function openTrackerAppView() {
+      toggleNav(false);
+      setActiveView('view-tracker');
+      renderTrackerApp();
+      history.pushState({ view: 'tracker' }, '', '#tracker');
+    }
+
+    function scrollToSection(sectionId) {
+      showLandingView();
+      toggleNav(false);
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 50);
+    }
+
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
       clearTimeout(introTimer);
@@ -1042,1793 +627,7 @@
       }
     }
 
-    function scrollToSection(sectionId) {
-      showLandingView();
-      toggleNav(false);
-      setTimeout(() => {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
-    }
-
-    // ==========================================
-    // 1. 會員帳密認證、NDA 協議與個人檔案中心
-    // ==========================================
-    let memberProfile = JSON.parse(localStorage.getItem('guilty_member')) || null;
-    let currentProfileRole = '服從者 (Sub)';
-
-    function toggleAuthModal(isOpen) {
-      const modal = document.getElementById('authModal');
-      if (isOpen) {
-        if (memberProfile && (memberProfile.email || memberProfile.phone)) {
-          document.getElementById('authGuestView').style.display = 'none';
-          document.getElementById('authProfileView').style.display = 'block';
-          document.getElementById('profileAccountBadge').textContent = `[ VERIFIED: ${memberProfile.email || memberProfile.phone} ]`;
-          document.getElementById('profNameInput').value = memberProfile.name || '';
-          document.getElementById('profLocationInput').value = memberProfile.defaultLocation || '';
-          setProfileRole(memberProfile.role || '服從者 (Sub)');
-        } else {
-          document.getElementById('authGuestView').style.display = 'block';
-          document.getElementById('authProfileView').style.display = 'none';
-          switchAuthTab('login');
-        }
-        modal.classList.add('active');
-      } else {
-        modal.classList.remove('active');
-      }
-    }
-
-    function switchAuthTab(tab) {
-      const tabLogin = document.getElementById('tabBtnLogin');
-      const tabReg = document.getElementById('tabBtnRegister');
-      const formLogin = document.getElementById('loginForm');
-      const formReg = document.getElementById('registerForm');
-
-      if (tab === 'login') {
-        tabLogin.classList.add('active');
-        tabReg.classList.remove('active');
-        formLogin.style.display = 'block';
-        formReg.style.display = 'none';
-      } else {
-        tabLogin.classList.remove('active');
-        tabReg.classList.add('active');
-        formLogin.style.display = 'none';
-        formReg.style.display = 'block';
-      }
-    }
-
-    function setProfileRole(role) {
-      currentProfileRole = role;
-      document.getElementById('roleDom').classList.toggle('active', role.includes('Dom'));
-      document.getElementById('roleSwitch').classList.toggle('active', role.includes('Switch'));
-      document.getElementById('roleSub').classList.toggle('active', role.includes('Sub'));
-    }
-
-    // 處理特工登入
-    function handleLoginSubmit(e) {
-      e.preventDefault();
-      const account = document.getElementById('loginAccountInput').value.trim();
-      const password = document.getElementById('loginPasswordInput').value.trim();
-      const ndaCheck = document.getElementById('loginNdaCheckbox').checked;
-      const btn = document.getElementById('btnLoginSubmit');
-
-      if (!ndaCheck) {
-        alert('請先詳閱並勾選同意《特工認罪保密協議》！');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = '神經密鑰驗證中...';
-
-      const cbName = 'loginCb_' + Date.now();
-      window[cbName] = function(res) {
-        const s = document.getElementById(cbName);
-        if (s) s.remove();
-        delete window[cbName];
-        btn.disabled = false;
-        btn.textContent = '驗證密鑰並登入 (ACCESS)';
-
-        if (res && res.result === 'success') {
-          memberProfile = res.user;
-          localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
-          updateMemberUI();
-          toggleAuthModal(true);
-          alert(`【認證成功】歡迎接入終端，特工 ${memberProfile.name}！`);
-        } else {
-          alert(`❌ 登入失敗：${res.msg || '帳號或密碼錯誤'}`);
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = cbName;
-      script.src = `${GOOGLE_SHEET_URL}?action=login&account=${encodeURIComponent(account)}&password=${encodeURIComponent(password)}&callback=${cbName}&_t=${Date.now()}`;
-      script.onerror = () => {
-        btn.disabled = false;
-        btn.textContent = '驗證密鑰並登入 (ACCESS)';
-        alert('連線逾時，請檢查網路狀態。');
-      };
-      document.body.appendChild(script);
-    }
-
-    // 處理特工註冊（含發送 OTP 與驗證註冊）
-    let regOtpTimer = null;
-
-    function sendRegisterOtp() {
-      const email = document.getElementById('regEmailInput').value.trim();
-      const btn = document.getElementById('btnSendRegOtp');
-      const notice = document.getElementById('regOtpNotice');
-
-      if (!email || email.indexOf('@') === -1) {
-        alert('請輸入有效的電子信箱！');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = '發送中...';
-
-      fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'sendOtp', email: email })
-      }).then(() => {
-        alert(`✔ 驗證碼已發送至 ${email}，請至信箱收取 6 位數代碼！`);
-        let count = 60;
-        notice.textContent = `重新發送冷卻中 (${count}s)...`;
-        clearInterval(regOtpTimer);
-        regOtpTimer = setInterval(() => {
-          count--;
-          if (count <= 0) {
-            clearInterval(regOtpTimer);
-            btn.disabled = false;
-            btn.textContent = '發送驗證碼';
-            notice.textContent = '';
-          } else {
-            notice.textContent = `重新發送冷卻中 (${count}s)...`;
-          }
-        }, 1000);
-      }).catch(() => {
-        btn.disabled = false;
-        btn.textContent = '發送驗證碼';
-        alert('發送失敗，請稍後再試。');
-      });
-    }
-
-    function handleRegisterSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('regNameInput').value.trim();
-      const email = document.getElementById('regEmailInput').value.trim();
-      const otp = document.getElementById('regOtpInput').value.trim();
-      const phone = document.getElementById('regPhoneInput').value.trim();
-      const password = document.getElementById('regPasswordInput').value.trim();
-      const ndaCheck = document.getElementById('regNdaCheckbox').checked;
-      const btn = document.getElementById('btnRegSubmit');
-
-      if (!ndaCheck) {
-        alert('請先勾選同意《特工認罪保密協議》！');
-        return;
-      }
-      if (!otp || otp.length !== 6) {
-        alert('請輸入信箱收到的 6 位數驗證碼！');
-        return;
-      }
-
-      btn.disabled = true;
-      btn.textContent = '驗證建立檔案中...';
-
-      const regPayload = {
-        action: 'registerWithOtp',
-        name: name,
-        email: email,
-        otp: otp,
-        phone: phone,
-        password: password
-      };
-
-      fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(regPayload)
-      }).then(() => {
-        btn.disabled = false;
-        btn.textContent = '驗證信箱並建立檔案 (REGISTER)';
-        memberProfile = {
-          email: email,
-          phone: phone,
-          name: name,
-          role: '服從者 (Sub)',
-          defaultLocation: ''
-        };
-        localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
-        updateMemberUI();
-        toggleAuthModal(true);
-        alert(`✔ 特工檔案已成功建立！歡迎加入 GUILTY 終端庫，${name}。`);
-      }).catch(() => {
-        btn.disabled = false;
-        btn.textContent = '驗證信箱並建立檔案 (REGISTER)';
-        alert('註冊連線異常，請確認驗證碼是否正確。');
-      });
-    }
-
-    // 更新特工檔案
-    function handleProfileUpdate(e) {
-      e.preventDefault();
-      if (!memberProfile) return;
-
-      const updateData = {
-        action: 'updateProfile',
-        email: memberProfile.email || '',
-        phone: memberProfile.phone || '',
-        name: document.getElementById('profNameInput').value.trim(),
-        role: currentProfileRole,
-        defaultLocation: document.getElementById('profLocationInput').value.trim()
-      };
-
-      fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(updateData)
-      }).then(() => {
-        memberProfile = { ...memberProfile, ...updateData };
-        localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
-        updateMemberUI();
-        toggleAuthModal(false);
-        alert('✔ 特工檔案已成功同步至 UserDB！');
-      });
-    }
-
-    function updateMemberUI() {
-      const btn = document.getElementById('memberBtn');
-      if (memberProfile && (memberProfile.email || memberProfile.phone)) {
-        const shortRole = memberProfile.role ? memberProfile.role.split(' ')[0] : '特工';
-        btn.textContent = `[ ${shortRole}：${memberProfile.name || '特工'} ]`;
-        btn.style.borderColor = 'var(--accent-cyan)';
-        btn.style.color = 'var(--accent-cyan)';
-
-        const nameInput = document.getElementById('custName');
-        const emailInput = document.getElementById('custEmail');
-        const phoneInput = document.getElementById('custPhone');
-        if (nameInput && !nameInput.value) nameInput.value = memberProfile.name || '';
-        if (emailInput && !emailInput.value) emailInput.value = memberProfile.email || '';
-        if (phoneInput && !phoneInput.value) phoneInput.value = memberProfile.phone || '';
-      } else {
-        btn.textContent = `[ 訪客 ]`;
-        btn.style.borderColor = 'var(--panel-border)';
-        btn.style.color = 'var(--text-muted)';
-      }
-    }
-
-    function logoutMember() {
-      if (confirm('確定要斷開此終端的神經連結並退出嗎？')) {
-        localStorage.removeItem('guilty_member');
-        memberProfile = null;
-        updateMemberUI();
-        toggleAuthModal(false);
-        alert('【已斷開】目前已切換為訪客模式。');
-      }
-    }
-
-    // ==========================================
-    // 2. 創作者審核入駐與工作台 (Seller Portal)
-    // ==========================================
-    let verifiedCreator = null;
-
-    function openSellerPortal() {
-      toggleNav(false);
-      setActiveView('view-seller');
-      history.pushState({ view: 'seller' }, '', '#seller');
-    }
-
-    function switchSellerTab(tab) {
-      const tabKey = document.getElementById('sellerTabKey');
-      const tabApply = document.getElementById('sellerTabApply');
-      const formKey = document.getElementById('sellerKeyForm');
-      const formApply = document.getElementById('sellerApplyForm');
-
-      if (tab === 'key') {
-        tabKey.classList.add('active');
-        tabApply.classList.remove('active');
-        formKey.style.display = 'block';
-        formApply.style.display = 'none';
-      } else {
-        tabKey.classList.remove('active');
-        tabApply.classList.add('active');
-        formKey.style.display = 'none';
-        formApply.style.display = 'block';
-      }
-    }
-
-    function handleSellerKeyLogin(e) {
-      e.preventDefault();
-      const key = document.getElementById('sellerAccessKeyInput').value.trim();
-      if (!key) return;
-
-      const cbName = 'sellerKeyCb_' + Date.now();
-      window[cbName] = function(res) {
-        const s = document.getElementById(cbName);
-        if (s) s.remove();
-        delete window[cbName];
-
-        if (res && res.result === 'success') {
-          verifiedCreator = res.creator;
-          document.getElementById('sellerAuthBox').style.display = 'none';
-          document.getElementById('sellerWorkstationBox').style.display = 'block';
-          document.getElementById('verifiedCreatorBadge').textContent = `[ 認證創作者：${verifiedCreator.brandName} ]`;
-          alert(`✔ 創作者權限核准！歡迎進入裝備發布終端：${verifiedCreator.brandName}`);
-        } else {
-          alert(`❌ 驗證未通過：${res.msg || '金鑰錯誤'}`);
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = cbName;
-      script.src = `${GOOGLE_SHEET_URL}?action=verifyCreatorKey&key=${encodeURIComponent(key)}&callback=${cbName}&_t=${Date.now()}`;
-      document.body.appendChild(script);
-    }
-
-    function handleSellerApplySubmit(e) {
-      e.preventDefault();
-      const applyPayload = {
-        action: 'applyCreator',
-        brandName: document.getElementById('applyBrandName').value.trim(),
-        contact: document.getElementById('applyContact').value.trim(),
-        portfolio: document.getElementById('applyPortfolio').value.trim()
-      };
-
-      fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(applyPayload)
-      }).then(() => {
-        alert('✔ 入駐申請已提交至 CreatorDB！主理團隊審核通過後將發送專屬開通金鑰至您的聯絡管道。');
-        document.getElementById('sellerApplyForm').reset();
-        switchSellerTab('key');
-      });
-    }
-
-    // 創作者工作台：本機圖片讀取與預覽
-    function handleFileSelected(input) {
-      const file = input.files[0];
-      if (!file) return;
-
-      if (!file.type.startsWith('image/')) {
-        alert('請上傳圖檔格式 (JPG, PNG, WebP)！');
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const base64Str = e.target.result;
-        document.getElementById('newProdBase64').value = base64Str;
-        const preview = document.getElementById('imageUploadPreview');
-        preview.src = base64Str;
-        preview.style.display = 'block';
-        document.getElementById('dropZoneText').innerHTML = `✔ 已選取檔案：<strong>${file.name}</strong><br><span style="color:var(--accent-cyan); font-size:0.7rem;">點擊可重新更換</span>`;
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function handlePublishProduct(e) {
-      e.preventDefault();
-      const brandVal = document.getElementById('newProdBrand').value;
-      let brandName = '欲室｜共犯 GUILTY';
-      if (brandVal === 'shushi') brandName = 'shushi束室 繩教室';
-      if (brandVal === 'guest') brandName = verifiedCreator ? verifiedCreator.brandName : '客座特工創作者';
-
-      const base64Data = document.getElementById('newProdBase64').value;
-      const manualImg = document.getElementById('newProdImg').value.trim();
-
-      if (!base64Data && !manualImg) {
-        alert('請選取上傳圖片檔案或填寫圖片網址！');
-        return;
-      }
-
-      const newProd = {
-        action: 'createProduct',
-        id: 'custom-' + Date.now().toString().slice(-6),
-        brand: brandVal,
-        brandName: brandName,
-        title: document.getElementById('newProdTitle').value.trim(),
-        price: Number(document.getElementById('newProdPrice').value) || 0,
-        desc: document.getElementById('newProdDesc').value.trim(),
-        note: document.getElementById('newProdNote').value.trim() || '⚡ 正常調用交付',
-        img: manualImg || '',
-        imageBase64: base64Data || '',
-        specs: document.getElementById('newProdSpecs').value.trim()
-      };
-
-      fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(newProd)
-      });
-
-      products.push({
-        ...newProd,
-        img: base64Data || manualImg,
-        badgeClass: brandVal === 'shushi' ? 'badge-shushi' : 'badge-guilty',
-        sizes: newProd.specs ? newProd.specs.split(',').map(s => s.trim()) : [],
-        hasSizes: Boolean(newProd.specs)
-      });
-
-      renderProductCards();
-      alert('✔ 裝備已發布至 ProductDB，前台目錄已同步公開上架！');
-      showLandingView();
-    }
-
-    function logoutSeller() {
-      verifiedCreator = null;
-      document.getElementById('sellerAuthBox').style.display = 'block';
-      document.getElementById('sellerWorkstationBox').style.display = 'none';
-      document.getElementById('sellerAccessKeyInput').value = '';
-      alert('已退出創作者工作台。');
-    }
-
-    // ==========================================
-    // 3. 超商門市查詢 (StoreDB 三段式下拉 + 路名即時過濾)
-    // ==========================================
-    let currentCityDistMap = {};
-    let currentDistrictStores = [];
-
-    function initCvsDropdowns() {
-      const citySelect = document.getElementById('cvsCitySelect');
-      const distSelect = document.getElementById('cvsDistSelect');
-      const storeSelect = document.getElementById('cvsStoreSelect');
-      const filterInput = document.getElementById('cvsStreetFilter');
-      const card = document.getElementById('storeConfirmedCard');
-
-      citySelect.innerHTML = '<option value="">-- 連線試算表載入縣市中... --</option>';
-      distSelect.innerHTML = '<option value="">-- 選擇區域 --</option>';
-      storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
-      distSelect.disabled = true;
-      storeSelect.disabled = true;
-      filterInput.disabled = true;
-      filterInput.value = '';
-      filterInput.style.borderColor = '#333';
-      currentDistrictStores = [];
-
-      if (card) card.style.display = 'none';
-      document.getElementById('finalShippingLocation').value = '';
-
-      if (memberProfile && memberProfile.defaultLocation) {
-        document.getElementById('confirmedStoreNameText').textContent = `[ 常用門市 ] ${memberProfile.defaultLocation}`;
-        document.getElementById('confirmedStoreAddrText').textContent = '已自動套用您的常用門市設定';
-        if (card) card.style.display = 'block';
-        document.getElementById('finalShippingLocation').value = memberProfile.defaultLocation;
-      }
-
-      const cbName = 'cvsInit_' + Date.now();
-      window[cbName] = function(data) {
-        const s = document.getElementById(cbName);
-        if (s) s.remove();
-        delete window[cbName];
-
-        currentCityDistMap = {};
-        if (data && data.length > 0) {
-          data.forEach(item => {
-            if (!currentCityDistMap[item.city]) {
-              currentCityDistMap[item.city] = new Set();
-            }
-            if (item.dist) {
-              currentCityDistMap[item.city].add(item.dist);
-            }
-          });
-
-          citySelect.innerHTML = '<option value="">-- 選擇縣市 --</option>';
-          Object.keys(currentCityDistMap).forEach(city => {
-            const opt = document.createElement('option');
-            opt.value = city;
-            opt.textContent = city;
-            citySelect.appendChild(opt);
-          });
-        } else {
-          citySelect.innerHTML = '<option value="">-- 試算表暫無門市資料 --</option>';
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = cbName;
-      script.src = `${GOOGLE_SHEET_URL}?action=getCvsLocations&brand=${currentShippingType}&callback=${cbName}&_t=${Date.now()}`;
-      script.onerror = () => {
-        citySelect.innerHTML = '<option value="">-- 門市連線超時，請重新選取 --</option>';
-      };
-      document.body.appendChild(script);
-    }
-
-    function onCityChanged(cityName) {
-      const distSelect = document.getElementById('cvsDistSelect');
-      const storeSelect = document.getElementById('cvsStoreSelect');
-      const filterInput = document.getElementById('cvsStreetFilter');
-      const card = document.getElementById('storeConfirmedCard');
-      
-      distSelect.innerHTML = '<option value="">-- 選擇區域 --</option>';
-      storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
-      storeSelect.disabled = true;
-      filterInput.disabled = true;
-      filterInput.value = '';
-      currentDistrictStores = [];
-
-      if (card) card.style.display = 'none';
-      document.getElementById('finalShippingLocation').value = '';
-
-      if (!cityName || !currentCityDistMap[cityName]) {
-        distSelect.disabled = true;
-        return;
-      }
-
-      currentCityDistMap[cityName].forEach(dist => {
-        const opt = document.createElement('option');
-        opt.value = dist;
-        opt.textContent = dist;
-        distSelect.appendChild(opt);
-      });
-      distSelect.disabled = false;
-    }
-
-    function onDistChanged(distName) {
-      const cityName = document.getElementById('cvsCitySelect').value;
-      const storeSelect = document.getElementById('cvsStoreSelect');
-      const filterInput = document.getElementById('cvsStreetFilter');
-      const card = document.getElementById('storeConfirmedCard');
-      
-      storeSelect.innerHTML = '<option value="">-- 門市清單載入中... --</option>';
-      storeSelect.disabled = true;
-      filterInput.disabled = true;
-      filterInput.value = '';
-      currentDistrictStores = [];
-
-      if (card) card.style.display = 'none';
-      document.getElementById('finalShippingLocation').value = '';
-
-      if (!distName) return;
-
-      const cbName = 'cvsStore_' + Date.now();
-      window[cbName] = function(stores) {
-        const s = document.getElementById(cbName);
-        if (s) s.remove();
-        delete window[cbName];
-
-        if (stores && stores.length > 0) {
-          currentDistrictStores = stores;
-          renderStoreOptions(stores);
-          filterInput.disabled = false;
-          filterInput.style.borderColor = 'var(--accent-cyan)';
-        } else {
-          currentDistrictStores = [];
-          storeSelect.innerHTML = '<option value="">-- 該區域無門市資料 --</option>';
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = cbName;
-      script.src = `${GOOGLE_SHEET_URL}?action=getCvsLocations&brand=${currentShippingType}&city=${encodeURIComponent(cityName)}&dist=${encodeURIComponent(distName)}&callback=${cbName}&_t=${Date.now()}`;
-      document.body.appendChild(script);
-    }
-
-    function filterStoresByKeyword(keyword) {
-      const cleanK = keyword.trim().toLowerCase();
-      if (!cleanK) {
-        renderStoreOptions(currentDistrictStores);
-        return;
-      }
-
-      const filtered = currentDistrictStores.filter(s => 
-        s.name.toLowerCase().includes(cleanK) || 
-        s.addr.toLowerCase().includes(cleanK) ||
-        s.id.includes(cleanK)
-      );
-      renderStoreOptions(filtered);
-    }
-
-    function renderStoreOptions(list) {
-      const storeSelect = document.getElementById('cvsStoreSelect');
-      if (!list || list.length === 0) {
-        storeSelect.innerHTML = '<option value="">-- 查無相符路名之門市 --</option>';
-        storeSelect.disabled = true;
-        return;
-      }
-
-      storeSelect.innerHTML = '<option value="">-- 選擇門市名稱 (店號) --</option>';
-      list.forEach(st => {
-        const opt = document.createElement('option');
-        opt.value = JSON.stringify(st);
-        opt.textContent = `${st.name} [${st.addr}]`;
-        storeSelect.appendChild(opt);
-      });
-      storeSelect.disabled = false;
-    }
-
-    function onStorePicked(storeJsonStr) {
-      const card = document.getElementById('storeConfirmedCard');
-      if (!storeJsonStr) {
-        card.style.display = 'none';
-        document.getElementById('finalShippingLocation').value = '';
-        return;
-      }
-
-      const store = JSON.parse(storeJsonStr);
-      document.getElementById('confirmedStoreNameText').textContent = `${store.name} (店號: ${store.id})`;
-      document.getElementById('confirmedStoreAddrText').textContent = store.addr;
-      card.style.display = 'block';
-
-      document.getElementById('finalShippingLocation').value = `${store.name} (${store.id}) - ${store.addr}`;
-    }
-
-    // ==========================================
-    // 4. 視圖控制與 History API 接管
-    // ==========================================
-    function setActiveView(viewId) {
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-      const target = document.getElementById(viewId);
-      if (target) target.classList.add('active');
-      window.scrollTo(0, 0);
-    }
-
-    function showLandingView(push = true) {
-      setActiveView('view-landing');
-      if (push && (!history.state || history.state.view !== 'landing')) {
-        history.pushState({ view: 'landing' }, '', '#landing');
-      }
-    }
-
-    window.addEventListener('popstate', function (event) {
-      const cartDrawer = document.getElementById('cartDrawer');
-      const sideNav = document.getElementById('sideNav');
-      const authModal = document.getElementById('authModal');
-
-      if (cartDrawer && cartDrawer.classList.contains('open')) { toggleCart(false); return; }
-      if (sideNav && sideNav.classList.contains('open')) { toggleNav(false); return; }
-      if (authModal && authModal.classList.contains('active')) { toggleAuthModal(false); return; }
-
-      if (event.state && event.state.view) {
-        if (event.state.view === 'product-detail' && event.state.productId) {
-          openProductDetail(event.state.productId, false);
-        } else if (event.state.view === 'checkout') {
-          renderCheckoutView();
-          setActiveView('view-checkout');
-        } else if (event.state.view === 'seller') {
-          setActiveView('view-seller');
-        } else if (event.state.view === 'history') {
-          setActiveView('view-history');
-        } else {
-          showLandingView(false);
-        }
-      } else {
-        showLandingView(false);
-      }
-    });
-
-    // ==========================================
-    // 5. 裝備目錄資料庫
-    // ==========================================
-    let products = [
-      { 
-        id: 'cat-choker', 
-        brand: 'guilty', 
-        brandName: '欲室｜共犯 GUILTY', 
-        badgeClass: 'badge-guilty', 
-        title: '【貓痕義體拘束項圈】', 
-        desc: '消光 SLS 外骨骼裝甲與 TPU 85A 柔性肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
-        note: '🚨 09.11 正式解鎖預購調用 (Batch 01)',
-        price: 1990,
-        img: '',
-        hasSizes: true,
-        isPreorder: true,
-        sizes: [
-          'S 碼（淨脖圍 29–33 cm，Model 著用）',
-          'M 碼（淨脖圍 34–38 cm）'
-        ],
-        isCustomRope: false,
-        isWhip: false
-      },
-      { 
-        id: 'synapse-whip', 
-        brand: 'guilty', 
-        brandName: '欲室｜共犯 GUILTY', 
-        badgeClass: 'badge-guilty', 
-        title: '【神經突觸戰術長鞭】', 
-        desc: '一體化重磅緊密編織，精準配重實心鞭芯，傳遞純粹的神經校準訊號。', 
-        note: '⚡ 預製/客製配色排產調用',
-        price: 1500,
-        img: '',
-        isWhip: true,
-        isCustomRope: false,
-        isPreorder: false,
-        lengths: [
-          { label: '1.2 米 (1.2M) [CQB // 近距校準型]', price: 1500 },
-          { label: '1.5 米 (1.5M) [EXTENDED // 遠距壓制型]', price: 1500 }
-        ],
-        colors: [
-          { label: '極夜黑 [VOID BLACK]', extra: 0 },
-          { label: '幽靈白 [GHOST WHITE]', extra: 0 },
-          { label: '信號藍 [SIGNAL BLUE]', extra: 0 },
-          { label: '紫黑混編 [NEURAL PURPLE]', extra: 0 },
-          { label: '小丑魚 [CLOWNFISH]', extra: 0 },
-          { label: '自訂特殊光譜（請備註 / 聯繫客服）(+NT$100)', extra: 100 }
-        ]
-      },
-      { 
-        id: 'shushi-rope', 
-        brand: 'shushi', 
-        brandName: 'shushi束室 繩教室', 
-        badgeClass: 'badge-shushi', 
-        title: '【束室繩教室｜特選精煉麻繩】', 
-        desc: '束室精工脫漿、過油打蠟特選麻繩，13 種配色與生繩規格可選，手感溫潤柔韌。', 
-        note: '⚡ 現貨正常調用發貨',
-        price: 600,
-        img: './images/image_rope.jpg',
-        isCustomRope: true,
-        isWhip: false,
-        isPreorder: false,
-        lengths: [
-          { label: '8 米 (8M)', price: 600 },
-          { label: '10 米 (10M)', price: 700 }
-        ],
-        variants: [
-          '未處理 原色生繩',
-          '未處理 彩色生繩 (請先確認庫存)',
-          '01 原色麻繩',
-          '02 紅色麻繩',
-          '03 粉紅色麻繩',
-          '04 紫色麻繩',
-          '05 深藍色麻繩',
-          '06 藍色麻繩',
-          '07 墨綠色麻繩',
-          '08 軍綠色麻繩',
-          '09 咖啡色麻繩',
-          '10 橘色麻繩',
-          '11 金黃色麻繩',
-          '安全剪刀 (不挑色)'
-        ]
-      },
-      { 
-        id: 'shushi-cuff-guard', 
-        brand: 'shushi', 
-        brandName: 'shushi束室 繩教室', 
-        badgeClass: 'badge-shushi', 
-        title: '【束室繩教室｜防勒皮革護腕墊】', 
-        desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。', 
-        note: '⚡ 現貨正常調用發貨',
-        price: 1280,
-        img: '',
-        isCustomRope: false,
-        isWhip: false,
-        isPreorder: false
-      }
-    ];
-
-    // ==========================================
-    // 6. 購物車模組
-    // ==========================================
-    let cart = JSON.parse(localStorage.getItem('guilty_cart')) || [];
-
-    function saveCart() {
-      localStorage.setItem('guilty_cart', JSON.stringify(cart));
-      updateCartUI();
-    }
-
-    function toggleCart(isOpen) {
-      const drawer = document.getElementById('cartDrawer');
-      const overlay = document.getElementById('navOverlay');
-      if (isOpen) {
-        drawer.classList.add('open');
-        overlay.classList.add('active');
-        renderCartDrawer();
-      } else {
-        drawer.classList.remove('open');
-        if (!document.getElementById('sideNav').classList.contains('open')) {
-          overlay.classList.remove('active');
-        }
-      }
-    }
-
-    function getCartTotalCount() {
-      return cart.reduce((sum, item) => sum + item.qty, 0);
-    }
-
-    function getCartSubtotal() {
-      return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    }
-
-    function updateCartUI() {
-      const count = getCartTotalCount();
-      document.getElementById('headerCartCount').textContent = count;
-      renderCartDrawer();
-    }
-
-    function renderCartDrawer() {
-      const container = document.getElementById('cartItemsContainer');
-      const subtotalEl = document.getElementById('cartDrawerSubtotal');
-      const freeShippingBanner = document.getElementById('cartFreeShippingBanner');
-      const subtotal = getCartSubtotal();
-
-      subtotalEl.textContent = `NT$ ${subtotal.toLocaleString()}`;
-
-      if (subtotal >= FREE_SHIPPING_THRESHOLD) {
-        freeShippingBanner.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">⚡ 已解鎖全館滿 NT$ 1,800 免運特權！</span>`;
-      } else {
-        const diff = FREE_SHIPPING_THRESHOLD - subtotal;
-        freeShippingBanner.innerHTML = `<span style="color:var(--text-muted);">差 <strong style="color:var(--accent-cyan);">NT$ ${diff.toLocaleString()}</strong> 即可享有免運交付</span>`;
-      }
-
-      if (cart.length === 0) {
-        container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px 0; font-size:0.85rem;">[ 裝備庫目前為空 ]<br>點擊裝備目錄即可添加調用</div>`;
-        return;
-      }
-
-      container.innerHTML = cart.map((item, index) => {
-        const thumbSrc = item.img && item.img.trim() !== '' ? item.img : '';
-        const thumbHtml = thumbSrc 
-          ? `<img src="${thumbSrc}" class="cart-item-thumb" onclick="openProductDetail('${item.productId}')" alt="${item.title}" />`
-          : `<div class="cart-item-thumb" onclick="openProductDetail('${item.productId}')" style="display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-muted);">SPEC</div>`;
-
-        return `
-          <div class="cart-item-card">
-            ${thumbHtml}
-            <div class="cart-item-info">
-              <div class="cart-item-title" onclick="openProductDetail('${item.productId}')">${item.title}</div>
-              <div class="cart-item-spec">${item.specText || '標準規格'}</div>
-              <div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div>
-              <div class="cart-qty-ctrl">
-                <button class="qty-btn" onclick="changeCartItemQty(${index}, -1)">-</button>
-                <span class="qty-num">${item.qty}</span>
-                <button class="qty-btn" onclick="changeCartItemQty(${index}, 1)">+</button>
-              </div>
-            </div>
-            <button class="cart-item-del" onclick="removeCartItem(${index})" title="移除裝備">✕</button>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function changeCartItemQty(index, delta) {
-      if (cart[index]) {
-        cart[index].qty += delta;
-        if (cart[index].qty <= 0) cart.splice(index, 1);
-        saveCart();
-      }
-    }
-
-    function removeCartItem(index) {
-      cart.splice(index, 1);
-      saveCart();
-    }
-
-    // ==========================================
-    // 7. 商品展示與配置視圖
-    // ==========================================
-    let currentDetailProduct = null;
-    let currentDetailRopeLength = '8 米 (8M)';
-    let currentDetailRopePrice = 600;
-
-    let currentWhipLength = '1.2 米 (1.2M) [CQB // 近距校準型]';
-    let currentWhipBasePrice = 1500;
-    let currentWhipColor = '極夜黑 [VOID BLACK]';
-    let currentWhipExtra = 0;
-
-    function renderProductCards(filter = 'all') {
-      const grid = document.getElementById('productGrid');
-      grid.innerHTML = '';
-      const filtered = filter === 'all' ? products : products.filter(p => p.brand === filter);
-      filtered.forEach(p => {
-        const card = document.createElement('div');
-        card.className = `product-card`;
-        card.onclick = () => openProductDetail(p.id);
-
-        let priceText = `NT$ ${p.price.toLocaleString()}`;
-        if (p.isCustomRope) priceText = `NT$ 600 起`;
-
-        const thumbContent = (p.img && p.img.trim() !== '')
-          ? `<img src="${p.img}" alt="${p.title}" onerror="this.parentElement.innerHTML='[ ${p.title} 預覽圖 ]';" />`
-          : `[ ${p.title} 預覽圖 ]`;
-
-        const statusNoteHtml = p.isPreorder 
-          ? `<div style="font-size:0.7rem; color:#ff334b; margin-top:4px; font-weight:bold;">${p.note}</div>`
-          : `<div style="font-size:0.7rem; color:var(--accent-cyan); margin-top:4px;">${p.note}</div>`;
-
-        card.innerHTML = `
-          <div class="card-thumb">
-            <span class="badge ${p.badgeClass}">${p.brandName}</span>
-            ${thumbContent}
-          </div>
-          <div class="card-body">
-            <div style="font-size: 0.95rem; margin-bottom: 4px; font-weight: bold;">${p.title}</div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">${p.desc}</div>
-            ${statusNoteHtml}
-            <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px; margin-top:8px;">
-              <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">${priceText}</span>
-              <span style="font-size: 0.75rem; color: var(--text-muted);">檢視裝備配置 →</span>
-            </div>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    function filterBrand(brand) {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
-      renderProductCards(brand);
-    }
-
-    function openProductDetail(productId, push = true) {
-      toggleCart(false);
-      currentDetailProduct = products.find(p => p.id === productId);
-      if (!currentDetailProduct) return;
-
-      currentDetailRopeLength = '8 米 (8M)';
-      currentDetailRopePrice = 600;
-      currentWhipLength = '1.2 米 (1.2M) [CQB // 近距校準型]';
-      currentWhipBasePrice = 1500;
-      currentWhipColor = '極夜黑 [VOID BLACK]';
-      currentWhipExtra = 0;
-
-      const heroArea = document.getElementById('detailHeroImgArea');
-      if (currentDetailProduct.img && currentDetailProduct.img.trim() !== '') {
-        heroArea.innerHTML = `<img src="${currentDetailProduct.img}" alt="${currentDetailProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${currentDetailProduct.title} 3D 義體檔案庫 ]</span>';" />`;
-      } else {
-        heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${currentDetailProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
-      }
-
-      const heroBox = document.getElementById('detailHeroBox');
-      heroBox.style.animation = 'none';
-      heroBox.offsetHeight;
-      heroBox.style.animation = 'heroScanIn 0.6s ease forwards';
-
-      document.getElementById('detailProductTitle').textContent = currentDetailProduct.title;
-      
-      let descNoteHtml = currentDetailProduct.isPreorder 
-        ? `<div style="color:#ff334b; font-weight:bold; font-size:0.8rem; margin-bottom:8px; border-left:2px solid #ff334b; padding-left:8px;">[ 官方公關解鎖中 // 9/11 正式開啟預購調用排產 ]</div>`
-        : `<div style="color:var(--accent-cyan); font-size:0.75rem; margin-bottom:8px; border-left:2px solid var(--accent-cyan); padding-left:8px;">[ 官方核心研發 // 正常調用交付 ]</div>`;
-
-      document.getElementById('detailProductDesc').innerHTML = descNoteHtml + currentDetailProduct.desc;
-
-      const dynamicArea = document.getElementById('detailDynamicOptions');
-      const chokerSpecificArea = document.getElementById('detailChokerSpecificArea');
-      
-      if (currentDetailProduct.id === 'cat-choker') {
-        dynamicArea.innerHTML = `
-          <div style="margin-bottom: 12px;">
-            <label style="font-size:0.75rem; color:var(--accent-cyan);">義體尺寸規格（Model 淨脖圍 30cm 著用 S 碼）*</label>
-            <select id="detailChokerSizeSelect" style="border-color:var(--accent-cyan);">
-              ${currentDetailProduct.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
-            </select>
-          </div>
-        `;
-
-        chokerSpecificArea.innerHTML = `
-          <div style="background:#000; border:1px dashed var(--panel-border); padding:16px; text-align:center; margin:16px 0;">
-            <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:4px;">[ 點擊/懸停模擬肉球壓印觸感 ]</div>
-            <div class="stamp-preview" id="detailStampBox">
-              <span id="detailStampText" style="color:var(--text-muted); font-size:0.75rem;">觸控體驗</span>
-            </div>
-            <div style="font-size:0.75rem; color:var(--danger-red);">取下後肌膚顯影：持續 30–60 分鐘</div>
-          </div>
-
-          <div class="blueprint-card">
-            <div class="blueprint-tag">SPEC-001 // BLUEPRINT</div>
-            <div class="spec-row">
-              <span class="spec-label">外骨骼裝甲外殼</span>
-              <span class="spec-val">工業級 SLS 尼龍（耐刮・輕量・消光霧面）</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-label">內襯印記模組</span>
-              <span class="spec-val">TPU 85A 柔性體（立體貓掌凸點矩陣）</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-label">人體工學結構</span>
-              <span class="spec-val">前喉結避空幾何凹槽（無壓迫窒息感）</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-label">快拆安全鎖扣</span>
-              <span class="spec-val">軍規快拆磁吸插銷（支援單手緊急脫離）</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-label">專屬特工銘牌</span>
-              <span class="spec-val">航太級金屬銘牌（客製 10 碼精密光纖雷雕）</span>
-            </div>
-          </div>
-        `;
-        document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
-        document.getElementById('detailCheckoutBtn').textContent = '9/11 開放預購・調用結帳 →';
-
-        bindChokerStampInteractive();
-
-      } else if (currentDetailProduct.isWhip) {
-        chokerSpecificArea.innerHTML = `
-          <div style="background:#121216; border:1px solid #27272a; padding:16px; border-radius:4px; margin:16px 0; font-size:0.8rem; color:#d4d4d8; line-height:1.7;">
-            <strong style="color:#fff;">// 神經校準世界觀：</strong><br>
-            「疼痛不是目的，是神經突觸最純粹的校準訊號。」精確配重實心鞭芯自手柄向鞭梢漸進收斂，破空低頻撕裂聲先於接觸前瓦解抵抗意志。
-          </div>
-        `;
-        dynamicArea.innerHTML = `
-          <div style="margin-bottom: 12px;">
-            <label style="font-size:0.75rem; color:var(--accent-cyan);">長度規格 (LENGTH)*</label>
-            <select id="detailWhipLengthSelect" onchange="onDetailWhipChange()" style="border-color:var(--accent-cyan);">
-              ${currentDetailProduct.lengths.map(l => `<option value="${l.label}" data-price="${l.price}">${l.label} - NT$ ${l.price}</option>`).join('')}
-            </select>
-          </div>
-          <div style="margin-bottom: 12px;">
-            <label style="font-size:0.75rem; color:var(--accent-cyan);">配色光譜 (SPECTRUM)*</label>
-            <select id="detailWhipColorSelect" onchange="onDetailWhipChange()" style="border-color:var(--accent-cyan);">
-              ${currentDetailProduct.colors.map(c => `<option value="${c.label}" data-extra="${c.extra}">${c.label}</option>`).join('')}
-            </select>
-          </div>
-        `;
-        updateWhipDetailPrice();
-        document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
-
-      } else if (currentDetailProduct.isCustomRope) {
-        chokerSpecificArea.innerHTML = ``;
-        dynamicArea.innerHTML = `
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-            <div>
-              <label style="font-size:0.75rem; color:var(--accent-purple);">長度規格*</label>
-              <select id="detailRopeLengthSelect" onchange="onDetailRopeLengthChange(this)" style="border-color:var(--accent-purple);">
-                ${currentDetailProduct.lengths.map(l => `<option value="${l.label}">${l.label} - NT$ ${l.price}</option>`).join('')}
-              </select>
-            </div>
-            <div>
-              <label style="font-size:0.75rem; color:var(--accent-purple);">款式顏色*</label>
-              <select id="detailRopeVariantSelect" style="border-color:var(--accent-purple);">
-                ${currentDetailProduct.variants.map(v => `<option value="${v}">${v}</option>`).join('')}
-              </select>
-            </div>
-          </div>
-        `;
-        document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailRopePrice.toLocaleString()}`;
-        document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
-      } else {
-        chokerSpecificArea.innerHTML = ``;
-        dynamicArea.innerHTML = currentDetailProduct.sizes && currentDetailProduct.sizes.length > 0 ? `
-          <div style="margin-bottom:12px;">
-            <label style="font-size:0.75rem; color:var(--accent-cyan);">規格選項*</label>
-            <select id="detailCustomSizeSelect">
-              ${currentDetailProduct.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
-            </select>
-          </div>
-        ` : '';
-        document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
-        document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
-      }
-
-      setActiveView('view-product-detail');
-      if (push) {
-        history.pushState({ view: 'product-detail', productId: productId }, '', `#product-${productId}`);
-      }
-    }
-
-    function bindChokerStampInteractive() {
-      const stamp = document.getElementById('detailStampBox');
-      const text = document.getElementById('detailStampText');
-      if (stamp && text) {
-        const act = () => {
-          text.textContent = '🐾 貓掌顯影';
-          text.style.color = '#ff334b';
-          stamp.style.backgroundColor = 'rgba(255, 51, 75, 0.15)';
-          stamp.style.borderColor = '#ff334b';
-        };
-        const deact = () => {
-          text.textContent = '觸控體驗';
-          text.style.color = '#8c8f96';
-          stamp.style.backgroundColor = 'transparent';
-          stamp.style.borderColor = 'var(--panel-border)';
-        };
-        stamp.addEventListener('mouseenter', act);
-        stamp.addEventListener('mouseleave', deact);
-        stamp.addEventListener('touchstart', act);
-        stamp.addEventListener('touchend', deact);
-      }
-    }
-
-    function onDetailRopeLengthChange(selectEl) {
-      const selectedOption = currentDetailProduct.lengths.find(l => l.label === selectEl.value);
-      if (selectedOption) {
-        currentDetailRopeLength = selectedOption.label;
-        currentDetailRopePrice = selectedOption.price;
-        document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailRopePrice.toLocaleString()}`;
-      }
-    }
-
-    function onDetailWhipChange() {
-      const lenEl = document.getElementById('detailWhipLengthSelect');
-      const colEl = document.getElementById('detailWhipColorSelect');
-      const optLen = lenEl.options[lenEl.selectedIndex];
-      const optCol = colEl.options[colEl.selectedIndex];
-
-      currentWhipLength = optLen.value;
-      currentWhipBasePrice = parseInt(optLen.getAttribute('data-price')) || 1500;
-
-      currentWhipColor = optCol.value;
-      currentWhipExtra = parseInt(optCol.getAttribute('data-extra')) || 0;
-
-      updateWhipDetailPrice();
-    }
-
-    function updateWhipDetailPrice() {
-      const total = currentWhipBasePrice + currentWhipExtra;
-      document.getElementById('detailPriceDisplay').textContent = `NT$ ${total.toLocaleString()}`;
-    }
-
-    function getCurrentConfiguredCartItem() {
-      if (!currentDetailProduct) return null;
-
-      let specText = '標準規格';
-      let itemPrice = currentDetailProduct.price;
-
-      if (currentDetailProduct.hasSizes) {
-        specText = document.getElementById('detailChokerSizeSelect') ? document.getElementById('detailChokerSizeSelect').value : '標準規格';
-      } else if (currentDetailProduct.isWhip) {
-        specText = `${currentWhipLength.split(' ')[0]} // ${currentWhipColor}`;
-        itemPrice = currentWhipBasePrice + currentWhipExtra;
-      } else if (currentDetailProduct.isCustomRope) {
-        const lengthVal = document.getElementById('detailRopeLengthSelect').value;
-        const variantVal = document.getElementById('detailRopeVariantSelect').value;
-        specText = `${variantVal} // ${lengthVal}`;
-        itemPrice = currentDetailRopePrice;
-      } else if (document.getElementById('detailCustomSizeSelect')) {
-        specText = document.getElementById('detailCustomSizeSelect').value;
-      }
-
-      const cartKey = `${currentDetailProduct.id}_${specText}`;
-
-      return {
-        key: cartKey,
-        productId: currentDetailProduct.id,
-        title: currentDetailProduct.title,
-        specText: specText,
-        price: itemPrice,
-        img: currentDetailProduct.img,
-        qty: 1
-      };
-    }
-
-    function addCurrentProductToCart() {
-      const item = getCurrentConfiguredCartItem();
-      if (!item) return;
-
-      const existingIndex = cart.findIndex(c => c.key === item.key);
-      if (existingIndex > -1) {
-        cart[existingIndex].qty += 1;
-      } else {
-        cart.push(item);
-      }
-
-      saveCart();
-      toggleCart(true);
-    }
-
-    function buyNowFromDetail() {
-      const item = getCurrentConfiguredCartItem();
-      if (!item) return;
-
-      const existingIndex = cart.findIndex(c => c.key === item.key);
-      if (existingIndex > -1) {
-        cart[existingIndex].qty += 1;
-      } else {
-        cart.push(item);
-      }
-
-      saveCart();
-      proceedToCheckoutFromCart();
-    }
-
-    // ==========================================
-    // 8. 結帳與折扣協議系統 (Promo Engine)
-    // ==========================================
-    let currentShippingType = '711';
-    let currentShippingName = '7-11 超商取貨';
-    let currentPayment = '超商取貨付款';
-    let appliedPromo = null;
-
-    function calculateShippingFee(subtotal, shippingType) {
-      if (shippingType === 'meetup') return 0;
-      if (subtotal >= FREE_SHIPPING_THRESHOLD) return 0;
-      return shippingType === 'home' ? 120 : 60;
-    }
-
-    function proceedToCheckoutFromCart(push = true) {
-      if (cart.length === 0) {
-        alert('裝備庫為空，請先選擇裝備！');
-        return;
-      }
-      toggleCart(false);
-      renderCheckoutView();
-      setActiveView('view-checkout');
-      initCvsDropdowns();
-      updateMemberUI();
-      if (push) {history.pushState({ view: 'checkout' }, '', '#checkout');
-      }
-    }
-
-    function onPhoneChanged() {
-      if (appliedPromo && appliedPromo.code === 'IAMSUB') {
-        applyPromoCode();
-      }
-    }
-
-    async function checkIsFirstPurchase(phone) {
-      const cleanPhone = String(phone).replace(/[^0-9]/g, '');
-      if (!cleanPhone) return false;
-
-      let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-      const hasLocalOrder = localOrders.some(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
-      if (hasLocalOrder) return false;
-
-      try {
-        const res = await new Promise((resolve) => {
-          const callbackName = 'checkFirst_' + Date.now();
-          window[callbackName] = function(cloudOrders) {
-            const scriptEl = document.getElementById(callbackName);
-            if (scriptEl) scriptEl.remove();
-            delete window[callbackName];
-            if (cloudOrders && cloudOrders.length > 0) {
-              resolve(false);
-            } else {
-              resolve(true);
-            }
-          };
-          const script = document.createElement('script');
-          script.id = callbackName;
-          script.src = `${GOOGLE_SHEET_URL}?phone=${encodeURIComponent(cleanPhone)}&callback=${callbackName}&_t=${Date.now()}`;
-          script.onerror = () => resolve(true);
-          document.body.appendChild(script);
-        });
-        return res;
-      } catch (e) {
-        return true;
-      }
-    }
-
-    async function applyPromoCode() {
-      const input = document.getElementById('promoCodeInput');
-      const msg = document.getElementById('promoStatusMsg');
-      const code = input.value.trim().toUpperCase();
-
-      if (!code) {
-        msg.innerHTML = `<span style="color:var(--danger-red);">請輸入折扣碼！</span>`;
-        return;
-      }
-
-      const now = new Date();
-
-      if (code === 'TOMOTACHI') {
-        const hasWhip = cart.some(item => item.productId === 'synapse-whip');
-        if (!hasWhip) {
-          msg.innerHTML = `<span style="color:var(--danger-red);">此折扣碼僅適用於【神經突觸戰術長鞭】！</span>`;
-          return;
-        }
-
-        appliedPromo = {
-          code: 'TOMOTACHI',
-          type: 'whip_discount',
-          desc: '長鞭專屬特友協議：單件折抵至 NT$ 1,200',
-          forceBankTransfer: false
-        };
-
-        forceBankPayment(false);
-        msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用 TOMOTACHI 特友協議！長鞭單件已折抵至 NT$ 1,200。</span>`;
-        document.getElementById('removePromoBtn').style.display = 'inline-block';
-        renderCheckoutView();
-        return;
-      }
-
-      if (code === 'LOVEGUILTY') {
-        const start = new Date('2026-09-06T00:00:00+08:00');
-        const end = new Date('2026-09-11T19:00:00+08:00');
-
-        if (now < start || now > end) {
-          msg.innerHTML = `<span style="color:var(--danger-red);">【LOVEGUILTY】盲鳥優惠協議尚未開啟或已逾期！(有效期限: 9/6 00:00 - 9/11 19:00)</span>`;
-          return;
-        }
-
-        const hasChoker = cart.some(item => item.productId === 'cat-choker');
-        if (!hasChoker) {
-          msg.innerHTML = `<span style="color:var(--danger-red);">此折扣碼僅適用於【貓痕義體拘束項圈】！</span>`;
-          return;
-        }
-
-        appliedPromo = {
-          code: 'LOVEGUILTY',
-          type: 'blind',
-          desc: '盲鳥優惠協議：項圈特惠 NT$ 990（限 ATM 匯款）',
-          forceBankTransfer: true
-        };
-
-        forceBankPayment(true);
-        msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用盲鳥優惠！項圈已折抵為 NT$ 990（支付管道已強制鎖定為 ATM 匯款）。</span>`;
-        document.getElementById('removePromoBtn').style.display = 'inline-block';
-        renderCheckoutView();
-        return;
-      }
-
-      if (code === 'IAMSUB') {
-        const phone = document.getElementById('custPhone').value.trim();
-        if (!phone) {
-          msg.innerHTML = `<span style="color:var(--danger-red);">請先填寫下方「聯絡終端（手機號碼）」以驗證特工首購資格！</span>`;
-          return;
-        }
-
-        msg.innerHTML = `<span style="color:var(--text-muted);">正在驗證特工首購檔案...</span>`;
-        const isFirst = await checkIsFirstPurchase(phone);
-
-        if (!isFirst) {
-          msg.innerHTML = `<span style="color:var(--danger-red);">【IAMSUB】驗證失敗：此終端電話已有調用案件紀錄，非首購特工。</span>`;
-          return;
-        }
-
-        appliedPromo = {
-          code: 'IAMSUB',
-          type: 'first',
-          desc: '首購特工協議：全單調用金額享 8 折 (20% OFF)',
-          forceBankTransfer: false
-        };
-
-        forceBankPayment(false);
-        msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 特工首購資格驗證通過！全單已套用 8 折優惠。</span>`;
-        document.getElementById('removePromoBtn').style.display = 'inline-block';
-        renderCheckoutView();
-        return;
-      }
-
-      if (code === 'WANG18X') {
-        const start = new Date('2026-09-11T19:00:00+08:00');
-        const end = new Date('2026-10-11T19:00:00+08:00');
-
-        if (now < start || now > end) {
-          msg.innerHTML = `<span style="color:var(--danger-red);">【WANG18X】早鳥優惠協議將於 9/11 19:00 開啟！(為期 1 個月)</span>`;
-          return;
-        }
-
-        const hasChoker = cart.some(item => item.productId === 'cat-choker');
-        if (!hasChoker) {
-          msg.innerHTML = `<span style="color:var(--danger-red);">此折扣碼僅適用於【貓痕義體拘束項圈】！</span>`;
-          return;
-        }
-
-        appliedPromo = {
-          code: 'WANG18X',
-          type: 'early',
-          desc: '早鳥專屬協議：項圈特惠 NT$ 1,580',
-          forceBankTransfer: false
-        };
-
-        forceBankPayment(false);
-        msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用早鳥優惠！項圈已折抵為 NT$ 1,580。</span>`;
-        document.getElementById('removePromoBtn').style.display = 'inline-block';
-        renderCheckoutView();
-        return;
-      }
-
-      msg.innerHTML = `<span style="color:var(--danger-red);">無效的協議折扣碼，請確認後重新輸入。</span>`;
-    }
-
-    function removePromoCode() {
-      appliedPromo = null;
-      document.getElementById('promoCodeInput').value = '';
-      document.getElementById('promoStatusMsg').innerHTML = `<span style="color:var(--text-muted);">已取消優惠代碼。</span>`;
-      document.getElementById('removePromoBtn').style.display = 'none';
-      forceBankPayment(false);
-      renderCheckoutView();
-    }
-
-    function forceBankPayment(isForce) {
-      const codBtn = document.getElementById('payMethodCod');
-      const bankBtn = document.getElementById('payMethodBank');
-      const note = document.getElementById('paymentNote');
-
-      if (isForce) {
-        codBtn.classList.remove('active');
-        codBtn.classList.add('disabled');
-        bankBtn.classList.add('active');
-        currentPayment = '銀行 ATM 匯款';
-        note.innerHTML = `<strong style="color:#ff334b;">⚡ 盲鳥特惠協議限定：本單僅限「銀行 ATM 匯款」支付。</strong>送出訂單後將顯示匯款帳號資料。`;
-      } else {
-        codBtn.classList.remove('disabled');
-        if (!codBtn.classList.contains('active') && !bankBtn.classList.contains('active')) {
-          codBtn.classList.add('active');
-          currentPayment = '超商取貨付款';
-          note.innerHTML = `貨物送達超商後，取貨現場付款即可。`;
-        }
-      }
-    }
-
-    function calculateOrderFinancials() {
-      let originalSubtotal = getCartSubtotal();
-      let discountedSubtotal = 0;
-      let discountAmount = 0;
-
-      if (!appliedPromo) {
-        discountedSubtotal = originalSubtotal;
-      } else if (appliedPromo.type === 'whip_discount') {
-        cart.forEach(item => {
-          if (item.productId === 'synapse-whip') {
-            discountedSubtotal += (item.price - 300) * item.qty;
-          } else {
-            discountedSubtotal += item.price * item.qty;
-          }
-        });
-        discountAmount = originalSubtotal - discountedSubtotal;
-      } else if (appliedPromo.type === 'blind') {
-        cart.forEach(item => {
-          if (item.productId === 'cat-choker') {
-            discountedSubtotal += 990 * item.qty;
-          } else {
-            discountedSubtotal += item.price * item.qty;
-          }
-        });
-        discountAmount = originalSubtotal - discountedSubtotal;
-      } else if (appliedPromo.type === 'early') {
-        cart.forEach(item => {
-          if (item.productId === 'cat-choker') {
-            discountedSubtotal += 1580 * item.qty;
-          } else {
-            discountedSubtotal += item.price * item.qty;
-          }
-        });
-        discountAmount = originalSubtotal - discountedSubtotal;
-      } else if (appliedPromo.type === 'first') {
-        discountedSubtotal = Math.round(originalSubtotal * 0.8);
-        discountAmount = originalSubtotal - discountedSubtotal;
-      }
-
-      const shippingFee = calculateShippingFee(discountedSubtotal, currentShippingType);
-      const totalAmount = discountedSubtotal + shippingFee;
-
-      return {
-        originalSubtotal,
-        discountedSubtotal,
-        discountAmount,
-        shippingFee,
-        totalAmount
-      };
-    }
-
-    function renderCheckoutView() {
-      const itemsListEl = document.getElementById('checkoutOrderItemsList');
-      const summaryEl = document.getElementById('checkoutFinancialSummary');
-      const fin = calculateOrderFinancials();
-
-      itemsListEl.innerHTML = cart.map(item => {
-        let displayPrice = item.price * item.qty;
-        let originalPriceHtml = '';
-
-        if (appliedPromo && appliedPromo.type === 'whip_discount' && item.productId === 'synapse-whip') {
-          originalPriceHtml = `<del style="color:var(--text-muted); font-size:0.75rem; margin-right:6px;">NT$ ${(item.price * item.qty).toLocaleString()}</del>`;
-          displayPrice = (item.price - 300) * item.qty;
-        } else if (appliedPromo && appliedPromo.type === 'blind' && item.productId === 'cat-choker') {
-          originalPriceHtml = `<del style="color:var(--text-muted); font-size:0.75rem; margin-right:6px;">NT$ ${(item.price * item.qty).toLocaleString()}</del>`;
-          displayPrice = 990 * item.qty;
-        } else if (appliedPromo && appliedPromo.type === 'early' && item.productId === 'cat-choker') {
-          originalPriceHtml = `<del style="color:var(--text-muted); font-size:0.75rem; margin-right:6px;">NT$ ${(item.price * item.qty).toLocaleString()}</del>`;
-          displayPrice = 1580 * item.qty;
-        }
-
-        return `
-          <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--panel-border); padding:6px 0; font-size:0.85rem;">
-            <div>
-              <strong>${item.title}</strong>
-              <span style="font-size:0.75rem; color:var(--text-muted); display:block;">規格：${item.specText} × ${item.qty}</span>
-            </div>
-            <div style="color:var(--accent-cyan); font-weight:bold;">
-              ${originalPriceHtml}NT$ ${displayPrice.toLocaleString()}
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      let discountRowHtml = '';
-      if (appliedPromo && fin.discountAmount > 0) {
-        discountRowHtml = `
-          <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; margin-top:4px; color:#ff334b;">
-            <span>[ 折扣減免 // ${appliedPromo.code} ]：</span>
-            <span>- NT$ ${fin.discountAmount.toLocaleString()}</span>
-          </div>
-        `;
-      }
-
-      let shippingStatusHtml = '';
-      if (currentShippingType === 'meetup') {
-        shippingStatusHtml = `<span style="color:var(--accent-cyan); font-weight:bold;">面交免運 (NT$ 0)</span>`;
-      } else if (fin.discountedSubtotal >= FREE_SHIPPING_THRESHOLD) {
-        shippingStatusHtml = `<span style="color:var(--accent-cyan); font-weight:bold;">已達滿額免運 (NT$ 0)</span>`;
-      } else {
-        const diff = FREE_SHIPPING_THRESHOLD - fin.discountedSubtotal;
-        shippingStatusHtml = `<span>NT$ ${fin.shippingFee} <small style="color:var(--text-muted);">(差 NT$ ${diff.toLocaleString()} 免運)</small></span>`;
-      }
-
-      summaryEl.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:0.85rem;">
-          <span style="color:var(--text-muted);">裝備原價小計：</span>
-          <span>NT$ ${fin.originalSubtotal.toLocaleString()}</span>
-        </div>
-        ${discountRowHtml}
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; margin-top:4px;">
-          <span style="color:var(--text-muted);">交付運費 (${currentShippingName})：</span>
-          <span>${shippingStatusHtml}</span>
-        </div>
-        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--panel-border); padding-top:10px; margin-top:10px;">
-          <span style="font-weight:bold; color:#fff;">結算總金額：</span>
-          <span style="color:var(--accent-cyan); font-weight:bold; font-size:1.25rem;">NT$ ${fin.totalAmount.toLocaleString()}</span>
-        </div>
-      `;
-    }
-
-    function selectShipping(type, el) {
-      el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      currentShippingType = type;
-
-      const cvsContainer = document.getElementById('cvsDropdownContainer');
-      const manualGroup = document.getElementById('manualLocationGroup');
-      const manualLabel = document.getElementById('manualStoreLabel');
-      const manualInput = document.getElementById('manualShippingLocation');
-
-      if (type === '711' || type === 'family') {
-        currentShippingName = type === '711' ? '7-11 超商取貨' : '全家 超商取貨';
-        cvsContainer.style.display = 'block';
-        manualGroup.style.display = 'none';
-        manualInput.required = false;
-        initCvsDropdowns();
-      } else if (type === 'home') {
-        currentShippingName = '黑貓 宅配到府';
-        cvsContainer.style.display = 'none';
-        manualGroup.style.display = 'block';
-        manualLabel.textContent = '收件詳細地址*';
-        manualInput.placeholder = '例如：台北市中山區南京東路一段...';
-        manualInput.required = true;
-        document.getElementById('finalShippingLocation').value = '';
-      } else if (type === 'meetup') {
-        currentShippingName = '親自接頭／線下面交';
-        cvsContainer.style.display = 'none';
-        manualGroup.style.display = 'block';
-        manualLabel.textContent = '面交預約代號 / 預計接頭地點（請主動接入 Discord / X 客服約定時間）*';
-        manualInput.placeholder = '例如：台北車站 / 台北市區面交（已私訊客服確認）';
-        manualInput.required = true;
-        document.getElementById('finalShippingLocation').value = '';
-      }
-
-      renderCheckoutView();
-    }
-
-    function selectPayment(type, el) {
-      if (appliedPromo && appliedPromo.forceBankTransfer && type === 'cod') {
-        alert('【盲鳥優惠限定】此折扣碼僅支援「銀行 ATM 匯款」！');
-        return;
-      }
-
-      el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
-      el.classList.add('active');
-      const note = document.getElementById('paymentNote');
-      if (type === 'cod') {
-        currentPayment = '超商取貨付款';
-        note.innerHTML = `貨物送達超商後，取貨現場付款即可。`;
-      } else {
-        currentPayment = '銀行 ATM 匯款';
-        note.innerHTML = `送出訂單後將顯示銀行帳號。匯款後請前往 <strong style="color:#5865F2;">Discord 開啟客服單</strong> 或 <strong style="color:#fff;">X 私訊</strong> 上傳匯款明細以利對帳。`;
-      }
-    }
-
-    // 結帳下單提交 (含自動記憶門市)
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      if (cart.length === 0) {
-        alert('裝備庫為空，無法簽署協議！');
-        return;
-      }
-
-      let locationText = '';
-      if (currentShippingType === '711' || currentShippingType === 'family') {
-        locationText = document.getElementById('finalShippingLocation').value.trim();
-        if (!locationText) {
-          alert('請由下拉選單選取具體的【取貨門市】！');
-          return;
-        }
-      } else {
-        locationText = document.getElementById('manualShippingLocation').value.trim();
-        if (!locationText) {
-          alert('請填寫詳細交付地址或面交約定地點！');
-          return;
-        }
-      }
-
-      const phoneRaw = document.getElementById('custPhone').value.trim();
-      const emailRaw = document.getElementById('custEmail').value.trim();
-      const saveCheck = document.getElementById('saveToProfileCheck').checked;
-      const fin = calculateOrderFinancials();
-
-      const productsSummaryText = cart.map(item => `${item.title} (${item.specText}) × ${item.qty}`).join(' + ');
-
-      const orderData = {
-        orderId: 'CASE-' + Date.now().toString().slice(-6),
-        product: productsSummaryText,
-        originalSubtotal: fin.originalSubtotal,
-        promoCode: appliedPromo ? appliedPromo.code : '無',
-        discountAmount: fin.discountAmount,
-        subtotal: fin.discountedSubtotal,
-        shippingFee: fin.shippingFee,
-        price: fin.totalAmount,
-        name: document.getElementById('custName').value.trim(),
-        email: emailRaw,
-        phone: phoneRaw,
-        engraving: document.getElementById('custEngraving').value.trim() || '無',
-        shipping: currentShippingName,
-        location: locationText,
-        payment: currentPayment,
-        saveToProfile: saveCheck,
-        status: '[ 排程調用中 ]',
-        createdAt: new Date().toLocaleString('zh-TW', { hour12: false })
-      };
-
-      // 更新本地檔案（若勾選自動記憶）
-      if (memberProfile && saveCheck) {
-        memberProfile.name = orderData.name;
-        memberProfile.phone = orderData.phone;
-        memberProfile.defaultLocation = orderData.location;
-        localStorage.setItem('guilty_member', JSON.stringify(memberProfile));
-      }
-
-      // 本地訂單備份
-      let allOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-      allOrders.unshift(orderData);
-      localStorage.setItem('guilty_orders', JSON.stringify(allOrders));
-
-      // 送出至 Google 試算表
-      fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(orderData)
-      }).then(() => {
-        console.log('[GUILTY LOG] 訂單已發送至 Google 試算表與推播系統！', orderData.orderId);
-      }).catch(err => {
-        console.warn('[GUILTY LOG] 試算表傳送提示:', err);
-      });
-
-      // 渲染成功憑證
-      const shippingFeeDisplay = orderData.shippingFee === 0 
-        ? '<span style="color:var(--accent-cyan);">免運費 (NT$ 0)</span>' 
-        : `NT$ ${orderData.shippingFee}`;
-
-      const promoDisplay = orderData.promoCode !== '無' 
-        ? `<span style="color:#ff334b;">${orderData.promoCode} (-NT$ ${Number(orderData.discountAmount).toLocaleString()})</span>` 
-        : '無';
-
-      document.getElementById('successDetailArea').innerHTML = `
-        <div><strong>案件編號：</strong><span style="color:var(--accent-cyan); font-weight:bold;">#${orderData.orderId}</span></div>
-        <div style="margin:4px 0;"><strong>調用裝備清單：</strong><br><span style="color:#fff;">${orderData.product}</span></div>
-        <div><strong>折扣協議代碼：</strong>${promoDisplay}</div>
-        <div><strong>裝備實計金額：</strong>NT$ ${Number(orderData.subtotal).toLocaleString()}</div>
-        <div><strong>物流運費：</strong>${shippingFeeDisplay}</div>
-        <div><strong>結算總金額：</strong><strong style="color:var(--accent-cyan); font-size:1.05rem;">NT$ ${Number(orderData.price).toLocaleString()}</strong></div>
-        <div><strong>收件特工：</strong>${orderData.name} (${orderData.phone})</div>
-        <div><strong>安全信箱：</strong>${orderData.email}</div>
-        <div><strong>客製／備註：</strong>${orderData.engraving}</div>
-        <div><strong>交付途徑：</strong>${orderData.shipping} (${orderData.location})</div>
-        <div><strong>支付結算：</strong>${orderData.payment}</div>
-      `;
-
-      // 華南銀行 ATM 指引
-      const payArea = document.getElementById('payInstructionArea');
-      if (orderData.payment === '銀行 ATM 匯款') {
-        payArea.innerHTML = `
-          <div class="pay-instruction-box">
-            <strong style="color:var(--accent-cyan); font-size:0.95rem;">🏦 ATM 匯款帳號資料：</strong><br>
-            銀行代碼：<strong>008（華南銀行）</strong><br>
-            轉帳帳號：<strong>106200758151</strong><br>
-            應匯總額：<strong style="color:var(--accent-cyan);">NT$ ${Number(orderData.price).toLocaleString()}</strong>（含運費）<br>
-            轉帳備註請填寫案件編號：<strong style="color:#fff;">#${orderData.orderId}</strong>
-            
-            <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--panel-border);">
-              <span style="color:#ff334b; font-weight:bold;">⚠️ 匯款完成後請回報明細：</span><br>
-              請至官方頻道上傳<strong>「匯款收據截圖」</strong>或<strong>「帳號末五碼」</strong>以完成案件解鎖：<br>
-              <div style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;">
-                <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" 
-                   style="background:rgba(88,101,242,0.15); border:1px solid #5865F2; color:#fff; padding:6px 12px; font-size:0.75rem; text-decoration:none; border-radius:3px;">
-                  👾 前往 Discord 開啟客服單 ↗
-                </a>
-                <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" 
-                   style="background:rgba(255,255,255,0.08); border:1px solid var(--panel-border); color:#fff; padding:6px 12px; font-size:0.75rem; text-decoration:none; border-radius:3px;">
-                  𝕏 私訊官方客服上傳 ↗
-                </a>
-              </div>
-            </div>
-          </div>
-        `;
-      } else {
-        payArea.innerHTML = ``;
-      }
-
-      cart = [];
-      appliedPromo = null;
-      saveCart();
-
-      setActiveView('view-success');
-      history.pushState({ view: 'success' }, '', '#success');
-      updateMemberUI();
-    });
-
-    // ==========================================
-    // 9. 個人調用紀錄 (DOSSIER)
-    // ==========================================
-    function openOrderHistory(push = true) {
-      toggleNav(false);
-      toggleCart(false);
-
-      if (!memberProfile || (!memberProfile.phone && !memberProfile.email)) {
-        alert('請先進行【特工帳密登入】，系統將調出專屬於您的調用檔案。');
-        toggleAuthModal(true);
-        return;
-      }
-
-      const historyArea = document.getElementById('historyListArea');
-      const cleanPhone = String(memberProfile.phone || '').replace(/[^0-9]/g, '');
-      const cleanEmail = String(memberProfile.email || '').trim().toLowerCase();
-      document.getElementById('historyTitle').textContent = `07 // 特工 [ ${memberProfile.name || '特工'} ] 專屬調用檔案`;
-
-      const renderOrders = (list) => {
-        if (!list || list.length === 0) {
-          historyArea.innerHTML = `<div style="color:var(--text-muted); text-align:center; padding:30px 0;">特工 ${memberProfile.name || ''} 尚無任何調用案件。</div>`;
-        } else {
-          historyArea.innerHTML = list.map(o => `
-            <div class="history-item">
-              <div class="history-header">
-                <span style="color:var(--accent-cyan); font-weight:bold;">#${o.orderId}</span>
-                <span style="color:var(--text-muted); font-size:0.75rem;">${o.createdAt}</span>
-              </div>
-              <div><strong>裝備：</strong>${o.product}</div>
-              <div><strong>金額：</strong>NT$ ${Number(o.price).toLocaleString()} (含運)</div>
-              <div><strong>收件人：</strong>${o.name} (${o.phone})</div>
-              <div><strong>門市/地址：</strong>${o.shipping} // ${o.location}</div>
-              <div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--panel-border); font-size:0.8rem;">
-                <strong>調用狀態：</strong><span style="color:var(--accent-cyan); font-weight:bold;">${o.status || '[ 排程調用中 ]'}</span>
-              </div>
-            </div>
-          `).join('');
-        }
-      };
-
-      let localOrders = JSON.parse(localStorage.getItem('guilty_orders')) || [];
-      let myLocalOrders = localOrders.filter(o => 
-        (cleanPhone && String(o.phone).replace(/[^0-9]/g, '') === cleanPhone) ||
-        (cleanEmail && String(o.email || '').toLowerCase() === cleanEmail)
-      );
-      renderOrders(myLocalOrders);
-
-      setActiveView('view-history');
-      if (push) {
-        history.pushState({ view: 'history' }, '', '#dossier');
-      }
-
-      const callbackName = 'cb_' + Date.now();
-      window[callbackName] = function(cloudOrders) {
-        const scriptEl = document.getElementById(callbackName);
-        if (scriptEl) scriptEl.remove();
-        delete window[callbackName];
-
-        if (cloudOrders && cloudOrders.length > 0) {
-          renderOrders(cloudOrders);
-          localStorage.setItem('guilty_orders', JSON.stringify(cloudOrders));
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = callbackName;
-      script.src = `${GOOGLE_SHEET_URL}?email=${encodeURIComponent(cleanEmail)}&phone=${encodeURIComponent(cleanPhone)}&callback=${callbackName}&_t=${Date.now()}`;
-      script.onerror = function() {
-        console.warn("雲端連線失敗，目前顯示本地紀錄。");
-      };
-      document.body.appendChild(script);
-    }
-
-    // ==========================================
-    // 10. 初始化執行
-    // ==========================================
+    // 初始化執行
     history.replaceState({ view: 'landing' }, '', '#landing');
     renderProductCards();
     updateMemberUI();
