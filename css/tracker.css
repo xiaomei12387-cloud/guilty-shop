@@ -1,184 +1,36 @@
-/* ==========================================
-   🎮 GUILTY TRACKER & PROFILE STYLES (css/tracker.css)
-========================================== */
-
-/* 頂部主/被動方切換 */
-.mode-switch-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.mode-switch-btn {
-  padding: 12px;
-  text-align: center;
-  font-size: 0.85rem;
-  font-weight: bold;
-  background: #141416;
-  border: 1px solid var(--panel-border);
-  color: var(--text-muted);
-  cursor: pointer;
-  letter-spacing: 1px;
-  transition: all 0.2s;
-}
-.mode-switch-btn.active {
-  border-color: var(--accent-cyan);
-  color: #000;
-  background: var(--accent-cyan);
-}
-
-/* 互動對象卡片 */
-.partner-card {
-  background: #000;
-  border: 1px solid var(--panel-border);
-  padding: 14px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: all 0.2s;
-  position: relative;
-}
-.partner-card:hover {
-  border-color: rgba(0, 255, 136, 0.4);
-}
-.partner-card.active {
-  border-color: var(--accent-cyan);
-  background: rgba(0, 255, 136, 0.04);
-  box-shadow: 0 0 15px var(--glow-cyan);
-}
-.partner-role-badge {
-  font-size: 0.65rem;
-  padding: 2px 6px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--accent-cyan);
-  margin-left: 6px;
-}
-.pin-btn {
-  background: transparent;
-  border: 1px solid var(--panel-border);
-  color: var(--text-muted);
-  font-size: 0.7rem;
-  padding: 3px 8px;
-  cursor: pointer;
-  border-radius: 2px;
-}
-.pin-btn.pinned {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-  background: rgba(0, 255, 136, 0.1);
-}
-.twitter-badge {
-  display: inline-block;
-  font-size: 0.72rem;
-  color: #1DA1F2;
-  text-decoration: none;
-  margin-top: 4px;
-}
-
-/* 計數器大按鈕看板 */
-.counter-board-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin: 16px 0;
-}
-.counter-box {
-  background: #000;
-  border: 1px solid var(--panel-border);
-  padding: 16px;
-  text-align: center;
-  border-radius: 4px;
-}
-.counter-title {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-.counter-val {
-  font-size: 2.4rem;
-  font-weight: bold;
-  color: #fff;
-  font-family: 'Consolas', monospace;
-  margin: 6px 0;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-}
-.counter-ctrl-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  margin-top: 10px;
-}
-.counter-btn {
-  padding: 10px 0;
-  font-size: 0.9rem;
-  font-weight: bold;
-  background: #141416;
-  border: 1px solid var(--panel-border);
-  color: #fff;
-  cursor: pointer;
-  border-radius: 3px;
-  user-select: none;
-}
-.counter-btn:active {
-  background: var(--accent-cyan);
-  color: #000;
-}
-
-/* 個人主頁標籤矩陣 */
-.tags-wrap-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 10px 0 16px;
-}
-.matrix-tag-btn {
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  background: #141416;
-  border: 1px solid var(--panel-border);
-  color: var(--text-muted);
-  cursor: pointer;
-  border-radius: 20px;
-  transition: all 0.2s;
-}
-.matrix-tag-btn.active {
-  border-color: var(--accent-cyan);
-  color: var(--accent-cyan);
-  background: rgba(0, 255, 136, 0.1);
-}
-.matrix-tag-btn.limit.active {
-  border-color: var(--danger-red);
-  color: var(--danger-red);
-  background: rgba(255, 51, 75, 0.1);
-}
-
-/* 賽博通行證 QR Code 卡片 */
-.qr-pass-card {
-  background: #000;
-  border: 1px dashed var(--accent-cyan);
-  padding: 20px;
-  text-align: center;
-  border-radius: 4px;
-  margin: 16px 0;
-}
-.qr-box {
-  width: 170px;
-  height: 170px;
-  margin: 12px auto;
+/* 頭像預覽與個人檔案編輯表單 */
+.profile-avatar-wrap {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: #08080a;
-  border: 1px solid var(--panel-border);
+  gap: 14px;
+  margin-bottom: 14px;
 }
-
-/* 行事曆卡片 */
-.calendar-card {
-  background: #000;
-  border: 1px solid var(--panel-border);
-  padding: 12px;
-  border-radius: 4px;
-  margin-bottom: 8px;
-  line-height: 1.5;
+.profile-avatar-img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-cyan);
+  object-fit: cover;
+  background: #141416;
+}
+.custom-tag-input-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.custom-tag-input-row input {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  border-radius: 3px;
+}
+.custom-tag-input-row button {
+  padding: 8px 14px;
+  background: var(--accent-cyan);
+  color: #000;
+  font-weight: bold;
+  font-size: 0.8rem;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  border-radius: 3px;
 }
