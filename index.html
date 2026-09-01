@@ -63,7 +63,7 @@
     </div>
   </div>
 
-  <!-- 特工身份認證彈窗 -->
+  <!-- 特工登入／註冊彈窗 -->
   <div class="auth-modal" id="authModal">
     <div class="auth-box">
       <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
@@ -89,8 +89,8 @@
             <input type="password" id="loginPasswordInput" required placeholder="請輸入密碼" />
           </div>
           <div class="nda-protocol-box">
-            <strong>⚠️ [ NEURAL ACCESS PROTOCOL // 認罪協議與保密條款 ]</strong><br>
-            進入本終端代表您已充分知悉並同意遵守 SSC（安全・理智・知情同意）原則，並對本實驗室之一切研發裝備、調用檔案與通訊紀錄負完全保密義務。
+            <strong>⚠️ [ NEURAL ACCESS PROTOCOL // 認罪保密協議 ]</strong><br>
+            進入本終端代表您已充分知悉並同意遵守 SSC（安全・理智・知情同意）原則。
             <label class="nda-checkbox-label">
               <input type="checkbox" id="loginNdaCheckbox" required />
               <span>我已閱讀並自願簽署《特工認罪保密協議》*</span>
@@ -117,20 +117,12 @@
             <input type="text" id="regOtpInput" required maxlength="6" placeholder="輸入信箱 6 位數代碼" style="letter-spacing:4px; font-size:1.1rem; text-align:center; font-weight:bold;" />
           </div>
           <div class="form-group">
-            <label>聯絡電話 (手機號碼，亦可作登入帳號)*</label>
+            <label>聯絡電話 (手機號碼)*</label>
             <input type="tel" id="regPhoneInput" required placeholder="0912-345-678" />
           </div>
           <div class="form-group">
             <label>設定加密通行密碼*</label>
             <input type="password" id="regPasswordInput" required minlength="6" placeholder="至少 6 碼英數密碼" />
-          </div>
-          <div class="nda-protocol-box">
-            <strong>⚠️ [ PROTOCOL // 首次註冊建檔宣告 ]</strong><br>
-            建立特工檔案即代表神經權限正式登錄於 UserDB。本實驗室實施嚴格隱私去識別化，您的真實個人資料僅用於包裹安全交付與認罪協議封存。
-            <label class="nda-checkbox-label">
-              <input type="checkbox" id="regNdaCheckbox" required />
-              <span>我已閱讀並自願簽署《特工認罪保密協議》*</span>
-            </label>
           </div>
           <button type="submit" class="btn-submit" id="btnRegSubmit" style="padding:12px; font-size:0.9rem;">驗證信箱並建立檔案 (REGISTER)</button>
         </form>
@@ -138,7 +130,7 @@
 
       <div id="authProfileView" style="display:none;">
         <div class="auth-header">
-          <div class="auth-title">特工個人檔案庫</div>
+          <div class="auth-title">特工系統檔案</div>
           <div class="auth-sub" id="profileAccountBadge" style="color:var(--accent-cyan);">[ VERIFIED AGENT ]</div>
         </div>
         <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)">
@@ -151,12 +143,12 @@
             </div>
           </div>
           <div class="form-group">
-            <label>特工代號 / 嫌疑人稱號*</label>
+            <label>特工代號*</label>
             <input type="text" id="profNameInput" required />
           </div>
           <div class="form-group">
-            <label>常用交付超商（店名／店號／地址）</label>
-            <input type="text" id="profLocationInput" placeholder="例如：7-11 鑫台北門市 (991182)" />
+            <label>常用交付超商門市</label>
+            <input type="text" id="profLocationInput" placeholder="例如：7-11 鑫台北門市" />
           </div>
           <button type="submit" class="btn-submit" style="padding:12px; font-size:0.9rem;">更新檔案數據 (SAVE)</button>
           <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:12px; cursor:pointer;">[ 斷開神經連結 / 退出登入 ]</button>
@@ -210,21 +202,20 @@
       </div>
 
       <ul class="nav-menu-list">
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">🎮 實踐計數與特工主頁 (TRACKER) ★</a></li>
-        <li class="nav-menu-item"><a href="#section-hero" onclick="scrollToSection('section-hero')">01 // 首頁 (TOP)</a></li>
-        <li class="nav-menu-item"><a href="#section-manifesto" onclick="scrollToSection('section-manifesto')">02 // 世界觀理念 (LORE)</a></li>
-        <li class="nav-menu-item"><a href="#section-matrix" onclick="scrollToSection('section-matrix')">03 // 裝備研發矩陣 (MATRIX)</a></li>
-        <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">04 // 裝備目錄庫 (CATALOG)</a></li>
-        <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">05 // 特工指南 (FAQ)</a></li>
-        <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">06 // 主理核心 (CREW)</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">07 // 個人調用紀錄 (MY DOSSIER)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">01 // 實踐計數終端 (TRACKER) ⚡</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">02 // 特工個人主頁 (PROFILE CARD) ★</a></li>
+        <li class="nav-menu-item"><a href="#section-hero" onclick="scrollToSection('section-hero')">03 // 展廳首頁 (TOP)</a></li>
+        <li class="nav-menu-item"><a href="#section-matrix" onclick="scrollToSection('section-matrix')">04 // 研發矩陣 (MATRIX)</a></li>
+        <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">05 // 裝備目錄 (CATALOG)</a></li>
+        <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">06 // 特工指南 (FAQ)</a></li>
+        <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">07 // 主理核心 (CREW)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">08 // 個人調用紀錄 (DOSSIER)</a></li>
       </ul>
     </div>
 
     <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--panel-border); padding-top:14px;">
-      <div style="margin-bottom:8px; color:var(--accent-cyan);">[ SECURE COMMS ]</div>
-      <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" style="color:#5865F2; text-decoration:none; display:block; margin-bottom:4px;">👾 加入特工 Discord 伺服器 ↗</a>
-      <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration:none; display:block; margin-bottom:6px;">𝕏 追蹤 GUILTY 官方情報 ↗</a>
+      <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" style="color:#5865F2; text-decoration:none; display:block; margin-bottom:4px;">👾 特工 Discord 伺服器 ↗</a>
+      <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration:none; display:block; margin-bottom:6px;">𝕏 GUILTY 官方情報 ↗</a>
       <span style="color:var(--text-muted);">欲室共犯 × shushi束室 // SYS.VER 02.0</span>
     </div>
   </div>
@@ -251,42 +242,8 @@
         <p class="hero-sub">工業義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。重塑冷冽硬派的次文化拘束哲學。</p>
         
         <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
-          <button class="btn-submit" onclick="openTrackerAppView()" style="width:auto; padding:12px 24px; font-size:0.85rem;">🎮 進入實踐計數終端 (TRACKER)</button>
-          <button class="btn-secondary" onclick="scrollToSection('section-arsenal')" style="width:auto; padding:12px 24px; font-size:0.85rem;">▼ 調用裝備目錄</button>
-        </div>
-      </section>
-
-      <!-- 世界觀脈絡 -->
-      <section class="section-manifesto" id="section-manifesto">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // WORLDVIEW & PROTOCOL ]</div>
-        <div class="manifesto-card">
-          <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
-            【欲室｜共犯 GUILTY】作為地下義體武裝研究所，攜手專業繩縛殿堂【shushi束室 繩教室】，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
-          </p>
-        </div>
-      </section>
-
-      <!-- 裝備研發矩陣 -->
-      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-matrix">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // ARSENAL MATRIX ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:6px;">支配・拘束・義體三大研發矩陣</h2>
-        <div class="matrix-grid">
-          <div class="matrix-card">
-            <div class="matrix-num">DIVISION 01 // CYBERNETICS</div>
-            <div class="matrix-title">義體外骨骼拘束器</div>
-            <div class="matrix-desc">工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
-          </div>
-          <div class="matrix-card card-shushi">
-            <div class="matrix-num">DIVISION 02 // ROPE ART</div>
-            <div class="matrix-title">束室特選精煉繩藝</div>
-            <div class="matrix-desc">經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌。</div>
-          </div>
-          <div class="matrix-card">
-            <div class="matrix-num">DIVISION 03 // CALIBRATION & TACTICAL</div>
-            <div class="matrix-title">神經校準與戰術裝備</div>
-            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹精準神經回饋。</div>
-          </div>
+          <button class="btn-submit" onclick="openTrackerAppView()" style="width:auto; padding:12px 20px; font-size:0.85rem;">⚡ 實踐計數終端</button>
+          <button class="btn-submit" onclick="openProfileDossierView()" style="width:auto; padding:12px 20px; font-size:0.85rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);">★ 特工個人主頁</button>
         </div>
       </section>
 
@@ -304,112 +261,125 @@
         </div>
         <div class="product-list-grid" id="productGrid"></div>
       </section>
-
-      <!-- FAQ -->
-      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-faq">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // AGENT DOSSIER FAQ ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
-        <div class="faq-item">
-          <div class="faq-q">Q1. 旗艦項圈尺寸如何挑選？（S 碼 vs M 碼）</div>
-          <div class="faq-a">• <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態。<br>• <strong>M 碼（34 – 38 cm）</strong>：適合標準體態。</div>
-        </div>
-        <div class="stealth-badge-card">
-          <div style="font-size: 1.8rem;">🔒</div>
-          <div>
-            <div style="color: var(--accent-cyan); font-weight: bold; font-size: 0.9rem;">100% 絕密隱私交付承諾 (STEALTH SHIPPING)</div>
-            <div style="color: var(--text-muted); font-size: 0.8rem;">超商寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>。</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 主理核心 -->
-      <section class="section-crew" id="section-crew">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
-        <div class="team-grid">
-          <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div class="team-header"><div class="team-role">DESIGN DIRECTOR</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">18X</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@18X_inthc</div>
-          </a>
-          <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div class="team-header"><div class="team-role">COMMUNITY & OPERATIONS</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">老王</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@Take1809DL</div>
-          </a>
-          <a href="https://x.com/220shushi" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
-            <div class="team-header"><div class="team-role">STRATEGIC ALLIANCE</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">shushi束室 繩教室</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@220shushi</div>
-          </a>
-        </div>
-      </section>
     </div>
   </div>
 
-  <!-- 2. 實踐計數器與特工主頁視圖 (Tracker View) -->
+  <!-- 2. 【獨立介面 01】實踐計數終端 (Tracker View) -->
   <div id="view-tracker" class="view-section">
     <div class="detail-container">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; font-size:0.8rem;">← 返回展廳</button>
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ PROTOCOL // TRACKER & DOSSIER ]</div>
+      <div class="terminal-hud-header">
+        <div>
+          <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ TERMINAL // PROTOCOL TRACKER ]</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">神經實踐實時計數板</span>
+        </div>
+        <button onclick="openProfileDossierView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">我的特工主頁 ★</button>
       </div>
 
       <!-- 頂部切換主/被動方 -->
       <div class="mode-switch-grid">
         <div class="mode-switch-btn active" id="btnModeDom" onclick="switchTrackerMode('dom')">⚔️ 主動方終端 (Dom)</div>
-        <div class="mode-switch-btn" id="btnModeSub" onclick="switchTrackerMode('sub')">⛓️ 被動方終端 (Sub)</div>
+        <div class="mode-switch-btn btn-sub" id="btnModeSub" onclick="switchTrackerMode('sub')">⛓️ 被動方終端 (Sub)</div>
       </div>
 
-      <!-- A. 實時計數板 -->
+      <!-- 實時計數板 -->
       <div class="form-box">
         <div class="form-title" id="activePartnerNameDisplay">[ 當前對象：載入中... ]</div>
         <div class="counter-board-grid">
-          <div class="counter-box">
+          <div class="counter-box box-cyan">
             <div class="counter-title">SP 實施次數</div>
             <div class="counter-val" id="spCountVal" style="color:var(--accent-cyan);">0</div>
             <div class="counter-ctrl-grid">
               <button class="counter-btn" onclick="adjustCounter('SP', 1)">+1</button>
               <button class="counter-btn" onclick="adjustCounter('SP', 5)">+5</button>
               <button class="counter-btn" onclick="adjustCounter('SP', -1)">-1</button>
-              <button class="counter-btn" onclick="resetCounter('SP')" style="color:var(--danger-red);">清零</button>
+              <button class="counter-btn btn-reset" onclick="resetCounter('SP')">清零</button>
             </div>
           </div>
 
-          <div class="counter-box">
+          <div class="counter-box box-purple">
             <div class="counter-title">神經長鞭擊數</div>
             <div class="counter-val" id="whipCountVal" style="color:var(--accent-purple);">0</div>
             <div class="counter-ctrl-grid">
               <button class="counter-btn" onclick="adjustCounter('WHIP', 1)">+1</button>
               <button class="counter-btn" onclick="adjustCounter('WHIP', 5)">+5</button>
               <button class="counter-btn" onclick="adjustCounter('WHIP', -1)">-1</button>
-              <button class="counter-btn" onclick="resetCounter('WHIP')" style="color:var(--danger-red);">清零</button>
+              <button class="counter-btn btn-reset" onclick="resetCounter('WHIP')">清零</button>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- B. 互動對象清單 (置頂功能) -->
+      <!-- 互動對象清單 (置頂 / 刪除) -->
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div class="form-title" style="margin-bottom:0; border:none; padding:0;">互動對象清單 (PARTNERS)</div>
-          <button onclick="addNewPartnerPrompt()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 手動新增對象</button>
+          <button onclick="addNewPartnerPrompt()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 新增對象</button>
         </div>
         <div id="trackerPartnerList"></div>
       </div>
+    </div>
+  </div>
 
-      <!-- C. 個人特工主頁設定 (頭像、推特、自訂連結、自訂標籤) -->
+  <!-- 3. 【獨立介面 02】特工個人主頁 (Profile Dossier View) -->
+  <div id="view-dossier" class="view-section">
+    <div class="detail-container">
+      <div class="terminal-hud-header">
+        <div>
+          <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL DOSSIER // 特工主頁 ]</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">個人偏好標籤與專屬名片</span>
+        </div>
+        <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">⚡ 進入計數終端</button>
+      </div>
+
+      <!-- 公開賽博特工名片 -->
+      <div class="dossier-hero-card">
+        <img id="dossierAvatarPreview" src="" class="dossier-avatar" />
+        <div class="dossier-name" id="dossierNameDisplay">特工</div>
+        <span class="partner-role-badge" id="dossierRoleBadge">支配者 (Dom)</span>
+        <div style="margin-top:8px;">
+          <a id="dossierTwitterLink" href="#" target="_blank" style="font-size:0.8rem; color:#1DA1F2; text-decoration:none;">𝕏 Twitter ↗</a>
+        </div>
+        <p id="dossierBioDisplay" style="font-size:0.8rem; color:var(--text-muted); max-width:400px; margin:8px auto 0;"></p>
+      </div>
+
+      <!-- 專屬 QR Code 通行證 -->
+      <div class="qr-pass-card">
+        <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL PASS // 掃碼連線特工名片 ]</div>
+        <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">出示供對方掃描，即可一鍵將您加為互動對象！</div>
+        <div class="qr-box" id="myQrCodeBox"></div>
+      </div>
+
+      <!-- 自訂偏好與雷點矩陣 -->
       <div class="form-box">
-        <div class="form-title">個人特工檔案設定 (MY DOSSIER)</div>
+        <div class="form-title">實踐偏好與雷點矩陣 (PREFERENCE MATRIX)</div>
+        
+        <div style="margin-bottom:14px;">
+          <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 實踐偏好 (PREFERENCES)：</label>
+          <div class="tags-wrap-box" id="myPrefTagsBox"></div>
+          <div class="custom-tag-input-row">
+            <input type="text" id="newCustomPrefInput" placeholder="輸入自訂偏好（例如：低溫蠟燭、罰站訓誡）" />
+            <button type="button" onclick="addCustomTag('pref')">＋ 新增偏好</button>
+          </div>
+        </div>
 
+        <div>
+          <label style="font-size:0.75rem; color:var(--danger-red); font-weight:bold;">✦ 絕對雷點 (HARD LIMITS)：</label>
+          <div class="tags-wrap-box" id="myLimitTagsBox"></div>
+          <div class="custom-tag-input-row">
+            <input type="text" id="newCustomLimitInput" placeholder="輸入自訂雷點（例如：拒絕拍照、拒絕面部打擊）" />
+            <button type="button" onclick="addCustomTag('limit')" style="background:var(--danger-red); color:#fff;">＋ 新增雷點</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 編輯特工檔案資料 -->
+      <div class="form-box">
+        <div class="form-title">編輯特工檔案數據 (EDIT PROFILE)</div>
         <form id="profileCustomForm" onsubmit="handleSaveProfileForm(event)">
-          <div class="profile-avatar-wrap">
-            <img id="avatarPreviewImg" src="" class="profile-avatar-img" />
-            <div style="flex:1;">
-              <label style="font-size:0.75rem;">頭像網址 (Avatar URL) 或 上傳本機圖檔</label>
-              <input type="url" id="profEditAvatar" placeholder="https://... 或點下方選擇圖片" style="padding:8px; font-size:0.8rem; margin-bottom:4px;" />
-              <input type="file" accept="image/*" onchange="handleAvatarUpload(this)" style="font-size:0.75rem; padding:4px 0;" />
-            </div>
+          <div style="margin-bottom:10px;">
+            <label style="font-size:0.75rem;">頭像網址 (Avatar URL) 或 上傳本機圖檔</label>
+            <input type="url" id="profEditAvatar" placeholder="https://... 或選擇圖片" style="padding:8px; font-size:0.8rem; margin-bottom:4px;" />
+            <input type="file" accept="image/*" onchange="handleAvatarUpload(this)" style="font-size:0.75rem;" />
           </div>
 
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
@@ -418,7 +388,7 @@
               <input type="text" id="profEditName" required style="padding:8px;" />
             </div>
             <div>
-              <label style="font-size:0.75rem;">主權屬性*</label>
+              <label style="font-size:0.75rem;">主權陣營屬性*</label>
               <select id="profEditRole" style="padding:8px;">
                 <option value="支配者 (Dom)">支配者 (Dom)</option>
                 <option value="切換者 (Switch)">切換者 (Switch)</option>
@@ -432,17 +402,6 @@
             <input type="url" id="profEditTwitter" placeholder="https://x.com/your_handle" style="padding:8px;" />
           </div>
 
-          <div style="display:grid; grid-template-columns: 1fr 2fr; gap:8px; margin-bottom:10px;">
-            <div>
-              <label style="font-size:0.75rem;">自訂連結名稱</label>
-              <input type="text" id="profEditLinkTitle" placeholder="如：作品網站" style="padding:8px;" />
-            </div>
-            <div>
-              <label style="font-size:0.75rem;">自訂連結網址 (URL)</label>
-              <input type="url" id="profEditLinkUrl" placeholder="https://..." style="padding:8px;" />
-            </div>
-          </div>
-
           <div class="form-group">
             <label style="font-size:0.75rem;">安全詞宣告 (SAFEWORD)</label>
             <input type="text" id="profEditSafeword" placeholder="例如：MAYDAY (紅燈/黃燈)" style="padding:8px;" />
@@ -450,43 +409,16 @@
 
           <div class="form-group">
             <label style="font-size:0.75rem;">特工簡介 / 實踐理念</label>
-            <textarea id="profEditBio" rows="2" placeholder="填寫簡介..." style="padding:8px; font-size:0.85rem;"></textarea>
+            <textarea id="profEditBio" rows="2" placeholder="填寫個人簡介..." style="padding:8px; font-size:0.85rem;"></textarea>
           </div>
 
-          <button type="submit" class="btn-submit" style="padding:10px; font-size:0.85rem; margin-bottom:16px;">儲存特工檔案變更 (SAVE)</button>
+          <button type="submit" class="btn-submit" style="padding:12px; font-size:0.85rem;">儲存特工檔案 (SAVE)</button>
         </form>
-
-        <!-- 自訂偏好標籤庫 -->
-        <div style="border-top:1px dashed var(--panel-border); padding-top:14px; margin-top:14px;">
-          <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 實踐偏好 (PREFERENCES)：</label>
-          <div class="tags-wrap-box" id="myPrefTagsBox"></div>
-          <div class="custom-tag-input-row">
-            <input type="text" id="newCustomPrefInput" placeholder="輸入自訂偏好標籤（例如：低溫蠟燭、罰站訓誡）" />
-            <button type="button" onclick="addCustomTag('pref')">＋ 新增偏好</button>
-          </div>
-        </div>
-
-        <!-- 自訂雷點標籤庫 -->
-        <div style="margin-top:14px;">
-          <label style="font-size:0.75rem; color:var(--danger-red); font-weight:bold;">✦ 絕對雷點 (HARD LIMITS)：</label>
-          <div class="tags-wrap-box" id="myLimitTagsBox"></div>
-          <div class="custom-tag-input-row">
-            <input type="text" id="newCustomLimitInput" placeholder="輸入自訂雷點（例如：拒絕拍照、拒絕面部打擊）" />
-            <button type="button" onclick="addCustomTag('limit')" style="background:var(--danger-red); color:#fff;">＋ 新增雷點</button>
-          </div>
-        </div>
-
-        <!-- 賽博通行證 QR Code -->
-        <div class="qr-pass-card">
-          <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL PASS // 專屬特工通行證 ]</div>
-          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">出示此 QR Code 供對方掃描，即可一鍵載入您的個人檔案、偏好與推特！</div>
-          <div class="qr-box" id="myQrCodeBox"></div>
-        </div>
       </div>
     </div>
   </div>
 
-  <!-- 3. 商品詳細配置頁 -->
+  <!-- 4. 商品詳細配置頁 -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
@@ -513,7 +445,7 @@
     </div>
   </div>
 
-  <!-- 4. 終端結帳視圖 -->
+  <!-- 5. 終端結帳視圖 -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -524,15 +456,6 @@
       <div class="form-box">
         <div class="form-title">01 // 調用裝備清單明細</div>
         <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
-        <div style="border-top:1px dashed var(--panel-border); padding-top:12px; margin-top:12px;">
-          <label style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ 終端優惠協議 // PROMO CODE ]</label>
-          <div style="display:flex; gap:8px; margin-top:4px;">
-            <input type="text" id="promoCodeInput" placeholder="輸入折扣碼（例如：IAMSUB）" style="text-transform:uppercase; font-size:0.85rem; padding:10px;" />
-            <button type="button" onclick="applyPromoCode()" style="background:var(--accent-cyan); color:#000; border:none; padding:0 16px; font-weight:bold; cursor:pointer; font-size:0.85rem; white-space:nowrap;">套用</button>
-            <button type="button" id="removePromoBtn" onclick="removePromoCode()" style="background:#222; color:var(--danger-red); border:1px solid var(--panel-border); padding:0 12px; cursor:pointer; font-size:0.8rem; display:none;">✕ 取消</button>
-          </div>
-          <div id="promoStatusMsg" style="font-size:0.75rem; margin-top:6px;"></div>
-        </div>
         <div id="checkoutFinancialSummary"></div>
       </div>
 
@@ -606,7 +529,7 @@
     </div>
   </div>
 
-  <!-- 5. 成功下單頁面 -->
+  <!-- 6. 成功下單頁面 -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
@@ -639,13 +562,6 @@
       if (push && (!history.state || history.state.view !== 'landing')) {
         history.pushState({ view: 'landing' }, '', '#landing');
       }
-    }
-
-    function openTrackerAppView() {
-      toggleNav(false);
-      setActiveView('view-tracker');
-      renderTrackerApp();
-      history.pushState({ view: 'tracker' }, '', '#tracker');
     }
 
     function scrollToSection(sectionId) {
