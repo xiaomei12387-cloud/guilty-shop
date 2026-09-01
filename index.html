@@ -331,15 +331,17 @@
         <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">⚡ 進入計數終端</button>
       </div>
 
-      <!-- 公開賽博特工名片 -->
+      <!-- 公開賽博特工名片（含神經掃描環與雷射掃描動畫） -->
       <div class="dossier-hero-card">
-        <img id="dossierAvatarPreview" src="" class="dossier-avatar" />
+        <div class="dossier-avatar-container">
+          <img id="dossierAvatarPreview" src="" class="dossier-avatar" />
+        </div>
         <div class="dossier-name" id="dossierNameDisplay">特工</div>
         <span class="partner-role-badge" id="dossierRoleBadge">支配者 (Dom)</span>
         <div style="margin-top:8px;">
           <a id="dossierTwitterLink" href="#" target="_blank" style="font-size:0.8rem; color:#1DA1F2; text-decoration:none;">𝕏 Twitter ↗</a>
         </div>
-        <p id="dossierBioDisplay" style="font-size:0.8rem; color:var(--text-muted); max-width:400px; margin:8px auto 0;"></p>
+        <p id="dossierBioDisplay" style="font-size:0.8rem; color:var(--text-muted); max-width:400px; margin:8px auto 0; line-height:1.6;"></p>
       </div>
 
       <!-- 專屬 QR Code 通行證 -->
@@ -562,6 +564,20 @@
       if (push && (!history.state || history.state.view !== 'landing')) {
         history.pushState({ view: 'landing' }, '', '#landing');
       }
+    }
+
+    function openTrackerAppView() {
+      toggleNav(false);
+      setActiveView('view-tracker');
+      renderTrackerApp();
+      history.pushState({ view: 'tracker' }, '', '#tracker');
+    }
+
+    function openProfileDossierView() {
+      toggleNav(false);
+      setActiveView('view-dossier');
+      renderProfileDossier();
+      history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
     function scrollToSection(sectionId) {
