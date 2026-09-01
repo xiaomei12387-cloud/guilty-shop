@@ -1,8 +1,8 @@
 /* ==========================================
-   🎮 GUILTY CYBERNETIC TRACKER & DOSSIER STYLES
+   🎮 GUILTY CYBERNETIC TRACKER & DOSSIER STYLES (css/tracker.css)
 ========================================== */
 
-/* 終端頂部 HUD 標題卡 */
+/* 頂部 HUD 標題卡 */
 .terminal-hud-header {
   background: linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(8, 8, 10, 0.98));
   border: 1px solid var(--panel-border);
@@ -24,7 +24,7 @@
   pointer-events: none;
 }
 
-/* 陣營切換切角按鈕組 */
+/* 陣營切換按鈕組 */
 .mode-switch-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -187,27 +187,100 @@
   background: linear-gradient(180deg, #101015, #050507);
   border: 1px solid var(--accent-cyan);
   box-shadow: 0 0 25px var(--glow-cyan);
-  padding: 24px 18px;
+  padding: 28px 18px;
   border-radius: 4px;
   text-align: center;
   position: relative;
   margin-bottom: 20px;
+  overflow: hidden;
+  animation: cardSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+
+/* 卡片上方雷射掃描光條 */
+.dossier-hero-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 255, 136, 0.15) 50%, transparent 100%);
+  transform: translateY(-100%);
+  animation: dossierLaserSweep 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes dossierLaserSweep {
+  0% { transform: translateY(-100%); opacity: 0; }
+  20% { opacity: 1; }
+  60% { transform: translateY(100%); opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* 頭像外圍動態神經光環容器 */
+.dossier-avatar-container {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 旋轉外光環 */
+.dossier-avatar-container::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px dashed var(--accent-cyan);
+  animation: ringRotate 12s linear infinite;
+  opacity: 0.6;
+}
+
+/* 呼吸脈衝內光環 */
+.dossier-avatar-container::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid var(--accent-cyan);
+  animation: pulseGlow 2.5s ease-in-out infinite alternate;
+  opacity: 0.3;
+}
+
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.95); opacity: 0.2; box-shadow: 0 0 0px var(--accent-cyan); }
+  100% { transform: scale(1.05); opacity: 0.7; box-shadow: 0 0 14px var(--accent-cyan); }
+}
+
 .dossier-avatar {
   width: 80px;
   height: 80px;
   border-radius: 50%;
   border: 2px solid var(--accent-cyan);
   object-fit: cover;
-  margin: 0 auto 10px;
   display: block;
   filter: drop-shadow(0 0 8px var(--glow-cyan));
+  position: relative;
+  z-index: 2;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.dossier-avatar:hover {
+  transform: scale(1.06);
+}
+
 .dossier-name {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: bold;
   color: #fff;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  position: relative;
+  z-index: 2;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
 /* 癖好與雷點矩陣標籤 */
@@ -218,26 +291,41 @@
   margin: 8px 0 12px;
 }
 .matrix-tag-btn {
-  padding: 5px 11px;
+  padding: 6px 12px;
   font-size: 0.75rem;
   background: #101014;
   border: 1px solid var(--panel-border);
   color: var(--text-muted);
   cursor: pointer;
   border-radius: 3px;
-  transition: all 0.2s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+.matrix-tag-btn:hover {
+  border-color: rgba(0, 255, 136, 0.4);
+  color: #fff;
+  transform: translateY(-2px);
 }
 .matrix-tag-btn.active {
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
   background: rgba(0, 255, 136, 0.12);
   font-weight: bold;
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.25);
+  animation: tagPop 0.25s ease;
 }
 .matrix-tag-btn.limit.active {
   border-color: var(--danger-red);
   color: var(--danger-red);
   background: rgba(255, 51, 75, 0.12);
   font-weight: bold;
+  box-shadow: 0 0 10px rgba(255, 51, 75, 0.25);
+  animation: tagPop 0.25s ease;
+}
+@keyframes tagPop {
+  0% { transform: scale(0.9); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
 }
 
 .custom-tag-input-row {
@@ -264,18 +352,38 @@
 .qr-pass-card {
   background: #000;
   border: 1px dashed var(--accent-cyan);
-  padding: 16px;
+  padding: 20px 16px;
   text-align: center;
   border-radius: 4px;
   margin: 16px 0;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
+.qr-pass-card:hover {
+  border-style: solid;
+  box-shadow: 0 0 20px var(--glow-cyan);
+}
+
 .qr-box {
   width: 170px;
   height: 170px;
-  margin: 10px auto;
+  margin: 12px auto;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #08080a;
   border: 1px solid var(--panel-border);
+  position: relative;
+  transition: transform 0.3s ease;
+}
+.qr-box:hover {
+  transform: scale(1.03);
+}
+.qr-box img {
+  animation: qrFadeIn 0.8s ease forwards;
+}
+@keyframes qrFadeIn {
+  from { opacity: 0; filter: blur(4px) brightness(1.8); }
+  to { opacity: 1; filter: blur(0px) brightness(1); }
 }
