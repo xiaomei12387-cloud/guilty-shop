@@ -1,36 +1,281 @@
-/* 頭像預覽與個人檔案編輯表單 */
-.profile-avatar-wrap {
+/* ==========================================
+   🎮 GUILTY CYBERNETIC TRACKER & DOSSIER STYLES
+========================================== */
+
+/* 終端頂部 HUD 標題卡 */
+.terminal-hud-header {
+  background: linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(8, 8, 10, 0.98));
+  border: 1px solid var(--panel-border);
+  border-left: 3px solid var(--accent-cyan);
+  padding: 14px 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.terminal-hud-header::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; width: 60px; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.05));
+  pointer-events: none;
+}
+
+/* 陣營切換切角按鈕組 */
+.mode-switch-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.mode-switch-btn {
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  background: #0d0d10;
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  clip-path: polygon(8px 0%, 100% 0%, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0% 100%, 0% 8px);
+}
+.mode-switch-btn.active {
+  border-color: var(--accent-cyan);
+  color: #000;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 16px var(--glow-cyan);
+}
+.mode-switch-btn.btn-sub.active {
+  border-color: var(--accent-purple);
+  background: var(--accent-purple);
+  box-shadow: 0 0 16px var(--glow-purple);
+}
+
+/* 戰術計數器 HUD 看板 */
+.counter-board-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin: 12px 0;
+}
+@media (min-width: 600px) {
+  .counter-board-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.counter-box {
+  background: radial-gradient(circle at top, rgba(20, 20, 26, 0.9), #050507 90%);
+  border: 1px solid var(--panel-border);
+  padding: 18px 14px;
+  text-align: center;
+  border-radius: 4px;
+  position: relative;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8);
+}
+.counter-box.box-cyan { border-top: 2px solid var(--accent-cyan); }
+.counter-box.box-purple { border-top: 2px solid var(--accent-purple); }
+
+.counter-title {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.counter-val {
+  font-size: 3rem;
+  font-weight: 900;
+  font-family: 'Consolas', monospace;
+  margin: 4px 0;
+  line-height: 1.1;
+  text-shadow: 0 0 14px currentColor;
+}
+
+.counter-ctrl-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-top: 12px;
+}
+.counter-btn {
+  padding: 10px 0;
+  font-size: 0.85rem;
+  font-weight: bold;
+  background: #121216;
+  border: 1px solid var(--panel-border);
+  color: #fff;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+}
+.counter-btn:active {
+  background: var(--accent-cyan);
+  color: #000;
+  transform: scale(0.95);
+}
+.counter-btn.btn-reset {
+  color: var(--danger-red);
+  border-color: rgba(255, 51, 75, 0.3);
+}
+
+/* 互動對象卡片 */
+.partner-card {
+  background: #08080a;
+  border: 1px solid var(--panel-border);
+  padding: 12px 14px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.partner-card:hover {
+  border-color: rgba(0, 255, 136, 0.4);
+  transform: translateX(2px);
+}
+.partner-card.active {
+  border-color: var(--accent-cyan);
+  background: linear-gradient(90deg, rgba(0, 255, 136, 0.08), transparent);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.15);
+}
+.partner-role-badge {
+  font-size: 0.65rem;
+  padding: 2px 6px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--accent-cyan);
+  margin-left: 6px;
+}
+.card-actions {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 14px;
+  gap: 6px;
 }
-.profile-avatar-img {
-  width: 60px;
-  height: 60px;
+.btn-pin {
+  background: transparent;
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.btn-pin.pinned {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(0, 255, 136, 0.1);
+}
+.btn-del-partner {
+  background: transparent;
+  border: 1px solid rgba(255, 51, 75, 0.3);
+  color: var(--danger-red);
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.btn-del-partner:hover {
+  background: var(--danger-red);
+  color: #fff;
+}
+
+/* 個人特工賽博檔案卡 (Profile View) */
+.dossier-hero-card {
+  background: linear-gradient(180deg, #101015, #050507);
+  border: 1px solid var(--accent-cyan);
+  box-shadow: 0 0 25px var(--glow-cyan);
+  padding: 24px 18px;
+  border-radius: 4px;
+  text-align: center;
+  position: relative;
+  margin-bottom: 20px;
+}
+.dossier-avatar {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   border: 2px solid var(--accent-cyan);
   object-fit: cover;
-  background: #141416;
+  margin: 0 auto 10px;
+  display: block;
+  filter: drop-shadow(0 0 8px var(--glow-cyan));
 }
+.dossier-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 1px;
+}
+
+/* 癖好與雷點矩陣標籤 */
+.tags-wrap-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+.matrix-tag-btn {
+  padding: 5px 11px;
+  font-size: 0.75rem;
+  background: #101014;
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all 0.2s;
+}
+.matrix-tag-btn.active {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  background: rgba(0, 255, 136, 0.12);
+  font-weight: bold;
+}
+.matrix-tag-btn.limit.active {
+  border-color: var(--danger-red);
+  color: var(--danger-red);
+  background: rgba(255, 51, 75, 0.12);
+  font-weight: bold;
+}
+
 .custom-tag-input-row {
   display: flex;
   gap: 6px;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 .custom-tag-input-row input {
-  padding: 8px 12px;
+  padding: 8px 10px;
   font-size: 0.8rem;
-  border-radius: 3px;
 }
 .custom-tag-input-row button {
-  padding: 8px 14px;
+  padding: 0 14px;
   background: var(--accent-cyan);
   color: #000;
   font-weight: bold;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   border: none;
   cursor: pointer;
   white-space: nowrap;
-  border-radius: 3px;
+}
+
+/* 賽博通行證 QR Code 卡片 */
+.qr-pass-card {
+  background: #000;
+  border: 1px dashed var(--accent-cyan);
+  padding: 16px;
+  text-align: center;
+  border-radius: 4px;
+  margin: 16px 0;
+}
+.qr-box {
+  width: 170px;
+  height: 170px;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #08080a;
+  border: 1px solid var(--panel-border);
 }
