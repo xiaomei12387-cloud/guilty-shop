@@ -21,10 +21,8 @@ let trackerState = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TRACKER))
     name: "特工 18X",
     role: "支配者 (Dom)",
     twitter: "https://x.com/18X_inthc",
-    customLinkTitle: "個人社群",
-    customLinkUrl: "",
-    bio: "工業義體外骨骼研發者。專注於精確神經回饋與參數化拘束。",
     safeword: "MAYDAY (紅色停止 / 黃色減速)",
+    bio: "工業義體外骨骼研發者。專注於精確神經回饋與參數化拘束。",
     allPreferences: [...DEFAULT_PRESET_TAGS.preferences],
     allLimits: [...DEFAULT_PRESET_TAGS.hardLimits],
     selectedTags: ["重度SP", "神經突觸長鞭", "外骨骼拘束", "精煉繩縛"],
@@ -53,7 +51,7 @@ function saveTrackerState() {
 }
 
 // --------------------------------------------------------------------------
-// 1. 視圖開啟控制
+// 1. 視圖導覽控制
 // --------------------------------------------------------------------------
 function openTrackerAppView() {
   toggleNav(false);
@@ -70,7 +68,7 @@ function openProfileDossierView() {
 }
 
 // --------------------------------------------------------------------------
-// 2. 實踐計數器與互動對象管理（新增 / 置頂 / 刪除）
+// 2. 實踐計數器與對象管理（主動/被動切換、計數、置頂、刪除）
 // --------------------------------------------------------------------------
 function switchTrackerMode(mode) {
   trackerState.currentMode = mode;
@@ -175,7 +173,7 @@ function renderPartnerList() {
   if (!listEl) return;
 
   if (trackerState.partners.length === 0) {
-    listEl.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:20px 0;">目前無互動對象，點擊上方按鈕新增。</div>`;
+    listEl.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:20px 0;">目前無互動對象，請點擊上方按鈕新增。</div>`;
     return;
   }
 
@@ -214,7 +212,112 @@ function renderCounterDisplay() {
 }
 
 // --------------------------------------------------------------------------
-// 3. 個人特工主頁 (Profile / Dossier View)
+// 3. 📷 相機即時掃碼與相簿解碼引擎
+// --------------------------------------------------------------------------
+let html5QrScannerInstance = null;
+
+function openQrScanner() {
+  const modal = document.getElementById('scannerModal');
+  if (!modal) return;
+  modal.classList.add('active');
+
+  html5QrScannerInstance = new Html5Qrcode("qrReaderBox");
+  const config = { fps: 15, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
+
+  html5QrScannerInstance.start(
+    { facingMode: "environment" },
+    config,
+    (decodedText) => {
+      closeQrScanner();
+      handleScannedData(decodedText);
+    },
+    () => {}
+  ).catch(err => {
+    console.warn("無法啟動相機:", err);
+    document.getElementById('qrReaderBox').innerHTML = `
+      <div style="padding: 40px 14px; color: var(--text-muted); font-size: 0.8rem;">
+        ⚠️ 相機權限未開啟或設備不支援。<br>請改用下方「選取 QR 截圖」或「手動輸入」。
+      </div>
+    `;
+  });
+}
+
+function closeQrScanner() {
+  const modal = document.getElementById('scannerModal');
+  if (modal) modal.classList.remove('active');
+
+  if (html5QrScannerInstance) {
+    html5QrScannerInstance.stop().then(() => {
+      html5QrScannerInstance.clear();
+      html5QrScannerInstance = null;
+    }).catch(() => {
+      html5QrScannerInstance = null;
+    });
+  }
+}
+
+function scanQrFromImageFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const html5QrCode = new Html5Qrcode("qrReaderBox");
+  html5QrCode.scanFile(file, true)
+    .then(decodedText => {
+      closeQrScanner();
+      handleScannedData(decodedText);
+    })
+    .catch(() => {
+      alert("❌ 圖片中未偵測到清晰的特工 QR Code，請重新嘗試！");
+    });
+}
+
+function handleScannedData(rawText) {
+  try {
+    let payload = null;
+    if (rawText.includes('data=')) {
+      const splitStr = rawText.split('data=')[1];
+      const cleanJson = decodeURIComponent(splitStr.split('&')[0]);
+      payload = JSON.parse(cleanJson);
+    } else {
+      payload = JSON.parse(rawText);
+    }
+
+    if (!payload || !payload.name) {
+      alert("❌ 無效的特工身分名片代碼！");
+      return;
+    }
+
+    if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
+    importScannedPartner(payload);
+
+  } catch (e) {
+    alert("❌ 解析代碼失敗，非本系統之特工 QR Code。");
+  }
+}
+
+function importScannedPartner(data) {
+  const exists = trackerState.partners.some(p => p.name === data.name);
+  if (exists) {
+    alert(`特工 [${data.name}] 已在您的互動清單中！`);
+  } else {
+    trackerState.partners.unshift({
+      id: "partner-" + Date.now().toString().slice(-6),
+      avatar: data.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(data.name),
+      name: data.name,
+      role: data.role || "服從者 (Sub)",
+      twitter: data.twitter || "",
+      isPinned: true,
+      spCount: 0,
+      whipCount: 0
+    });
+    saveTrackerState();
+    renderTrackerApp();
+    alert(`✔ 成功同步！已將特工 [${data.name}] 存入互動對象清單！`);
+  }
+}
+
+// --------------------------------------------------------------------------
+// 4. 特工個人主頁 (Profile / Dossier View)
 // --------------------------------------------------------------------------
 function renderProfileDossier() {
   const prof = trackerState.profile;
@@ -233,7 +336,6 @@ function renderProfileDossier() {
     twitterEl.style.display = 'none';
   }
 
-  // 填寫編輯表單
   document.getElementById('profEditName').value = prof.name || '';
   document.getElementById('profEditRole').value = prof.role || '支配者 (Dom)';
   document.getElementById('profEditAvatar').value = prof.avatar || '';
@@ -329,6 +431,7 @@ function generateMyQrCode() {
   const payload = {
     name: prof.name,
     role: prof.role,
+    avatar: prof.avatar.startsWith('data:') ? '' : prof.avatar,
     twitter: prof.twitter,
     tags: prof.selectedTags,
     limits: prof.limits
@@ -342,3 +445,16 @@ function generateMyQrCode() {
     <img src="${qrApiUrl}" alt="Pass QR" style="width:170px; height:170px; border-radius:4px;" />
   `;
 }
+
+// 監聽 URL 外部名片帶入
+window.addEventListener('load', () => {
+  if (window.location.hash.includes('#import')) {
+    const rawParam = window.location.hash.split('data=')[1];
+    if (rawParam) {
+      try {
+        const decoded = JSON.parse(decodeURIComponent(rawParam));
+        handleScannedData(JSON.stringify(decoded));
+      } catch (e) {}
+    }
+  }
+});
