@@ -665,8 +665,64 @@ function handleAvatarUpload(inputEl) {
   };
   reader.readAsDataURL(file);
 }
-
 // --------------------------------------------------------------------------
-// 8. 系統啟動初始化
+// 8. 實踐防護：安全詞急停協議 (EMERGENCY SAFEWORD PROTOCOL)
+// --------------------------------------------------------------------------
+function triggerEmergencySafeword() {
+  const modal = document.getElementById("safewordEmergencyModal");
+  const displayWord = document.getElementById("emergencySafewordDisplay");
+  if (!modal) return;
+
+  // 取得當前設定的安全詞（優先抓對象，無對象則抓自己）
+  const activePartner = getActivePartner();
+  const word = (activePartner && activePartner.safeword) 
+    ? activePartner.safeword 
+    : (trackerState.profile.safeword || "MAYDAY");
+
+  if (displayWord) {
+    displayWord.textContent = word.toUpperCase();
+  }
+
+  // 觸發硬體長震動警報 (震 400ms，停 100ms，連震 3 次)
+  if (navigator.vibrate) {
+    navigator.vibrate([400, 100, 400, 100, 800]);
+  }
+
+  // 若當前工作階段進行中，強制打斷並自動標記
+  if (isSessionActive) {
+    clearInterval(currentSessionTimer);
+    isSessionActive = false;
+
+    const mins = Math.floor(sessionSecondsElapsed / 60);
+    const secs = sessionSecondsElapsed % 60;
+    const durationText = `${mins} 分 ${secs} 秒`;
+
+    if (activePartner) {
+      if (!activePartner.sessions) activePartner.sessions = [];
+      activePartner.sessions.unshift({
+        sessionId: "EMG-" + Date.now().toString().slice(-6),
+        date: new Date().toLocaleString("zh-TW", { hour12: false }),
+        duration: durationText,
+        spCount: activePartner.spCount || 0,
+        whipCount: activePartner.whipCount || 0,
+        note: "⚠️ 觸發安全詞急停協議中斷實踐。"
+      });
+      saveTrackerState();
+      renderSessionHUD();
+      renderSessionLogs();
+    }
+  }
+
+  // 開啟全螢幕紅光警示
+  modal.classList.add("active");
+}
+
+function dismissEmergencySafeword() {
+  const modal = document.getElementById("safewordEmergencyModal");
+  if (modal) modal.classList.remove("active");
+  if (navigator.vibrate) navigator.vibrate(0); // 停止震動
+}
+// --------------------------------------------------------------------------
+// 9. 系統啟動初始化
 // --------------------------------------------------------------------------
 loadAgentTrackerState();
