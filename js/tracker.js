@@ -14,7 +14,17 @@ const DEFAULT_PRESET_TAGS = {
   ]
 };
 
-// 取得當前登入特工的專屬隔離 Key
+// 即時工作階段（Session）計時狀態
+let currentSessionTimer = null;
+let sessionSecondsElapsed = 0;
+let isSessionActive = false;
+
+// HTML5 相機掃描器實例
+let html5QrScannerInstance = null;
+
+// --------------------------------------------------------------------------
+// 1. 本地特工資料庫隔離核心 (Storage Segregation)
+// --------------------------------------------------------------------------
 function getAgentStorageKey() {
   if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
     return null;
@@ -23,7 +33,6 @@ function getAgentStorageKey() {
   return `guilty_tracker_${uid}`;
 }
 
-// 產生新特工的預設空白狀態
 function createDefaultTrackerState() {
   const agentName = (memberProfile && memberProfile.name) ? memberProfile.name : "特工";
   const agentRole = (memberProfile && memberProfile.role) ? memberProfile.role : "支配者 (Dom)";
@@ -36,21 +45,32 @@ function createDefaultTrackerState() {
       role: agentRole,
       twitter: "",
       safeword: "MAYDAY (紅色停止 / 黃色減速)",
-      bio: "",
+      bio: "尚未填寫特工宣言與實踐簡介。",
       allPreferences: [...DEFAULT_PRESET_TAGS.preferences],
       allLimits: [...DEFAULT_PRESET_TAGS.hardLimits],
       selectedTags: ["重度SP", "神經突觸長鞭"],
       limits: ["❌ 拒絕穿刺/見血", "❌ 拒絕窒息/壓喉"]
     },
-    partners: [],
-    activePartnerId: null
+    partners: [
+      {
+        id: "partner_default_sub",
+        name: "範例對象・01",
+        role: "服從者 (Sub)",
+        avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Sub01",
+        spCount: 0,
+        whipCount: 0,
+        safeword: "MAYDAY",
+        tags: ["輕度訓誡", "精煉繩縛"],
+        limits: ["❌ 拒絕穿刺/見血"],
+        sessions: []
+      }
+    ],
+    activePartnerId: "partner_default_sub"
   };
 }
 
-// 當前動態載入的狀態庫
 let trackerState = createDefaultTrackerState();
 
-// 載入當前特工的專屬資料庫
 function loadAgentTrackerState() {
   const key = getAgentStorageKey();
   if (!key) {
@@ -62,20 +82,22 @@ function loadAgentTrackerState() {
   if (saved) {
     try {
       trackerState = JSON.parse(saved);
-      // 確保陣列相容
       if (!trackerState.profile.allPreferences) trackerState.profile.allPreferences = [...DEFAULT_PRESET_TAGS.preferences];
       if (!trackerState.profile.allLimits) trackerState.profile.allLimits = [...DEFAULT_PRESET_TAGS.hardLimits];
+      if (trackerState.partners) {
+        trackerState.partners.forEach(p => {
+          if (!p.sessions) p.sessions = [];
+        });
+      }
     } catch (e) {
       trackerState = createDefaultTrackerState();
     }
   } else {
-    // 首次登入該帳號，生成預設檔並存入
     trackerState = createDefaultTrackerState();
     saveTrackerState();
   }
 }
 
-// 儲存資料至當前特工名下
 function saveTrackerState() {
   const key = getAgentStorageKey();
   if (key && trackerState) {
@@ -84,7 +106,7 @@ function saveTrackerState() {
 }
 
 // --------------------------------------------------------------------------
-// 1. 視圖導覽控制
+// 2. 視圖存取權限攔截
 // --------------------------------------------------------------------------
 function checkAgentAuth() {
   if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
@@ -96,7 +118,7 @@ function checkAgentAuth() {
 }
 
 function openTrackerAppView() {
-  if (!checkAgentAuth()) return; // 未登入直接攔截
+  if (!checkAgentAuth()) return;
   toggleNav(false);
   setActiveView('view-tracker');
   renderTrackerApp();
@@ -104,7 +126,7 @@ function openTrackerAppView() {
 }
 
 function openProfileDossierView() {
-  if (!checkAgentAuth()) return; // 未登入直接攔截
+  if (!checkAgentAuth()) return;
   toggleNav(false);
   setActiveView('view-dossier');
   renderProfileDossier();
@@ -112,70 +134,258 @@ function openProfileDossierView() {
 }
 
 // --------------------------------------------------------------------------
-// 2. 實踐計數器與對象管理（主動/被動切換、計數、置頂、刪除）
+// 3. 計數終端業務邏輯 (Tracker Engine)
 // --------------------------------------------------------------------------
+function getActivePartner() {
+  if (!trackerState.partners || trackerState.partners.length === 0) return null;
+  return trackerState.partners.find(p => p.id === trackerState.activePartnerId) || trackerState.partners[0];
+}
+
+function renderTrackerApp() {
+  const activePartner = getActivePartner();
+  const nameDisplay = document.getElementById("activePartnerNameDisplay");
+  const spVal = document.getElementById("spCountVal");
+  const whipVal = document.getElementById("whipCountVal");
+
+  // 模式切換按鈕高亮
+  const isDom = trackerState.currentMode === "dom";
+  document.getElementById("btnModeDom").classList.toggle("active", isDom);
+  document.getElementById("btnModeSub").classList.toggle("active", !isDom);
+
+  if (activePartner) {
+    nameDisplay.textContent = `[ 當前實踐對象：${activePartner.name} (${activePartner.role}) ]`;
+    spVal.textContent = activePartner.spCount || 0;
+    whipVal.textContent = activePartner.whipCount || 0;
+  } else {
+    nameDisplay.textContent = "[ 尚未選定互動對象 ]";
+    spVal.textContent = 0;
+    whipVal.textContent = 0;
+  }
+
+  renderPartnerList();
+  renderSessionHUD();
+  renderSessionLogs();
+}
+
 function switchTrackerMode(mode) {
   trackerState.currentMode = mode;
-  document.getElementById('btnModeDom').classList.toggle('active', mode === 'dom');
-  document.getElementById('btnModeSub').classList.toggle('active', mode === 'sub');
   saveTrackerState();
   renderTrackerApp();
 }
 
-function getActivePartner() {
-  return trackerState.partners.find(p => p.id === trackerState.activePartnerId) || trackerState.partners[0];
-}
-
 function adjustCounter(type, delta) {
-  const partner = getActivePartner();
-  if (!partner) {
-    alert("請先於下方新增或選取對象！");
+  const activePartner = getActivePartner();
+  if (!activePartner) {
+    alert("請先選定或新增互動對象！");
     return;
   }
-  if (navigator.vibrate) navigator.vibrate(40);
 
-  if (type === "SP") partner.spCount = Math.max(0, (partner.spCount || 0) + delta);
-  if (type === "WHIP") partner.whipCount = Math.max(0, (partner.whipCount || 0) + delta);
+  // 震動回饋 (Haptic Feedback)
+  if (navigator.vibrate) {
+    delta > 0 ? navigator.vibrate(40) : navigator.vibrate([20, 50, 20]);
+  }
+
+  if (type === "SP") {
+    activePartner.spCount = Math.max(0, (activePartner.spCount || 0) + delta);
+    document.getElementById("spCountVal").textContent = activePartner.spCount;
+  } else if (type === "WHIP") {
+    activePartner.whipCount = Math.max(0, (activePartner.whipCount || 0) + delta);
+    document.getElementById("whipCountVal").textContent = activePartner.whipCount;
+  }
 
   saveTrackerState();
-  renderCounterDisplay();
 }
 
 function resetCounter(type) {
-  const partner = getActivePartner();
-  if (!partner) return;
-  if (confirm(`確定要歸零特工 [${partner.name}] 的計數嗎？`)) {
-    if (type === "SP") partner.spCount = 0;
-    if (type === "WHIP") partner.whipCount = 0;
-    saveTrackerState();
-    renderCounterDisplay();
-  }
-}
+  const activePartner = getActivePartner();
+  if (!activePartner) return;
 
-function togglePinPartner(partnerId, e) {
-  e.stopPropagation();
-  const partner = trackerState.partners.find(p => p.id === partnerId);
-  if (partner) {
-    partner.isPinned = !partner.isPinned;
-    trackerState.partners.sort((a, b) => (b.isPinned ? 1 : 0) - (a.isPinned ? 1 : 0));
-    saveTrackerState();
-    renderPartnerList();
-  }
-}
-
-function deletePartner(partnerId, e) {
-  e.stopPropagation();
-  const partner = trackerState.partners.find(p => p.id === partnerId);
-  if (!partner) return;
-
-  if (confirm(`⚠️ 確定要刪除互動對象 [${partner.name}] 及其所有紀錄嗎？`)) {
-    trackerState.partners = trackerState.partners.filter(p => p.id !== partnerId);
-    if (trackerState.activePartnerId === partnerId) {
-      trackerState.activePartnerId = trackerState.partners.length > 0 ? trackerState.partners[0].id : null;
-    }
+  if (confirm(`確定要將 ${activePartner.name} 的 ${type} 計數歸零嗎？`)) {
+    if (type === "SP") activePartner.spCount = 0;
+    if (type === "WHIP") activePartner.whipCount = 0;
     saveTrackerState();
     renderTrackerApp();
   }
+}
+
+// --------------------------------------------------------------------------
+// 4. 實踐工作階段邏輯 (Session Logs)
+// --------------------------------------------------------------------------
+function renderSessionHUD() {
+  const container = document.getElementById("sessionHudArea");
+  if (!container) return;
+
+  if (isSessionActive) {
+    container.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#141416; border:1px solid var(--accent-cyan); padding:10px 14px; border-radius:4px; margin-bottom:14px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--accent-cyan); box-shadow:0 0 8px var(--accent-cyan); animation:blink 1s infinite;"></span>
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">實踐階段進行中</div>
+            <div id="sessionTimerDisplay" style="font-size:1.4rem; font-weight:bold; color:var(--accent-cyan); font-family:monospace;">00:00</div>
+          </div>
+        </div>
+        <button class="btn-submit" onclick="finishSessionPrompt()" style="width:auto; padding:8px 16px; font-size:0.8rem; background:var(--accent-purple); border-color:var(--accent-purple);">
+          ■ 結束實踐並結案
+        </button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; background:#000; border:1px dashed var(--panel-border); padding:10px 14px; border-radius:4px; margin-bottom:14px;">
+        <div>
+          <div style="font-size:0.8rem; font-weight:bold; color:#fff;">[ PROTOCOL SESSION // 實踐階段計時 ]</div>
+          <div style="font-size:0.7rem; color:var(--text-muted);">點擊啟動進入計時與當次累計模式</div>
+        </div>
+        <button class="btn-submit" onclick="startSession()" style="width:auto; padding:8px 16px; font-size:0.8rem;">
+          ▶ 開始本次實踐
+        </button>
+      </div>
+    `;
+  }
+}
+
+function startSession() {
+  const activePartner = getActivePartner();
+  if (!activePartner) {
+    alert("請先選擇或新增一個互動對象！");
+    return;
+  }
+
+  isSessionActive = true;
+  sessionSecondsElapsed = 0;
+
+  activePartner.spCount = 0;
+  activePartner.whipCount = 0;
+  saveTrackerState();
+  renderTrackerApp();
+
+  clearInterval(currentSessionTimer);
+  currentSessionTimer = setInterval(() => {
+    sessionSecondsElapsed++;
+    const timerDisplay = document.getElementById("sessionTimerDisplay");
+    if (timerDisplay) {
+      const mins = String(Math.floor(sessionSecondsElapsed / 60)).padStart(2, '0');
+      const secs = String(sessionSecondsElapsed % 60).padStart(2, '0');
+      timerDisplay.textContent = `${mins}:${secs}`;
+    }
+  }, 1000);
+
+  renderSessionHUD();
+}
+
+function finishSessionPrompt() {
+  if (!isSessionActive) return;
+
+  const activePartner = getActivePartner();
+  if (!activePartner) return;
+
+  const note = prompt("請輸入本次實踐結案筆記（如：心理狀態、安全詞觸發反饋、部位反應）：", "實踐順利完成，雙方意識清醒。");
+  if (note === null) return;
+
+  clearInterval(currentSessionTimer);
+  isSessionActive = false;
+
+  const mins = Math.floor(sessionSecondsElapsed / 60);
+  const secs = sessionSecondsElapsed % 60;
+  const durationText = `${mins} 分 ${secs} 秒`;
+
+  if (!activePartner.sessions) activePartner.sessions = [];
+
+  activePartner.sessions.unshift({
+    sessionId: "SES-" + Date.now().toString().slice(-6),
+    date: new Date().toLocaleString("zh-TW", { hour12: false }),
+    duration: durationText,
+    spCount: activePartner.spCount || 0,
+    whipCount: activePartner.whipCount || 0,
+    note: note.trim() || "未填寫筆記"
+  });
+
+  saveTrackerState();
+  renderSessionHUD();
+  renderSessionLogs();
+  alert(`✔ 本次實踐已封存！\n總時長：${durationText}\nSP 次數：${activePartner.spCount}\n長鞭擊數：${activePartner.whipCount}`);
+}
+
+function renderSessionLogs() {
+  const listContainer = document.getElementById("sessionLogsContainer");
+  if (!listContainer) return;
+
+  const activePartner = getActivePartner();
+  if (!activePartner) {
+    listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:15px 0;">[ 請先選取對象 ]</div>`;
+    return;
+  }
+
+  if (!activePartner.sessions || activePartner.sessions.length === 0) {
+    listContainer.innerHTML = `
+      <div style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:15px 0;">
+        [ 尚無實踐歷程 ]<br>點擊「開始本次實踐」開啟調教計時
+      </div>
+    `;
+    return;
+  }
+
+  listContainer.innerHTML = activePartner.sessions.map(s => `
+    <div style="background:#0c0c0e; border:1px solid var(--panel-border); border-left:3px solid var(--accent-cyan); padding:10px; margin-bottom:8px; border-radius:2px; font-size:0.75rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span style="color:var(--accent-cyan); font-weight:bold; font-family:monospace;">#${s.sessionId} [${s.duration}]</span>
+        <button onclick="deleteSessionLog('${s.sessionId}')" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">✕</button>
+      </div>
+      <div style="color:var(--text-muted); font-size:0.7rem; margin-bottom:4px;">${s.date}</div>
+      <div style="display:flex; gap:12px; margin-bottom:6px; color:#fff;">
+        <span>SP：<strong style="color:var(--accent-cyan);">${s.spCount}</strong> 下</span>
+        <span>長鞭：<strong style="color:var(--accent-purple);">${s.whipCount}</strong> 下</span>
+      </div>
+      <div style="color:#d4d4d8; background:#141416; padding:6px; border-radius:2px; border:1px dashed var(--panel-border);">
+        💬 ${s.note}
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteSessionLog(sessionId) {
+  if (!confirm("確定要銷毀這筆實踐歷程紀錄嗎？")) return;
+  const activePartner = getActivePartner();
+  if (!activePartner || !activePartner.sessions) return;
+
+  activePartner.sessions = activePartner.sessions.filter(s => s.sessionId !== sessionId);
+  saveTrackerState();
+  renderSessionLogs();
+}
+
+// --------------------------------------------------------------------------
+// 5. 互動對象管理 (Partner Management)
+// --------------------------------------------------------------------------
+function renderPartnerList() {
+  const container = document.getElementById("trackerPartnerList");
+  if (!container) return;
+
+  if (trackerState.partners.length === 0) {
+    container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:16px 0;">尚無對象，請點擊上方新增</div>`;
+    return;
+  }
+
+  container.innerHTML = trackerState.partners.map(p => {
+    const isActive = p.id === trackerState.activePartnerId;
+    return `
+      <div class="partner-card ${isActive ? 'active' : ''}" onclick="selectActivePartner('${p.id}')">
+        <img src="${p.avatar}" class="partner-avatar" />
+        <div style="flex:1; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <strong style="color:#fff; font-size:0.85rem;">${p.name}</strong>
+            <span class="partner-role-badge">${p.role}</span>
+          </div>
+          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
+            安全詞：<span style="color:var(--accent-cyan);">${p.safeword || '未設定'}</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:4px;" onclick="event.stopPropagation();">
+          <button onclick="deletePartner('${p.id}')" style="background:transparent; border:none; color:var(--text-muted); font-size:1rem; cursor:pointer;">✕</button>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 
 function selectActivePartner(partnerId) {
@@ -184,111 +394,70 @@ function selectActivePartner(partnerId) {
   renderTrackerApp();
 }
 
-function addNewPartnerPrompt() {
-  const name = prompt("請輸入互動對象特工代號／稱呼：");
-  if (!name || !name.trim()) return;
-  const role = prompt("請設定陣營屬性（Dom / Switch / Sub）：", "服從者 (Sub)");
-  const twitter = prompt("請輸入對方的 𝕏 (Twitter) 連結（選填）：", "");
-
-  const newPartner = {
-    id: "partner-" + Date.now().toString().slice(-6),
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(name),
-    name: name.trim(),
-    role: role ? role.trim() : "服從者 (Sub)",
-    twitter: twitter ? twitter.trim() : "",
-    isPinned: false,
-    spCount: 0,
-    whipCount: 0
-  };
-
-  trackerState.partners.push(newPartner);
-  trackerState.activePartnerId = newPartner.id;
+function deletePartner(partnerId) {
+  if (!confirm("確定要移除此互動對象檔案嗎？")) return;
+  trackerState.partners = trackerState.partners.filter(p => p.id !== partnerId);
+  if (trackerState.activePartnerId === partnerId) {
+    trackerState.activePartnerId = trackerState.partners.length > 0 ? trackerState.partners[0].id : null;
+  }
   saveTrackerState();
   renderTrackerApp();
 }
 
-function renderTrackerApp() {
-  renderPartnerList();
-  renderCounterDisplay();
+function addNewPartnerPrompt() {
+  const name = prompt("請輸入互動對象特工代號：");
+  if (!name || !name.trim()) return;
+
+  const role = prompt("請輸入陣營屬性 (例如：服從者 (Sub) 或 支配者 (Dom))：", "服從者 (Sub)");
+  const newId = "partner_" + Date.now();
+
+  trackerState.partners.push({
+    id: newId,
+    name: name.trim(),
+    role: role.trim(),
+    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(name),
+    spCount: 0,
+    whipCount: 0,
+    safeword: "MAYDAY",
+    tags: [],
+    limits: [],
+    sessions: []
+  });
+
+  trackerState.activePartnerId = newId;
+  saveTrackerState();
+  renderTrackerApp();
 }
 
-function renderPartnerList() {
-  const listEl = document.getElementById("trackerPartnerList");
-  if (!listEl) return;
+// --------------------------------------------------------------------------
+// 6. 相機掃描 QR Code 串接 (HTML5-QRCode)
+// --------------------------------------------------------------------------
+function openQrScanner() {
+  const modal = document.getElementById("scannerModal");
+  if (modal) modal.classList.add("active");
 
-  if (trackerState.partners.length === 0) {
-    listEl.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:20px 0;">目前無互動對象，請點擊上方按鈕新增。</div>`;
+  if (typeof Html5Qrcode === "undefined") {
+    alert("掃碼組件載入異常，請重新整理頁面。");
     return;
   }
 
-  listEl.innerHTML = trackerState.partners.map(p => {
-    const isActive = p.id === trackerState.activePartnerId;
-    return `
-      <div class="partner-card ${isActive ? 'active' : ''}" onclick="selectActivePartner('${p.id}')">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <img src="${p.avatar}" style="width:34px; height:34px; border-radius:50%; border:1px solid var(--accent-cyan);" />
-          <div>
-            <strong style="font-size:0.9rem; color:#fff;">${p.name}</strong>
-            <span class="partner-role-badge">${p.role}</span>
-            ${p.twitter ? `<br><a href="${p.twitter}" target="_blank" onclick="event.stopPropagation();" style="font-size:0.7rem; color:#1DA1F2; text-decoration:none;">𝕏 ${p.twitter.replace('https://x.com/', '@')} ↗</a>` : ''}
-          </div>
-        </div>
-        <div class="card-actions">
-          <button class="btn-pin ${p.isPinned ? 'pinned' : ''}" onclick="togglePinPartner('${p.id}', event)">
-            ${p.isPinned ? '📌' : '置頂'}
-          </button>
-          <button class="btn-del-partner" onclick="deletePartner('${p.id}', event)">刪除</button>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderCounterDisplay() {
-  const partner = getActivePartner();
-  const nameEl = document.getElementById("activePartnerNameDisplay");
-  const spValEl = document.getElementById("spCountVal");
-  const whipValEl = document.getElementById("whipCountVal");
-
-  if (nameEl) nameEl.textContent = partner ? `[ 當前對象：${partner.name} (${partner.role}) ]` : "[ 尚未選定對象 ]";
-  if (spValEl) spValEl.textContent = partner ? (partner.spCount || 0) : 0;
-  if (whipValEl) whipValEl.textContent = partner ? (partner.whipCount || 0) : 0;
-}
-
-// --------------------------------------------------------------------------
-// 3. 📷 相機即時掃碼與相簿解碼引擎
-// --------------------------------------------------------------------------
-let html5QrScannerInstance = null;
-
-function openQrScanner() {
-  const modal = document.getElementById('scannerModal');
-  if (!modal) return;
-  modal.classList.add('active');
-
   html5QrScannerInstance = new Html5Qrcode("qrReaderBox");
-  const config = { fps: 15, qrbox: { width: 220, height: 220 }, aspectRatio: 1.0 };
-
   html5QrScannerInstance.start(
     { facingMode: "environment" },
-    config,
+    { fps: 10, qrbox: { width: 220, height: 220 } },
     (decodedText) => {
-      closeQrScanner();
       handleScannedData(decodedText);
+      closeQrScanner();
     },
-    () => {}
+    (errorMessage) => {}
   ).catch(err => {
-    console.warn("無法啟動相機:", err);
-    document.getElementById('qrReaderBox').innerHTML = `
-      <div style="padding: 40px 14px; color: var(--text-muted); font-size: 0.8rem;">
-        ⚠️ 相機權限未開啟或設備不支援。<br>請改用下方「選取 QR 截圖」或「手動輸入」。
-      </div>
-    `;
+    console.warn("相機啟動異常，可改用圖片上傳或手動輸入。", err);
   });
 }
 
 function closeQrScanner() {
-  const modal = document.getElementById('scannerModal');
-  if (modal) modal.classList.remove('active');
+  const modal = document.getElementById("scannerModal");
+  if (modal) modal.classList.remove("active");
 
   if (html5QrScannerInstance) {
     html5QrScannerInstance.stop().then(() => {
@@ -300,205 +469,204 @@ function closeQrScanner() {
   }
 }
 
-function scanQrFromImageFile(input) {
-  const file = input.files[0];
-  if (!file) return;
+function scanQrFromImageFile(inputEl) {
+  if (!inputEl.files || inputEl.files.length === 0) return;
+  const file = inputEl.files[0];
 
   const html5QrCode = new Html5Qrcode("qrReaderBox");
   html5QrCode.scanFile(file, true)
     .then(decodedText => {
-      closeQrScanner();
       handleScannedData(decodedText);
+      closeQrScanner();
     })
-    .catch(() => {
-      alert("❌ 圖片中未偵測到清晰的特工 QR Code，請重新嘗試！");
+    .catch(err => {
+      alert("無法在此圖片中辨識特工 QR Code，請確認圖片清晰度。");
     });
 }
 
-function handleScannedData(rawText) {
+function handleScannedData(dataString) {
   try {
     let payload = null;
-    if (rawText.includes('data=')) {
-      const splitStr = rawText.split('data=')[1];
-      const cleanJson = decodeURIComponent(splitStr.split('&')[0]);
-      payload = JSON.parse(cleanJson);
+    if (dataString.startsWith("GUILTY:")) {
+      payload = JSON.parse(decodeURIComponent(dataString.replace("GUILTY:", "")));
     } else {
-      payload = JSON.parse(rawText);
+      payload = JSON.parse(dataString);
     }
 
     if (!payload || !payload.name) {
-      alert("❌ 無效的特工身分名片代碼！");
+      alert("❌ 掃描無效：此 QR 碼非 GUILTY 特工專屬數據。");
       return;
     }
 
-    if (navigator.vibrate) navigator.vibrate([60, 40, 60]);
-    importScannedPartner(payload);
-
-  } catch (e) {
-    alert("❌ 解析代碼失敗，非本系統之特工 QR Code。");
-  }
-}
-
-function importScannedPartner(data) {
-  const exists = trackerState.partners.some(p => p.name === data.name);
-  if (exists) {
-    alert(`特工 [${data.name}] 已在您的互動清單中！`);
-  } else {
-    trackerState.partners.unshift({
-      id: "partner-" + Date.now().toString().slice(-6),
-      avatar: data.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(data.name),
-      name: data.name,
-      role: data.role || "服從者 (Sub)",
-      twitter: data.twitter || "",
-      isPinned: true,
+    const newId = "partner_" + Date.now();
+    trackerState.partners.push({
+      id: newId,
+      name: payload.name,
+      role: payload.role || "服從者 (Sub)",
+      avatar: payload.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(payload.name)}`,
       spCount: 0,
-      whipCount: 0
+      whipCount: 0,
+      safeword: payload.safeword || "MAYDAY",
+      tags: payload.tags || [],
+      limits: payload.limits || [],
+      sessions: []
     });
+
+    trackerState.activePartnerId = newId;
     saveTrackerState();
     renderTrackerApp();
-    alert(`✔ 成功同步！已將特工 [${data.name}] 存入互動對象清單！`);
+    alert(`✔ 成功同步對象特工名片：${payload.name}！`);
+  } catch (err) {
+    alert("❌ 解析失敗：QR Code 內容格式不相符。");
   }
 }
 
 // --------------------------------------------------------------------------
-// 4. 特工個人主頁 (Profile / Dossier View)
+// 7. 特工個人主頁與偏好矩陣 (Profile & Dossier)
 // --------------------------------------------------------------------------
 function renderProfileDossier() {
   const prof = trackerState.profile;
 
-  document.getElementById('dossierAvatarPreview').src = prof.avatar;
-  document.getElementById('dossierNameDisplay').textContent = prof.name;
-  document.getElementById('dossierRoleBadge').textContent = prof.role;
-  document.getElementById('dossierBioDisplay').textContent = prof.bio || '尚未填寫簡介。';
+  document.getElementById("dossierAvatarPreview").src = prof.avatar;
+  document.getElementById("dossierNameDisplay").textContent = prof.name;
+  document.getElementById("dossierRoleBadge").textContent = prof.role;
+  document.getElementById("dossierBioDisplay").textContent = prof.bio || "尚未填寫特工簡介。";
 
-  const twitterEl = document.getElementById('dossierTwitterLink');
+  const twLink = document.getElementById("dossierTwitterLink");
   if (prof.twitter) {
-    twitterEl.href = prof.twitter;
-    twitterEl.textContent = `𝕏 ${prof.twitter.replace('https://x.com/', '@')} ↗`;
-    twitterEl.style.display = 'inline-block';
+    twLink.href = prof.twitter;
+    twLink.style.display = "inline-block";
   } else {
-    twitterEl.style.display = 'none';
+    twLink.style.display = "none";
   }
 
-  document.getElementById('profEditName').value = prof.name || '';
-  document.getElementById('profEditRole').value = prof.role || '支配者 (Dom)';
-  document.getElementById('profEditAvatar').value = prof.avatar || '';
-  document.getElementById('profEditTwitter').value = prof.twitter || '';
-  document.getElementById('profEditSafeword').value = prof.safeword || '';
-  document.getElementById('profEditBio').value = prof.bio || '';
+  // 填入編輯表單預設值
+  document.getElementById("profEditName").value = prof.name;
+  document.getElementById("profEditRole").value = prof.role;
+  document.getElementById("profEditTwitter").value = prof.twitter || "";
+  document.getElementById("profEditSafeword").value = prof.safeword || "";
+  document.getElementById("profEditBio").value = prof.bio || "";
+  document.getElementById("profEditAvatar").value = prof.avatar || "";
 
-  renderProfileTags();
-  generateMyQrCode();
+  renderDossierTags();
+  renderMyQrCode();
 }
 
-function handleSaveProfileForm(e) {
-  e.preventDefault();
-  const p = trackerState.profile;
-  p.name = document.getElementById('profEditName').value.trim() || p.name;
-  p.role = document.getElementById('profEditRole').value;
-  p.avatar = document.getElementById('profEditAvatar').value.trim() || p.avatar;
-  p.twitter = document.getElementById('profEditTwitter').value.trim();
-  p.safeword = document.getElementById('profEditSafeword').value.trim();
-  p.bio = document.getElementById('profEditBio').value.trim();
+function renderDossierTags() {
+  const prof = trackerState.profile;
+  const prefBox = document.getElementById("myPrefTagsBox");
+  const limitBox = document.getElementById("myLimitTagsBox");
 
+  if (prefBox) {
+    prefBox.innerHTML = prof.allPreferences.map(tag => {
+      const isSelected = prof.selectedTags.includes(tag);
+      return `<div class="tag-pill ${isSelected ? 'active' : ''}" onclick="toggleTagSelection('pref', '${tag}')">${tag}</div>`;
+    }).join('');
+  }
+
+  if (limitBox) {
+    limitBox.innerHTML = prof.allLimits.map(tag => {
+      const isSelected = prof.limits.includes(tag);
+      return `<div class="tag-pill ${isSelected ? 'active-limit' : ''}" onclick="toggleTagSelection('limit', '${tag}')">${tag}</div>`;
+    }).join('');
+  }
+}
+
+function toggleTagSelection(type, tag) {
+  const prof = trackerState.profile;
+  if (type === "pref") {
+    if (prof.selectedTags.includes(tag)) {
+      prof.selectedTags = prof.selectedTags.filter(t => t !== tag);
+    } else {
+      prof.selectedTags.push(tag);
+    }
+  } else {
+    if (prof.limits.includes(tag)) {
+      prof.limits = prof.limits.filter(t => t !== tag);
+    } else {
+      prof.limits.push(tag);
+    }
+  }
   saveTrackerState();
-  renderProfileDossier();
-  alert("✔ 特工檔案與通行證已儲存更新！");
-}
-
-function handleAvatarUpload(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const base64 = e.target.result;
-    document.getElementById('profEditAvatar').value = base64;
-    trackerState.profile.avatar = base64;
-    saveTrackerState();
-    renderProfileDossier();
-  };
-  reader.readAsDataURL(file);
+  renderDossierTags();
+  renderMyQrCode();
 }
 
 function addCustomTag(type) {
-  const input = document.getElementById(type === 'pref' ? 'newCustomPrefInput' : 'newCustomLimitInput');
-  const text = input.value.trim();
-  if (!text) return;
+  const input = type === "pref" ? document.getElementById("newCustomPrefInput") : document.getElementById("newCustomLimitInput");
+  const val = input.value.trim();
+  if (!val) return;
 
   const prof = trackerState.profile;
-  if (type === 'pref') {
-    if (!prof.allPreferences.includes(text)) prof.allPreferences.push(text);
-    if (!prof.selectedTags.includes(text)) prof.selectedTags.push(text);
+  if (type === "pref") {
+    if (!prof.allPreferences.includes(val)) prof.allPreferences.push(val);
+    if (!prof.selectedTags.includes(val)) prof.selectedTags.push(val);
   } else {
-    const limitText = text.startsWith('❌') ? text : `❌ ${text}`;
-    if (!prof.allLimits.includes(limitText)) prof.allLimits.push(limitText);
-    if (!prof.limits.includes(limitText)) prof.limits.push(limitText);
+    if (!prof.allLimits.includes(val)) prof.allLimits.push(val);
+    if (!prof.limits.includes(val)) prof.limits.push(val);
   }
 
-  input.value = '';
+  input.value = "";
   saveTrackerState();
-  renderProfileTags();
-  generateMyQrCode();
+  renderDossierTags();
+  renderMyQrCode();
 }
 
-function toggleTag(tagType, tagText) {
-  const list = tagType === "pref" ? trackerState.profile.selectedTags : trackerState.profile.limits;
-  const index = list.indexOf(tagText);
-  if (index > -1) list.splice(index, 1);
-  else list.push(tagText);
-
-  saveTrackerState();
-  renderProfileTags();
-  generateMyQrCode();
-}
-
-function renderProfileTags() {
-  const prefBox = document.getElementById("myPrefTagsBox");
-  const limitBox = document.getElementById("myLimitTagsBox");
-  if (!prefBox || !limitBox) return;
-
-  const prof = trackerState.profile;
-  prefBox.innerHTML = prof.allPreferences.map(tag => `
-    <button type="button" class="matrix-tag-btn ${prof.selectedTags.includes(tag) ? 'active' : ''}" onclick="toggleTag('pref', '${tag}')">${tag}</button>
-  `).join('');
-
-  limitBox.innerHTML = prof.allLimits.map(tag => `
-    <button type="button" class="matrix-tag-btn limit ${prof.limits.includes(tag) ? 'active' : ''}" onclick="toggleTag('limit', '${tag}')">${tag}</button>
-  `).join('');
-}
-
-function generateMyQrCode() {
+function renderMyQrCode() {
   const qrContainer = document.getElementById("myQrCodeBox");
   if (!qrContainer) return;
 
   const prof = trackerState.profile;
-  const payload = {
+  const qrPayload = {
     name: prof.name,
     role: prof.role,
-    avatar: prof.avatar.startsWith('data:') ? '' : prof.avatar,
-    twitter: prof.twitter,
+    avatar: prof.avatar,
+    safeword: prof.safeword,
     tags: prof.selectedTags,
     limits: prof.limits
   };
 
-  const baseUrl = window.location.origin + window.location.pathname;
-  const targetUrl = `${baseUrl}#import?data=${encodeURIComponent(JSON.stringify(payload))}`;
-  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(targetUrl)}&color=00ff88&bgcolor=08080a`;
+  const encodedStr = "GUILTY:" + encodeURIComponent(JSON.stringify(qrPayload));
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(encodedStr)}&bgcolor=08080a&color=00ff88&margin=4`;
 
-  qrContainer.innerHTML = `
-    <img src="${qrApiUrl}" alt="Pass QR" style="width:170px; height:170px; border-radius:4px;" />
-  `;
+  qrContainer.innerHTML = `<img src="${qrApiUrl}" style="width:160px; height:160px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
 }
 
-// 監聽 URL 外部名片帶入
-window.addEventListener('load', () => {
-  if (window.location.hash.includes('#import')) {
-    const rawParam = window.location.hash.split('data=')[1];
-    if (rawParam) {
-      try {
-        const decoded = JSON.parse(decodeURIComponent(rawParam));
-        handleScannedData(JSON.stringify(decoded));
-      } catch (e) {}
-    }
+function handleSaveProfileForm(e) {
+  e.preventDefault();
+  const prof = trackerState.profile;
+
+  prof.name = document.getElementById("profEditName").value.trim();
+  prof.role = document.getElementById("profEditRole").value;
+  prof.twitter = document.getElementById("profEditTwitter").value.trim();
+  prof.safeword = document.getElementById("profEditSafeword").value.trim();
+  prof.bio = document.getElementById("profEditBio").value.trim();
+
+  const customAvatarUrl = document.getElementById("profEditAvatar").value.trim();
+  if (customAvatarUrl) {
+    prof.avatar = customAvatarUrl;
   }
-});
+
+  saveTrackerState();
+  renderProfileDossier();
+  alert("✔ 特工檔案已成功更新！");
+}
+
+function handleAvatarUpload(inputEl) {
+  if (!inputEl.files || inputEl.files.length === 0) return;
+  const file = inputEl.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    trackerState.profile.avatar = e.target.result;
+    document.getElementById("dossierAvatarPreview").src = e.target.result;
+    saveTrackerState();
+    renderMyQrCode();
+  };
+  reader.readAsDataURL(file);
+}
+
+// --------------------------------------------------------------------------
+// 8. 系統啟動初始化
+// --------------------------------------------------------------------------
+loadAgentTrackerState();
