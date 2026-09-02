@@ -14,40 +14,73 @@ const DEFAULT_PRESET_TAGS = {
   ]
 };
 
-let trackerState = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.TRACKER)) || {
-  currentMode: "dom",
-  profile: {
-    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=agent18x",
-    name: "特工 18X",
-    role: "支配者 (Dom)",
-    twitter: "https://x.com/18X_inthc",
-    safeword: "MAYDAY (紅色停止 / 黃色減速)",
-    bio: "工業義體外骨骼研發者。專注於精確神經回饋與參數化拘束。",
-    allPreferences: [...DEFAULT_PRESET_TAGS.preferences],
-    allLimits: [...DEFAULT_PRESET_TAGS.hardLimits],
-    selectedTags: ["重度SP", "神經突觸長鞭", "外骨骼拘束", "精煉繩縛"],
-    limits: ["❌ 拒絕穿刺/見血", "❌ 拒絕窒息/壓喉"]
-  },
-  partners: [
-    {
-      id: "partner-001",
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=sub07",
-      name: "服從者 No.07",
-      role: "服從者 (Sub)",
-      twitter: "https://x.com/",
-      isPinned: true,
-      spCount: 35,
-      whipCount: 12
+// 取得當前登入特工的專屬隔離 Key
+function getAgentStorageKey() {
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    return null;
+  }
+  const uid = (memberProfile.email || memberProfile.phone).replace(/[^a-zA-Z0-9]/g, '_');
+  return `guilty_tracker_${uid}`;
+}
+
+// 產生新特工的預設空白狀態
+function createDefaultTrackerState() {
+  const agentName = (memberProfile && memberProfile.name) ? memberProfile.name : "特工";
+  const agentRole = (memberProfile && memberProfile.role) ? memberProfile.role : "支配者 (Dom)";
+  
+  return {
+    currentMode: "dom",
+    profile: {
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(agentName),
+      name: agentName,
+      role: agentRole,
+      twitter: "",
+      safeword: "MAYDAY (紅色停止 / 黃色減速)",
+      bio: "",
+      allPreferences: [...DEFAULT_PRESET_TAGS.preferences],
+      allLimits: [...DEFAULT_PRESET_TAGS.hardLimits],
+      selectedTags: ["重度SP", "神經突觸長鞭"],
+      limits: ["❌ 拒絕穿刺/見血", "❌ 拒絕窒息/壓喉"]
+    },
+    partners: [],
+    activePartnerId: null
+  };
+}
+
+// 當前動態載入的狀態庫
+let trackerState = createDefaultTrackerState();
+
+// 載入當前特工的專屬資料庫
+function loadAgentTrackerState() {
+  const key = getAgentStorageKey();
+  if (!key) {
+    trackerState = createDefaultTrackerState();
+    return;
+  }
+
+  const saved = localStorage.getItem(key);
+  if (saved) {
+    try {
+      trackerState = JSON.parse(saved);
+      // 確保陣列相容
+      if (!trackerState.profile.allPreferences) trackerState.profile.allPreferences = [...DEFAULT_PRESET_TAGS.preferences];
+      if (!trackerState.profile.allLimits) trackerState.profile.allLimits = [...DEFAULT_PRESET_TAGS.hardLimits];
+    } catch (e) {
+      trackerState = createDefaultTrackerState();
     }
-  ],
-  activePartnerId: "partner-001"
-};
+  } else {
+    // 首次登入該帳號，生成預設檔並存入
+    trackerState = createDefaultTrackerState();
+    saveTrackerState();
+  }
+}
 
-if (!trackerState.profile.allPreferences) trackerState.profile.allPreferences = [...DEFAULT_PRESET_TAGS.preferences];
-if (!trackerState.profile.allLimits) trackerState.profile.allLimits = [...DEFAULT_PRESET_TAGS.hardLimits];
-
+// 儲存資料至當前特工名下
 function saveTrackerState() {
-  localStorage.setItem(CONFIG.STORAGE_KEYS.TRACKER, JSON.stringify(trackerState));
+  const key = getAgentStorageKey();
+  if (key && trackerState) {
+    localStorage.setItem(key, JSON.stringify(trackerState));
+  }
 }
 
 // --------------------------------------------------------------------------
