@@ -8,7 +8,7 @@ const PRODUCTS = [
     id: "guilty-choker",
     brand: "guilty",
     brandName: "欲室｜共犯",
-    title: "次世代外骨骼機能項圈【旗艦版】",
+    title: "貓掌印痕外骨骼項圈",
     price: 3280,
     desc: "3D 列印工業級尼龍裝甲，前喉結避空人體工學曲線。磁吸快拆模組，隱形微型顯影認罪印記。",
     note: "客製雷雕銘牌與神經顯影印記",
@@ -19,12 +19,23 @@ const PRODUCTS = [
     id: "guilty-whip",
     brand: "guilty",
     brandName: "欲室｜共犯",
-    title: "神經突觸精密戰術長鞭【黑化版】",
+    title: "神經突觸精密戰術長鞭",
     price: 2680,
     desc: "航太級配重手柄，耐磨高密編織鞭身。破空阻力極小化，提供銳利而精確的神經末梢感知。",
     note: "附防掉手腕帶與專屬收納套筒",
     img: "./icons/icon-512.png",
-    specs: ["1.2 米 (CQB 近距校準型)", "1.5 米 (EXTENDED 遠距壓制型)"]
+    // ✦ 升級為雙重動態規格選項，顏色與長度一次滿足！
+    options: [
+      { name: "顏色", values: ["黑", "白", "藍", "紫黑", "黑紅"] },
+      { name: "長度", values: ["1.2 米 (CQB 近距校準型)", "1.5 米 (EXTENDED 遠距壓制型)"] }
+    ],
+    specs: [
+      "黑 / 1.2M", "黑 / 1.5M", 
+      "白 / 1.2M", "白 / 1.5M", 
+      "藍 / 1.2M", "藍 / 1.5M", 
+      "紫黑 / 1.2M", "紫黑 / 1.5M", 
+      "黑紅 / 1.2M", "黑紅 / 1.5M"
+    ]
   },
   {
     id: "shushi-rope",
