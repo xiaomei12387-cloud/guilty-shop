@@ -22,6 +22,9 @@ let isSessionActive = false;
 // HTML5 相機掃描器實例
 let html5QrScannerInstance = null;
 
+// 雲端自動同步防抖計時器
+let syncDebounceTimer = null;
+
 // --------------------------------------------------------------------------
 // 1. 本地特工資料庫隔離核心 (Storage Segregation)
 // --------------------------------------------------------------------------
@@ -94,14 +97,23 @@ function loadAgentTrackerState() {
     }
   } else {
     trackerState = createDefaultTrackerState();
-    saveTrackerState();
+    saveTrackerState(true);
   }
 }
 
-function saveTrackerState() {
+// 儲存狀態（支援本機儲存與非同步雲端自動備份）
+function saveTrackerState(skipCloud = false) {
   const key = getAgentStorageKey();
   if (key && trackerState) {
     localStorage.setItem(key, JSON.stringify(trackerState));
+  }
+
+  // 自動非同步雲端備份（防抖 2 秒避免頻繁請求）
+  if (!skipCloud && memberProfile && (memberProfile.email || memberProfile.phone)) {
+    clearTimeout(syncDebounceTimer);
+    syncDebounceTimer = setTimeout(() => {
+      syncTrackerToCloud(true);
+    }, 2000);
   }
 }
 
@@ -665,6 +677,7 @@ function handleAvatarUpload(inputEl) {
   };
   reader.readAsDataURL(file);
 }
+
 // --------------------------------------------------------------------------
 // 8. 實踐防護：安全詞急停協議 (EMERGENCY SAFEWORD PROTOCOL)
 // --------------------------------------------------------------------------
@@ -673,7 +686,6 @@ function triggerEmergencySafeword() {
   const displayWord = document.getElementById("emergencySafewordDisplay");
   if (!modal) return;
 
-  // 取得當前設定的安全詞（優先抓對象，無對象則抓自己）
   const activePartner = getActivePartner();
   const word = (activePartner && activePartner.safeword) 
     ? activePartner.safeword 
@@ -683,12 +695,12 @@ function triggerEmergencySafeword() {
     displayWord.textContent = word.toUpperCase();
   }
 
-  // 觸發硬體長震動警報 (震 400ms，停 100ms，連震 3 次)
+  // 觸發長震動警報
   if (navigator.vibrate) {
     navigator.vibrate([400, 100, 400, 100, 800]);
   }
 
-  // 若當前工作階段進行中，強制打斷並自動標記
+  // 強制終止進行中的 Session
   if (isSessionActive) {
     clearInterval(currentSessionTimer);
     isSessionActive = false;
@@ -713,16 +725,82 @@ function triggerEmergencySafeword() {
     }
   }
 
-  // 開啟全螢幕紅光警示
   modal.classList.add("active");
 }
 
 function dismissEmergencySafeword() {
   const modal = document.getElementById("safewordEmergencyModal");
   if (modal) modal.classList.remove("active");
-  if (navigator.vibrate) navigator.vibrate(0); // 停止震動
+  if (navigator.vibrate) navigator.vibrate(0);
 }
+
 // --------------------------------------------------------------------------
-// 9. 系統啟動初始化
+// 9. TrackerDB 雲端非同步同步機制
+// --------------------------------------------------------------------------
+
+// 上傳本機狀態至 Google 試算表 (TrackerDB)
+function syncTrackerToCloud(silent = false) {
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    if (!silent) alert("請先登入特工帳號以啟用雲端資料庫備份！");
+    return;
+  }
+
+  const payload = {
+    action: "syncTrackerState",
+    email: memberProfile.email || "",
+    phone: memberProfile.phone || "",
+    trackerState: trackerState
+  };
+
+  fetch(CONFIG.API_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  }).then(() => {
+    if (!silent) alert("✔ 終端實踐數據已成功加密備份至 TrackerDB 雲端！");
+  }).catch(err => {
+    if (!silent) alert("雲端同步失敗，請確認網路狀態。");
+  });
+}
+
+// 自 Google 試算表 (TrackerDB) 下載並還原特工數據
+function restoreTrackerFromCloud() {
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    alert("請先登入特工帳號！");
+    return;
+  }
+
+  const account = memberProfile.email || memberProfile.phone;
+  const cbName = "trackerCb_" + Date.now();
+
+  window[cbName] = function(res) {
+    const s = document.getElementById(cbName);
+    if (s) s.remove();
+    delete window[cbName];
+
+    if (res && res.result === "success" && res.data) {
+      try {
+        const cloudState = JSON.parse(res.data);
+        trackerState = cloudState;
+        saveTrackerState(true); // 存入本機，避免迴圈上傳
+        renderTrackerApp();
+        alert("✔ 成功自 TrackerDB 雲端同步特工實踐歷程與對象檔案！");
+      } catch (e) {
+        alert("雲端數據解析異常。");
+      }
+    } else {
+      alert("雲端目前尚無備份檔案，目前以本機資料為主。");
+    }
+  };
+
+  const script = document.createElement("script");
+  script.id = cbName;
+  script.src = `${CONFIG.API_URL}?action=getTrackerState&account=${encodeURIComponent(account)}&callback=${cbName}&_t=${Date.now()}`;
+  document.body.appendChild(script);
+}
+
+// --------------------------------------------------------------------------
+// 10. 系統啟動初始化
 // --------------------------------------------------------------------------
 loadAgentTrackerState();
