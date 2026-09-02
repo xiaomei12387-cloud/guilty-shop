@@ -641,7 +641,8 @@ function renderMyQrCode() {
   const encodedStr = "GUILTY:" + encodeURIComponent(JSON.stringify(qrPayload));
   const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(encodedStr)}&bgcolor=08080a&color=00ff88&margin=4`;
 
-  qrContainer.innerHTML = `<img src="${qrApiUrl}" style="width:160px; height:160px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
+  // 加上 crossorigin="anonymous"
+  qrContainer.innerHTML = `<img src="${qrApiUrl}" crossorigin="anonymous" style="width:160px; height:160px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
 }
 
 function handleSaveProfileForm(e) {
@@ -801,6 +802,51 @@ function restoreTrackerFromCloud() {
 }
 
 // --------------------------------------------------------------------------
-// 10. 系統啟動初始化
+// 10. 特工名片長圖匯出 (html2canvas)
+// --------------------------------------------------------------------------
+function exportDossierToImage() {
+  const target = document.getElementById("dossierExportTarget");
+  const btn = document.getElementById("btnExportCard");
+
+  if (!target) return;
+  if (typeof html2canvas === "undefined") {
+    alert("長圖繪製組件尚未就緒，請重新整理頁面。");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = "繪製中...";
+
+  // 暫時移除卡片的雷射動畫光條，避免截圖出現奇怪光斑
+  target.classList.add("exporting-mode");
+
+  html2canvas(target, {
+    backgroundColor: "#08080a",
+    scale: 2, // 2 倍清晰度（Retina 畫質）
+    useCORS: true, // 支援跨域圖片
+    allowTaint: false,
+    logging: false
+  }).then(canvas => {
+    target.classList.remove("exporting-mode");
+    btn.disabled = false;
+    btn.textContent = "📷 匯出名片圖";
+
+    // 建立自動下載連結
+    const link = document.createElement("a");
+    const agentName = trackerState.profile.name || "特工";
+    link.download = `GUILTY_DOSSIER_${agentName}_${Date.now().toString().slice(-4)}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }).catch(err => {
+    target.classList.remove("exporting-mode");
+    btn.disabled = false;
+    btn.textContent = "📷 匯出名片圖";
+    console.error(err);
+    alert("長圖生成失敗，若使用外部頭像網址可能受到跨域限制，建議改用「上傳本機圖檔」！");
+  });
+}
+
+// --------------------------------------------------------------------------
+// 11. 系統啟動初始化
 // --------------------------------------------------------------------------
 loadAgentTrackerState();
