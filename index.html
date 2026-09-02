@@ -250,7 +250,7 @@
         <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">06 // 特工指南 (FAQ)</a></li>
         <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">07 // 主理核心 (CREW)</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">08 // 創作者合作後台 (PORTAL) ⚙️</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">09 // 個人調用紀錄 (DOSSIER)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">09 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
       </ul>
     </div>
 
@@ -299,7 +299,7 @@
         </div>
       </section>
 
-      <!-- 裝備研發矩陣 (補回) -->
+      <!-- 裝備研發矩陣 -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-matrix">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // ARSENAL MATRIX ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:6px;">支配・拘束・義體三大研發矩陣</h2>
@@ -337,7 +337,7 @@
         <div class="product-list-grid" id="productGrid"></div>
       </section>
 
-      <!-- 特工指南 FAQ (補回) -->
+      <!-- 特工指南 FAQ -->
       <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-faq">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // AGENT DOSSIER FAQ ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
@@ -366,7 +366,7 @@
         </div>
       </section>
 
-      <!-- 主理核心 CREW (補回) -->
+      <!-- 主理核心 CREW -->
       <section class="section-crew" id="section-crew">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
@@ -554,7 +554,7 @@
     </div>
   </div>
 
-  <!-- 4. 【獨立介面 03】創作者合作後台 (Creator Portal View) (補回) -->
+  <!-- 4. 【獨立介面 03】創作者合作後台 (Creator Portal View) -->
   <div id="view-creator-portal" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header" style="border-left-color: var(--accent-purple);">
@@ -608,7 +608,30 @@
     </div>
   </div>
 
-  <!-- 5. 商品詳細配置頁 -->
+  <!-- 5. 【獨立介面 04】個人調用紀錄 (Order History / My Dossier View) (補回) -->
+  <div id="view-order-history" class="view-section">
+    <div class="detail-container">
+      <div class="terminal-hud-header">
+        <div>
+          <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ DOSSIER // 個人裝備調用案件紀錄 ]</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">雲端與本機封存之案件調用檔案</span>
+        </div>
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回展廳</button>
+      </div>
+
+      <div class="form-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="form-title" style="margin-bottom:0; border:none; padding:0;">案件調用歷史清單</div>
+          <button onclick="refreshOrderHistoryCloud()" style="background:#141416; border:1px solid var(--panel-border); color:var(--accent-cyan); font-size:0.75rem; padding:4px 10px; cursor:pointer; border-radius:2px;">
+            ↻ 同步雲端紀錄
+          </button>
+        </div>
+        <div id="orderHistoryListContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 商品詳細配置頁 -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
@@ -635,7 +658,7 @@
     </div>
   </div>
 
-  <!-- 6. 終端結帳視圖 -->
+  <!-- 7. 終端結帳視圖 -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -719,7 +742,7 @@
     </div>
   </div>
 
-  <!-- 7. 成功下單頁面 -->
+  <!-- 8. 成功下單頁面 -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
@@ -772,6 +795,75 @@
       toggleNav(false);
       setActiveView('view-creator-portal');
       history.pushState({ view: 'creator-portal' }, '', '#creator-portal');
+    }
+
+    // 個人調用紀錄視圖與資料渲染
+    function openOrderHistory() {
+      toggleNav(false);
+      setActiveView('view-order-history');
+      renderOrderHistoryList();
+      history.pushState({ view: 'order-history' }, '', '#history');
+    }
+
+    function renderOrderHistoryList(cloudOrders = null) {
+      const container = document.getElementById('orderHistoryListContainer');
+      if (!container) return;
+
+      const orders = cloudOrders || JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.ORDERS)) || [];
+      if (orders.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; color:var(--text-muted); padding:30px 0; font-size:0.85rem;">
+            [ 尚無案件調用紀錄 ]<br>完成任何裝備調用後，案件檔案將自動登錄於此。
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = orders.map(o => `
+        <div class="history-item">
+          <div class="history-header">
+            <div>
+              <strong style="color:var(--accent-cyan); font-size:0.95rem;">#${o.orderId || '案件檔案'}</strong>
+              <span style="font-size:0.7rem; color:var(--text-muted); display:block;">${o.createdAt || ''}</span>
+            </div>
+            <div style="text-align:right;">
+              <span style="color:#fff; font-weight:bold; font-size:0.95rem;">NT$ ${Number(o.price || 0).toLocaleString()}</span>
+              <span style="font-size:0.7rem; color:var(--accent-cyan); display:block;">[ ${o.shipping || '超商交付'} ]</span>
+            </div>
+          </div>
+          <div style="font-size:0.8rem; color:#d4d4d8; margin:6px 0;"><strong>裝備明細：</strong>${o.product || '自訂裝備'}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted);"><strong>交付終端：</strong>${o.location || '超商門市'}</div>
+          ${o.engraving && o.engraving !== '無' ? `<div style="font-size:0.75rem; color:var(--text-muted);"><strong>銘牌刻印：</strong>${o.engraving}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function refreshOrderHistoryCloud() {
+      const phone = memberProfile ? memberProfile.phone : (document.getElementById('custPhone') ? document.getElementById('custPhone').value.trim() : '');
+      if (!phone) {
+        alert('請先登入特工帳號以同步雲端案件檔案！');
+        return;
+      }
+
+      const cbName = 'histCb_' + Date.now();
+      window[cbName] = function(cloudOrders) {
+        const s = document.getElementById(cbName);
+        if (s) s.remove();
+        delete window[cbName];
+
+        if (cloudOrders && cloudOrders.length > 0) {
+          localStorage.setItem(CONFIG.STORAGE_KEYS.ORDERS, JSON.stringify(cloudOrders));
+          renderOrderHistoryList(cloudOrders);
+          alert(`✔ 已從雲端同步 ${cloudOrders.length} 筆案件檔案！`);
+        } else {
+          alert('雲端目前尚無此特工電話的調用紀錄。');
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = cbName;
+      script.src = `${CONFIG.API_URL}?phone=${encodeURIComponent(phone)}&callback=${cbName}&_t=${Date.now()}`;
+      document.body.appendChild(script);
     }
 
     function handleCreatorVerify(e) {
