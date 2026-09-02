@@ -85,13 +85,13 @@ function loadAgentTrackerState() {
   if (saved) {
     try {
       trackerState = JSON.parse(saved);
+      if (!trackerState.profile) trackerState.profile = createDefaultTrackerState().profile;
       if (!trackerState.profile.allPreferences) trackerState.profile.allPreferences = [...DEFAULT_PRESET_TAGS.preferences];
       if (!trackerState.profile.allLimits) trackerState.profile.allLimits = [...DEFAULT_PRESET_TAGS.hardLimits];
-      if (trackerState.partners) {
-        trackerState.partners.forEach(p => {
-          if (!p.sessions) p.sessions = [];
-        });
-      }
+      if (!trackerState.partners) trackerState.partners = [];
+      trackerState.partners.forEach(p => {
+        if (!p.sessions) p.sessions = [];
+      });
     } catch (e) {
       trackerState = createDefaultTrackerState();
     }
@@ -161,17 +161,19 @@ function renderTrackerApp() {
 
   // 模式切換按鈕高亮
   const isDom = trackerState.currentMode === "dom";
-  document.getElementById("btnModeDom").classList.toggle("active", isDom);
-  document.getElementById("btnModeSub").classList.toggle("active", !isDom);
+  const btnDom = document.getElementById("btnModeDom");
+  const btnSub = document.getElementById("btnModeSub");
+  if (btnDom) btnDom.classList.toggle("active", isDom);
+  if (btnSub) btnSub.classList.toggle("active", !isDom);
 
   if (activePartner) {
-    nameDisplay.textContent = `[ 當前實踐對象：${activePartner.name} (${activePartner.role}) ]`;
-    spVal.textContent = activePartner.spCount || 0;
-    whipVal.textContent = activePartner.whipCount || 0;
+    if (nameDisplay) nameDisplay.textContent = `[ 當前實踐對象：${activePartner.name} (${activePartner.role}) ]`;
+    if (spVal) spVal.textContent = activePartner.spCount || 0;
+    if (whipVal) whipVal.textContent = activePartner.whipCount || 0;
   } else {
-    nameDisplay.textContent = "[ 尚未選定互動對象 ]";
-    spVal.textContent = 0;
-    whipVal.textContent = 0;
+    if (nameDisplay) nameDisplay.textContent = "[ 尚未選定互動對象 ]";
+    if (spVal) spVal.textContent = 0;
+    if (whipVal) whipVal.textContent = 0;
   }
 
   renderPartnerList();
@@ -199,10 +201,12 @@ function adjustCounter(type, delta) {
 
   if (type === "SP") {
     activePartner.spCount = Math.max(0, (activePartner.spCount || 0) + delta);
-    document.getElementById("spCountVal").textContent = activePartner.spCount;
+    const spEl = document.getElementById("spCountVal");
+    if (spEl) spEl.textContent = activePartner.spCount;
   } else if (type === "WHIP") {
     activePartner.whipCount = Math.max(0, (activePartner.whipCount || 0) + delta);
-    document.getElementById("whipCountVal").textContent = activePartner.whipCount;
+    const whipEl = document.getElementById("whipCountVal");
+    if (whipEl) whipEl.textContent = activePartner.whipCount;
   }
 
   saveTrackerState();
@@ -539,26 +543,40 @@ function handleScannedData(dataString) {
 function renderProfileDossier() {
   const prof = trackerState.profile;
 
-  document.getElementById("dossierAvatarPreview").src = prof.avatar;
-  document.getElementById("dossierNameDisplay").textContent = prof.name;
-  document.getElementById("dossierRoleBadge").textContent = prof.role;
-  document.getElementById("dossierBioDisplay").textContent = prof.bio || "尚未填寫特工簡介。";
-
+  const avatarPreview = document.getElementById("dossierAvatarPreview");
+  const nameDisplay = document.getElementById("dossierNameDisplay");
+  const roleBadge = document.getElementById("dossierRoleBadge");
+  const bioDisplay = document.getElementById("dossierBioDisplay");
   const twLink = document.getElementById("dossierTwitterLink");
-  if (prof.twitter) {
-    twLink.href = prof.twitter;
-    twLink.style.display = "inline-block";
-  } else {
-    twLink.style.display = "none";
+
+  if (avatarPreview) avatarPreview.src = prof.avatar;
+  if (nameDisplay) nameDisplay.textContent = prof.name;
+  if (roleBadge) roleBadge.textContent = prof.role;
+  if (bioDisplay) bioDisplay.textContent = prof.bio || "尚未填寫特工簡介。";
+
+  if (twLink) {
+    if (prof.twitter) {
+      twLink.href = prof.twitter;
+      twLink.style.display = "inline-block";
+    } else {
+      twLink.style.display = "none";
+    }
   }
 
   // 填入編輯表單預設值
-  document.getElementById("profEditName").value = prof.name;
-  document.getElementById("profEditRole").value = prof.role;
-  document.getElementById("profEditTwitter").value = prof.twitter || "";
-  document.getElementById("profEditSafeword").value = prof.safeword || "";
-  document.getElementById("profEditBio").value = prof.bio || "";
-  document.getElementById("profEditAvatar").value = prof.avatar || "";
+  const editName = document.getElementById("profEditName");
+  const editRole = document.getElementById("profEditRole");
+  const editTw = document.getElementById("profEditTwitter");
+  const editSafe = document.getElementById("profEditSafeword");
+  const editBio = document.getElementById("profEditBio");
+  const editAvatar = document.getElementById("profEditAvatar");
+
+  if (editName) editName.value = prof.name;
+  if (editRole) editRole.value = prof.role;
+  if (editTw) editTw.value = prof.twitter || "";
+  if (editSafe) editSafe.value = prof.safeword || "";
+  if (editBio) editBio.value = prof.bio || "";
+  if (editAvatar) editAvatar.value = prof.avatar || "";
 
   renderDossierTags();
   renderMyQrCode();
@@ -606,6 +624,7 @@ function toggleTagSelection(type, tag) {
 
 function addCustomTag(type) {
   const input = type === "pref" ? document.getElementById("newCustomPrefInput") : document.getElementById("newCustomLimitInput");
+  if (!input) return;
   const val = input.value.trim();
   if (!val) return;
 
@@ -641,7 +660,6 @@ function renderMyQrCode() {
   const encodedStr = "GUILTY:" + encodeURIComponent(JSON.stringify(qrPayload));
   const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(encodedStr)}&bgcolor=08080a&color=00ff88&margin=4`;
 
-  // 加上 crossorigin="anonymous"
   qrContainer.innerHTML = `<img src="${qrApiUrl}" crossorigin="anonymous" style="width:160px; height:160px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
 }
 
@@ -672,7 +690,8 @@ function handleAvatarUpload(inputEl) {
 
   reader.onload = (e) => {
     trackerState.profile.avatar = e.target.result;
-    document.getElementById("dossierAvatarPreview").src = e.target.result;
+    const avatarPreview = document.getElementById("dossierAvatarPreview");
+    if (avatarPreview) avatarPreview.src = e.target.result;
     saveTrackerState();
     renderMyQrCode();
   };
@@ -765,10 +784,9 @@ function syncTrackerToCloud(silent = false) {
   });
 }
 
-// 自 Google 試算表 (TrackerDB) 下載並還原特工數據
+// 自 Google 試算表 (TrackerDB) 下載並還原特工數據（加入型態安全保護）
 function restoreTrackerFromCloud() {
   if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
-    alert("請先登入特工帳號！");
     return;
   }
 
@@ -782,16 +800,16 @@ function restoreTrackerFromCloud() {
 
     if (res && res.result === "success" && res.data) {
       try {
-        const cloudState = JSON.parse(res.data);
-        trackerState = cloudState;
-        saveTrackerState(true); // 存入本機，避免迴圈上傳
-        renderTrackerApp();
-        alert("✔ 成功自 TrackerDB 雲端同步特工實踐歷程與對象檔案！");
+        const cloudState = typeof res.data === "string" ? JSON.parse(res.data) : res.data;
+        if (cloudState && cloudState.profile) {
+          trackerState = cloudState;
+          saveTrackerState(true);
+          renderTrackerApp();
+          console.log("[PROTOCOL] TrackerDB 雲端檔案同步成功");
+        }
       } catch (e) {
-        alert("雲端數據解析異常。");
+        console.warn("[PROTOCOL] 雲端數據解析異常，沿用本機資料", e);
       }
-    } else {
-      alert("雲端目前尚無備份檔案，目前以本機資料為主。");
     }
   };
 
@@ -814,24 +832,26 @@ function exportDossierToImage() {
     return;
   }
 
-  btn.disabled = true;
-  btn.textContent = "繪製中...";
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "繪製中...";
+  }
 
-  // 暫時移除卡片的雷射動畫光條，避免截圖出現奇怪光斑
   target.classList.add("exporting-mode");
 
   html2canvas(target, {
     backgroundColor: "#08080a",
-    scale: 2, // 2 倍清晰度（Retina 畫質）
-    useCORS: true, // 支援跨域圖片
+    scale: 2,
+    useCORS: true,
     allowTaint: false,
     logging: false
   }).then(canvas => {
     target.classList.remove("exporting-mode");
-    btn.disabled = false;
-    btn.textContent = "📷 匯出名片圖";
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "📷 匯出名片圖";
+    }
 
-    // 建立自動下載連結
     const link = document.createElement("a");
     const agentName = trackerState.profile.name || "特工";
     link.download = `GUILTY_DOSSIER_${agentName}_${Date.now().toString().slice(-4)}.png`;
@@ -839,8 +859,10 @@ function exportDossierToImage() {
     link.click();
   }).catch(err => {
     target.classList.remove("exporting-mode");
-    btn.disabled = false;
-    btn.textContent = "📷 匯出名片圖";
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = "📷 匯出名片圖";
+    }
     console.error(err);
     alert("長圖生成失敗，若使用外部頭像網址可能受到跨域限制，建議改用「上傳本機圖檔」！");
   });
