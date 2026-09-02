@@ -399,14 +399,17 @@
           <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ TERMINAL // PROTOCOL TRACKER ]</span>
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">神經實踐實時計數板</span>
         </div>
-        <div style="display:flex; gap:8px;">
+       <div style="display:flex; gap:8px; align-items:center;">
+          <!-- ☁️ 雲端備份手動按鈕 -->
+          <button onclick="syncTrackerToCloud()" style="background:#141416; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 8px; font-size:0.75rem; cursor:pointer; border-radius:3px;">
+            ☁️ 備份
+          </button>
           <!-- 🚨 急停拍擊按鈕 -->
           <button class="safeword-panic-btn" onclick="triggerEmergencySafeword()">
             🛑 SAFEWORD 急停
           </button>
           <button onclick="openProfileDossierView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">我的特工主頁 ★</button>
         </div>
-      </div>
 
       <!-- 頂部切換主/被動方 -->
       <div class="mode-switch-grid">
