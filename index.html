@@ -402,7 +402,7 @@
           <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ TERMINAL // PROTOCOL TRACKER ]</span>
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">神經實踐實時計數板</span>
         </div>
-       <div style="display:flex; gap:8px; align-items:center;">
+        <div style="display:flex; gap:8px; align-items:center;">
           <!-- ☁️ 雲端備份手動按鈕 -->
           <button onclick="syncTrackerToCloud()" style="background:#141416; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 8px; font-size:0.75rem; cursor:pointer; border-radius:3px;">
             ☁️ 備份
@@ -413,6 +413,7 @@
           </button>
           <button onclick="openProfileDossierView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">我的特工主頁 ★</button>
         </div>
+      </div>
 
       <!-- 頂部切換主/被動方 -->
       <div class="mode-switch-grid">
@@ -460,7 +461,7 @@
             <button onclick="openQrScanner()" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px; display:flex; align-items:center; gap:4px;">
               📷 掃碼新增
             </button>
-            <button onclick="addNewPartnerPrompt()" style="background:#141416; color:var(--text-muted); border:1px solid var(--panel-border); padding:5px 8px; font-size:0.75rem; cursor:border-radius:2px;">
+            <button onclick="addNewPartnerPrompt()" style="background:#141416; color:var(--text-muted); border:1px solid var(--panel-border); padding:5px 8px; font-size:0.75rem; cursor:pointer; border-radius:2px;">
               ＋ 手動
             </button>
           </div>
@@ -476,7 +477,7 @@
     </div>
   </div>
 
-<!-- 3. 【獨立介面 02】特工個人主頁 (Profile Dossier View) -->
+  <!-- 3. 【獨立介面 02】特工個人主頁 (Profile Dossier View) -->
   <div id="view-dossier" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -795,7 +796,7 @@
     </div>
   </div>
 
-  <!-- 🚨 全螢幕安全詞急停警報 (Emergency Safeword Modal - 必須在 script 標籤外面！) -->
+  <!-- 🚨 全螢幕安全詞急停警報 (Emergency Safeword Modal) -->
   <div class="safeword-emergency-overlay" id="safewordEmergencyModal">
     <div style="font-size:1.5rem; letter-spacing:4px; color:#ff334b; font-weight:bold;">
       ⚠️ [ EMERGENCY PROTOCOL ACTIVATED ] ⚠️
@@ -816,7 +817,7 @@
     </button>
   </div>
 
-  <!-- 載入所有模組 JS（shop.js 帶版本號強制破除舊圖片快取） -->
+  <!-- 載入所有模組 JS -->
   <script src="./js/config.js"></script>
   <script src="./js/auth.js"></script>
   <script src="./js/shop.js?v=999"></script>
