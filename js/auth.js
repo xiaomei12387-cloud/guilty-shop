@@ -81,11 +81,19 @@ function handleLoginSubmit(e) {
     btn.textContent = '驗證密鑰並登入 (ACCESS)';
 
     if (res && res.result === 'success') {
-      memberProfile = res.user;
-      localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
-      updateMemberUI();
-      toggleAuthModal(true);
-      alert(`【認證成功】歡迎接入終端，特工 ${memberProfile.name}！`);
+  memberProfile = res.user;
+  localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
+  
+  // 自動同步特工代號至 Tracker
+  if (trackerState && trackerState.profile) {
+    trackerState.profile.name = memberProfile.name || trackerState.profile.name;
+    if (memberProfile.role) trackerState.profile.role = memberProfile.role;
+    saveTrackerState();
+  }
+
+  updateMemberUI();
+  toggleAuthModal(false);
+  alert(`【認證成功】歡迎接入終端，特工 ${memberProfile.name}！`);
     } else {
       alert(`❌ 登入失敗：${res.msg || '帳號或密碼錯誤'}`);
     }
