@@ -411,6 +411,10 @@
       <!-- 實時計數板 -->
       <div class="form-box">
         <div class="form-title" id="activePartnerNameDisplay">[ 當前對象：載入中... ]</div>
+
+        <!-- 實踐階段計時 HUD 區塊 (掛載點) -->
+        <div id="sessionHudArea"></div>
+
         <div class="counter-board-grid">
           <div class="counter-box box-cyan">
             <div class="counter-title">SP 實施次數</div>
@@ -450,6 +454,12 @@
           </div>
         </div>
         <div id="trackerPartnerList"></div>
+      </div>
+
+      <!-- 實踐歷程封存紀錄 (掛載點) -->
+      <div class="form-box">
+        <div class="form-title">實踐歷程封存紀錄 (SESSION LOGS)</div>
+        <div id="sessionLogsContainer"></div>
       </div>
     </div>
   </div>
@@ -608,7 +618,7 @@
     </div>
   </div>
 
-  <!-- 5. 【獨立介面 04】個人調用紀錄 (Order History / My Dossier View) (補回) -->
+  <!-- 5. 【獨立介面 04】個人調用紀錄 (Order History / My Dossier View) -->
   <div id="view-order-history" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -756,10 +766,10 @@
     </div>
   </div>
 
-  <!-- 載入所有模組 JS -->
+  <!-- 載入所有模組 JS（shop.js 帶版本號強制破除舊圖片快取） -->
   <script src="./js/config.js"></script>
   <script src="./js/auth.js"></script>
-  <script src="./js/shop.js"></script>
+  <script src="./js/shop.js?v=999"></script>
   <script src="./js/tracker.js"></script>
 
   <script>
@@ -797,7 +807,6 @@
       history.pushState({ view: 'creator-portal' }, '', '#creator-portal');
     }
 
-    // 個人調用紀錄視圖與資料渲染
     function openOrderHistory() {
       toggleNav(false);
       setActiveView('view-order-history');
@@ -935,7 +944,7 @@
       }
     }
 
-    // 初始化執行
+    // 系統初始化執行
     history.replaceState({ view: 'landing' }, '', '#landing');
     renderProductCards();
     updateMemberUI();
