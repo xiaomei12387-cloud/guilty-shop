@@ -15,12 +15,16 @@ function toggleAuthModal(isOpen) {
   if (isOpen) {
     modal.classList.add("active");
     if (memberProfile) {
-      document.getElementById("authGuestView").style.display = "none";
-      document.getElementById("authProfileView").style.display = "block";
+      const guestView = document.getElementById("authGuestView");
+      const profView = document.getElementById("authProfileView");
+      if (guestView) guestView.style.display = "none";
+      if (profView) profView.style.display = "block";
       populateProfileView();
     } else {
-      document.getElementById("authGuestView").style.display = "block";
-      document.getElementById("authProfileView").style.display = "none";
+      const guestView = document.getElementById("authGuestView");
+      const profView = document.getElementById("authProfileView");
+      if (guestView) guestView.style.display = "block";
+      if (profView) profView.style.display = "none";
       switchAuthTab("login");
     }
   } else {
@@ -35,15 +39,15 @@ function switchAuthTab(tab) {
   const tabReg = document.getElementById("tabBtnRegister");
 
   if (tab === "login") {
-    loginForm.style.display = "block";
-    registerForm.style.display = "none";
-    tabLogin.classList.add("active");
-    tabReg.classList.remove("active");
+    if (loginForm) loginForm.style.display = "block";
+    if (registerForm) registerForm.style.display = "none";
+    if (tabLogin) tabLogin.classList.add("active");
+    if (tabReg) tabReg.classList.remove("active");
   } else {
-    loginForm.style.display = "none";
-    registerForm.style.display = "block";
-    tabLogin.classList.remove("active");
-    tabReg.classList.add("active");
+    if (loginForm) loginForm.style.display = "none";
+    if (registerForm) registerForm.style.display = "block";
+    if (tabLogin) tabLogin.classList.remove("active");
+    if (tabReg) tabReg.classList.add("active");
   }
 }
 
@@ -78,10 +82,13 @@ function updateMemberUI() {
 
 function populateProfileView() {
   if (!memberProfile) return;
-  document.getElementById("profileAccountBadge").textContent = 
-    `[ VERIFIED AGENT // ${memberProfile.email || memberProfile.phone} ]`;
-  document.getElementById("profNameInput").value = memberProfile.name || "";
-  document.getElementById("profLocationInput").value = memberProfile.defaultLocation || "";
+  const badge = document.getElementById("profileAccountBadge");
+  const nameInp = document.getElementById("profNameInput");
+  const locInp = document.getElementById("profLocationInput");
+
+  if (badge) badge.textContent = `[ VERIFIED AGENT // ${memberProfile.email || memberProfile.phone} ]`;
+  if (nameInp) nameInp.value = memberProfile.name || "";
+  if (locInp) locInp.value = memberProfile.defaultLocation || "";
   setProfileRole(memberProfile.role || "服從者 (Sub)");
 }
 
@@ -90,13 +97,15 @@ function setProfileRole(role) {
   const switchBtn = document.getElementById("roleSwitch");
   const subBtn = document.getElementById("roleSub");
 
-  [domBtn, switchBtn, subBtn].forEach(b => b.classList.remove("active"));
+  [domBtn, switchBtn, subBtn].forEach(b => {
+    if (b) b.classList.remove("active");
+  });
 
-  if (role.includes("Dom")) {
+  if (role.includes("Dom") && domBtn) {
     domBtn.classList.add("active");
-  } else if (role.includes("Switch")) {
+  } else if (role.includes("Switch") && switchBtn) {
     switchBtn.classList.add("active");
-  } else {
+  } else if (subBtn) {
     subBtn.classList.add("active");
   }
 
@@ -133,7 +142,6 @@ function sendRegisterOtp() {
       notice.style.color = "var(--accent-cyan)";
       notice.textContent = "✔ 驗證碼已發送，請檢查收件匣或垃圾郵件匣。";
 
-      // 60 秒倒數計時冷卻
       let cooldown = 60;
       const timer = setInterval(() => {
         cooldown--;
@@ -205,7 +213,6 @@ function handleRegisterSubmit(e) {
       localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
       updateMemberUI();
 
-      // 載入該特工專屬隔離資料庫
       if (typeof loadAgentTrackerState === "function") {
         loadAgentTrackerState();
       }
