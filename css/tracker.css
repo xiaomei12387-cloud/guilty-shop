@@ -482,11 +482,12 @@
   transition: all 0.2s ease;
 }
 
-/* 截圖匯出時隱藏雷射掃描光條，防止畫面出現斷層 */
-.exporting-mode .dossier-hero-card::before {
-  display: none !important;
-}
 .safeword-dismiss-btn:hover {
   background: #fff;
   color: #000;
+}
+
+/* 截圖匯出時隱藏雷射掃描光條，防止畫面出現斷層 */
+.exporting-mode .dossier-hero-card::before {
+  display: none !important;
 }
