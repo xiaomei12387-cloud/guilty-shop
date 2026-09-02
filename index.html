@@ -249,7 +249,8 @@
         <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">05 // 裝備目錄 (CATALOG)</a></li>
         <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">06 // 特工指南 (FAQ)</a></li>
         <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">07 // 主理核心 (CREW)</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">08 // 個人調用紀錄 (DOSSIER)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">08 // 創作者合作後台 (PORTAL) ⚙️</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()">09 // 個人調用紀錄 (DOSSIER)</a></li>
       </ul>
     </div>
 
@@ -287,6 +288,40 @@
         </div>
       </section>
 
+      <!-- 世界觀脈絡 -->
+      <section class="section-manifesto" id="section-manifesto">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // WORLDVIEW & PROTOCOL ]</div>
+        <div class="manifesto-card">
+          <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
+          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
+            【欲室｜共犯 GUILTY】作為地下義體武裝研究所，攜手專業繩縛殿堂【shushi束室 繩教室】，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
+          </p>
+        </div>
+      </section>
+
+      <!-- 裝備研發矩陣 (補回) -->
+      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-matrix">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // ARSENAL MATRIX ]</div>
+        <h2 style="font-size:1.4rem; margin-bottom:6px;">支配・拘束・義體三大研發矩陣</h2>
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="matrix-num">DIVISION 01 // CYBERNETICS</div>
+            <div class="matrix-title">義體外骨骼拘束器</div>
+            <div class="matrix-desc">工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
+          </div>
+          <div class="matrix-card card-shushi">
+            <div class="matrix-num">DIVISION 02 // ROPE ART</div>
+            <div class="matrix-title">束室特選精煉繩藝</div>
+            <div class="matrix-desc">經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌。</div>
+          </div>
+          <div class="matrix-card">
+            <div class="matrix-num">DIVISION 03 // CALIBRATION & TACTICAL</div>
+            <div class="matrix-title">神經校準與戰術裝備</div>
+            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹精準神經回饋。</div>
+          </div>
+        </div>
+      </section>
+
       <!-- 裝備目錄庫 -->
       <section class="section-arsenal" id="section-arsenal">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
@@ -300,6 +335,58 @@
           <button class="filter-btn" onclick="filterBrand('shushi')">shushi束室 繩選</button>
         </div>
         <div class="product-list-grid" id="productGrid"></div>
+      </section>
+
+      <!-- 特工指南 FAQ (補回) -->
+      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-faq">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // AGENT DOSSIER FAQ ]</div>
+        <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
+        
+        <div class="faq-item">
+          <div class="faq-q">Q1. 旗艦項圈尺寸如何挑選？（S 碼 vs M 碼）</div>
+          <div class="faq-a">• <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態、多數女性特工或脖圍偏細者著用。<br>• <strong>M 碼（34 – 38 cm）</strong>：適合中等或肌肉型特工著用。請先以皮尺貼合淨脖圍量測。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">Q2. 神經突觸長鞭（1.2M vs 1.5M）如何選擇？</div>
+          <div class="faq-a">• <strong>1.2 米 (CQB 近距校準型)</strong>：重心靈活回彈迅速，適合室內或新手特工練習發力控點。<br>• <strong>1.5 米 (EXTENDED 遠距壓制型)</strong>：鞭尾破空聲清脆響亮，具備強大壓迫感與長距牽制力。</div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-q">Q3. 隱私交付承諾與包裹外觀？</div>
+          <div class="faq-a">全館包裹採用 100% 絕密隱密紙箱出貨，外箱與超商寄件託運單絕不出現任何敏感字樣，寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>。</div>
+        </div>
+
+        <div class="stealth-badge-card">
+          <div style="font-size: 1.8rem;">🔒</div>
+          <div>
+            <div style="color: var(--accent-cyan); font-weight: bold; font-size: 0.9rem;">100% 絕密隱私交付承諾 (STEALTH SHIPPING)</div>
+            <div style="color: var(--text-muted); font-size: 0.8rem;">超商寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>，保護每位特工隱私。</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 主理核心 CREW (補回) -->
+      <section class="section-crew" id="section-crew">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
+        <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
+        <div class="team-grid">
+          <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
+            <div class="team-header"><div class="team-role">DESIGN DIRECTOR</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
+            <div style="font-size:1.1rem; font-weight:bold;">18X</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">@18X_inthc</div>
+          </a>
+          <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
+            <div class="team-header"><div class="team-role">COMMUNITY & OPERATIONS</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
+            <div style="font-size:1.1rem; font-weight:bold;">老王</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">@Take1809DL</div>
+          </a>
+          <a href="https://x.com/220shushi" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
+            <div class="team-header"><div class="team-role">STRATEGIC ALLIANCE</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
+            <div style="font-size:1.1rem; font-weight:bold;">shushi束室 繩教室</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">@220shushi</div>
+          </a>
+        </div>
       </section>
     </div>
   </div>
@@ -467,7 +554,61 @@
     </div>
   </div>
 
-  <!-- 4. 商品詳細配置頁 -->
+  <!-- 4. 【獨立介面 03】創作者合作後台 (Creator Portal View) (補回) -->
+  <div id="view-creator-portal" class="view-section">
+    <div class="detail-container">
+      <div class="terminal-hud-header" style="border-left-color: var(--accent-purple);">
+        <div>
+          <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-purple);">[ CREATOR PORTAL // 創作者合作通道 ]</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">專屬推廣碼查詢與分潤統計</span>
+        </div>
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回展廳</button>
+      </div>
+
+      <div class="form-box">
+        <div class="form-title" style="color:var(--accent-purple);">創作者身分登錄核銷</div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">
+          請輸入官方審核通過之<strong>「專屬特工推廣碼」</strong>與<strong>「綁定手機號碼」</strong>以檢索案件調用成果：
+        </p>
+
+        <form id="creatorVerifyForm" onsubmit="handleCreatorVerify(event)">
+          <div class="form-group">
+            <label>創作者專屬代碼 (PROMO CODE)*</label>
+            <input type="text" id="creatorCodeInput" placeholder="例如：WANG18X" style="text-transform:uppercase; border-color:rgba(181,23,158,0.4);" required />
+          </div>
+          <div class="form-group">
+            <label>綁定特工聯絡電話*</label>
+            <input type="tel" id="creatorPhoneInput" placeholder="0912-345-678" required />
+          </div>
+          <button type="submit" class="btn-submit" id="btnCreatorVerifySubmit" style="background:var(--accent-purple); color:#fff;">驗證通行密鑰 (VERIFY)</button>
+        </form>
+
+        <div id="creatorDashboardBox" style="display:none; margin-top:20px; border-top:1px dashed var(--panel-border); padding-top:16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3 style="color:#fff; font-size:1.1rem;" id="creatorNameText">特工創作者</h3>
+            <span class="badge badge-shushi" id="creatorCommissionBadge">分潤率 10%</span>
+          </div>
+          
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0;">
+            <div style="background:#000; padding:12px; border:1px solid var(--panel-border); text-align:center;">
+              <div style="font-size:0.7rem; color:var(--text-muted);">累計推薦調用次數</div>
+              <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-purple);" id="creatorOrderCount">0 件</div>
+            </div>
+            <div style="background:#000; padding:12px; border:1px solid var(--panel-border); text-align:center;">
+              <div style="font-size:0.7rem; color:var(--text-muted);">預計累計分潤收益</div>
+              <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-cyan);" id="creatorRewardTotal">NT$ 0</div>
+            </div>
+          </div>
+
+          <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.5;">
+            * 收益每月 10 號經由 UserDB 核算自動匯入特工加密錢包或指定帳戶。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 商品詳細配置頁 -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
@@ -494,7 +635,7 @@
     </div>
   </div>
 
-  <!-- 5. 終端結帳視圖 -->
+  <!-- 6. 終端結帳視圖 -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -578,7 +719,7 @@
     </div>
   </div>
 
-  <!-- 6. 成功下單頁面 -->
+  <!-- 7. 成功下單頁面 -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
@@ -625,6 +766,51 @@
       setActiveView('view-dossier');
       renderProfileDossier();
       history.pushState({ view: 'dossier' }, '', '#dossier');
+    }
+
+    function openCreatorPortalView() {
+      toggleNav(false);
+      setActiveView('view-creator-portal');
+      history.pushState({ view: 'creator-portal' }, '', '#creator-portal');
+    }
+
+    function handleCreatorVerify(e) {
+      e.preventDefault();
+      const code = document.getElementById('creatorCodeInput').value.trim().toUpperCase();
+      const phone = document.getElementById('creatorPhoneInput').value.trim();
+      const btn = document.getElementById('btnCreatorVerifySubmit');
+
+      btn.disabled = true;
+      btn.textContent = '密鑰檢索中...';
+
+      const cbName = 'creatorCb_' + Date.now();
+      window[cbName] = function(res) {
+        const s = document.getElementById(cbName);
+        if (s) s.remove();
+        delete window[cbName];
+        btn.disabled = false;
+        btn.textContent = '驗證通行密鑰 (VERIFY)';
+
+        if (res && res.result === 'success') {
+          document.getElementById('creatorNameText').textContent = res.creatorName || '合作特工';
+          document.getElementById('creatorCommissionBadge').textContent = `分潤率 ${res.rate || 10}%`;
+          document.getElementById('creatorOrderCount').textContent = `${res.orderCount || 0} 件`;
+          document.getElementById('creatorRewardTotal').textContent = `NT$ ${(res.totalReward || 0).toLocaleString()}`;
+          document.getElementById('creatorDashboardBox').style.display = 'block';
+        } else {
+          alert('❌ 驗證失敗：無此推廣碼或電話未綁定。');
+        }
+      };
+
+      const script = document.createElement('script');
+      script.id = cbName;
+      script.src = `${CONFIG.API_URL}?action=verifyCreator&code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&callback=${cbName}&_t=${Date.now()}`;
+      script.onerror = () => {
+        btn.disabled = false;
+        btn.textContent = '驗證通行密鑰 (VERIFY)';
+        alert('連線逾時，請檢查網路狀態。');
+      };
+      document.body.appendChild(script);
     }
 
     function scrollToSection(sectionId) {
