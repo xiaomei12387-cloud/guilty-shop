@@ -53,7 +53,17 @@ function saveTrackerState() {
 // --------------------------------------------------------------------------
 // 1. 視圖導覽控制
 // --------------------------------------------------------------------------
+function checkAgentAuth() {
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    alert("⚠️ [ 權限拒絕 // ACCESS DENIED ]\n此終端為特工專屬管制區，請先完成神經認證登入！");
+    toggleAuthModal(true);
+    return false;
+  }
+  return true;
+}
+
 function openTrackerAppView() {
+  if (!checkAgentAuth()) return; // 未登入直接攔截
   toggleNav(false);
   setActiveView('view-tracker');
   renderTrackerApp();
@@ -61,6 +71,7 @@ function openTrackerAppView() {
 }
 
 function openProfileDossierView() {
+  if (!checkAgentAuth()) return; // 未登入直接攔截
   toggleNav(false);
   setActiveView('view-dossier');
   renderProfileDossier();
