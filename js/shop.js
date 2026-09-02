@@ -12,7 +12,7 @@ const PRODUCTS = [
     price: 3280,
     desc: "3D 列印工業級尼龍裝甲，前喉結避空人體工學曲線。磁吸快拆模組，隱形微型顯影認罪印記。",
     note: "客製雷雕銘牌與神經顯影印記",
-    img: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=800&q=80",
+    img: "./icons/icon-512.png",
     specs: ["S 碼 (29-33cm)", "M 碼 (34-38cm)"]
   },
   {
@@ -23,7 +23,7 @@ const PRODUCTS = [
     price: 2680,
     desc: "航太級配重手柄，耐磨高密編織鞭身。破空阻力極小化，提供銳利而精確的神經末梢感知。",
     note: "附防掉手腕帶與專屬收納套筒",
-    img: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80",
+    img: "./icons/icon-512.png",
     specs: ["1.2 米 (CQB 近距校準型)", "1.5 米 (EXTENDED 遠距壓制型)"]
   },
   {
@@ -34,7 +34,7 @@ const PRODUCTS = [
     price: 1580,
     desc: "13 道古法脫漿、深層天然植物油浸潤與蜂蠟烘烤。手感細膩溫潤，極度親膚且抗拉緊實。",
     note: "每組 3 條（每條長度 7.5 公尺，直徑 6mm）",
-    img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+    img: "./images/image_rope.jpg",
     specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"]
   },
   {
@@ -45,7 +45,7 @@ const PRODUCTS = [
     price: 1980,
     desc: "外層高強度工業織帶，內襯醫療級減壓 TPU。快拆戰術金屬插扣，長效配戴零勒痕壓迫。",
     note: "手腕與腳踝雙用通用尺寸",
-    img: "https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=800&q=80",
+    img: "./icons/icon-512.png",
     specs: ["標準對裝 (手腕用)", "加長對裝 (腳踝用)"]
   }
 ];
