@@ -399,7 +399,13 @@
           <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ TERMINAL // PROTOCOL TRACKER ]</span>
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">神經實踐實時計數板</span>
         </div>
-        <button onclick="openProfileDossierView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">我的特工主頁 ★</button>
+        <div style="display:flex; gap:8px;">
+          <!-- 🚨 急停拍擊按鈕 -->
+          <button class="safeword-panic-btn" onclick="triggerEmergencySafeword()">
+            🛑 SAFEWORD 急停
+          </button>
+          <button onclick="openProfileDossierView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">我的特工主頁 ★</button>
+        </div>
       </div>
 
       <!-- 頂部切換主/被動方 -->
@@ -448,7 +454,7 @@
             <button onclick="openQrScanner()" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px; display:flex; align-items:center; gap:4px;">
               📷 掃碼新增
             </button>
-            <button onclick="addNewPartnerPrompt()" style="background:#141416; color:var(--text-muted); border:1px solid var(--panel-border); padding:5px 8px; font-size:0.75rem; cursor:pointer; border-radius:2px;">
+            <button onclick="addNewPartnerPrompt()" style="background:#141416; color:var(--text-muted); border:1px solid var(--panel-border); padding:5px 8px; font-size:0.75rem; cursor:border-radius:2px;">
               ＋ 手動
             </button>
           </div>
@@ -764,6 +770,27 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- 🚨 全螢幕安全詞急停警報 (Emergency Safeword Modal - 必須在 script 標籤外面！) -->
+  <div class="safeword-emergency-overlay" id="safewordEmergencyModal">
+    <div style="font-size:1.5rem; letter-spacing:4px; color:#ff334b; font-weight:bold;">
+      ⚠️ [ EMERGENCY PROTOCOL ACTIVATED ] ⚠️
+    </div>
+    <div style="font-size:0.85rem; color:rgba(255,255,255,0.7); margin-top:8px;">
+      所有指令與實踐立即終止 // IMMEDIATE HALT
+    </div>
+
+    <!-- 巨大安全詞顯示區 -->
+    <div class="safeword-display-large" id="emergencySafewordDisplay">MAYDAY</div>
+
+    <div style="max-width:360px; font-size:0.8rem; color:rgba(255,255,255,0.6); line-height:1.6;">
+      請立刻停手、解開束縛裝備、提供溫水並確認受調者意識狀態（Aftercare 照護）。
+    </div>
+
+    <button class="safeword-dismiss-btn" onclick="dismissEmergencySafeword()">
+      [ 雙方已恢復平靜 // 解除警報 ]
+    </button>
   </div>
 
   <!-- 載入所有模組 JS（shop.js 帶版本號強制破除舊圖片快取） -->
