@@ -23,6 +23,9 @@
   <link rel="stylesheet" href="./css/style.css" />
   <link rel="stylesheet" href="./css/tracker.css" />
 
+  <!-- 📷 名片截圖轉存圖片引擎 (html2canvas) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
   <!-- 輕量即時相機掃碼引擎 (HTML5-QRCode) -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
@@ -473,7 +476,7 @@
     </div>
   </div>
 
-  <!-- 3. 【獨立介面 02】特工個人主頁 (Profile Dossier View) -->
+<!-- 3. 【獨立介面 02】特工個人主頁 (Profile Dossier View) -->
   <div id="view-dossier" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -481,49 +484,66 @@
           <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL DOSSIER // 特工主頁 ]</span>
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">個人偏好標籤與專屬名片</span>
         </div>
-        <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">⚡ 進入計數終端</button>
-      </div>
-
-      <!-- 公開賽博特工名片（含神經掃描環與雷射掃描動畫） -->
-      <div class="dossier-hero-card">
-        <div class="dossier-avatar-container">
-          <img id="dossierAvatarPreview" src="" class="dossier-avatar" />
+        <div style="display:flex; gap:8px;">
+          <!-- 📷 匯出長圖按鈕 -->
+          <button id="btnExportCard" onclick="exportDossierToImage()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">
+            📷 匯出名片圖
+          </button>
+          <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">⚡ 計數終端</button>
         </div>
-        <div class="dossier-name" id="dossierNameDisplay">特工</div>
-        <span class="partner-role-badge" id="dossierRoleBadge">支配者 (Dom)</span>
-        <div style="margin-top:8px;">
-          <a id="dossierTwitterLink" href="#" target="_blank" style="font-size:0.8rem; color:#1DA1F2; text-decoration:none;">𝕏 Twitter ↗</a>
-        </div>
-        <p id="dossierBioDisplay" style="font-size:0.8rem; color:var(--text-muted); max-width:400px; margin:8px auto 0; line-height:1.6;"></p>
       </div>
 
-      <!-- 專屬 QR Code 通行證 -->
-      <div class="qr-pass-card">
-        <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL PASS // 掃碼連線特工名片 ]</div>
-        <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">出示供對方掃描，即可一鍵將您加為互動對象！</div>
-        <div class="qr-box" id="myQrCodeBox"></div>
-      </div>
-
-      <!-- 自訂偏好與雷點矩陣 -->
-      <div class="form-box">
-        <div class="form-title">實踐偏好與雷點矩陣 (PREFERENCE MATRIX)</div>
+      <!-- 📸 匯出長圖目標區域開始 -->
+      <div id="dossierExportTarget" style="padding: 6px; background: #08080a; border-radius: 6px;">
         
-        <div style="margin-bottom:14px;">
-          <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 實踐偏好 (PREFERENCES)：</label>
-          <div class="tags-wrap-box" id="myPrefTagsBox"></div>
-          <div class="custom-tag-input-row">
-            <input type="text" id="newCustomPrefInput" placeholder="輸入自訂偏好（例如：低溫蠟燭、罰站訓誡）" />
-            <button type="button" onclick="addCustomTag('pref')">＋ 新增偏好</button>
+        <!-- 公開賽博特工名片 -->
+        <div class="dossier-hero-card">
+          <div class="dossier-avatar-container">
+            <img id="dossierAvatarPreview" src="" class="dossier-avatar" crossorigin="anonymous" />
+          </div>
+          <div class="dossier-name" id="dossierNameDisplay">特工</div>
+          <span class="partner-role-badge" id="dossierRoleBadge">支配者 (Dom)</span>
+          <div style="margin-top:8px;">
+            <a id="dossierTwitterLink" href="#" target="_blank" style="font-size:0.8rem; color:#1DA1F2; text-decoration:none;">𝕏 Twitter ↗</a>
+          </div>
+          <p id="dossierBioDisplay" style="font-size:0.8rem; color:var(--text-muted); max-width:400px; margin:8px auto 0; line-height:1.6;"></p>
+        </div>
+
+        <!-- 專屬 QR Code 通行證 -->
+        <div class="qr-pass-card">
+          <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL PASS // 掃碼連線特工名片 ]</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">出示供對方掃描，即可一鍵將您加為互動對象！</div>
+          <div class="qr-box" id="myQrCodeBox"></div>
+        </div>
+
+        <!-- 自訂偏好與雷點矩陣 -->
+        <div class="form-box">
+          <div class="form-title">實踐偏好與雷點矩陣 (PREFERENCE MATRIX)</div>
+          
+          <div style="margin-bottom:14px;">
+            <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 實踐偏好 (PREFERENCES)：</label>
+            <div class="tags-wrap-box" id="myPrefTagsBox"></div>
+          </div>
+
+          <div>
+            <label style="font-size:0.75rem; color:var(--danger-red); font-weight:bold;">✦ 絕對雷點 (HARD LIMITS)：</label>
+            <div class="tags-wrap-box" id="myLimitTagsBox"></div>
           </div>
         </div>
 
-        <div>
-          <label style="font-size:0.75rem; color:var(--danger-red); font-weight:bold;">✦ 絕對雷點 (HARD LIMITS)：</label>
-          <div class="tags-wrap-box" id="myLimitTagsBox"></div>
-          <div class="custom-tag-input-row">
-            <input type="text" id="newCustomLimitInput" placeholder="輸入自訂雷點（例如：拒絕拍照、拒絕面部打擊）" />
-            <button type="button" onclick="addCustomTag('limit')" style="background:var(--danger-red); color:#fff;">＋ 新增雷點</button>
-          </div>
+      </div>
+      <!-- 📸 匯出長圖目標區域結束 -->
+
+      <!-- 自訂標籤輸入（不放進截圖區域，保持名片整潔） -->
+      <div class="form-box" style="margin-top: 14px;">
+        <div class="form-title">擴充自訂標籤 (CUSTOM TAGS)</div>
+        <div class="custom-tag-input-row" style="margin-bottom: 8px;">
+          <input type="text" id="newCustomPrefInput" placeholder="輸入自訂偏好（例如：低溫蠟燭）" />
+          <button type="button" onclick="addCustomTag('pref')">＋ 新增偏好</button>
+        </div>
+        <div class="custom-tag-input-row">
+          <input type="text" id="newCustomLimitInput" placeholder="輸入自訂雷點（例如：拒絕拍照）" />
+          <button type="button" onclick="addCustomTag('limit')" style="background:var(--danger-red); color:#fff;">＋ 新增雷點</button>
         </div>
       </div>
 
