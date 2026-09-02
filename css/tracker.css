@@ -121,6 +121,12 @@
   border-color: rgba(255, 51, 75, 0.3);
 }
 
+/* 實踐 Session 進行中指示呼吸燈 */
+@keyframes blink {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.2; transform: scale(0.85); }
+}
+
 /* 互動對象卡片 */
 .partner-card {
   background: #08080a;
@@ -142,6 +148,14 @@
   border-color: var(--accent-cyan);
   background: linear-gradient(90deg, rgba(0, 255, 136, 0.08), transparent);
   box-shadow: 0 0 12px rgba(0, 255, 136, 0.15);
+}
+.partner-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--panel-border);
+  margin-right: 12px;
+  object-fit: cover;
 }
 .partner-role-badge {
   font-size: 0.65rem;
@@ -283,13 +297,14 @@
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-/* 癖好與雷點矩陣標籤 */
+/* 癖好與雷點矩陣標籤（相容 .tag-pill 與 .matrix-tag-btn） */
 .tags-wrap-box {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin: 8px 0 12px;
 }
+.tag-pill,
 .matrix-tag-btn {
   padding: 6px 12px;
   font-size: 0.75rem;
@@ -301,11 +316,13 @@
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   user-select: none;
 }
+.tag-pill:hover,
 .matrix-tag-btn:hover {
   border-color: rgba(0, 255, 136, 0.4);
   color: #fff;
   transform: translateY(-2px);
 }
+.tag-pill.active,
 .matrix-tag-btn.active {
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
@@ -314,6 +331,7 @@
   box-shadow: 0 0 10px rgba(0, 255, 136, 0.25);
   animation: tagPop 0.25s ease;
 }
+.tag-pill.active-limit,
 .matrix-tag-btn.limit.active {
   border-color: var(--danger-red);
   color: var(--danger-red);
@@ -386,4 +404,85 @@
 @keyframes qrFadeIn {
   from { opacity: 0; filter: blur(4px) brightness(1.8); }
   to { opacity: 1; filter: blur(0px) brightness(1); }
+}
+
+/* ==========================================
+   🚨 EMERGENCY SAFEWORD PROTOCOL STYLES
+   ========================================== */
+
+/* 常駐急停拍擊按鈕 */
+.safeword-panic-btn {
+  background: rgba(230, 57, 70, 0.15);
+  border: 1px solid var(--danger-red);
+  color: var(--danger-red);
+  font-size: 0.75rem;
+  font-weight: bold;
+  padding: 6px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.safeword-panic-btn:hover,
+.safeword-panic-btn:active {
+  background: var(--danger-red);
+  color: #fff;
+  box-shadow: 0 0 12px var(--danger-red);
+}
+
+/* 全螢幕急停覆蓋層 */
+.safeword-emergency-overlay {
+  position: fixed;
+  inset: 0;
+  background: #08080a;
+  z-index: 99999;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+}
+
+.safeword-emergency-overlay.active {
+  display: flex;
+  animation: emergencyPulseBg 1.2s infinite;
+}
+
+@keyframes emergencyPulseBg {
+  0% { background: #120406; box-shadow: inset 0 0 100px rgba(230, 57, 70, 0.5); }
+  50% { background: #280408; box-shadow: inset 0 0 180px rgba(230, 57, 70, 0.8); }
+  100% { background: #120406; box-shadow: inset 0 0 100px rgba(230, 57, 70, 0.5); }
+}
+
+.safeword-display-large {
+  font-size: clamp(2.5rem, 10vw, 4.5rem);
+  font-weight: 900;
+  color: #ff334b;
+  letter-spacing: 4px;
+  text-shadow: 0 0 30px rgba(255, 51, 75, 0.8);
+  margin: 20px 0;
+  font-family: monospace;
+}
+
+.safeword-dismiss-btn {
+  margin-top: 30px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  padding: 12px 30px;
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.safeword-dismiss-btn:hover {
+  background: #fff;
+  color: #000;
 }
