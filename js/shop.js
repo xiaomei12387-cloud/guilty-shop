@@ -1,409 +1,209 @@
-// ==========================================
-// 🛒 GUILTY SHOP & CHECKOUT ENGINE (js/shop.js)
-// ==========================================
+// ==========================================================================
+// 🛒 GUILTY PROTOCOL // ARSENAL SHOP MODULE (js/shop.js)
+// ==========================================================================
 
-let cart = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.CART)) || [];
-let currentDetailProduct = null;
-let currentDetailRopeLength = '8 米 (8M)';
-let currentDetailRopePrice = 600;
-let currentWhipLength = '1.2 米 (1.2M) [CQB // 近距校準型]';
-let currentWhipBasePrice = 1500;
-let currentWhipColor = '極夜黑 [VOID BLACK]';
-let currentWhipExtra = 0;
-
-let currentShippingType = '711';
-let currentShippingName = '7-11 超商取貨';
-let currentPayment = '超商取貨付款';
-let appliedPromo = null;
-
-let currentCityDistMap = {};
-let currentDistrictStores = [];
-let verifiedCreator = null;
-
-let products = [
-  { 
-    id: 'cat-choker', 
-    brand: 'guilty', 
-    brandName: '欲室｜共犯 GUILTY', 
-    badgeClass: 'badge-guilty', 
-    title: '【貓痕義體拘束項圈】', 
-    desc: '消光 SLS 外骨骼裝甲與 TPU 85A 柔性肉球矩陣，取下後隱形烙印顯影 30-60 分鐘。', 
-    note: '🚨 09.11 正式解鎖預購調用 (Batch 01)',
-    price: 1990,
-    img: '',
-    hasSizes: true,
-    isPreorder: true,
-    sizes: [
-      'S 碼（淨脖圍 29–33 cm，Model 著用）',
-      'M 碼（淨脖圍 34–38 cm）'
-    ]
+// 裝備產品目錄庫
+const PRODUCTS = [
+  {
+    id: "guilty-choker",
+    brand: "guilty",
+    brandName: "欲室｜共犯",
+    title: "次世代外骨骼機能項圈【旗艦版】",
+    price: 3280,
+    desc: "3D 列印工業級尼龍裝甲，前喉結避空人體工學曲線。磁吸快拆模組，隱形微型顯影認罪印記。",
+    note: "客製雷雕銘牌與神經顯影印記",
+    img: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=800&q=80",
+    specs: ["S 碼 (29-33cm)", "M 碼 (34-38cm)"]
   },
-  { 
-    id: 'synapse-whip', 
-    brand: 'guilty', 
-    brandName: '欲室｜共犯 GUILTY', 
-    badgeClass: 'badge-guilty', 
-    title: '【神經突觸戰術長鞭】', 
-    desc: '一體化重磅緊密編織，精準配重實心鞭芯，傳遞純粹的神經校準訊號。', 
-    note: '⚡ 預製/客製配色排產調用',
-    price: 1500,
-    img: '',
-    isWhip: true,
-    lengths: [
-      { label: '1.2 米 (1.2M) [CQB // 近距校準型]', price: 1500 },
-      { label: '1.5 米 (1.5M) [EXTENDED // 遠距壓制型]', price: 1500 }
-    ],
-    colors: [
-      { label: '極夜黑 [VOID BLACK]', extra: 0 },
-      { label: '幽靈白 [GHOST WHITE]', extra: 0 },
-      { label: '信號藍 [SIGNAL BLUE]', extra: 0 },
-      { label: '紫黑混編 [NEURAL PURPLE]', extra: 0 },
-      { label: '小丑魚 [CLOWNFISH]', extra: 0 },
-      { label: '自訂特殊光譜（請備註 / 聯繫客服）(+NT$100)', extra: 100 }
-    ]
+  {
+    id: "guilty-whip",
+    brand: "guilty",
+    brandName: "欲室｜共犯",
+    title: "神經突觸精密戰術長鞭【黑化版】",
+    price: 2680,
+    desc: "航太級配重手柄，耐磨高密編織鞭身。破空阻力極小化，提供銳利而精確的神經末梢感知。",
+    note: "附防掉手腕帶與專屬收納套筒",
+    img: "https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=800&q=80",
+    specs: ["1.2 米 (CQB 近距校準型)", "1.5 米 (EXTENDED 遠距壓制型)"]
   },
-  { 
-    id: 'shushi-rope', 
-    brand: 'shushi', 
-    brandName: 'shushi束室 繩教室', 
-    badgeClass: 'badge-shushi', 
-    title: '【束室繩教室｜特選精煉麻繩】', 
-    desc: '束室精工脫漿、過油打蠟特選麻繩，13 種配色與生繩規格可選，手感溫潤柔韌。', 
-    note: '⚡ 現貨正常調用發貨',
-    price: 600,
-    img: './images/image_rope.jpg',
-    isCustomRope: true,
-    lengths: [
-      { label: '8 米 (8M)', price: 600 },
-      { label: '10 米 (10M)', price: 700 }
-    ],
-    variants: [
-      '未處理 原色生繩', '未處理 彩色生繩 (請先確認庫存)',
-      '01 原色麻繩', '02 紅色麻繩', '03 粉紅色麻繩',
-      '04 紫色麻繩', '05 深藍色麻繩', '06 藍色麻繩',
-      '07 墨綠色麻繩', '08 軍綠色麻繩', '09 咖啡色麻繩',
-      '10 橘色麻繩', '11 金黃色麻繩', '安全剪刀 (不挑色)'
-    ]
+  {
+    id: "shushi-rope",
+    brand: "shushi",
+    brandName: "shushi束室",
+    title: "束室特選・職人手工精煉麻繩【3條組】",
+    price: 1580,
+    desc: "13 道古法脫漿、深層天然植物油浸潤與蜂蠟烘烤。手感細膩溫潤，極度親膚且抗拉緊實。",
+    note: "每組 3 條（每條長度 7.5 公尺，直徑 6mm）",
+    img: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+    specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"]
   },
-  { 
-    id: 'shushi-cuff-guard', 
-    brand: 'shushi', 
-    brandName: 'shushi束室 繩教室', 
-    badgeClass: 'badge-shushi', 
-    title: '【束室繩教室｜防勒皮革護腕墊】', 
-    desc: '專為高拉力懸吊與繩縛設計，提供肌膚緩衝與關節壓迫保護。', 
-    note: '⚡ 現貨正常調用發貨',
-    price: 1280,
-    img: ''
+  {
+    id: "guilty-restraint",
+    brand: "guilty",
+    brandName: "欲室｜共犯",
+    title: "外骨骼柔性戰術肢體束縛帶【對裝】",
+    price: 1980,
+    desc: "外層高強度工業織帶，內襯醫療級減壓 TPU。快拆戰術金屬插扣，長效配戴零勒痕壓迫。",
+    note: "手腕與腳踝雙用通用尺寸",
+    img: "https://images.unsplash.com/photo-1508296695146-257a814070b4?auto=format&fit=crop&w=800&q=80",
+    specs: ["標準對裝 (手腕用)", "加長對裝 (腳踝用)"]
   }
 ];
 
+// 購物車與當前結帳狀態
+let cart = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.CART)) || [];
+let currentProduct = null;
+let currentSelectedSpec = null;
+let currentChokerPrint = "微型顯影『罪』印記";
+let currentShipping = "711";
+let currentShippingName = "7-11 超商取貨";
+let currentShippingFee = 60;
+let currentPayment = "cod";
+let appliedPromo = null;
+
+// --------------------------------------------------------------------------
+// 1. 裝備目錄渲染與過濾
+// --------------------------------------------------------------------------
+function renderProductCards(filter = "all") {
+  const grid = document.getElementById("productGrid");
+  if (!grid) return;
+
+  const filtered = filter === "all" ? PRODUCTS : PRODUCTS.filter(p => p.brand === filter);
+
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card" onclick="openProductDetail('${p.id}')">
+      <div class="card-thumb">
+        <img src="${p.img}" alt="${p.title}" loading="lazy" />
+        <span class="badge ${p.brand === 'guilty' ? 'badge-guilty' : 'badge-shushi'}">
+          [ ${p.brandName} ]
+        </span>
+      </div>
+      <div class="card-body">
+        <h3 style="font-size:1rem; font-weight:bold; color:#fff; margin-bottom:6px;">${p.title}</h3>
+        <p style="font-size:0.75rem; color:var(--text-muted); line-height:1.5; margin-bottom:10px;">${p.desc}</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:8px;">
+          <span style="font-size:1.1rem; color:var(--accent-cyan); font-weight:bold;">NT$ ${p.price.toLocaleString()}</span>
+          <span style="font-size:0.75rem; color:var(--accent-cyan); border:1px solid var(--accent-cyan); padding:2px 8px; border-radius:2px;">配置裝備 →</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterBrand(brand) {
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  event.target.classList.add('active');
+  renderProductCards(brand);
+}
+
+// --------------------------------------------------------------------------
+// 2. 裝備詳細配置視圖
+// --------------------------------------------------------------------------
+function openProductDetail(productId) {
+  currentProduct = PRODUCTS.find(p => p.id === productId);
+  if (!currentProduct) return;
+
+  currentSelectedSpec = currentProduct.specs[0];
+  currentChokerPrint = "微型顯影『罪』印記";
+
+  setActiveView("view-product-detail");
+  history.pushState({ view: "detail", productId }, "", `#detail-${productId}`);
+
+  document.getElementById("detailHeroImgArea").innerHTML = `
+    <img src="${currentProduct.img}" style="width:100%; height:100%; object-fit:cover;" />
+  `;
+  document.getElementById("detailProductTitle").textContent = `${currentProduct.brandName} // ${currentProduct.title}`;
+  document.getElementById("detailProductDesc").textContent = currentProduct.desc;
+  document.getElementById("detailPriceDisplay").textContent = `NT$ ${currentProduct.price.toLocaleString()}`;
+
+  // 動態規格選項
+  const optContainer = document.getElementById("detailDynamicOptions");
+  optContainer.innerHTML = `
+    <label style="font-size:0.75rem; color:var(--accent-cyan); margin-bottom:6px;">▼ 選擇戰術規格 / 尺寸：</label>
+    <div class="radio-grid" style="margin-bottom:14px;">
+      ${currentProduct.specs.map((spec, i) => `
+        <div class="radio-card ${i === 0 ? 'active' : ''}" onclick="selectDetailSpec('${spec}', this)">
+          ${spec}
+        </div>
+      `).join('')}
+    </div>
+  `;
+
+  // 旗艦項圈專屬自訂印記
+  const chokerArea = document.getElementById("detailChokerSpecificArea");
+  if (currentProduct.id === "guilty-choker") {
+    chokerArea.innerHTML = `
+      <div style="background:#000; border:1px dashed var(--accent-cyan); padding:12px; border-radius:4px; margin-bottom:14px;">
+        <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 內襯微型顯影印記 (配戴壓迫顯影技術)：</label>
+        <div class="radio-grid" style="margin-top:6px;">
+          <div class="radio-card active" onclick="selectChokerPrint('微型顯影『罪』印記', this)">微型『罪』印記</div>
+          <div class="radio-card" onclick="selectChokerPrint('神經突觸矩陣符號', this)">神經突觸符號</div>
+          <div class="radio-card" onclick="selectChokerPrint('純黑無顯影 (極簡款)', this)">純黑無顯影</div>
+        </div>
+      </div>
+    `;
+  } else {
+    chokerArea.innerHTML = "";
+  }
+}
+
+function selectDetailSpec(spec, el) {
+  currentSelectedSpec = spec;
+  el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectChokerPrint(printText, el) {
+  currentChokerPrint = printText;
+  el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// --------------------------------------------------------------------------
+// 3. 購物車管理邏輯
+// --------------------------------------------------------------------------
 function saveCart() {
   localStorage.setItem(CONFIG.STORAGE_KEYS.CART, JSON.stringify(cart));
   updateCartUI();
 }
 
 function toggleCart(isOpen) {
-  const drawer = document.getElementById('cartDrawer');
-  const overlay = document.getElementById('navOverlay');
+  const drawer = document.getElementById("cartDrawer");
+  const overlay = document.getElementById("navOverlay");
   if (isOpen) {
-    drawer.classList.add('open');
-    overlay.classList.add('active');
-    renderCartDrawer();
+    drawer.classList.add("open");
+    overlay.classList.add("active");
   } else {
-    drawer.classList.remove('open');
-    if (!document.getElementById('sideNav').classList.contains('open')) {
-      overlay.classList.remove('active');
+    drawer.classList.remove("open");
+    if (!document.getElementById("sideNav").classList.contains("open")) {
+      overlay.classList.remove("active");
     }
   }
 }
 
-function getCartTotalCount() {
-  return cart.reduce((sum, item) => sum + item.qty, 0);
-}
-
-function getCartSubtotal() {
-  return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-}
-
-function updateCartUI() {
-  document.getElementById('headerCartCount').textContent = getCartTotalCount();
-  renderCartDrawer();
-}
-
-function renderCartDrawer() {
-  const container = document.getElementById('cartItemsContainer');
-  const subtotalEl = document.getElementById('cartDrawerSubtotal');
-  const freeShippingBanner = document.getElementById('cartFreeShippingBanner');
-  const subtotal = getCartSubtotal();
-
-  subtotalEl.textContent = `NT$ ${subtotal.toLocaleString()}`;
-
-  if (subtotal >= CONFIG.FREE_SHIPPING_THRESHOLD) {
-    freeShippingBanner.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">⚡ 已解鎖全館滿 NT$ 1,800 免運特權！</span>`;
-  } else {
-    const diff = CONFIG.FREE_SHIPPING_THRESHOLD - subtotal;
-    freeShippingBanner.innerHTML = `<span style="color:var(--text-muted);">差 <strong style="color:var(--accent-cyan);">NT$ ${diff.toLocaleString()}</strong> 即可享有免運交付</span>`;
-  }
-
-  if (cart.length === 0) {
-    container.innerHTML = `<div style="text-align:center; color:var(--text-muted); padding:40px 0; font-size:0.85rem;">[ 裝備庫目前為空 ]<br>點擊裝備目錄即可添加調用</div>`;
-    return;
-  }
-
-  container.innerHTML = cart.map((item, index) => {
-    const thumbHtml = (item.img && item.img.trim() !== '')
-      ? `<img src="${item.img}" class="cart-item-thumb" onclick="openProductDetail('${item.productId}')" alt="${item.title}" />`
-      : `<div class="cart-item-thumb" onclick="openProductDetail('${item.productId}')" style="display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--text-muted);">SPEC</div>`;
-
-    return `
-      <div class="cart-item-card">
-        ${thumbHtml}
-        <div class="cart-item-info">
-          <div class="cart-item-title" onclick="openProductDetail('${item.productId}')">${item.title}</div>
-          <div class="cart-item-spec">${item.specText || '標準規格'}</div>
-          <div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div>
-          <div class="cart-qty-ctrl">
-            <button class="qty-btn" onclick="changeCartItemQty(${index}, -1)">-</button>
-            <span class="qty-num">${item.qty}</span>
-            <button class="qty-btn" onclick="changeCartItemQty(${index}, 1)">+</button>
-          </div>
-        </div>
-        <button class="cart-item-del" onclick="removeCartItem(${index})" title="移除裝備">✕</button>
-      </div>
-    `;
-  }).join('');
-}
-
-function changeCartItemQty(index, delta) {
-  if (cart[index]) {
-    cart[index].qty += delta;
-    if (cart[index].qty <= 0) cart.splice(index, 1);
-    saveCart();
-  }
-}
-
-function removeCartItem(index) {
-  cart.splice(index, 1);
-  saveCart();
-}
-
-function renderProductCards(filter = 'all') {
-  const grid = document.getElementById('productGrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  const filtered = filter === 'all' ? products : products.filter(p => p.brand === filter);
-  filtered.forEach(p => {
-    const card = document.createElement('div');
-    card.className = `product-card`;
-    card.onclick = () => openProductDetail(p.id);
-
-    let priceText = `NT$ ${p.price.toLocaleString()}`;
-    if (p.isCustomRope) priceText = `NT$ 600 起`;
-
-    const thumbContent = (p.img && p.img.trim() !== '')
-      ? `<img src="${p.img}" alt="${p.title}" onerror="this.parentElement.innerHTML='[ ${p.title} 預覽圖 ]';" />`
-      : `[ ${p.title} 預覽圖 ]`;
-
-    const statusNoteHtml = p.isPreorder 
-      ? `<div style="font-size:0.7rem; color:#ff334b; margin-top:4px; font-weight:bold;">${p.note}</div>`
-      : `<div style="font-size:0.7rem; color:var(--accent-cyan); margin-top:4px;">${p.note}</div>`;
-
-    card.innerHTML = `
-      <div class="card-thumb">
-        <span class="badge ${p.badgeClass}">${p.brandName}</span>
-        ${thumbContent}
-      </div>
-      <div class="card-body">
-        <div style="font-size: 0.95rem; margin-bottom: 4px; font-weight: bold;">${p.title}</div>
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">${p.desc}</div>
-        ${statusNoteHtml}
-        <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px dashed var(--panel-border); padding-top:10px; margin-top:8px;">
-          <span style="color: ${p.brand === 'guilty' ? 'var(--accent-cyan)' : 'var(--accent-purple)'}; font-weight: bold; font-size: 0.9rem;">${priceText}</span>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">檢視裝備配置 →</span>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-}
-
-function filterBrand(brand) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
-  renderProductCards(brand);
-}
-
-function openProductDetail(productId, push = true) {
-  toggleCart(false);
-  currentDetailProduct = products.find(p => p.id === productId);
-  if (!currentDetailProduct) return;
-
-  currentDetailRopeLength = '8 米 (8M)';
-  currentDetailRopePrice = 600;
-  currentWhipLength = '1.2 米 (1.2M) [CQB // 近距校準型]';
-  currentWhipBasePrice = 1500;
-  currentWhipColor = '極夜黑 [VOID BLACK]';
-  currentWhipExtra = 0;
-
-  const heroArea = document.getElementById('detailHeroImgArea');
-  if (currentDetailProduct.img && currentDetailProduct.img.trim() !== '') {
-    heroArea.innerHTML = `<img src="${currentDetailProduct.img}" alt="${currentDetailProduct.title}" onerror="this.parentElement.innerHTML='<span style=\\'color:var(--text-muted);\\'>[ ${currentDetailProduct.title} 3D 義體檔案庫 ]</span>';" />`;
-  } else {
-    heroArea.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.85rem;"><span style="color:var(--accent-cyan); font-weight:bold;">[ ${currentDetailProduct.title} ]</span><br>SPEC // 3D 外骨骼參數化檔案庫</div>`;
-  }
-
-  document.getElementById('detailProductTitle').textContent = currentDetailProduct.title;
-  let descNoteHtml = currentDetailProduct.isPreorder 
-    ? `<div style="color:#ff334b; font-weight:bold; font-size:0.8rem; margin-bottom:8px; border-left:2px solid #ff334b; padding-left:8px;">[ 官方公關解鎖中 // 9/11 正式開啟預購調用排產 ]</div>`
-    : `<div style="color:var(--accent-cyan); font-size:0.75rem; margin-bottom:8px; border-left:2px solid var(--accent-cyan); padding-left:8px;">[ 官方核心研發 // 正常調用交付 ]</div>`;
-
-  document.getElementById('detailProductDesc').innerHTML = descNoteHtml + currentDetailProduct.desc;
-
-  const dynamicArea = document.getElementById('detailDynamicOptions');
-  const chokerSpecificArea = document.getElementById('detailChokerSpecificArea');
-  
-  if (currentDetailProduct.id === 'cat-choker') {
-    dynamicArea.innerHTML = `
-      <div style="margin-bottom: 12px;">
-        <label style="font-size:0.75rem; color:var(--accent-cyan);">義體尺寸規格（Model 淨脖圍 30cm 著用 S 碼）*</label>
-        <select id="detailChokerSizeSelect" style="border-color:var(--accent-cyan);">
-          ${currentDetailProduct.sizes.map(s => `<option value="${s}">${s}</option>`).join('')}
-        </select>
-      </div>
-    `;
-
-    chokerSpecificArea.innerHTML = `
-      <div style="background:#000; border:1px dashed var(--panel-border); padding:16px; text-align:center; margin:16px 0;">
-        <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:4px;">[ 點擊/懸停模擬肉球壓印觸感 ]</div>
-        <div class="stamp-preview" id="detailStampBox">
-          <span id="detailStampText" style="color:var(--text-muted); font-size:0.75rem;">觸控體驗</span>
-        </div>
-        <div style="font-size:0.75rem; color:var(--danger-red);">取下後肌膚顯影：持續 30–60 分鐘</div>
-      </div>
-    `;
-    document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
-    document.getElementById('detailCheckoutBtn').textContent = '9/11 開放預購・調用結帳 →';
-
-  } else if (currentDetailProduct.isWhip) {
-    chokerSpecificArea.innerHTML = ``;
-    dynamicArea.innerHTML = `
-      <div style="margin-bottom: 12px;">
-        <label style="font-size:0.75rem; color:var(--accent-cyan);">長度規格 (LENGTH)*</label>
-        <select id="detailWhipLengthSelect" onchange="onDetailWhipChange()" style="border-color:var(--accent-cyan);">
-          ${currentDetailProduct.lengths.map(l => `<option value="${l.label}" data-price="${l.price}">${l.label} - NT$ ${l.price}</option>`).join('')}
-        </select>
-      </div>
-      <div style="margin-bottom: 12px;">
-        <label style="font-size:0.75rem; color:var(--accent-cyan);">配色光譜 (SPECTRUM)*</label>
-        <select id="detailWhipColorSelect" onchange="onDetailWhipChange()" style="border-color:var(--accent-cyan);">
-          ${currentDetailProduct.colors.map(c => `<option value="${c.label}" data-extra="${c.extra}">${c.label}</option>`).join('')}
-        </select>
-      </div>
-    `;
-    updateWhipDetailPrice();
-    document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
-
-  } else if (currentDetailProduct.isCustomRope) {
-    chokerSpecificArea.innerHTML = ``;
-    dynamicArea.innerHTML = `
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
-        <div>
-          <label style="font-size:0.75rem; color:var(--accent-purple);">長度規格*</label>
-          <select id="detailRopeLengthSelect" onchange="onDetailRopeLengthChange(this)" style="border-color:var(--accent-purple);">
-            ${currentDetailProduct.lengths.map(l => `<option value="${l.label}">${l.label} - NT$ ${l.price}</option>`).join('')}
-          </select>
-        </div>
-        <div>
-          <label style="font-size:0.75rem; color:var(--accent-purple);">款式顏色*</label>
-          <select id="detailRopeVariantSelect" style="border-color:var(--accent-purple);">
-            ${currentDetailProduct.variants.map(v => `<option value="${v}">${v}</option>`).join('')}
-          </select>
-        </div>
-      </div>
-    `;
-    document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailRopePrice.toLocaleString()}`;
-    document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
-  } else {
-    chokerSpecificArea.innerHTML = ``;
-    dynamicArea.innerHTML = '';
-    document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailProduct.price.toLocaleString()}`;
-    document.getElementById('detailCheckoutBtn').textContent = '立即簽署協議結帳 →';
-  }
-
-  setActiveView('view-product-detail');
-  if (push) {
-    history.pushState({ view: 'product-detail', productId: productId }, '', `#product-${productId}`);
-  }
-}
-
-function onDetailRopeLengthChange(selectEl) {
-  const selectedOption = currentDetailProduct.lengths.find(l => l.label === selectEl.value);
-  if (selectedOption) {
-    currentDetailRopeLength = selectedOption.label;
-    currentDetailRopePrice = selectedOption.price;
-    document.getElementById('detailPriceDisplay').textContent = `NT$ ${currentDetailRopePrice.toLocaleString()}`;
-  }
-}
-
-function onDetailWhipChange() {
-  const lenEl = document.getElementById('detailWhipLengthSelect');
-  const colEl = document.getElementById('detailWhipColorSelect');
-  const optLen = lenEl.options[lenEl.selectedIndex];
-  const optCol = colEl.options[colEl.selectedIndex];
-
-  currentWhipLength = optLen.value;
-  currentWhipBasePrice = parseInt(optLen.getAttribute('data-price')) || 1500;
-
-  currentWhipColor = optCol.value;
-  currentWhipExtra = parseInt(optCol.getAttribute('data-extra')) || 0;
-
-  updateWhipDetailPrice();
-}
-
-function updateWhipDetailPrice() {
-  const total = currentWhipBasePrice + currentWhipExtra;
-  document.getElementById('detailPriceDisplay').textContent = `NT$ ${total.toLocaleString()}`;
-}
-
-function getCurrentConfiguredCartItem() {
-  if (!currentDetailProduct) return null;
-
-  let specText = '標準規格';
-  let itemPrice = currentDetailProduct.price;
-
-  if (currentDetailProduct.hasSizes) {
-    specText = document.getElementById('detailChokerSizeSelect') ? document.getElementById('detailChokerSizeSelect').value : '標準規格';
-  } else if (currentDetailProduct.isWhip) {
-    specText = `${currentWhipLength.split(' ')[0]} // ${currentWhipColor}`;
-    itemPrice = currentWhipBasePrice + currentWhipExtra;
-  } else if (currentDetailProduct.isCustomRope) {
-    const lengthVal = document.getElementById('detailRopeLengthSelect').value;
-    const variantVal = document.getElementById('detailRopeVariantSelect').value;
-    specText = `${variantVal} // ${lengthVal}`;
-    itemPrice = currentDetailRopePrice;
-  }
-
-  return {
-    key: `${currentDetailProduct.id}_${specText}`,
-    productId: currentDetailProduct.id,
-    title: currentDetailProduct.title,
-    specText: specText,
-    price: itemPrice,
-    img: currentDetailProduct.img,
-    qty: 1
-  };
-}
-
 function addCurrentProductToCart() {
-  const item = getCurrentConfiguredCartItem();
-  if (!item) return;
+  if (!currentProduct) return;
 
-  const existingIndex = cart.findIndex(c => c.key === item.key);
-  if (existingIndex > -1) {
-    cart[existingIndex].qty += 1;
+  const specLabel = currentProduct.id === "guilty-choker" 
+    ? `${currentSelectedSpec} / ${currentChokerPrint}` 
+    : currentSelectedSpec;
+
+  const cartItemId = `${currentProduct.id}_${specLabel}`;
+  const existing = cart.find(item => item.cartItemId === cartItemId);
+
+  if (existing) {
+    existing.qty += 1;
   } else {
-    cart.push(item);
+    cart.push({
+      cartItemId,
+      id: currentProduct.id,
+      title: currentProduct.title,
+      brandName: currentProduct.brandName,
+      price: currentProduct.price,
+      specText: specLabel,
+      img: currentProduct.img,
+      qty: 1
+    });
   }
 
   saveCart();
@@ -412,369 +212,409 @@ function addCurrentProductToCart() {
 
 function buyNowFromDetail() {
   addCurrentProductToCart();
-  proceedToCheckoutFromCart();
+  toggleCart(false);
+  openCheckoutView();
 }
 
-function calculateShippingFee(subtotal, shippingType) {
-  if (shippingType === 'meetup') return 0;
-  if (subtotal >= CONFIG.FREE_SHIPPING_THRESHOLD) return 0;
-  return shippingType === 'home' ? 120 : 60;
+function updateCartQty(cartItemId, delta) {
+  const item = cart.find(i => i.cartItemId === cartItemId);
+  if (!item) return;
+
+  item.qty += delta;
+  if (item.qty <= 0) {
+    cart = cart.filter(i => i.cartItemId !== cartItemId);
+  }
+  saveCart();
 }
 
-function proceedToCheckoutFromCart(push = true) {
+function removeCartItem(cartItemId) {
+  cart = cart.filter(i => i.cartItemId !== cartItemId);
+  saveCart();
+}
+
+function getCartSubtotal() {
+  return cart.reduce((acc, item) => acc + (item.price * item.qty), 0);
+}
+
+function updateCartUI() {
+  const countBadge = document.getElementById("headerCartCount");
+  const itemsContainer = document.getElementById("cartItemsContainer");
+  const subtotalText = document.getElementById("cartDrawerSubtotal");
+  const banner = document.getElementById("cartFreeShippingBanner");
+
+  const totalQty = cart.reduce((acc, i) => acc + i.qty, 0);
+  const subtotal = getCartSubtotal();
+
+  if (countBadge) countBadge.textContent = totalQty;
+  if (subtotalText) subtotalText.textContent = `NT$ ${subtotal.toLocaleString()}`;
+
+  if (banner) {
+    if (subtotal >= CONFIG.FREE_SHIPPING_THRESHOLD) {
+      banner.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已達成免運門檻（滿 NT$ ${CONFIG.FREE_SHIPPING_THRESHOLD.toLocaleString()} 免運）</span>`;
+    } else {
+      const diff = CONFIG.FREE_SHIPPING_THRESHOLD - subtotal;
+      banner.innerHTML = `<span style="color:var(--text-muted);">還差 <strong style="color:var(--accent-cyan);">NT$ ${diff.toLocaleString()}</strong> 享全館免運費</span>`;
+    }
+  }
+
+  if (itemsContainer) {
+    if (cart.length === 0) {
+      itemsContainer.innerHTML = `
+        <div style="text-align:center; color:var(--text-muted); padding:40px 0; font-size:0.85rem;">
+          [ 裝備庫目前為空 ]<br>點擊裝備加入調用清單
+        </div>
+      `;
+      return;
+    }
+
+    itemsContainer.innerHTML = cart.map(item => `
+      <div class="cart-item-card">
+        <img src="${item.img}" class="cart-item-thumb" />
+        <div class="cart-item-info">
+          <div class="cart-item-title">${item.title}</div>
+          <div class="cart-item-spec">${item.specText}</div>
+          <div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div>
+          <div class="cart-qty-ctrl">
+            <button class="qty-btn" onclick="updateCartQty('${item.cartItemId}', -1)">-</button>
+            <span class="qty-num">${item.qty}</span>
+            <button class="qty-btn" onclick="updateCartQty('${item.cartItemId}', 1)">+</button>
+          </div>
+        </div>
+        <button class="cart-item-del" onclick="removeCartItem('${item.cartItemId}')">✕</button>
+      </div>
+    `).join('');
+  }
+}
+
+function proceedToCheckoutFromCart() {
   if (cart.length === 0) {
-    alert('裝備庫為空，請先選擇裝備！');
+    alert("裝備庫為空，請先選取裝備！");
     return;
   }
   toggleCart(false);
-  renderCheckoutView();
-  setActiveView('view-checkout');
-  initCvsDropdowns();
-  updateMemberUI();
-  if (push) {
-    history.pushState({ view: 'checkout' }, '', '#checkout');
-  }
+  openCheckoutView();
 }
 
-function onPhoneChanged() {
-  if (appliedPromo && appliedPromo.code === 'IAMSUB') {
-    applyPromoCode();
-  }
-}
+// --------------------------------------------------------------------------
+// 4. 終端結帳與物流計算
+// --------------------------------------------------------------------------
+function calculateFinancials() {
+  const subtotal = getCartSubtotal();
+  const isFreeShip = subtotal >= CONFIG.FREE_SHIPPING_THRESHOLD || currentShipping === "meetup";
+  const shippingFee = isFreeShip ? 0 : currentShippingFee;
 
-async function checkIsFirstPurchase(phone) {
-  const cleanPhone = String(phone).replace(/[^0-9]/g, '');
-  if (!cleanPhone) return false;
-
-  let localOrders = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.ORDERS)) || [];
-  const hasLocalOrder = localOrders.some(o => String(o.phone).replace(/[^0-9]/g, '') === cleanPhone);
-  if (hasLocalOrder) return false;
-
-  try {
-    const res = await new Promise((resolve) => {
-      const cbName = 'checkFirst_' + Date.now();
-      window[cbName] = function(cloudOrders) {
-        const scriptEl = document.getElementById(cbName);
-        if (scriptEl) scriptEl.remove();
-        delete window[cbName];
-        resolve(!cloudOrders || cloudOrders.length === 0);
-      };
-      const script = document.createElement('script');
-      script.id = cbName;
-      script.src = `${CONFIG.API_URL}?phone=${encodeURIComponent(cleanPhone)}&callback=${cbName}&_t=${Date.now()}`;
-      script.onerror = () => resolve(true);
-      document.body.appendChild(script);
-    });
-    return res;
-  } catch (e) {
-    return true;
-  }
-}
-
-async function applyPromoCode() {
-  const input = document.getElementById('promoCodeInput');
-  const msg = document.getElementById('promoStatusMsg');
-  const code = input.value.trim().toUpperCase();
-
-  if (!code) {
-    msg.innerHTML = `<span style="color:var(--danger-red);">請輸入折扣碼！</span>`;
-    return;
-  }
-
-  const now = new Date();
-
-  if (code === 'TOMOTACHI') {
-    const hasWhip = cart.some(item => item.productId === 'synapse-whip');
-    if (!hasWhip) {
-      msg.innerHTML = `<span style="color:var(--danger-red);">此折扣碼僅適用於【神經突觸戰術長鞭】！</span>`;
-      return;
-    }
-    appliedPromo = { code: 'TOMOTACHI', type: 'whip_discount' };
-    forceBankPayment(false);
-    msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用 TOMOTACHI 特友協議！</span>`;
-    document.getElementById('removePromoBtn').style.display = 'inline-block';
-    renderCheckoutView();
-    return;
-  }
-
-  if (code === 'LOVEGUILTY') {
-    const start = new Date('2026-09-06T00:00:00+08:00');
-    const end = new Date('2026-09-11T19:00:00+08:00');
-    if (now < start || now > end) {
-      msg.innerHTML = `<span style="color:var(--danger-red);">【LOVEGUILTY】盲鳥優惠協議尚未開啟或已逾期！</span>`;
-      return;
-    }
-    appliedPromo = { code: 'LOVEGUILTY', type: 'blind', forceBankTransfer: true };
-    forceBankPayment(true);
-    msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用盲鳥優惠！(限定 ATM 匯款)</span>`;
-    document.getElementById('removePromoBtn').style.display = 'inline-block';
-    renderCheckoutView();
-    return;
-  }
-
-  if (code === 'IAMSUB') {
-    const phone = document.getElementById('custPhone').value.trim();
-    if (!phone) {
-      msg.innerHTML = `<span style="color:var(--danger-red);">請先填寫聯絡電話以驗證首購資格！</span>`;
-      return;
-    }
-    const isFirst = await checkIsFirstPurchase(phone);
-    if (!isFirst) {
-      msg.innerHTML = `<span style="color:var(--danger-red);">此電話已有調用案件紀錄，非首購特工。</span>`;
-      return;
-    }
-    appliedPromo = { code: 'IAMSUB', type: 'first' };
-    forceBankPayment(false);
-    msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 特工首購資格驗證通過！全單享 8 折。</span>`;
-    document.getElementById('removePromoBtn').style.display = 'inline-block';
-    renderCheckoutView();
-    return;
-  }
-
-  if (code === 'WANG18X') {
-    appliedPromo = { code: 'WANG18X', type: 'early' };
-    forceBankPayment(false);
-    msg.innerHTML = `<span style="color:var(--accent-cyan); font-weight:bold;">✔ 已成功套用早鳥優惠！</span>`;
-    document.getElementById('removePromoBtn').style.display = 'inline-block';
-    renderCheckoutView();
-    return;
-  }
-
-  msg.innerHTML = `<span style="color:var(--danger-red);">無效的協議折扣碼。</span>`;
-}
-
-function removePromoCode() {
-  appliedPromo = null;
-  document.getElementById('promoCodeInput').value = '';
-  document.getElementById('promoStatusMsg').innerHTML = ``;
-  document.getElementById('removePromoBtn').style.display = 'none';
-  forceBankPayment(false);
-  renderCheckoutView();
-}
-
-function forceBankPayment(isForce) {
-  const codBtn = document.getElementById('payMethodCod');
-  const bankBtn = document.getElementById('payMethodBank');
-  const note = document.getElementById('paymentNote');
-
-  if (isForce) {
-    codBtn.classList.remove('active');
-    codBtn.classList.add('disabled');
-    bankBtn.classList.add('active');
-    currentPayment = '銀行 ATM 匯款';
-    note.innerHTML = `<strong style="color:#ff334b;">⚡ 盲鳥特惠限定：本單僅限「銀行 ATM 匯款」支付。</strong>`;
-  } else {
-    codBtn.classList.remove('disabled');
-  }
-}
-
-function calculateOrderFinancials() {
-  let originalSubtotal = getCartSubtotal();
-  let discountedSubtotal = originalSubtotal;
-  let discountAmount = 0;
-
+  let discount = 0;
   if (appliedPromo) {
-    if (appliedPromo.type === 'whip_discount') {
-      discountedSubtotal = cart.reduce((sum, item) => sum + (item.productId === 'synapse-whip' ? (item.price - 300) * item.qty : item.price * item.qty), 0);
-    } else if (appliedPromo.type === 'blind') {
-      discountedSubtotal = cart.reduce((sum, item) => sum + (item.productId === 'cat-choker' ? 990 * item.qty : item.price * item.qty), 0);
-    } else if (appliedPromo.type === 'early') {
-      discountedSubtotal = cart.reduce((sum, item) => sum + (item.productId === 'cat-choker' ? 1580 * item.qty : item.price * item.qty), 0);
-    } else if (appliedPromo.type === 'first') {
-      discountedSubtotal = Math.round(originalSubtotal * 0.8);
+    if (appliedPromo.type === "percent") {
+      discount = Math.round(subtotal * (1 - appliedPromo.value));
+    } else if (appliedPromo.type === "fixed") {
+      discount = Math.min(subtotal, appliedPromo.value);
     }
-    discountAmount = originalSubtotal - discountedSubtotal;
   }
 
-  const shippingFee = calculateShippingFee(discountedSubtotal, currentShippingType);
-  return { originalSubtotal, discountedSubtotal, discountAmount, shippingFee, totalAmount: discountedSubtotal + shippingFee };
+  const totalAmount = Math.max(0, subtotal - discount + shippingFee);
+  return { subtotal, discount, shippingFee, totalAmount };
 }
 
-function renderCheckoutView() {
-  const itemsListEl = document.getElementById('checkoutOrderItemsList');
-  const summaryEl = document.getElementById('checkoutFinancialSummary');
-  const fin = calculateOrderFinancials();
+function openCheckoutView() {
+  setActiveView("view-checkout");
+  history.pushState({ view: "checkout" }, "", "#checkout");
+  renderCheckoutSummary();
+  initCvsCityDropdown();
+}
 
-  itemsListEl.innerHTML = cart.map(item => `
-    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px dashed var(--panel-border); padding:6px 0; font-size:0.85rem;">
+function renderCheckoutSummary() {
+  const itemsList = document.getElementById("checkoutOrderItemsList");
+  const summaryBox = document.getElementById("checkoutFinancialSummary");
+  if (!itemsList || !summaryBox) return;
+
+  itemsList.innerHTML = cart.map(i => `
+    <div style="display:flex; justify-content:space-between; font-size:0.82rem; margin-bottom:6px; border-bottom:1px dashed var(--panel-border); padding-bottom:6px;">
       <div>
-        <strong>${item.title}</strong>
-        <span style="font-size:0.75rem; color:var(--text-muted); display:block;">規格：${item.specText} × ${item.qty}</span>
+        <span style="color:#fff;">${i.title}</span><br>
+        <span style="color:var(--text-muted); font-size:0.75rem;">${i.specText} × ${i.qty}</span>
       </div>
-      <div style="color:var(--accent-cyan); font-weight:bold;">NT$ ${(item.price * item.qty).toLocaleString()}</div>
+      <div style="color:var(--accent-cyan); font-weight:bold;">NT$ ${(i.price * i.qty).toLocaleString()}</div>
     </div>
   `).join('');
 
-  summaryEl.innerHTML = `
-    <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:0.85rem;">
-      <span style="color:var(--text-muted);">小計：</span>
-      <span>NT$ ${fin.originalSubtotal.toLocaleString()}</span>
-    </div>
-    ${fin.discountAmount > 0 ? `<div style="display:flex; justify-content:space-between; color:#ff334b; font-size:0.85rem;"><span>折扣：</span><span>- NT$ ${fin.discountAmount.toLocaleString()}</span></div>` : ''}
-    <div style="display:flex; justify-content:space-between; margin-top:4px; font-size:0.85rem;">
-      <span style="color:var(--text-muted);">運費 (${currentShippingName})：</span>
-      <span>NT$ ${fin.shippingFee}</span>
-    </div>
-    <div style="display:flex; justify-content:space-between; border-top:1px solid var(--panel-border); padding-top:10px; margin-top:10px;">
-      <span style="font-weight:bold; color:#fff;">總金額：</span>
-      <span style="color:var(--accent-cyan); font-weight:bold; font-size:1.25rem;">NT$ ${fin.totalAmount.toLocaleString()}</span>
+  const fin = calculateFinancials();
+  summaryBox.innerHTML = `
+    <div style="margin-top:10px; font-size:0.85rem; line-height:1.8;">
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted);">裝備小計：</span>
+        <span>NT$ ${fin.subtotal.toLocaleString()}</span>
+      </div>
+      ${fin.discount > 0 ? `
+        <div style="display:flex; justify-content:space-between; color:var(--danger-red);">
+          <span>折扣代碼折抵 (${appliedPromo.code})：</span>
+          <span>- NT$ ${fin.discount.toLocaleString()}</span>
+        </div>
+      ` : ''}
+      <div style="display:flex; justify-content:space-between;">
+        <span style="color:var(--text-muted);">絕密隱私運費：</span>
+        <span>${fin.shippingFee === 0 ? '<strong style="color:var(--accent-cyan);">免運 (FREE)</strong>' : `NT$ ${fin.shippingFee}`}</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; border-top:1px solid var(--panel-border); padding-top:8px; margin-top:8px; font-size:1.1rem; font-weight:bold;">
+        <span style="color:#fff;">協議調用總額：</span>
+        <span style="color:var(--accent-cyan);">NT$ ${fin.totalAmount.toLocaleString()}</span>
+      </div>
     </div>
   `;
 }
 
 function selectShipping(type, el) {
+  currentShipping = type;
   el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
-  currentShippingType = type;
 
-  const cvsContainer = document.getElementById('cvsDropdownContainer');
-  const manualGroup = document.getElementById('manualLocationGroup');
+  const cvsBox = document.getElementById("cvsDropdownContainer");
+  const manualBox = document.getElementById("manualLocationGroup");
 
-  if (type === '711' || type === 'family') {
-    currentShippingName = type === '711' ? '7-11 超商取貨' : '全家 超商取貨';
-    cvsContainer.style.display = 'block';
-    manualGroup.style.display = 'none';
-    initCvsDropdowns();
+  if (type === "711") {
+    currentShippingName = "7-11 超商取貨";
+    currentShippingFee = 60;
+    cvsBox.style.display = "block";
+    manualBox.style.display = "none";
+    initCvsCityDropdown();
+  } else if (type === "family") {
+    currentShippingName = "全家 超商取貨";
+    currentShippingFee = 60;
+    cvsBox.style.display = "block";
+    manualBox.style.display = "none";
+    initCvsCityDropdown();
+  } else if (type === "home") {
+    currentShippingName = "黑貓 絕密宅配";
+    currentShippingFee = 120;
+    cvsBox.style.display = "none";
+    manualBox.style.display = "block";
+  } else if (type === "meetup") {
+    currentShippingName = "線下面交 (特工約定時地)";
+    currentShippingFee = 0;
+    cvsBox.style.display = "none";
+    manualBox.style.display = "block";
+  }
+
+  renderCheckoutSummary();
+}
+
+function selectPayment(method, el) {
+  currentPayment = method;
+  el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+
+  const note = document.getElementById("paymentNote");
+  if (method === "cod") {
+    note.textContent = "貨物送達指定超商門市後，取貨現場付款即可。";
   } else {
-    currentShippingName = type === 'home' ? '黑貓 宅配到府' : '線下面交';
-    cvsContainer.style.display = 'none';
-    manualGroup.style.display = 'block';
+    note.textContent = "請於送出訂單後，依畫面指示匯入指定安全帳戶以完成調用鎖定。";
   }
-  renderCheckoutView();
 }
 
-function selectPayment(type, el) {
-  if (appliedPromo && appliedPromo.forceBankTransfer && type === 'cod') {
-    alert('【盲鳥特惠限定】此折扣碼僅支援「銀行 ATM 匯款」！');
-    return;
-  }
-  el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
-  el.classList.add('active');
-  currentPayment = type === 'cod' ? '超商取貨付款' : '銀行 ATM 匯款';
-}
+// --------------------------------------------------------------------------
+// 5. 超商門市級聯下拉選單 (JSONP 串接 StoreDB)
+// --------------------------------------------------------------------------
+function initCvsCityDropdown() {
+  const citySel = document.getElementById("cvsCitySelect");
+  if (!citySel) return;
 
-function initCvsDropdowns() {
-  const citySelect = document.getElementById('cvsCitySelect');
-  citySelect.innerHTML = '<option value="">-- 連線試算表載入縣市中... --</option>';
+  citySel.innerHTML = "<option value=''>-- 載入縣市中... --</option>";
+  const brand = currentShipping === "711" ? "711" : "family";
 
-  const cbName = 'cvsInit_' + Date.now();
+  const cbName = "cityCb_" + Date.now();
   window[cbName] = function(data) {
     const s = document.getElementById(cbName);
     if (s) s.remove();
     delete window[cbName];
 
-    currentCityDistMap = {};
-    if (data && data.length > 0) {
-      data.forEach(item => {
-        if (!currentCityDistMap[item.city]) currentCityDistMap[item.city] = new Set();
-        if (item.dist) currentCityDistMap[item.city].add(item.dist);
-      });
-
-      citySelect.innerHTML = '<option value="">-- 選擇縣市 --</option>';
-      Object.keys(currentCityDistMap).forEach(city => {
-        const opt = document.createElement('option');
-        opt.value = city;
-        opt.textContent = city;
-        citySelect.appendChild(opt);
-      });
+    if (!data || data.length === 0) {
+      citySel.innerHTML = "<option value=''>-- 無門市數據，改由手動填寫 --</option>";
+      return;
     }
+
+    const uniqueCities = [...new Set(data.map(item => item.city).filter(Boolean))];
+    citySel.innerHTML = "<option value=''>-- 選擇縣市 --</option>" + 
+      uniqueCities.map(c => `<option value="${c}">${c}</option>`).join('');
   };
 
-  const script = document.createElement('script');
+  const script = document.createElement("script");
   script.id = cbName;
-  script.src = `${CONFIG.API_URL}?action=getCvsLocations&brand=${currentShippingType}&callback=${cbName}&_t=${Date.now()}`;
+  script.src = `${CONFIG.API_URL}?action=getCvsLocations&brand=${brand}&callback=${cbName}&_t=${Date.now()}`;
   document.body.appendChild(script);
 }
 
-function onCityChanged(cityName) {
-  const distSelect = document.getElementById('cvsDistSelect');
-  distSelect.innerHTML = '<option value="">-- 選擇區域 --</option>';
-  if (!cityName || !currentCityDistMap[cityName]) {
-    distSelect.disabled = true;
-    return;
-  }
-  currentCityDistMap[cityName].forEach(dist => {
-    const opt = document.createElement('option');
-    opt.value = dist;
-    opt.textContent = dist;
-    distSelect.appendChild(opt);
-  });
-  distSelect.disabled = false;
-}
+function onCityChanged(city) {
+  const distSel = document.getElementById("cvsDistSelect");
+  const storeSel = document.getElementById("cvsStoreSelect");
+  distSel.disabled = true;
+  storeSel.disabled = true;
+  storeSel.innerHTML = "<option value=''>-- 選擇門市名稱 (店號) --</option>";
+  if (!city) return;
 
-function onDistChanged(distName) {
-  const cityName = document.getElementById('cvsCitySelect').value;
-  const storeSelect = document.getElementById('cvsStoreSelect');
-  storeSelect.innerHTML = '<option value="">-- 門市清單載入中... --</option>';
-  storeSelect.disabled = true;
-
-  const cbName = 'cvsStore_' + Date.now();
-  window[cbName] = function(stores) {
+  const brand = currentShipping === "711" ? "711" : "family";
+  const cbName = "distCb_" + Date.now();
+  window[cbName] = function(data) {
     const s = document.getElementById(cbName);
     if (s) s.remove();
     delete window[cbName];
 
-    if (stores && stores.length > 0) {
-      currentDistrictStores = stores;
-      storeSelect.innerHTML = '<option value="">-- 選擇門市 --</option>';
-      stores.forEach(st => {
-        const opt = document.createElement('option');
-        opt.value = JSON.stringify(st);
-        opt.textContent = `${st.name} [${st.addr}]`;
-        storeSelect.appendChild(opt);
-      });
-      storeSelect.disabled = false;
-    }
+    const uniqueDists = [...new Set(data.filter(i => i.city === city).map(i => i.dist).filter(Boolean))];
+    distSel.innerHTML = "<option value=''>-- 選擇行政區 --</option>" + 
+      uniqueDists.map(d => `<option value="${d}">${d}</option>`).join('');
+    distSel.disabled = false;
   };
 
-  const script = document.createElement('script');
+  const script = document.createElement("script");
   script.id = cbName;
-  script.src = `${CONFIG.API_URL}?action=getCvsLocations&brand=${currentShippingType}&city=${encodeURIComponent(cityName)}&dist=${encodeURIComponent(distName)}&callback=${cbName}&_t=${Date.now()}`;
+  script.src = `${CONFIG.API_URL}?action=getCvsLocations&brand=${brand}&callback=${cbName}&_t=${Date.now()}`;
   document.body.appendChild(script);
 }
 
-function onStorePicked(storeJsonStr) {
-  if (!storeJsonStr) return;
-  const store = JSON.parse(storeJsonStr);
-  document.getElementById('confirmedStoreNameText').textContent = `${store.name} (店號: ${store.id})`;
-  document.getElementById('confirmedStoreAddrText').textContent = store.addr;
-  document.getElementById('storeConfirmedCard').style.display = 'block';
-  document.getElementById('finalShippingLocation').value = `${store.name} (${store.id}) - ${store.addr}`;
-}
+function onDistChanged(dist) {
+  const city = document.getElementById("cvsCitySelect").value;
+  const storeSel = document.getElementById("cvsStoreSelect");
+  storeSel.disabled = true;
+  if (!dist) return;
 
-// 結帳表單監聽
-document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  if (cart.length === 0) {
-    alert('裝備庫為空！');
-    return;
-  }
+  const brand = currentShipping === "711" ? "711" : "family";
+  const cbName = "storeCb_" + Date.now();
+  window[cbName] = function(data) {
+    const s = document.getElementById(cbName);
+    if (s) s.remove();
+    delete window[cbName];
 
-  const fin = calculateOrderFinancials();
-  const orderData = {
-    orderId: 'CASE-' + Date.now().toString().slice(-6),
-    product: cart.map(item => `${item.title} (${item.specText}) × ${item.qty}`).join(' + '),
-    price: fin.totalAmount,
-    name: document.getElementById('custName').value.trim(),
-    email: document.getElementById('custEmail').value.trim(),
-    phone: document.getElementById('custPhone').value.trim(),
-    engraving: document.getElementById('custEngraving').value.trim() || '無',
-    shipping: currentShippingName,
-    location: document.getElementById('finalShippingLocation').value || document.getElementById('manualShippingLocation').value,
-    payment: currentPayment,
-    saveToProfile: document.getElementById('saveToProfileCheck').checked,
-    createdAt: new Date().toLocaleString('zh-TW', { hour12: false })
+    storeSel.innerHTML = "<option value=''>-- 選擇超商門市 --</option>" + 
+      data.map(st => `<option value="${st.id}|${st.name}|${st.addr}">${st.name} (${st.id})</option>`).join('');
+    storeSel.disabled = false;
   };
 
-  fetch(CONFIG.API_URL, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify(orderData)
-  });
+  const script = document.createElement("script");
+  script.id = cbName;
+  script.src = `${CONFIG.API_URL}?action=getCvsLocations&brand=${brand}&city=${encodeURIComponent(city)}&dist=${encodeURIComponent(dist)}&callback=${cbName}&_t=${Date.now()}`;
+  document.body.appendChild(script);
+}
 
-  cart = [];
-  saveCart();
-  setActiveView('view-success');
-  alert(`✔ 案件 #${orderData.orderId} 簽署完成！`);
+function onStorePicked(val) {
+  if (!val) return;
+  const [id, name, addr] = val.split("|");
+  const displayLocation = `${currentShippingName} ${name}門市 (店號:${id}) - ${addr}`;
+
+  document.getElementById("finalShippingLocation").value = displayLocation;
+  document.getElementById("confirmedStoreNameText").textContent = `${name} 門市 (店號: ${id})`;
+  document.getElementById("confirmedStoreAddrText").textContent = addr;
+  document.getElementById("storeConfirmedCard").style.display = "block";
+}
+
+// --------------------------------------------------------------------------
+// 6. 優惠折扣碼核銷
+// --------------------------------------------------------------------------
+function applyPromoCode() {
+  const codeInput = document.getElementById("promoCodeInput");
+  const msg = document.getElementById("promoStatusMsg");
+  const removeBtn = document.getElementById("removePromoBtn");
+  const rawCode = codeInput.value.trim().toUpperCase();
+
+  if (!rawCode) return;
+
+  if (rawCode === "IAMSUB" || rawCode === "GUILTY90") {
+    appliedPromo = { code: rawCode, type: "percent", value: 0.9 };
+    msg.style.color = "var(--accent-cyan)";
+    msg.textContent = `✔ 密鑰核銷成功：全單享有 9 折專屬優惠！`;
+    removeBtn.style.display = "block";
+    codeInput.disabled = true;
+  } else if (rawCode === "FREESHIP") {
+    appliedPromo = { code: rawCode, type: "fixed", value: currentShippingFee };
+    msg.style.color = "var(--accent-cyan)";
+    msg.textContent = `✔ 免運通行證生效：折抵全額運費！`;
+    removeBtn.style.display = "block";
+    codeInput.disabled = true;
+  } else {
+    msg.style.color = "var(--danger-red)";
+    msg.textContent = `❌ 無效或已過期的折扣密鑰。`;
+  }
+  renderCheckoutSummary();
+}
+
+function removePromoCode() {
+  appliedPromo = null;
+  const codeInput = document.getElementById("promoCodeInput");
+  const msg = document.getElementById("promoStatusMsg");
+  const removeBtn = document.getElementById("removePromoBtn");
+
+  codeInput.disabled = false;
+  codeInput.value = "";
+  msg.textContent = "";
+  removeBtn.style.display = "none";
+  renderCheckoutSummary();
+}
+
+// --------------------------------------------------------------------------
+// 7. 簽署協議提交訂單 (含明確 action 標記，杜絕誤發通知)
+// --------------------------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("checkoutForm");
+  if (!form) return;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (cart.length === 0) {
+      alert("裝備庫為空，無法進行協議調用！");
+      return;
+    }
+
+    const finalLocation = document.getElementById("finalShippingLocation").value ||
+                          document.getElementById("manualShippingLocation").value;
+
+    if (!finalLocation) {
+      alert("請完整選取取貨門市或填寫交付地址！");
+      return;
+    }
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = "協議密鑰鎖定中 (ENCRYPTING)...";
+
+    const fin = calculateFinancials();
+    const orderData = {
+      action: "createOrder", // 明確標記為建立訂單
+      orderId: "CASE-" + Date.now().toString().slice(-6),
+      product: cart.map(i => `${i.title} [${i.specText}] × ${i.qty}`).join(" + "),
+      price: fin.totalAmount,
+      name: document.getElementById("custName").value.trim(),
+      email: document.getElementById("custEmail").value.trim(),
+      phone: document.getElementById("custPhone").value.trim(),
+      engraving: document.getElementById("custEngraving").value.trim() || "無",
+      shipping: currentShippingName,
+      location: finalLocation,
+      payment: currentPayment === "cod" ? "超商取貨付款" : "銀行 ATM 匯款",
+      saveToProfile: document.getElementById("saveToProfileCheck").checked,
+      createdAt: new Date().toLocaleString("zh-TW", { hour12: false })
+    };
+
+    fetch(CONFIG.API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(orderData)
+    }).then(() => {
+      // 本機歷史紀錄封存
+      const historyOrders = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.ORDERS)) || [];
+      historyOrders.unshift(orderData);
+      localStorage.setItem(CONFIG.STORAGE_KEYS.ORDERS, JSON.stringify(historyOrders));
+
+      // 清空購物車
+      cart = [];
+      saveCart();
+
+      // 切換至成功頁面
+      submitBtn.disabled = false;
+      submitBtn.textContent = "確認協議並鎖定調用 (LOCK)";
+      setActiveView("view-success");
+      history.pushState({ view: "success" }, "", "#success");
+    }).catch(err => {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "確認協議並鎖定調用 (LOCK)";
+      alert("連線協議發送失敗，請檢查網路連線狀態！");
+    });
+  });
 });
