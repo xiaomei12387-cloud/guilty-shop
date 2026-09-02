@@ -81,19 +81,17 @@ function handleLoginSubmit(e) {
     btn.textContent = '驗證密鑰並登入 (ACCESS)';
 
     if (res && res.result === 'success') {
-  memberProfile = res.user;
-  localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
-  
-  // 自動同步特工代號至 Tracker
-  if (trackerState && trackerState.profile) {
-    trackerState.profile.name = memberProfile.name || trackerState.profile.name;
-    if (memberProfile.role) trackerState.profile.role = memberProfile.role;
-    saveTrackerState();
-  }
+      memberProfile = res.user;
+      localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
+      updateMemberUI();
 
-  updateMemberUI();
-  toggleAuthModal(false);
-  alert(`【認證成功】歡迎接入終端，特工 ${memberProfile.name}！`);
+      // 核心隔離：切換載入該特工專屬的 Tracker 資料庫
+      if (typeof loadAgentTrackerState === 'function') {
+        loadAgentTrackerState();
+      }
+
+      toggleAuthModal(false);
+      alert(`【認證成功】歡迎接入終端，特工 ${memberProfile.name}！`);
     } else {
       alert(`❌ 登入失敗：${res.msg || '帳號或密碼錯誤'}`);
     }
@@ -160,13 +158,8 @@ function handleRegisterSubmit(e) {
   const otp = document.getElementById('regOtpInput').value.trim();
   const phone = document.getElementById('regPhoneInput').value.trim();
   const password = document.getElementById('regPasswordInput').value.trim();
-  const ndaCheck = document.getElementById('regNdaCheckbox').checked;
   const btn = document.getElementById('btnRegSubmit');
 
-  if (!ndaCheck) {
-    alert('請先勾選同意《特工認罪保密協議》！');
-    return;
-  }
   if (!otp || otp.length !== 6) {
     alert('請輸入信箱收到的 6 位數驗證碼！');
     return;
@@ -201,7 +194,13 @@ function handleRegisterSubmit(e) {
     };
     localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
     updateMemberUI();
-    toggleAuthModal(true);
+
+    // 核心隔離：為新特工建立並載入獨立 Tracker 庫
+    if (typeof loadAgentTrackerState === 'function') {
+      loadAgentTrackerState();
+    }
+
+    toggleAuthModal(false);
     alert(`✔ 特工檔案已成功建立！歡迎加入 GUILTY 終端庫，${name}。`);
   }).catch(() => {
     btn.disabled = false;
@@ -233,13 +232,25 @@ function handleProfileUpdate(e) {
     memberProfile = { ...memberProfile, ...updateData };
     localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
     updateMemberUI();
+
+    // 若更改稱號或屬性，同步更新當前 Tracker 中的名片
+    if (typeof trackerState !== 'undefined' && trackerState.profile) {
+      trackerState.profile.name = memberProfile.name;
+      trackerState.profile.role = memberProfile.role;
+      if (typeof saveTrackerState === 'function') saveTrackerState();
+      if (typeof renderTrackerApp === 'function') renderTrackerApp();
+    }
+
     toggleAuthModal(false);
     alert('✔ 特工檔案已成功同步至 UserDB！');
   });
 }
 
+// 更新導覽列會員按鈕 UI
 function updateMemberUI() {
   const btn = document.getElementById('memberBtn');
+  if (!btn) return;
+
   if (memberProfile && (memberProfile.email || memberProfile.phone)) {
     const shortRole = memberProfile.role ? memberProfile.role.split(' ')[0] : '特工';
     btn.textContent = `[ ${shortRole}：${memberProfile.name || '特工'} ]`;
@@ -259,12 +270,25 @@ function updateMemberUI() {
   }
 }
 
+// 退出特工登入（斷開連結）
 function logoutMember() {
   if (confirm('確定要斷開此終端的神經連結並退出嗎？')) {
     localStorage.removeItem(CONFIG.STORAGE_KEYS.MEMBER);
     memberProfile = null;
+
+    // 核心隔離：清空當前畫面數據為空白狀態
+    if (typeof createDefaultTrackerState === 'function') {
+      trackerState = createDefaultTrackerState();
+    }
+
     updateMemberUI();
     toggleAuthModal(false);
-    alert('【已斷開】目前已切換為訪客模式。');
+
+    // 登出時退回展廳首頁，避免訪客停留在管制終端
+    if (typeof showLandingView === 'function') {
+      showLandingView();
+    }
+
+    alert('【已斷開】目前已切換為訪客模式，終端權限已鎖定。');
   }
 }
