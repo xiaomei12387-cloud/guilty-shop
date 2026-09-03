@@ -14,6 +14,13 @@ const DEFAULT_PRESET_TAGS = {
   ]
 };
 
+const DEFAULT_METRICS = [
+  { id: "sp", name: "SP 掌/板", count: 0, color: "cyan" },
+  { id: "whip", name: "長鞭/散鞭", count: 0, color: "purple" },
+  { id: "rope", name: "繩縛/懸吊段數", count: 0, color: "cyan" },
+  { id: "wax", name: "低溫滴蠟", count: 0, color: "purple" }
+];
+
 let currentSessionTimer = null;
 let sessionSecondsElapsed = 0;
 let isSessionActive = false;
@@ -54,11 +61,10 @@ function createDefaultTrackerState() {
         role: "服從者 (Sub)",
         agentId: "SUB-01",
         avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Sub01",
-        spCount: 0,
-        whipCount: 0,
         safeword: "MAYDAY",
         tags: ["輕度訓誡", "精煉繩縛"],
         limits: ["❌ 拒絕穿刺/見血"],
+        customMetrics: JSON.parse(JSON.stringify(DEFAULT_METRICS)),
         sessions: []
       }
     ],
@@ -169,8 +175,6 @@ function getActivePartner() {
 function renderTrackerApp() {
   const activePartner = getActivePartner();
   const nameDisplay = document.getElementById("activePartnerNameDisplay");
-  const spVal = document.getElementById("spCountVal");
-  const whipVal = document.getElementById("whipCountVal");
 
   const isDom = trackerState.currentMode === "dom";
   const btnDom = document.getElementById("btnModeDom");
@@ -180,12 +184,11 @@ function renderTrackerApp() {
 
   if (activePartner) {
     if (nameDisplay) nameDisplay.textContent = `[ 當前實踐對象：${activePartner.name} (ID: ${activePartner.agentId || 'N/A'}) ]`;
-    if (spVal) spVal.textContent = activePartner.spCount || 0;
-    if (whipVal) whipVal.textContent = activePartner.whipCount || 0;
   }
 
   renderPartnerList();
   renderSessionHUD();
+  renderMetricsPreview();
   renderSessionLogs();
   renderAnalyticsChart();
 }
@@ -194,41 +197,6 @@ function switchTrackerMode(mode) {
   trackerState.currentMode = mode;
   saveTrackerState();
   renderTrackerApp();
-}
-
-function adjustCounter(type, delta) {
-  const activePartner = getActivePartner();
-  if (!activePartner) {
-    alert("請先選定或新增互動對象！");
-    return;
-  }
-
-  playTerminalBeep("click");
-  if (navigator.vibrate) {
-    delta > 0 ? navigator.vibrate(40) : navigator.vibrate([20, 50, 20]);
-  }
-
-  if (type === "SP") {
-    activePartner.spCount = Math.max(0, (activePartner.spCount || 0) + delta);
-    const spEl = document.getElementById("spCountVal");
-    if (spEl) spEl.textContent = activePartner.spCount;
-  } else if (type === "WHIP") {
-    activePartner.whipCount = Math.max(0, (activePartner.whipCount || 0) + delta);
-    const whipEl = document.getElementById("whipCountVal");
-    if (whipEl) whipEl.textContent = activePartner.whipCount;
-  }
-  saveTrackerState();
-}
-
-function resetCounter(type) {
-  const activePartner = getActivePartner();
-  if (!activePartner) return;
-  if (confirm(`確定要將 ${activePartner.name} 的 ${type} 計數歸零嗎？`)) {
-    if (type === "SP") activePartner.spCount = 0;
-    if (type === "WHIP") activePartner.whipCount = 0;
-    saveTrackerState();
-    renderTrackerApp();
-  }
 }
 
 // --------------------------------------------------------------------------
@@ -242,7 +210,7 @@ function renderSessionHUD() {
     <div style="background:linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(10, 10, 14, 0.98)); border:1px solid var(--panel-border); border-left:4px solid var(--accent-cyan); padding:16px 18px; border-radius:4px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
       <div>
         <div style="font-size:0.85rem; font-weight:bold; color:#fff; letter-spacing:1px;">[ PROTOCOL SESSION // 全螢幕沉浸實踐 ]</div>
-        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">啟動專屬全螢幕視窗：極大化碼錶、整塊觸控計數與盲按急停</div>
+        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">啟動專屬全螢幕視窗：極大化碼錶、多元觸控計數與盲按急停</div>
       </div>
       <button class="btn-submit" onclick="startSession()" style="width:auto; padding:14px 28px; font-size:0.95rem; font-weight:bold;">
         ▶ 開啟獨立全螢幕實踐終端
@@ -273,15 +241,74 @@ function triggerEmergencySafeword() {
   if (d) d.textContent = word.toUpperCase();
 
   modal.classList.add("active");
-  renderSessionHUD();
-  renderSessionLogs();
-  renderAnalyticsChart();
 }
 
 function dismissEmergencySafeword() {
   const modal = document.getElementById("safewordEmergencyModal");
   if (modal) modal.classList.remove("active");
   if (navigator.vibrate) navigator.vibrate(0);
+}
+
+// --------------------------------------------------------------------------
+// 🛠️ 多元實踐項目管理 (Metrics Management)
+// --------------------------------------------------------------------------
+function getPartnerMetrics(partner) {
+  if (!partner.customMetrics || partner.customMetrics.length === 0) {
+    partner.customMetrics = JSON.parse(JSON.stringify(DEFAULT_METRICS));
+  }
+  return partner.customMetrics;
+}
+
+function renderMetricsPreview() {
+  const container = document.getElementById("activeMetricsPreviewGrid");
+  if (!container) return;
+  const activePartner = getActivePartner();
+  if (!activePartner) {
+    container.innerHTML = `<div style="color:var(--text-muted); font-size:0.75rem;">尚未選取對象</div>`;
+    return;
+  }
+
+  const metrics = getPartnerMetrics(activePartner);
+  container.innerHTML = metrics.map((m, idx) => `
+    <div style="background:#0a0a0d; border:1px solid ${m.color === 'purple' ? 'var(--accent-purple)' : 'var(--accent-cyan)'}; padding:8px 12px; border-radius:3px; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-size:0.8rem; color:#fff;">${m.name}</span>
+      <button onclick="removeMetric(${idx})" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; padding-left:8px;">✕</button>
+    </div>
+  `).join('');
+}
+
+function addCustomMetricPrompt() {
+  const activePartner = getActivePartner();
+  if (!activePartner) { alert("請先選定對象！"); return; }
+
+  const name = prompt("請輸入實踐項目名稱（例如：低溫滴蠟、電擊次數、繩縛段數、放置時間）：");
+  if (!name || !name.trim()) return;
+
+  const color = confirm("點擊『確定』設定為螢光綠，點擊『取消』設定為霓虹紫") ? "cyan" : "purple";
+  const metrics = getPartnerMetrics(activePartner);
+
+  metrics.push({
+    id: "m_" + Date.now(),
+    name: name.trim(),
+    count: 0,
+    color: color
+  });
+
+  saveTrackerState();
+  renderMetricsPreview();
+}
+
+function removeMetric(idx) {
+  const activePartner = getActivePartner();
+  if (!activePartner) return;
+  const metrics = getPartnerMetrics(activePartner);
+  if (metrics.length <= 1) {
+    alert("至少需保留一個實踐項目！");
+    return;
+  }
+  metrics.splice(idx, 1);
+  saveTrackerState();
+  renderMetricsPreview();
 }
 
 // --------------------------------------------------------------------------
@@ -295,8 +322,7 @@ function renderAnalyticsChart() {
   const sessions = (activePartner && activePartner.sessions) ? [...activePartner.sessions].reverse().slice(-7) : [];
 
   const labels = sessions.length > 0 ? sessions.map(s => s.date.slice(5) || s.date) : ["記錄一", "記錄二", "記錄三", "記錄四"];
-  const spData = sessions.length > 0 ? sessions.map(s => s.spCount) : [0, 0, 0, 0];
-  const whipData = sessions.length > 0 ? sessions.map(s => s.whipCount) : [0, 0, 0, 0];
+  const durationData = sessions.length > 0 ? sessions.map(s => s.durationMins || 0) : [0, 0, 0, 0];
 
   if (analyticsChartInstance) analyticsChartInstance.destroy();
 
@@ -307,18 +333,10 @@ function renderAnalyticsChart() {
       labels: labels,
       datasets: [
         {
-          label: "SP 次數",
-          data: spData,
+          label: "實踐時長 (分鐘)",
+          data: durationData,
           borderColor: "#00ff88",
           backgroundColor: "rgba(0, 255, 136, 0.15)",
-          tension: 0.3,
-          fill: true
-        },
-        {
-          label: "長鞭擊數",
-          data: whipData,
-          borderColor: "#b5179e",
-          backgroundColor: "rgba(181, 23, 158, 0.15)",
           tension: 0.3,
           fill: true
         }
@@ -332,7 +350,7 @@ function renderAnalyticsChart() {
       },
       scales: {
         x: { ticks: { color: "#71717a" }, grid: { color: "rgba(255,255,255,0.05)" } },
-        y: { ticks: { color: "#71717a" }, grid: { color: "rgba(255,255,255,0.05)" } }
+        y: { ticks: { color: "#71717a" }, grid: { color: "rgba(255,255,255,0.05)" }, beginAtZero: true }
       }
     }
   });
@@ -352,7 +370,7 @@ function renderSessionLogs() {
         <span style="color:var(--accent-cyan); font-weight:bold;">#${s.sessionId} [${s.duration}]</span>
         <button onclick="deleteSessionLog('${s.sessionId}')" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">✕</button>
       </div>
-      <div style="color:var(--text-muted); font-size:0.7rem; margin-bottom:4px;">${s.date} ｜ SP: ${s.spCount} ｜ 鞭: ${s.whipCount}</div>
+      <div style="color:var(--text-muted); font-size:0.7rem; margin-bottom:4px;">${s.date} ｜ ${s.summary || (s.spCount !== undefined ? `SP: ${s.spCount} ｜ 鞭: ${s.whipCount}` : '實踐完成')}</div>
       <div style="color:#d4d4d8; background:#141416; padding:6px;">💬 ${s.note}</div>
     </div>
   `).join('');
@@ -413,8 +431,7 @@ function addNewPartnerPrompt() {
     role: role || "服從者 (Sub)",
     agentId: (agentId && agentId.toUpperCase()) || "SUB-X",
     avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`,
-    spCount: 0,
-    whipCount: 0,
+    customMetrics: JSON.parse(JSON.stringify(DEFAULT_METRICS)),
     safeword: "MAYDAY",
     sessions: []
   });
