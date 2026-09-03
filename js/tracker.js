@@ -177,7 +177,7 @@ function playTerminalBeep(type = "click") {
 }
 
 // --------------------------------------------------------------------------
-// 4. ⚡ 實踐計數終端邏輯
+// 4. ⚡ 實踐計數終端常態邏輯
 // --------------------------------------------------------------------------
 function getActivePartner() {
   if (!trackerState.partners || trackerState.partners.length === 0) return null;
@@ -232,11 +232,15 @@ function adjustCounter(type, delta) {
   if (type === "SP") {
     activePartner.spCount = Math.max(0, (activePartner.spCount || 0) + delta);
     const spEl = document.getElementById("spCountVal");
+    const fsSpEl = document.getElementById("fsSpVal");
     if (spEl) spEl.textContent = activePartner.spCount;
+    if (fsSpEl) fsSpEl.textContent = activePartner.spCount;
   } else if (type === "WHIP") {
     activePartner.whipCount = Math.max(0, (activePartner.whipCount || 0) + delta);
     const whipEl = document.getElementById("whipCountVal");
+    const fsWhipEl = document.getElementById("fsWhipVal");
     if (whipEl) whipEl.textContent = activePartner.whipCount;
+    if (fsWhipEl) fsWhipEl.textContent = activePartner.whipCount;
   }
 
   saveTrackerState();
@@ -255,46 +259,75 @@ function resetCounter(type) {
 }
 
 // --------------------------------------------------------------------------
-// 5. 實踐 Session 進行狀態與全螢幕 HUD
+// 5. ⚡ 極限全螢幕實踐 HUD 與超大盲按急停按鈕
 // --------------------------------------------------------------------------
 function renderSessionHUD() {
   const container = document.getElementById("sessionHudArea");
   if (!container) return;
 
+  const activePartner = getActivePartner();
+
   if (isSessionActive) {
-    // 全螢幕沉浸計時 + 超大急停按鈕
+    // ✦ 真正滿版覆蓋全螢幕（含計數、碼錶與極大化急停按鈕）
     container.innerHTML = `
-      <div style="position:fixed; inset:0; z-index:99998; background:rgba(8, 8, 10, 0.98); backdrop-filter:blur(10px); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:24px;">
-        <div style="font-size:0.85rem; color:var(--accent-cyan); letter-spacing:3px; font-family:monospace; margin-bottom:12px;">
-          ⚡ [ PROTOCOL ACTIVE // 實踐階段沉浸進行中 ] ⚡
-        </div>
+      <div id="fullScreenSessionOverlay" style="position:fixed; inset:0; z-index:999999; background:#050507; display:flex; flex-direction:column; justify-content:space-between; padding:16px 14px; box-sizing:border-box; overflow:hidden;">
         
-        <div id="sessionTimerDisplay" style="font-size:clamp(3.5rem, 14vw, 5.5rem); font-weight:900; color:var(--accent-cyan); font-family:monospace; margin:16px 0; text-shadow:0 0 25px var(--accent-cyan);">
-          00:00
+        <!-- 頂部對象與安全詞宣告 -->
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
+          <div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">實踐對象</div>
+            <div style="font-size:1.05rem; font-weight:900; color:#fff;">${activePartner ? activePartner.name : '未知'}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.75rem; color:var(--text-muted);">雙方安全詞</div>
+            <div style="font-size:1.05rem; font-weight:900; color:var(--accent-cyan);">${(activePartner && activePartner.safeword) || 'MAYDAY'}</div>
+          </div>
         </div>
 
-        <div style="display:flex; flex-direction:column; gap:14px; width:100%; max-width:440px; margin-top:24px;">
-          <!-- 🛑 盲按專用超大急停按鈕 -->
-          <button class="safeword-panic-btn" onclick="triggerEmergencySafeword()" style="width:100%; padding:22px; font-size:1.15rem; font-weight:900; justify-content:center; border-width:2px; box-shadow:0 0 25px rgba(255, 51, 75, 0.4);">
-            🛑 SAFEWORD 終極急停
+        <!-- 中間：巨大時間碼錶 + 雙軌即時計數板 -->
+        <div style="text-align:center; margin:auto 0;">
+          <div style="font-size:0.8rem; letter-spacing:3px; color:var(--accent-cyan); font-family:monospace;">● SESSION RUNNING</div>
+          <div id="sessionTimerDisplay" style="font-size:clamp(4.5rem, 18vw, 7rem); font-weight:900; color:var(--accent-cyan); font-family:monospace; line-height:1; margin:10px 0; text-shadow:0 0 35px var(--glow-cyan);">
+            00:00
+          </div>
+
+          <!-- 全螢幕內的即時大按鈕計數器 -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
+            <div style="background:#101015; border:1px solid var(--accent-cyan); border-radius:6px; padding:14px 10px;" onclick="adjustCounter('SP', 1)">
+              <div style="font-size:0.75rem; color:var(--text-muted);">SP 次數 (點擊+1)</div>
+              <div id="fsSpVal" style="font-size:2.8rem; font-weight:900; color:var(--accent-cyan); font-family:monospace;">${(activePartner && activePartner.spCount) || 0}</div>
+            </div>
+            <div style="background:#101015; border:1px solid var(--accent-purple); border-radius:6px; padding:14px 10px;" onclick="adjustCounter('WHIP', 1)">
+              <div style="font-size:0.75rem; color:var(--text-muted);">長鞭擊數 (點擊+1)</div>
+              <div id="fsWhipVal" style="font-size:2.8rem; font-weight:900; color:var(--accent-purple); font-family:monospace;">${(activePartner && activePartner.whipCount) || 0}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 底部：超大盲按急停區（佔據螢幕下半部絕大部分） -->
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <!-- 🛑 盲按專用巨型急停鈕：高度加厚、紅光頻閃、隨手一拍即停 -->
+          <button onclick="triggerEmergencySafeword()" style="width:100%; min-height:100px; background:#e63946; border:3px solid #ff334b; border-radius:8px; color:#fff; font-size:clamp(1.4rem, 5vw, 2rem); font-weight:900; letter-spacing:2px; cursor:pointer; box-shadow:0 0 40px rgba(255, 51, 75, 0.7); display:flex; align-items:center; justify-content:center; gap:10px;">
+            🛑 SAFEWORD 急停停止
           </button>
           
-          <!-- 結束並結案按鈕 -->
-          <button class="btn-submit" onclick="finishSessionPrompt()" style="width:100%; padding:16px; font-size:0.95rem; background:var(--accent-purple); border-color:var(--accent-purple);">
-            ■ 結束本次實踐並結案封存
+          <!-- 結案按鈕 -->
+          <button onclick="finishSessionPrompt()" style="width:100%; padding:14px; background:#1c1c24; border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#a1a1aa; font-size:0.9rem; font-weight:bold; cursor:pointer;">
+            ■ 正常結束並結案封存
           </button>
         </div>
+
       </div>
     `;
   } else {
-    // 常駐醒目的大型開始實踐按鈕
+    // 正常未開始狀態：醒目大按鈕
     container.innerHTML = `
       <div style="background:linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(10, 10, 14, 0.98)); border:1px solid var(--panel-border); border-left:4px solid var(--accent-cyan); padding:16px 18px; border-radius:4px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:0 4px 20px rgba(0,0,0,0.5);">
         <div>
           <div style="font-size:0.85rem; font-weight:bold; color:#fff; letter-spacing:1px;">[ PROTOCOL SESSION // 實踐階段計時 ]</div>
           <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">啟動後即刻進入全螢幕碼錶計時與雙方數值累計</div>
         </div>
-        <button class="btn-submit" onclick="startSession()" style="width:auto; padding:12px 26px; font-size:0.9rem; font-weight:bold; letter-spacing:1px; box-shadow:0 0 16px var(--glow-cyan);">
+        <button class="btn-submit" onclick="startSession()" style="width:auto; padding:14px 28px; font-size:0.95rem; font-weight:bold; letter-spacing:1px; box-shadow:0 0 20px var(--glow-cyan);">
           ▶ 開始本次實踐
         </button>
       </div>
@@ -308,6 +341,13 @@ function startSession() {
     alert("請先選擇或新增一個互動對象！");
     return;
   }
+
+  // 嘗試觸發系統級全螢幕 API
+  try {
+    const docEl = document.documentElement;
+    if (docEl.requestFullscreen) docEl.requestFullscreen().catch(() => {});
+    else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen().catch(() => {});
+  } catch (e) {}
 
   isSessionActive = true;
   sessionSecondsElapsed = 0;
@@ -332,6 +372,15 @@ function startSession() {
   renderSessionHUD();
 }
 
+function exitNativeFullscreen() {
+  try {
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen().catch(() => {});
+    }
+  } catch (e) {}
+}
+
 function finishSessionPrompt() {
   if (!isSessionActive) return;
   const activePartner = getActivePartner();
@@ -342,6 +391,7 @@ function finishSessionPrompt() {
 
   clearInterval(currentSessionTimer);
   isSessionActive = false;
+  exitNativeFullscreen();
 
   const mins = Math.floor(sessionSecondsElapsed / 60);
   const secs = sessionSecondsElapsed % 60;
@@ -428,6 +478,7 @@ function triggerEmergencySafeword() {
   if (isSessionActive) {
     clearInterval(currentSessionTimer);
     isSessionActive = false;
+    exitNativeFullscreen();
     if (activePartner) {
       if (!activePartner.sessions) activePartner.sessions = [];
       activePartner.sessions.unshift({
