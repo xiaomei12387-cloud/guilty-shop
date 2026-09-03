@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>GUILTY // PROTOCOL ACTIVE SESSION</title>
+  <style>
+    :root {
+      --accent-cyan: #00ff88;
+      --accent-purple: #b5179e;
+      --danger-red: #ff334b;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    body, html {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: #050508;
+      color: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Consolas', monospace;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* 頂部資訊列 */
+    header {
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.6);
+    }
+    .info-partner { font-size: 1.1rem; font-weight: bold; }
+    .info-safeword { color: var(--accent-cyan); font-weight: bold; font-size: 1.1rem; }
+
+    /* 中央超大碼錶 */
+    .timer-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+    .timer-label {
+      font-size: 0.9rem;
+      letter-spacing: 4px;
+      color: var(--accent-cyan);
+      margin-bottom: 6px;
+    }
+    #timerDisplay {
+      font-size: clamp(5rem, 24vw, 9.5rem);
+      font-weight: 900;
+      color: var(--accent-cyan);
+      text-shadow: 0 0 35px rgba(0, 255, 136, 0.4);
+      line-height: 0.9;
+    }
+
+    /* 雙軌巨大觸控計數按鈕 (點擊全塊直接+1) */
+    .counter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 0 16px;
+      height: 26vh;
+    }
+    .counter-btn-box {
+      background: #0d0d12;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      border: 2px solid var(--panel-border, #222);
+      transition: transform 0.08s, background-color 0.08s;
+    }
+    .counter-btn-box:active {
+      transform: scale(0.96);
+    }
+    .box-sp {
+      border-color: var(--accent-cyan);
+      box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.08);
+    }
+    .box-sp:active { background: rgba(0, 255, 136, 0.2); }
+    .box-whip {
+      border-color: var(--accent-purple);
+      box-shadow: inset 0 0 20px rgba(181, 23, 158, 0.08);
+    }
+    .box-whip:active { background: rgba(181, 23, 158, 0.2); }
+
+    .counter-name { font-size: 0.85rem; color: #8c8f96; margin-bottom: 4px; }
+    .counter-num {
+      font-size: clamp(2.6rem, 10vw, 4rem);
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    /* 底部超巨型盲按急停板與結案 */
+    .bottom-controls {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn-panic-massive {
+      width: 100%;
+      height: clamp(85px, 14vh, 120px);
+      background: #ff334b;
+      border: 3px solid #fff;
+      color: #fff;
+      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      font-weight: 900;
+      letter-spacing: 3px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 0 45px rgba(255, 51, 75, 0.7);
+      animation: panicGlow 1.5s infinite alternate;
+    }
+    .btn-panic-massive:active {
+      transform: scale(0.98);
+      background: #b30018;
+    }
+    @keyframes panicGlow {
+      from { box-shadow: 0 0 20px rgba(255, 51, 75, 0.4); }
+      to { box-shadow: 0 0 50px rgba(255, 51, 75, 0.9); }
+    }
+
+    .btn-finish {
+      width: 100%;
+      padding: 14px;
+      background: #141418;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #a1a1aa;
+      font-size: 0.88rem;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    /* 急停警告覆蓋層 */
+    #panicOverlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      border: 10px solid #ff334b;
+      z-index: 99999;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 24px;
+    }
+    #panicOverlay.active { display: flex; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div style="font-size:0.7rem; color:#8c8f96;">實踐對象</div>
+      <div class="info-partner" id="partnerNameDisplay">載入中...</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:0.7rem; color:#8c8f96;">安全詞</div>
+      <div class="info-safeword" id="safewordDisplay">MAYDAY</div>
+    </div>
+  </header>
+
+  <!-- 中央極限碼錶 -->
+  <div class="timer-section">
+    <div class="timer-label">● PROTOCOL RUNNING</div>
+    <div id="timerDisplay">00:00</div>
+  </div>
+
+  <!-- 雙軌巨大計數觸控板 -->
+  <div class="counter-grid">
+    <div class="counter-btn-box box-sp" onclick="addCount('SP')">
+      <div class="counter-name">SP 實施次數 (+1)</div>
+      <div class="counter-num" id="spNum" style="color:var(--accent-cyan);">0</div>
+    </div>
+    <div class="counter-btn-box box-whip" onclick="addCount('WHIP')">
+      <div class="counter-name">長鞭擊數 (+1)</div>
+      <div class="counter-num" id="whipNum" style="color:var(--accent-purple);">0</div>
+    </div>
+  </div>
+
+  <!-- 底部超巨大盲按停止板 -->
+  <div class="bottom-controls">
+    <button class="btn-panic-massive" onclick="triggerPanic()">
+      🛑 SAFEWORD 急停停止
+    </button>
+    <button class="btn-finish" onclick="finishSession()">
+      ■ 正常完成並結案返回
+    </button>
+  </div>
+
+  <!-- 急停全面封鎖畫面 -->
+  <div id="panicOverlay">
+    <div style="font-size:clamp(1.8rem, 6vw, 2.6rem); color:#ff334b; font-weight:900; letter-spacing:4px; margin-bottom:14px;">
+      ⚠️ 急停協議觸發 ⚠️
+    </div>
+    <div style="font-size:1.1rem; color:#fff; margin-bottom:24px;">
+      安全詞：<span id="panicWordText" style="color:#ff334b; font-size:1.8rem; font-weight:bold;">MAYDAY</span>
+    </div>
+    <div style="max-width:420px; font-size:0.85rem; color:#a1a1aa; line-height:1.7; margin-bottom:30px;">
+      所有動作即刻停止。解除束縛拘束器具，提供受調者溫水，進行 Aftercare 心理與生理確認。
+    </div>
+    <button onclick="dismissAndReturn()" style="padding:16px 36px; background:#fff; color:#000; border:none; font-weight:bold; font-size:1rem; cursor:pointer; border-radius:4px;">
+      [ 確認雙方安全 // 結案退出 ]
+    </button>
+  </div>
+
+  <script>
+    // 讀取當前主程式特工狀態
+    let activeKey = null;
+    let trackerState = null;
+    let activePartner = null;
+    let secondsElapsed = 0;
+    let timer = null;
+
+    // 尋找當前登入者的 Key
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith("guilty_tracker_")) {
+        activeKey = k;
+        break;
+      }
+    }
+
+    if (activeKey) {
+      try {
+        trackerState = JSON.parse(localStorage.getItem(activeKey));
+      } catch (e) {}
+    }
+
+    if (trackerState && trackerState.partners && trackerState.partners.length > 0) {
+      activePartner = trackerState.partners.find(p => p.id === trackerState.activePartnerId) || trackerState.partners[0];
+    }
+
+    // 初始化顯示
+    const pName = activePartner ? activePartner.name : "特工對象";
+    const sWord = (activePartner && activePartner.safeword) ? activePartner.safeword : "MAYDAY";
+    document.getElementById("partnerNameDisplay").textContent = pName;
+    document.getElementById("safewordDisplay").textContent = sWord;
+    document.getElementById("panicWordText").textContent = sWord.toUpperCase();
+
+    // 啟動碼錶
+    let spCount = 0;
+    let whipCount = 0;
+
+    timer = setInterval(() => {
+      secondsElapsed++;
+      const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+      const s = String(secondsElapsed % 60).padStart(2, '0');
+      document.getElementById("timerDisplay").textContent = `${m}:${s}`;
+    }, 1000);
+
+    // 音效反饋
+    function playBeep(isEmergency = false) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        if (isEmergency) {
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(880, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.4);
+          gain.gain.setValueAtTime(0.4, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+          osc.start(); osc.stop(ctx.currentTime + 0.4);
+        } else {
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(650, ctx.currentTime);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+          osc.start(); osc.stop(ctx.currentTime + 0.08);
+        }
+      } catch (e) {}
+    }
+
+    function addCount(type) {
+      playBeep(false);
+      if (navigator.vibrate) navigator.vibrate(35);
+
+      if (type === 'SP') {
+        spCount++;
+        document.getElementById("spNum").textContent = spCount;
+      } else {
+        whipCount++;
+        document.getElementById("whipNum").textContent = whipCount;
+      }
+    }
+
+    function triggerPanic() {
+      clearInterval(timer);
+      playBeep(true);
+      if (navigator.vibrate) navigator.vibrate([400, 100, 400, 100, 600]);
+      document.getElementById("panicOverlay").classList.add("active");
+    }
+
+    function saveSessionRecord(noteText) {
+      if (!trackerState || !activePartner) return;
+      const mins = Math.floor(secondsElapsed / 60);
+      const secs = secondsElapsed % 60;
+      const durationStr = `${mins} 分 ${secs} 秒`;
+
+      if (!activePartner.sessions) activePartner.sessions = [];
+      activePartner.sessions.unshift({
+        sessionId: "SES-" + Date.now().toString().slice(-6),
+        date: new Date().toLocaleDateString("zh-TW"),
+        duration: durationStr,
+        durationMins: mins,
+        spCount: spCount,
+        whipCount: whipCount,
+        note: noteText
+      });
+
+      activePartner.spCount = spCount;
+      activePartner.whipCount = whipCount;
+      localStorage.setItem(activeKey, JSON.stringify(trackerState));
+    }
+
+    function finishSession() {
+      clearInterval(timer);
+      const note = prompt("請輸入本次實踐結案筆記：", "順利完成，雙方意識清醒。");
+      saveSessionRecord(note || "實踐正常完成。");
+      window.location.href = "index.html#tracker";
+    }
+
+    function dismissAndReturn() {
+      saveSessionRecord("⚠️ 觸發安全詞急停協議退出。");
+      window.location.href = "index.html#tracker";
+    }
+  </script>
+</body>
+</html>
