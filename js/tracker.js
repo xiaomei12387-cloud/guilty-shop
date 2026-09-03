@@ -20,6 +20,9 @@ let isSessionActive = false;
 let html5QrScannerInstance = null;
 let syncDebounceTimer = null;
 
+// --------------------------------------------------------------------------
+// 1. 本地特工資料庫隔離核心 (Storage Segregation)
+// --------------------------------------------------------------------------
 function getAgentStorageKey() {
   if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
     return null;
@@ -30,6 +33,7 @@ function getAgentStorageKey() {
 
 function createDefaultTrackerState() {
   const agentName = (memberProfile && memberProfile.name) ? memberProfile.name : "特工";
+  const agentId = (memberProfile && memberProfile.agentId) ? memberProfile.agentId : "AGENT-001";
   const agentRole = (memberProfile && memberProfile.role) ? memberProfile.role : "支配者 (Dom)";
   
   return {
@@ -37,7 +41,7 @@ function createDefaultTrackerState() {
     profile: {
       avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(agentName),
       name: agentName,
-      agentId: (memberProfile && memberProfile.agentId) ? memberProfile.agentId : "AGENT-001",
+      agentId: agentId,
       role: agentRole,
       twitter: "",
       safeword: "MAYDAY (紅色停止 / 黃色減速)",
@@ -82,8 +86,14 @@ function loadAgentTrackerState() {
     try {
       trackerState = JSON.parse(saved);
       if (!trackerState.profile) trackerState.profile = createDefaultTrackerState().profile;
+      if (!trackerState.profile.allPreferences) trackerState.profile.allPreferences = [...DEFAULT_PRESET_TAGS.preferences];
+      if (!trackerState.profile.allLimits) trackerState.profile.allLimits = [...DEFAULT_PRESET_TAGS.hardLimits];
+      if (!trackerState.partners) trackerState.partners = [];
       if (!trackerState.friends) trackerState.friends = [];
       if (!trackerState.calendarEvents) trackerState.calendarEvents = [];
+      trackerState.partners.forEach(p => {
+        if (!p.sessions) p.sessions = [];
+      });
     } catch (e) {
       trackerState = createDefaultTrackerState();
     }
@@ -108,7 +118,35 @@ function saveTrackerState(skipCloud = false) {
 }
 
 // --------------------------------------------------------------------------
-// 🔊 Web Audio API 音效與觸覺震動回饋引擎
+// 2. 視圖存取權限與入口
+// --------------------------------------------------------------------------
+function checkAgentAuth() {
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    alert("⚠️ [ 權限拒絕 // ACCESS DENIED ]\n此終端為特工專屬管制區，請先完成神經認證登入！");
+    if (typeof toggleAuthModal === "function") toggleAuthModal(true);
+    return false;
+  }
+  return true;
+}
+
+function openTrackerAppView() {
+  if (!checkAgentAuth()) return;
+  if (typeof toggleNav === "function") toggleNav(false);
+  if (typeof setActiveView === "function") setActiveView('view-tracker');
+  renderTrackerApp();
+  history.pushState({ view: 'tracker' }, '', '#tracker');
+}
+
+function openProfileDossierView() {
+  if (!checkAgentAuth()) return;
+  if (typeof toggleNav === "function") toggleNav(false);
+  if (typeof setActiveView === "function") setActiveView('view-dossier');
+  renderProfileDossier();
+  history.pushState({ view: 'dossier' }, '', '#dossier');
+}
+
+// --------------------------------------------------------------------------
+// 3. 🔊 Web Audio API 音效與觸覺震動回饋引擎
 // --------------------------------------------------------------------------
 function playTerminalBeep(type = "click") {
   try {
@@ -122,15 +160,15 @@ function playTerminalBeep(type = "click") {
     if (type === "emergency") {
       osc.type = "sawtooth";
       osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(440, audioCtx.currentTime + 0.3);
-      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+      osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.35);
+      gain.gain.setValueAtTime(0.35, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
       osc.start();
-      osc.stop(audioCtx.currentTime + 0.3);
+      osc.stop(audioCtx.currentTime + 0.35);
     } else {
       osc.type = "sine";
-      osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); // D5
-      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      osc.frequency.setValueAtTime(620, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
       osc.start();
       osc.stop(audioCtx.currentTime + 0.08);
@@ -139,8 +177,13 @@ function playTerminalBeep(type = "click") {
 }
 
 // --------------------------------------------------------------------------
-// ⚡ 全螢幕實踐計數終端
+// 4. ⚡ 實踐計數終端邏輯
 // --------------------------------------------------------------------------
+function getActivePartner() {
+  if (!trackerState.partners || trackerState.partners.length === 0) return null;
+  return trackerState.partners.find(p => p.id === trackerState.activePartnerId) || trackerState.partners[0];
+}
+
 function renderTrackerApp() {
   const activePartner = getActivePartner();
   const nameDisplay = document.getElementById("activePartnerNameDisplay");
@@ -154,9 +197,13 @@ function renderTrackerApp() {
   if (btnSub) btnSub.classList.toggle("active", !isDom);
 
   if (activePartner) {
-    if (nameDisplay) nameDisplay.textContent = `[ 當前對象：${activePartner.name} (ID: ${activePartner.agentId || 'N/A'}) ]`;
+    if (nameDisplay) nameDisplay.textContent = `[ 當前實踐對象：${activePartner.name} (ID: ${activePartner.agentId || 'N/A'}) ]`;
     if (spVal) spVal.textContent = activePartner.spCount || 0;
     if (whipVal) whipVal.textContent = activePartner.whipCount || 0;
+  } else {
+    if (nameDisplay) nameDisplay.textContent = "[ 尚未選定互動對象 ]";
+    if (spVal) spVal.textContent = 0;
+    if (whipVal) whipVal.textContent = 0;
   }
 
   renderPartnerList();
@@ -195,34 +242,59 @@ function adjustCounter(type, delta) {
   saveTrackerState();
 }
 
+function resetCounter(type) {
+  const activePartner = getActivePartner();
+  if (!activePartner) return;
+
+  if (confirm(`確定要將 ${activePartner.name} 的 ${type} 計數歸零嗎？`)) {
+    if (type === "SP") activePartner.spCount = 0;
+    if (type === "WHIP") activePartner.whipCount = 0;
+    saveTrackerState();
+    renderTrackerApp();
+  }
+}
+
+// --------------------------------------------------------------------------
+// 5. 實踐 Session 進行狀態與全螢幕 HUD
+// --------------------------------------------------------------------------
 function renderSessionHUD() {
   const container = document.getElementById("sessionHudArea");
   if (!container) return;
 
   if (isSessionActive) {
+    // 全螢幕沉浸計時 + 超大急停按鈕
     container.innerHTML = `
-      <div style="background:#141416; border:2px solid var(--accent-cyan); padding:20px; border-radius:6px; text-align:center; position:fixed; inset:0; z-index:9999; display:flex; flex-direction:column; justify-content:center; align-items:center; background:rgba(8,8,10,0.98);">
-        <div style="font-size:0.9rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:10px;">⚡ [ PROTOCOL // 實踐階段全螢幕進行中 ] ⚡</div>
-        <div id="sessionTimerDisplay" style="font-size:4rem; font-weight:900; color:var(--accent-cyan); font-family:monospace; margin:20px 0;">00:00</div>
+      <div style="position:fixed; inset:0; z-index:99998; background:rgba(8, 8, 10, 0.98); backdrop-filter:blur(10px); display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:24px;">
+        <div style="font-size:0.85rem; color:var(--accent-cyan); letter-spacing:3px; font-family:monospace; margin-bottom:12px;">
+          ⚡ [ PROTOCOL ACTIVE // 實踐階段沉浸進行中 ] ⚡
+        </div>
         
-        <div style="display:flex; gap:16px; width:100%; max-width:400px; margin-top:20px;">
-          <button class="btn-submit" onclick="finishSessionPrompt()" style="flex:1; padding:18px; font-size:1rem; background:var(--accent-purple);">
-            ■ 結束並結案
+        <div id="sessionTimerDisplay" style="font-size:clamp(3.5rem, 14vw, 5.5rem); font-weight:900; color:var(--accent-cyan); font-family:monospace; margin:16px 0; text-shadow:0 0 25px var(--accent-cyan);">
+          00:00
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:14px; width:100%; max-width:440px; margin-top:24px;">
+          <!-- 🛑 盲按專用超大急停按鈕 -->
+          <button class="safeword-panic-btn" onclick="triggerEmergencySafeword()" style="width:100%; padding:22px; font-size:1.15rem; font-weight:900; justify-content:center; border-width:2px; box-shadow:0 0 25px rgba(255, 51, 75, 0.4);">
+            🛑 SAFEWORD 終極急停
           </button>
-          <button class="safeword-panic-btn" onclick="triggerEmergencySafeword()" style="flex:1; padding:18px; font-size:1rem; justify-content:center;">
-            🛑 終極急停
+          
+          <!-- 結束並結案按鈕 -->
+          <button class="btn-submit" onclick="finishSessionPrompt()" style="width:100%; padding:16px; font-size:0.95rem; background:var(--accent-purple); border-color:var(--accent-purple);">
+            ■ 結束本次實踐並結案封存
           </button>
         </div>
       </div>
     `;
   } else {
+    // 常駐醒目的大型開始實踐按鈕
     container.innerHTML = `
-      <div style="display:flex; justify-content:space-between; align-items:center; background:#000; border:1px dashed var(--panel-border); padding:12px 16px; border-radius:4px; margin-bottom:14px;">
+      <div style="background:linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(10, 10, 14, 0.98)); border:1px solid var(--panel-border); border-left:4px solid var(--accent-cyan); padding:16px 18px; border-radius:4px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; box-shadow:0 4px 20px rgba(0,0,0,0.5);">
         <div>
-          <div style="font-size:0.8rem; font-weight:bold; color:#fff;">[ PROTOCOL SESSION // 實踐階段計時 ]</div>
-          <div style="font-size:0.7rem; color:var(--text-muted);">點擊啟動進入全螢幕沉浸式計時模式</div>
+          <div style="font-size:0.85rem; font-weight:bold; color:#fff; letter-spacing:1px;">[ PROTOCOL SESSION // 實踐階段計時 ]</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">啟動後即刻進入全螢幕碼錶計時與雙方數值累計</div>
         </div>
-        <button class="btn-submit" onclick="startSession()" style="width:auto; padding:10px 20px; font-size:0.85rem;">
+        <button class="btn-submit" onclick="startSession()" style="width:auto; padding:12px 26px; font-size:0.9rem; font-weight:bold; letter-spacing:1px; box-shadow:0 0 16px var(--glow-cyan);">
           ▶ 開始本次實踐
         </button>
       </div>
@@ -265,7 +337,7 @@ function finishSessionPrompt() {
   const activePartner = getActivePartner();
   if (!activePartner) return;
 
-  const note = prompt("請輸入本次實踐結案筆記：", "實踐順利完成，雙方意識清醒。");
+  const note = prompt("請輸入本次實踐結案筆記（如：心理狀態、安全詞觸發反饋、部位反應）：", "實踐順利完成，雙方意識清醒。");
   if (note === null) return;
 
   clearInterval(currentSessionTimer);
@@ -286,12 +358,60 @@ function finishSessionPrompt() {
   });
 
   saveTrackerState();
-  renderTrackerApp();
-  alert(`✔ 本次實踐已封存！\n總時長：${durationText}`);
+  renderSessionHUD();
+  renderSessionLogs();
+  alert(`✔ 本次實踐已封存！\n總時長：${durationText}\nSP 次數：${activePartner.spCount}\n長鞭擊數：${activePartner.whipCount}`);
+}
+
+function renderSessionLogs() {
+  const listContainer = document.getElementById("sessionLogsContainer");
+  if (!listContainer) return;
+
+  const activePartner = getActivePartner();
+  if (!activePartner) {
+    listContainer.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:15px 0;">[ 請先選取對象 ]</div>`;
+    return;
+  }
+
+  if (!activePartner.sessions || activePartner.sessions.length === 0) {
+    listContainer.innerHTML = `
+      <div style="text-align:center; color:var(--text-muted); font-size:0.75rem; padding:15px 0;">
+        [ 尚無實踐歷程 ]<br>點擊「開始本次實踐」開啟調教計時
+      </div>
+    `;
+    return;
+  }
+
+  listContainer.innerHTML = activePartner.sessions.map(s => `
+    <div style="background:#0c0c0e; border:1px solid var(--panel-border); border-left:3px solid var(--accent-cyan); padding:10px; margin-bottom:8px; border-radius:2px; font-size:0.75rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span style="color:var(--accent-cyan); font-weight:bold; font-family:monospace;">#${s.sessionId} [${s.duration}]</span>
+        <button onclick="deleteSessionLog('${s.sessionId}')" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">✕</button>
+      </div>
+      <div style="color:var(--text-muted); font-size:0.7rem; margin-bottom:4px;">${s.date}</div>
+      <div style="display:flex; gap:12px; margin-bottom:6px; color:#fff;">
+        <span>SP：<strong style="color:var(--accent-cyan);">${s.spCount}</strong> 下</span>
+        <span>長鞭：<strong style="color:var(--accent-purple);">${s.whipCount}</strong> 下</span>
+      </div>
+      <div style="color:#d4d4d8; background:#141416; padding:6px; border-radius:2px; border:1px dashed var(--panel-border);">
+        💬 ${s.note}
+      </div>
+    </div>
+  `).join('');
+}
+
+function deleteSessionLog(sessionId) {
+  if (!confirm("確定要銷毀這筆實踐歷程紀錄嗎？")) return;
+  const activePartner = getActivePartner();
+  if (!activePartner || !activePartner.sessions) return;
+
+  activePartner.sessions = activePartner.sessions.filter(s => s.sessionId !== sessionId);
+  saveTrackerState();
+  renderSessionLogs();
 }
 
 // --------------------------------------------------------------------------
-// 🚨 安全詞急停防護
+// 6. 🚨 安全詞急停防護 (Emergency Safeword Protocol)
 // --------------------------------------------------------------------------
 function triggerEmergencySafeword() {
   const modal = document.getElementById("safewordEmergencyModal");
@@ -313,7 +433,7 @@ function triggerEmergencySafeword() {
       activePartner.sessions.unshift({
         sessionId: "EMG-" + Date.now().toString().slice(-6),
         date: new Date().toLocaleString("zh-TW", { hour12: false }),
-        duration: "中斷",
+        duration: "急停中斷",
         spCount: activePartner.spCount || 0,
         whipCount: activePartner.whipCount || 0,
         note: "⚠️ 觸發安全詞急停協議中斷實踐。"
@@ -323,7 +443,8 @@ function triggerEmergencySafeword() {
   }
 
   modal.classList.add("active");
-  renderTrackerApp();
+  renderSessionHUD();
+  renderSessionLogs();
 }
 
 function dismissEmergencySafeword() {
@@ -333,7 +454,177 @@ function dismissEmergencySafeword() {
 }
 
 // --------------------------------------------------------------------------
-// 👤 特工個人檔案與 QR Code 名片
+// 7. 互動對象管理 (Partner Management)
+// --------------------------------------------------------------------------
+function renderPartnerList() {
+  const container = document.getElementById("trackerPartnerList");
+  if (!container) return;
+
+  if (trackerState.partners.length === 0) {
+    container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:16px 0;">尚無對象，請點擊上方新增</div>`;
+    return;
+  }
+
+  container.innerHTML = trackerState.partners.map(p => {
+    const isActive = p.id === trackerState.activePartnerId;
+    return `
+      <div class="partner-card ${isActive ? 'active' : ''}" onclick="selectActivePartner('${p.id}')">
+        <img src="${p.avatar}" class="partner-avatar" />
+        <div style="flex:1; overflow:hidden;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <strong style="color:#fff; font-size:0.85rem;">${p.name}</strong>
+            <span class="partner-role-badge">${p.role}</span>
+          </div>
+          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">
+            ID：<span style="color:#fff;">${p.agentId || 'N/A'}</span> ｜ 安全詞：<span style="color:var(--accent-cyan);">${p.safeword || '未設定'}</span>
+          </div>
+        </div>
+        <div style="display:flex; gap:4px;" onclick="event.stopPropagation();">
+          <button onclick="deletePartner('${p.id}')" style="background:transparent; border:none; color:var(--text-muted); font-size:1rem; cursor:pointer;">✕</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectActivePartner(partnerId) {
+  trackerState.activePartnerId = partnerId;
+  saveTrackerState();
+  renderTrackerApp();
+}
+
+function deletePartner(partnerId) {
+  if (!confirm("確定要移除此互動對象檔案嗎？")) return;
+  trackerState.partners = trackerState.partners.filter(p => p.id !== partnerId);
+  if (trackerState.activePartnerId === partnerId) {
+    trackerState.activePartnerId = trackerState.partners.length > 0 ? trackerState.partners[0].id : null;
+  }
+  saveTrackerState();
+  renderTrackerApp();
+}
+
+function addNewPartnerPrompt() {
+  const name = prompt("請輸入互動對象特工代號：");
+  if (!name || !name.trim()) return;
+
+  const role = prompt("請輸入陣營屬性 (例如：服從者 (Sub) 或 支配者 (Dom))：", "服從者 (Sub)");
+  const agentId = prompt("請輸入對象的特工 ID (若無可留空)：", "SUB-" + Math.floor(Math.random()*900 + 100));
+  const newId = "partner_" + Date.now();
+
+  trackerState.partners.push({
+    id: newId,
+    name: name.trim(),
+    role: (role && role.trim()) || "服從者 (Sub)",
+    agentId: (agentId && agentId.trim().toUpperCase()) || "AGENT-X",
+    avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(name),
+    spCount: 0,
+    whipCount: 0,
+    safeword: "MAYDAY",
+    tags: [],
+    limits: [],
+    sessions: []
+  });
+
+  trackerState.activePartnerId = newId;
+  saveTrackerState();
+  renderTrackerApp();
+}
+
+// --------------------------------------------------------------------------
+// 8. 相機掃描 QR Code 串接 (HTML5-QRCode)
+// --------------------------------------------------------------------------
+function openQrScanner() {
+  const modal = document.getElementById("scannerModal");
+  if (modal) modal.classList.add("active");
+
+  if (typeof Html5Qrcode === "undefined") {
+    alert("掃碼組件載入異常，請重新整理頁面。");
+    return;
+  }
+
+  html5QrScannerInstance = new Html5Qrcode("qrReaderBox");
+  html5QrScannerInstance.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: { width: 220, height: 220 } },
+    (decodedText) => {
+      handleScannedData(decodedText);
+      closeQrScanner();
+    },
+    (errorMessage) => {}
+  ).catch(err => {
+    console.warn("相機啟動異常，可改用圖片上傳或手動輸入。", err);
+  });
+}
+
+function closeQrScanner() {
+  const modal = document.getElementById("scannerModal");
+  if (modal) modal.classList.remove("active");
+
+  if (html5QrScannerInstance) {
+    html5QrScannerInstance.stop().then(() => {
+      html5QrScannerInstance.clear();
+      html5QrScannerInstance = null;
+    }).catch(() => {
+      html5QrScannerInstance = null;
+    });
+  }
+}
+
+function scanQrFromImageFile(inputEl) {
+  if (!inputEl.files || inputEl.files.length === 0) return;
+  const file = inputEl.files[0];
+
+  const html5QrCode = new Html5Qrcode("qrReaderBox");
+  html5QrCode.scanFile(file, true)
+    .then(decodedText => {
+      handleScannedData(decodedText);
+      closeQrScanner();
+    })
+    .catch(err => {
+      alert("無法在此圖片中辨識特工 QR Code，請確認圖片清晰度。");
+    });
+}
+
+function handleScannedData(dataString) {
+  try {
+    let payload = null;
+    if (dataString.startsWith("GUILTY:")) {
+      payload = JSON.parse(decodeURIComponent(dataString.replace("GUILTY:", "")));
+    } else {
+      payload = JSON.parse(dataString);
+    }
+
+    if (!payload || !payload.name) {
+      alert("❌ 掃描無效：此 QR 碼非 GUILTY 特工專屬數據。");
+      return;
+    }
+
+    const newId = "partner_" + Date.now();
+    trackerState.partners.push({
+      id: newId,
+      name: payload.name,
+      agentId: payload.agentId || "AGENT-X",
+      role: payload.role || "服從者 (Sub)",
+      avatar: payload.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(payload.name)}`,
+      spCount: 0,
+      whipCount: 0,
+      safeword: payload.safeword || "MAYDAY",
+      tags: payload.tags || [],
+      limits: payload.limits || [],
+      sessions: []
+    });
+
+    trackerState.activePartnerId = newId;
+    saveTrackerState();
+    renderTrackerApp();
+    alert(`✔ 成功同步對象特工名片：${payload.name} (ID: ${payload.agentId || 'N/A'})！`);
+  } catch (err) {
+    alert("❌ 解析失敗：QR Code 內容格式不相符。");
+  }
+}
+
+// --------------------------------------------------------------------------
+// 9. 👤 特工個人檔案與 QR Code 名片 (Profile & Dossier)
 // --------------------------------------------------------------------------
 function renderProfileDossier() {
   const prof = trackerState.profile;
@@ -412,6 +703,27 @@ function toggleTagSelection(type, tag) {
   renderMyQrCode();
 }
 
+function addCustomTag(type) {
+  const input = type === "pref" ? document.getElementById("newCustomPrefInput") : document.getElementById("newCustomLimitInput");
+  if (!input) return;
+  const val = input.value.trim();
+  if (!val) return;
+
+  const prof = trackerState.profile;
+  if (type === "pref") {
+    if (!prof.allPreferences.includes(val)) prof.allPreferences.push(val);
+    if (!prof.selectedTags.includes(val)) prof.selectedTags.push(val);
+  } else {
+    if (!prof.allLimits.includes(val)) prof.allLimits.push(val);
+    if (!prof.limits.includes(val)) prof.limits.push(val);
+  }
+
+  input.value = "";
+  saveTrackerState();
+  renderDossierTags();
+  renderMyQrCode();
+}
+
 function renderMyQrCode() {
   const qrContainer = document.getElementById("myQrCodeBox");
   if (!qrContainer) return;
@@ -453,11 +765,29 @@ function handleSaveProfileForm(e) {
   alert("✔ 特工檔案已成功更新！");
 }
 
+function handleAvatarUpload(inputEl) {
+  if (!inputEl.files || inputEl.files.length === 0) return;
+  const file = inputEl.files[0];
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    trackerState.profile.avatar = e.target.result;
+    const avatarPreview = document.getElementById("dossierAvatarPreview");
+    if (avatarPreview) avatarPreview.src = e.target.result;
+    saveTrackerState();
+    renderMyQrCode();
+  };
+  reader.readAsDataURL(file);
+}
+
 // --------------------------------------------------------------------------
-// ☁️ 雲端同步機制
+// 10. ☁️ TrackerDB 雲端同步機制
 // --------------------------------------------------------------------------
 function syncTrackerToCloud(silent = false) {
-  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) return;
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    if (!silent) alert("請先登入特工帳號以啟用雲端備份！");
+    return;
+  }
 
   const payload = {
     action: "syncTrackerState",
@@ -473,7 +803,9 @@ function syncTrackerToCloud(silent = false) {
     body: JSON.stringify(payload)
   }).then(() => {
     if (!silent) alert("✔ 終端實踐數據已成功同步至 TrackerDB 雲端！");
-  }).catch(() => {});
+  }).catch(() => {
+    if (!silent) alert("雲端同步失敗，請檢查網路狀態。");
+  });
 }
 
 function restoreTrackerFromCloud() {
@@ -506,7 +838,7 @@ function restoreTrackerFromCloud() {
 }
 
 // --------------------------------------------------------------------------
-// 📷 長圖匯出
+// 11. 📷 特工名片長圖匯出 (html2canvas)
 // --------------------------------------------------------------------------
 function exportDossierToImage() {
   const target = document.getElementById("dossierExportTarget");
@@ -516,18 +848,24 @@ function exportDossierToImage() {
   if (btn) { btn.disabled = true; btn.textContent = "繪製中..."; }
   target.classList.add("exporting-mode");
 
-  html2canvas(target, { backgroundColor: "#08080a", scale: 2, useCORS: true, allowTaint: false }).then(canvas => {
+  html2canvas(target, { 
+    backgroundColor: "#08080a", 
+    scale: 2, 
+    useCORS: true, 
+    allowTaint: false 
+  }).then(canvas => {
     target.classList.remove("exporting-mode");
     if (btn) { btn.disabled = false; btn.textContent = "📷 匯出名片圖"; }
     const link = document.createElement("a");
-    link.download = `GUILTY_${trackerState.profile.agentId || 'AGENT'}.png`;
+    link.download = `GUILTY_${trackerState.profile.agentId || 'AGENT'}_${Date.now().toString().slice(-4)}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
   }).catch(() => {
     target.classList.remove("exporting-mode");
     if (btn) { btn.disabled = false; btn.textContent = "📷 匯出名片圖"; }
-    alert("長圖生成失敗！");
+    alert("長圖生成失敗，建議改用上傳本機圖片！");
   });
 }
 
+// 系統啟動初始化
 loadAgentTrackerState();
