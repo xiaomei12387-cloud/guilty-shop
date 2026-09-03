@@ -613,6 +613,27 @@ document.addEventListener("DOMContentLoaded", () => {
       historyOrders.unshift(orderData);
       localStorage.setItem(CONFIG.STORAGE_KEYS.ORDERS, JSON.stringify(historyOrders));
 
+      // 在 showProductDetail 函式中渲染主圖的地方加入 onclick 燈箱觸發
+const heroImgArea = document.getElementById("detailHeroImgArea");
+if (heroImgArea) {
+  heroImgArea.innerHTML = `<img src="${product.img}" onclick="openLightbox('${product.img}')" style="max-height:260px; object-fit:contain; cursor:pointer;" title="點擊放大細節" />`;
+}
+
+// Lightbox 燈箱開關函式
+function openLightbox(imgSrc) {
+  const lightbox = document.getElementById("productLightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  if (lightbox && lightboxImg) {
+    lightboxImg.src = imgSrc;
+    lightbox.style.display = "flex";
+  }
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById("productLightbox");
+  if (lightbox) lightbox.style.display = "none";
+}
+
       // 清空購物車
       cart = [];
       saveCart();
