@@ -14,6 +14,305 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Consolas', 'PingFang TC', sans-serif; -webkit-tap-highlight-color: transparent; }
 html, body { width: 100%; max-width: 100%; overflow-x: hidden; background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; scroll-behavior: smooth; }
 
+/* ==========================================================================
+   開場讀條遮罩 + 貓眼光效動態
+   ========================================================================== */
+.splash-screen {
+  position: fixed;
+  inset: 0;
+  background: #050608;
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s;
+}
+
+.splash-screen.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 90%;
+  max-width: 380px;
+}
+
+/* 貓眼核心：外廓與裂隙金屬光感 */
+.cat-eye-container {
+  position: relative;
+  width: 90px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 243, 255, 0.4);
+  box-shadow: 0 0 25px rgba(0, 243, 255, 0.15), inset 0 0 15px rgba(0, 243, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+/* 貓眼瞳孔（垂直裂縫開闔與呼吸） */
+.cat-eye-slit {
+  width: 4px;
+  height: 80%;
+  background: #00f3ff;
+  border-radius: 50%;
+  box-shadow: 0 0 12px #00f3ff, 0 0 24px #00f3ff;
+  animation: catEyePulse 3s infinite ease-in-out;
+}
+
+@keyframes catEyePulse {
+  0%, 100% {
+    transform: scaleX(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scaleX(2.8);
+    opacity: 1;
+    filter: drop-shadow(0 0 8px #ff0055);
+  }
+}
+
+.splash-brand {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  letter-spacing: 0.35em;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 6px;
+}
+
+.splash-sub {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: #6a7682;
+  margin-bottom: 22px;
+}
+
+.splash-loader-bar {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+.splash-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, transparent, #00f3ff, #fff);
+  box-shadow: 0 0 8px #00f3ff;
+  transition: width 0.15s ease-out;
+}
+
+.splash-status {
+  font-size: 0.65rem;
+  font-family: monospace;
+  color: var(--accent-cyan, #00f3ff);
+  margin-top: 10px;
+  letter-spacing: 0.1em;
+}
+
+/* ==========================================================================
+   首頁超巨大 LOGO 與頂級質感視覺排版 (Grand Hero)
+   ========================================================================== */
+.hero-grand-section {
+  position: relative;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px 60px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 30%, rgba(16, 24, 38, 0.5) 0%, #08090d 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* 背後超巨大浮雕 LOGO 水印 */
+.hero-huge-bg-logo {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 26vw; /* 依視窗比例放大的超巨文字 */
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  color: rgba(255, 255, 255, 0.018);
+  text-transform: uppercase;
+  user-select: none;
+  pointer-events: none;
+  white-space: nowrap;
+  line-height: 1;
+  font-family: 'Space Grotesk', Impact, sans-serif;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-content-wrapper {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+  text-align: center;
+}
+
+.hero-tech-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.25em;
+  color: #7b8895;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(10, 14, 20, 0.6);
+  padding: 6px 14px;
+  border-radius: 40px;
+  backdrop-filter: blur(8px);
+  margin-bottom: 24px;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  background: #00f3ff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #00f3ff;
+  animation: dotBlink 1.8s infinite;
+}
+
+@keyframes dotBlink {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+.hero-grand-title {
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: 0.08em;
+  color: #fff;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+.hero-grand-title .title-sub {
+  display: block;
+  font-size: 1rem;
+  letter-spacing: 0.4em;
+  font-weight: 500;
+  color: #8c9ba5;
+  margin-bottom: 12px;
+}
+
+.hero-grand-desc {
+  font-size: clamp(0.88rem, 1.6vw, 1.05rem);
+  color: #929ea8;
+  font-weight: 300;
+  line-height: 1.8;
+  letter-spacing: 0.05em;
+  max-width: 580px;
+  margin: 0 auto 36px;
+}
+
+.hero-btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-grand-primary {
+  background: #00f3ff;
+  color: #06090e;
+  border: none;
+  padding: 13px 30px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  border-radius: 2px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 243, 255, 0.25);
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-grand-primary:hover {
+  background: #fff;
+  box-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-grand-outline {
+  background: transparent;
+  color: #c4d1db;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 13px 26px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btn-grand-outline:hover {
+  border-color: #00f3ff;
+  color: #00f3ff;
+  background: rgba(0, 243, 255, 0.05);
+}
+
+/* 底部微型滑動指引 */
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #4a5568;
+  font-size: 0.62rem;
+  letter-spacing: 0.25em;
+}
+
+.scroll-mouse {
+  width: 16px;
+  height: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  padding-top: 4px;
+}
+
+.scroll-wheel {
+  width: 2px;
+  height: 6px;
+  background: #00f3ff;
+  border-radius: 1px;
+  animation: wheelScroll 1.8s infinite;
+}
+
+@keyframes wheelScroll {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(8px); opacity: 0; }
+}
+
 /* 原創幾何骨架 SVG 樣式 */
 .guilty-vector-logo { display: inline-block; vertical-align: middle; filter: drop-shadow(0 0 6px var(--glow-cyan)); }
 .logo-path { stroke: var(--accent-cyan); stroke-width: 7; stroke-linecap: square; stroke-linejoin: miter; fill: none; }
