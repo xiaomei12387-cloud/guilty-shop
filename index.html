@@ -3,30 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>欲室｜共犯 GUILTY </title>
+  <title>欲室｜共犯 GUILTY</title>
 
-  <!-- 瀏覽器分頁 Favicon -->
   <link rel="icon" type="image/png" href="./icons/favicon.png" />
-
-  <!-- PWA 設定清單 (Android / Chrome) -->
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#08080a" />
 
-  <!-- iOS 主畫面 Icon 與全螢幕 App 設定 -->
   <link rel="apple-touch-icon" href="./icons/icon-180.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="GUILTY" />
 
-  <!-- 外部樣式模組 -->
   <link rel="stylesheet" href="./css/style.css" />
   <link rel="stylesheet" href="./css/tracker.css" />
 
-  <!-- 📷 名片截圖轉存圖片引擎 (html2canvas) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  
-  <!-- 輕量即時相機掃碼引擎 (HTML5-QRCode) -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
@@ -118,7 +110,6 @@
           <button type="submit" class="btn-submit" id="btnLoginSubmit" style="padding:12px; font-size:0.9rem;">驗證密鑰並登入 (ACCESS)</button>
         </form>
 
-        <!-- 註冊表單 -->
         <form id="registerForm" onsubmit="handleRegisterSubmit(event)" style="display:none;">
           <div class="form-group">
             <label>特工代號 / 嫌疑人稱號*</label>
@@ -185,7 +176,7 @@
     </div>
   </div>
 
-  <!-- 📷 特工神經掃描彈窗 (Scanner Modal) -->
+  <!-- 相機掃描彈窗 -->
   <div class="auth-modal" id="scannerModal">
     <div class="auth-box" style="max-width: 380px; text-align: center; position: relative;">
       <button class="auth-close" onclick="closeQrScanner()">✕</button>
@@ -193,10 +184,7 @@
         <div class="auth-title" style="font-size: 1rem; color: var(--accent-cyan);">[ NEURAL SCANNER // 掃描名片 ]</div>
         <div class="auth-sub">對準特工的專屬 QR Code 進行神經同步</div>
       </div>
-
-      <!-- 相機預覽區域 -->
       <div id="qrReaderBox" style="width: 100%; min-height: 250px; background: #000; border: 1px solid var(--panel-border); border-radius: 4px; overflow: hidden; position: relative;"></div>
-
       <div style="margin-top: 14px; display: flex; gap: 8px;">
         <label style="flex: 1; padding: 10px; background: #141416; border: 1px solid var(--panel-border); color: var(--text-muted); font-size: 0.75rem; border-radius: 3px; cursor: pointer; text-align: center;">
           📁 選取 QR 截圖
@@ -254,15 +242,12 @@
       </div>
 
       <ul class="nav-menu-list">
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">01 // 實踐計數終端 (TRACKER) ⚡</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">02 // 特工個人主頁 (PROFILE CARD) ★</a></li>
-        <li class="nav-menu-item"><a href="#section-hero" onclick="scrollToSection('section-hero')">03 // 展廳首頁 (TOP)</a></li>
-        <li class="nav-menu-item"><a href="#section-matrix" onclick="scrollToSection('section-matrix')">04 // 研發矩陣 (MATRIX)</a></li>
-        <li class="nav-menu-item"><a href="#section-arsenal" onclick="scrollToSection('section-arsenal')">05 // 裝備目錄 (CATALOG)</a></li>
-        <li class="nav-menu-item"><a href="#section-faq" onclick="scrollToSection('section-faq')">06 // 特工指南 (FAQ)</a></li>
-        <li class="nav-menu-item"><a href="#section-crew" onclick="scrollToSection('section-crew')">07 // 主理核心 (CREW)</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">08 // 創作者合作後台 (PORTAL) ⚙️</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">09 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="showLandingView()">00 // 首頁分流大廳 (HOME)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openShopCatalogView()" style="color:#00ff88; font-weight:bold;">01 // 裝備調用商城 (ARSENAL) 🛒</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">02 // 實踐計數終端 (TRACKER) ⚡</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">03 // 特工個人主頁 (PROFILE CARD) ★</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">04 // 創作者合作後台 (PORTAL) ⚙️</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">05 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
       </ul>
     </div>
 
@@ -273,10 +258,12 @@
     </div>
   </div>
 
-<!-- 1. 展廳主頁面 (極簡雙軌分流大廳) -->
+  <!-- ======================================================== -->
+  <!-- 1. 【首頁雙軌分流大廳】（只有品牌 + 兩個按鈕，乾淨俐落） -->
+  <!-- ======================================================== -->
   <div id="view-landing" class="view-section active">
-    <div class="landing-container" style="display: flex; flex-direction: column; justify-content: center; min-height: 80vh; text-align: center;">
-      <section class="hero-fullscreen" id="section-hero" style="padding: 20px 0;">
+    <div class="landing-container" style="display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:82vh; text-align:center;">
+      <section class="hero-fullscreen" style="padding: 10px 0; width: 100%;">
         <div class="hero-code">[ PROTOCOL // A.D. 2678 HARDWARE ARSENAL ]</div>
         <div style="margin: 20px auto;">
           <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 320px;">
@@ -294,24 +281,23 @@
         
         <h1 class="hero-heading">我們不製造傷害，<br>我們定義支配。</h1>
         
-        <!-- 白話文快速導引區 -->
-        <div style="background: rgba(0,255,136,0.05); border: 1px dashed var(--accent-cyan); padding: 14px 18px; border-radius: 4px; max-width: 520px; margin: 20px auto; text-align: left; font-size: 0.85rem;">
+        <div style="background: rgba(0,255,136,0.05); border: 1px dashed var(--accent-cyan); padding: 14px 18px; border-radius: 4px; max-width: 500px; margin: 20px auto; text-align: left; font-size: 0.85rem;">
           <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 6px;">📌 第一次來？3 步驟輕鬆調用：</div>
           <div style="color: #d4d4d8; line-height: 1.6;">
-            1. 點擊下方<strong>「進入裝備調用商城」</strong>挑選實體裝備。<br>
+            1. 點擊<strong>「進入裝備調用商城」</strong>挑選實體裝備。<br>
             2. 選擇規格與顏色加入裝備庫，填寫超商收件資料即可完成。<br>
             3. 若要記錄雙人互動與實踐歷程，點擊<strong>「開啟實踐管理終端」</strong>。
           </div>
         </div>
 
-        <p class="hero-sub" style="max-width: 500px; margin: 0 auto 24px;">工業義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。重塑冷冽硬派的次文化拘束哲學。</p>
+        <p class="hero-sub" style="max-width: 500px; margin: 0 auto 28px;">工業義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。重塑冷冽硬派的次文化拘束哲學。</p>
         
-        <!-- 雙生終端大按鈕分流（主導航） -->
-        <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; max-width: 520px; margin: 0 auto;">
-          <button class="btn-submit" onclick="openShopCatalogView()" style="flex: 1; min-width: 220px; padding: 16px; font-size: 0.95rem;">
+        <!-- 雙軌大按鈕 -->
+        <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; max-width:520px; margin:0 auto;">
+          <button class="btn-submit" onclick="openShopCatalogView()" style="flex:1; min-width:220px; padding:16px; font-size:0.95rem;">
             🛒 進入裝備調用商城
           </button>
-          <button class="btn-submit" onclick="openTrackerAppView()" style="flex: 1; min-width: 220px; padding: 16px; font-size: 0.95rem; background: #141416; color: var(--accent-cyan); border: 1px solid var(--accent-cyan);">
+          <button class="btn-submit" onclick="openTrackerAppView()" style="flex:1; min-width:220px; padding:16px; font-size:0.95rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--accent-cyan);">
             ⚡ 開啟實踐管理終端
           </button>
         </div>
@@ -319,43 +305,23 @@
     </div>
   </div>
 
-      <!-- 世界觀脈絡 -->
-      <section class="section-manifesto" id="section-manifesto">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // WORLDVIEW & PROTOCOL ]</div>
-        <div class="manifesto-card">
-          <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
-          <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
-            【欲室｜共犯 GUILTY】作為地下義體武裝研究所，攜手合作夥伴【KK】，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
-          </p>
-        </div>
-      </section>
-
-      <!-- 裝備研發矩陣 -->
-      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-matrix">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // ARSENAL MATRIX ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:6px;">支配・拘束・義體三大研發矩陣</h2>
-        <div class="matrix-grid">
-          <div class="matrix-card">
-            <div class="matrix-num">DIVISION 01 // CYBERNETICS</div>
-            <div class="matrix-title">義體外骨骼拘束器</div>
-            <div class="matrix-desc">工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
-          </div>
-          <div class="matrix-card card-shushi">
-            <div class="matrix-num">DIVISION 02 // ROPE ART</div>
-            <div class="matrix-title">KK 特選精煉繩藝</div>
-            <div class="matrix-desc">經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌。</div>
-          </div>
-          <div class="matrix-card">
-            <div class="matrix-num">DIVISION 03 // CALIBRATION & TACTICAL</div>
-            <div class="matrix-title">神經校準與戰術裝備</div>
-            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹精準神經回饋。</div>
-          </div>
-        </div>
-      </section>
+  <!-- ======================================================== -->
+  <!-- 2. 【獨立裝備商城視圖】（點擊商城按鈕才會進到這裡） -->
+  <!-- ======================================================== -->
+  <div id="view-shop" class="view-section">
+    <div class="landing-container">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 14px; cursor:pointer; font-size:0.8rem; border-radius:2px;">
+          ← 返回首頁大廳
+        </button>
+        <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 14px; cursor:pointer; font-size:0.8rem; border-radius:2px;">
+          ⚡ 開啟實踐計數終端 →
+        </button>
+      </div>
 
       <!-- 裝備目錄庫 -->
       <section class="section-arsenal" id="section-arsenal">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // ARSENAL CATALOG ]</div>
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
           <h2 style="font-size:1.4rem;">全系列裝備目錄庫</h2>
           <span style="font-size:0.8rem; color:var(--accent-cyan); border:1px dashed var(--accent-cyan); padding:2px 8px;">全館滿 NT$ 1,800 免運費</span>
@@ -368,9 +334,38 @@
         <div class="product-list-grid" id="productGrid"></div>
       </section>
 
+      <!-- 世界觀與三大矩陣 -->
+      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // WORLDVIEW & ARSENAL MATRIX ]</div>
+        <div class="manifesto-card" style="margin-bottom:20px;">
+          <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
+          <p style="color:var(--text-muted); font-size:0.85rem;">
+            【欲室｜共犯 GUILTY】作為地下義體武裝研究所，攜手合作夥伴【KK】，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
+          </p>
+        </div>
+
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="matrix-num">DIVISION 01 // CYBERNETICS</div>
+            <div class="matrix-title">義體外骨骼拘束器</div>
+            <div class="matrix-desc">工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
+          </div>
+          <div class="matrix-card card-shushi">
+            <div class="matrix-num">DIVISION 02 // ROPE ART</div>
+            <div class="matrix-title">KK 特選精煉繩藝</div>
+            <div class="matrix-desc">經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌。</div>
+          </div>
+          <div class="matrix-card">
+            <div class="matrix-num">DIVISION 03 // CALIBRATION</div>
+            <div class="matrix-title">神經校準與戰術裝備</div>
+            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹精準神經回饋。</div>
+          </div>
+        </div>
+      </section>
+
       <!-- 特工指南 FAQ -->
-      <section style="padding: 50px 0; border-top: 1px solid var(--panel-border);" id="section-faq">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // AGENT DOSSIER FAQ ]</div>
+      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // AGENT DOSSIER FAQ ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
         
         <div class="faq-item">
@@ -380,12 +375,7 @@
 
         <div class="faq-item">
           <div class="faq-q">Q2. 神經突觸長鞭（1.2M vs 1.5M）如何選擇？</div>
-          <div class="faq-a">• <strong>1.2 米 (CQB 近距校準型)</strong>：重心靈活回彈迅速，適合室內或新手特工練習發力控點。<br>• <strong>1.5 米 (EXTENDED 遠距壓制型)</strong>：鞭尾破空聲清脆響亮，具備強大壓迫感與長距牽制力。</div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-q">Q3. 隱私交付承諾與包裹外觀？</div>
-          <div class="faq-a">全館包裹採用 100% 絕密隱密紙箱出貨，外箱與超商寄件託運單絕不出現任何敏感字樣，寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>。</div>
+          <div class="faq-a">• <strong>1.2 米 (CQB 近距校準型)</strong>：重心靈活回彈迅速，適合室內或新手練習控點。<br>• <strong>1.5 米 (EXTENDED 遠距壓制型)</strong>：鞭尾破空聲清脆響亮，具備強大壓迫感與長距牽制力。</div>
         </div>
 
         <div class="stealth-badge-card">
@@ -397,9 +387,9 @@
         </div>
       </section>
 
-      <!-- 主理核心 CREW -->
-      <section class="section-crew" id="section-crew">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 05 // CREW DOSSIER ]</div>
+      <!-- 主理成員 -->
+      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
+        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
         <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
         <div class="team-grid">
           <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
@@ -422,7 +412,7 @@
     </div>
   </div>
 
-  <!-- 2. 【獨立介面 01】實踐計數終端 (Tracker View) -->
+  <!-- 3. 【實踐計數終端】 (Tracker View) -->
   <div id="view-tracker" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -431,11 +421,9 @@
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">神經實踐實時計數板</span>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
-          <!-- ☁️ 雲端備份手動按鈕 -->
           <button onclick="syncTrackerToCloud()" style="background:#141416; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 8px; font-size:0.75rem; cursor:pointer; border-radius:3px;">
             ☁️ 備份
           </button>
-          <!-- 🚨 急停拍擊按鈕 -->
           <button class="safeword-panic-btn" onclick="triggerEmergencySafeword()">
             🛑 SAFEWORD 急停
           </button>
@@ -443,17 +431,13 @@
         </div>
       </div>
 
-      <!-- 頂部切換主/被動方 -->
       <div class="mode-switch-grid">
         <div class="mode-switch-btn active" id="btnModeDom" onclick="switchTrackerMode('dom')">⚔️ 主動方終端 (Dom)</div>
         <div class="mode-switch-btn btn-sub" id="btnModeSub" onclick="switchTrackerMode('sub')">⛓️ 被動方終端 (Sub)</div>
       </div>
 
-      <!-- 實時計數板 -->
       <div class="form-box">
         <div class="form-title" id="activePartnerNameDisplay">[ 當前對象：載入中... ]</div>
-
-        <!-- 實踐階段計時 HUD 區塊 (掛載點) -->
         <div id="sessionHudArea"></div>
 
         <div class="counter-board-grid">
@@ -481,7 +465,6 @@
         </div>
       </div>
 
-      <!-- 互動對象清單 -->
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div class="form-title" style="margin-bottom:0; border:none; padding:0;">互動對象清單 (PARTNERS)</div>
@@ -497,7 +480,6 @@
         <div id="trackerPartnerList"></div>
       </div>
 
-      <!-- 實踐歷程封存紀錄 -->
       <div class="form-box">
         <div class="form-title">實踐歷程封存紀錄 (SESSION LOGS)</div>
         <div id="sessionLogsContainer"></div>
@@ -505,7 +487,7 @@
     </div>
   </div>
 
-  <!-- 3. 【獨立介面 02】特工個人主頁 (Profile Dossier View) -->
+  <!-- 4. 【特工個人主頁】 (Profile Dossier View) -->
   <div id="view-dossier" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -514,7 +496,6 @@
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">個人偏好標籤與專屬名片</span>
         </div>
         <div style="display:flex; gap:8px;">
-          <!-- 📷 匯出長圖按鈕 -->
           <button id="btnExportCard" onclick="exportDossierToImage()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">
             📷 匯出名片圖
           </button>
@@ -522,10 +503,7 @@
         </div>
       </div>
 
-      <!-- 📸 匯出長圖目標區域開始 -->
       <div id="dossierExportTarget" style="padding: 6px; background: #08080a; border-radius: 6px;">
-        
-        <!-- 公開賽博特工名片 -->
         <div class="dossier-hero-card">
           <div class="dossier-avatar-container">
             <img id="dossierAvatarPreview" src="" class="dossier-avatar" crossorigin="anonymous" />
@@ -538,32 +516,25 @@
           <p id="dossierBioDisplay" style="font-size:0.8rem; color:var(--text-muted); max-width:400px; margin:8px auto 0; line-height:1.6;"></p>
         </div>
 
-        <!-- 專屬 QR Code 通行證 -->
         <div class="qr-pass-card">
           <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL PASS // 掃碼連線特工名片 ]</div>
           <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">出示供對方掃描，即可一鍵將您加為互動對象！</div>
           <div class="qr-box" id="myQrCodeBox"></div>
         </div>
 
-        <!-- 自訂偏好與雷點矩陣 -->
         <div class="form-box">
           <div class="form-title">實踐偏好與雷點矩陣 (PREFERENCE MATRIX)</div>
-          
           <div style="margin-bottom:14px;">
             <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 實踐偏好 (PREFERENCES)：</label>
             <div class="tags-wrap-box" id="myPrefTagsBox"></div>
           </div>
-
           <div>
             <label style="font-size:0.75rem; color:var(--danger-red); font-weight:bold;">✦ 絕對雷點 (HARD LIMITS)：</label>
             <div class="tags-wrap-box" id="myLimitTagsBox"></div>
           </div>
         </div>
-
       </div>
-      <!-- 📸 匯出長圖目標區域結束 -->
 
-      <!-- 自訂標籤輸入 -->
       <div class="form-box" style="margin-top: 14px;">
         <div class="form-title">擴充自訂標籤 (CUSTOM TAGS)</div>
         <div class="custom-tag-input-row" style="margin-bottom: 8px;">
@@ -578,7 +549,7 @@
     </div>
   </div>
 
-  <!-- 4. 【獨立介面 03】創作者合作後台 (Creator Portal View) -->
+  <!-- 5. 【創作者合作後台】 (Creator Portal View) -->
   <div id="view-creator-portal" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header" style="border-left-color: var(--accent-purple);">
@@ -586,7 +557,7 @@
           <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-purple);">[ CREATOR PORTAL // 創作者合作通道 ]</span>
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">專屬推廣碼查詢與分潤統計</span>
         </div>
-        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回展廳</button>
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回大廳</button>
       </div>
 
       <div class="form-box">
@@ -633,7 +604,7 @@
     </div>
   </div>
 
-  <!-- 5. 個人調用紀錄 -->
+  <!-- 6. 【個人調用紀錄】 (My Dossier View) -->
   <div id="view-order-history" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -641,7 +612,7 @@
           <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ DOSSIER // 個人裝備調用案件紀錄 ]</span>
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">雲端與本機封存之案件調用檔案</span>
         </div>
-        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回展廳</button>
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回大廳</button>
       </div>
 
       <div class="form-box">
@@ -656,10 +627,10 @@
     </div>
   </div>
 
-  <!-- 6. 商品詳細配置頁 -->
+  <!-- 7. 【商品詳細配置頁】 -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
-      <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回展廳</button>
+      <button onclick="openShopCatalogView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回裝備目錄</button>
       <div class="checkout-hero-img-box" id="detailHeroBox">
         <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
         <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
@@ -683,11 +654,11 @@
     </div>
   </div>
 
-  <!-- 7. 終端結帳視圖 -->
+  <!-- 8. 【終端結帳視圖】 -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; font-size:0.8rem;">← 返回展廳</button>
+        <button onclick="openShopCatalogView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; font-size:0.8rem;">← 返回商城目錄</button>
         <button onclick="toggleCart(true)" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; cursor:pointer; font-size:0.8rem;">檢視購物車清單 ↗</button>
       </div>
 
@@ -767,7 +738,7 @@
     </div>
   </div>
 
-  <!-- 8. 成功下單頁面 -->
+  <!-- 9. 【成功下單頁面】 -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
@@ -775,19 +746,19 @@
         <h2 class="success-title">認罪協議已簽署完畢</h2>
         <p style="color:var(--text-muted); font-size:0.85rem;">裝備調用指令已注入終端，檔案已加密封存。</p>
         <div style="display:flex; gap:10px; margin-top:24px;">
-          <button class="btn-submit" style="padding:12px 20px;" onclick="showLandingView()">返回展廳 (HOME)</button>
+          <button class="btn-submit" style="padding:12px 20px;" onclick="showLandingView()">返回大廳 (HOME)</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 💡 商品圖片預覽燈箱 Lightbox -->
+  <!-- 燈箱彈窗 -->
   <div id="productLightbox" style="position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:99999; display:none; align-items:center; justify-content:center; padding:20px;" onclick="closeLightbox()">
     <button onclick="closeLightbox()" style="position:absolute; top:20px; right:20px; background:transparent; border:none; color:#fff; font-size:2rem; cursor:pointer;">✕</button>
     <img id="lightboxImg" src="" style="max-width:100%; max-height:90vh; border:1px solid var(--accent-cyan); box-shadow:0 0 30px rgba(0,255,136,0.3);" />
   </div>
 
-  <!-- 🚨 全螢幕安全詞急停警報 -->
+  <!-- 安全詞急停警報 -->
   <div class="safeword-emergency-overlay" id="safewordEmergencyModal">
     <div style="font-size:1.5rem; letter-spacing:4px; color:#ff334b; font-weight:bold;">
       ⚠️ [ EMERGENCY PROTOCOL ACTIVATED ] ⚠️
@@ -804,11 +775,11 @@
     </button>
   </div>
 
-  <!-- 載入所有模組 JS -->
-  <script src="./js/config.js"></script>
-  <script src="./js/auth.js"></script>
-  <script src="./js/shop.js?v=999"></script>
-  <script src="./js/tracker.js"></script>
+  <!-- 載入模組 -->
+  <script src="./js/config.js?v=20260903"></script>
+  <script src="./js/auth.js?v=20260903"></script>
+  <script src="./js/shop.js?v=20260903"></script>
+  <script src="./js/tracker.js?v=20260903"></script>
 
   <script>
     function setActiveView(viewId) {
@@ -825,23 +796,19 @@
       }
     }
 
+    function openShopCatalogView() {
+      toggleNav(false);
+      setActiveView('view-shop');
+      renderProductCards();
+      history.pushState({ view: 'shop' }, '', '#shop');
+    }
+
     function openTrackerAppView() {
       toggleNav(false);
       setActiveView('view-tracker');
       renderTrackerApp();
       history.pushState({ view: 'tracker' }, '', '#tracker');
     }
-
-    function openShopCatalogView() {
-    toggleNav(false);
-    showLandingView(true);
-    setTimeout(() => {
-      const arsenalEl = document.getElementById('section-arsenal');
-      if (arsenalEl) {
-        arsenalEl.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 100);
-  }
 
     function openProfileDossierView() {
       toggleNav(false);
@@ -963,15 +930,6 @@
       document.body.appendChild(script);
     }
 
-    function scrollToSection(sectionId) {
-      showLandingView();
-      toggleNav(false);
-      setTimeout(() => {
-        const el = document.getElementById(sectionId);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
-    }
-
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
       clearTimeout(introTimer);
@@ -993,9 +951,8 @@
       }
     }
 
-    // 系統初始化執行
+    // 系統啟動初始化
     history.replaceState({ view: 'landing' }, '', '#landing');
-    renderProductCards();
     updateMemberUI();
     updateCartUI();
   </script>
