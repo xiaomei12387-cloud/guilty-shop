@@ -118,10 +118,15 @@
           <button type="submit" class="btn-submit" id="btnLoginSubmit" style="padding:12px; font-size:0.9rem;">驗證密鑰並登入 (ACCESS)</button>
         </form>
 
+        <!-- 註冊表單 -->
         <form id="registerForm" onsubmit="handleRegisterSubmit(event)" style="display:none;">
           <div class="form-group">
             <label>特工代號 / 嫌疑人稱號*</label>
             <input type="text" id="regNameInput" required placeholder="例如：18X / 支配者 K" />
+          </div>
+          <div class="form-group">
+            <label>自訂特工 ID (AGENT ID)*</label>
+            <input type="text" id="regAgentIdInput" required placeholder="例如：AGENT-001 或 18X" style="text-transform:uppercase;" />
           </div>
           <div class="form-group">
             <label>安全信箱 (Email)*</label>
@@ -164,6 +169,10 @@
           <div class="form-group">
             <label>特工代號*</label>
             <input type="text" id="profNameInput" required />
+          </div>
+          <div class="form-group">
+            <label>自訂特工 ID*</label>
+            <input type="text" id="profAgentIdInput" required style="text-transform:uppercase;" />
           </div>
           <div class="form-group">
             <label>常用交付超商門市</label>
@@ -260,27 +269,9 @@
     <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--panel-border); padding-top:14px;">
       <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" style="color:#5865F2; text-decoration:none; display:block; margin-bottom:4px;">👾 特工 Discord 伺服器 ↗</a>
       <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration:none; display:block; margin-bottom:6px;">𝕏 GUILTY 官方情報 ↗</a>
-      <span style="color:var(--text-muted);">欲室共犯 × shushi束室 // SYS.VER 02.0</span>
+      <span style="color:var(--text-muted);">欲室共犯 × KK // SYS.VER 02.0</span>
     </div>
   </div>
-
-  <!-- 註冊表單內加入 ID 輸入 -->
-<div class="form-group">
-  <label>自訂特工 ID (AGENT ID)*</label>
-  <input type="text" id="regAgentIdInput" required placeholder="例如：AGENT-001 或 18X" style="text-transform:uppercase;" />
-</div>
-
-<!-- 檔案編輯視圖內加入 ID 輸入 -->
-<div class="form-group">
-  <label>自訂特工 ID*</label>
-  <input type="text" id="profAgentIdInput" required style="text-transform:uppercase;" />
-</div>
-
-<!-- 商品詳細頁燈箱彈窗結構 (在 body 底部加入) -->
-<div id="productLightbox" style="position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:99999; display:none; align-items:center; justify-content:center; padding:20px;" onclick="closeLightbox()">
-  <button onclick="closeLightbox()" style="position:absolute; top:20px; right:20px; background:transparent; border:none; color:#fff; font-size:2rem; cursor:pointer;">✕</button>
-  <img id="lightboxImg" src="" style="max-width:100%; max-height:90vh; border:1px solid var(--accent-cyan); box-shadow:0 0 30px rgba(0,255,136,0.3);" />
-</div>
 
   <!-- 1. 展廳主頁面 -->
   <div id="view-landing" class="view-section active">
@@ -301,6 +292,7 @@
           </svg>
         </div>
         <h1 class="hero-heading">我們不製造傷害，<br>我們定義支配。</h1>
+        
         <!-- 白話文快速導引區 -->
         <div style="background: rgba(0,255,136,0.05); border: 1px dashed var(--accent-cyan); padding: 12px 16px; border-radius: 4px; max-width: 500px; margin: 16px auto; text-align: left; font-size: 0.8rem;">
           <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px;">📌 第一次來？3 步驟輕鬆訂購：</div>
@@ -310,11 +302,13 @@
             3. 點右上角購物車，填寫收件資料（支援超商取貨付款）即可完成！
           </div>
         </div>
+
         <p class="hero-sub">工業義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。重塑冷冽硬派的次文化拘束哲學。</p>
         
+        <!-- 雙生終端大按鈕分流 -->
         <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
-          <button class="btn-submit" onclick="openTrackerAppView()" style="width:auto; padding:12px 20px; font-size:0.85rem;">⚡ 實踐計數終端</button>
-          <button class="btn-submit" onclick="openProfileDossierView()" style="width:auto; padding:12px 20px; font-size:0.85rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);">★ 特工個人主頁</button>
+          <button class="btn-submit" onclick="scrollToSection('section-arsenal')" style="width:auto; padding:12px 20px; font-size:0.85rem;">🛒 進入裝備調用商城</button>
+          <button class="btn-submit" onclick="openTrackerAppView()" style="width:auto; padding:12px 20px; font-size:0.85rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);">⚡ 開啟實踐管理終端</button>
         </div>
       </section>
 
@@ -324,7 +318,7 @@
         <div class="manifesto-card">
           <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
           <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:12px;">
-            【欲室｜共犯 GUILTY】作為地下義體武裝研究所，攜手專業繩縛殿堂【shushi束室 繩教室】，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
+            【欲室｜共犯 GUILTY】作為地下義體武裝研究所，攜手合作夥伴【KK】，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
           </p>
         </div>
       </section>
@@ -341,7 +335,7 @@
           </div>
           <div class="matrix-card card-shushi">
             <div class="matrix-num">DIVISION 02 // ROPE ART</div>
-            <div class="matrix-title">束室特選精煉繩藝</div>
+            <div class="matrix-title">KK 特選精煉繩藝</div>
             <div class="matrix-desc">經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌。</div>
           </div>
           <div class="matrix-card">
@@ -362,7 +356,7 @@
         <div class="filter-bar">
           <button class="filter-btn active" onclick="filterBrand('all')">全部裝備 (ALL)</button>
           <button class="filter-btn" onclick="filterBrand('guilty')">欲室｜共犯 義體</button>
-          <button class="filter-btn" onclick="filterBrand('shushi')">shushi束室 繩選</button>
+          <button class="filter-btn" onclick="filterBrand('shushi')">KK 合作繩選</button>
         </div>
         <div class="product-list-grid" id="productGrid"></div>
       </section>
@@ -480,7 +474,7 @@
         </div>
       </div>
 
-      <!-- 互動對象清單 (置頂 / 刪除 / 📷 掃碼新增) -->
+      <!-- 互動對象清單 -->
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div class="form-title" style="margin-bottom:0; border:none; padding:0;">互動對象清單 (PARTNERS)</div>
@@ -496,7 +490,7 @@
         <div id="trackerPartnerList"></div>
       </div>
 
-      <!-- 實踐歷程封存紀錄 (掛載點) -->
+      <!-- 實踐歷程封存紀錄 -->
       <div class="form-box">
         <div class="form-title">實踐歷程封存紀錄 (SESSION LOGS)</div>
         <div id="sessionLogsContainer"></div>
@@ -562,7 +556,7 @@
       </div>
       <!-- 📸 匯出長圖目標區域結束 -->
 
-      <!-- 自訂標籤輸入（不放進截圖區域，保持名片整潔） -->
+      <!-- 自訂標籤輸入 -->
       <div class="form-box" style="margin-top: 14px;">
         <div class="form-title">擴充自訂標籤 (CUSTOM TAGS)</div>
         <div class="custom-tag-input-row" style="margin-bottom: 8px;">
@@ -573,50 +567,6 @@
           <input type="text" id="newCustomLimitInput" placeholder="輸入自訂雷點（例如：拒絕拍照）" />
           <button type="button" onclick="addCustomTag('limit')" style="background:var(--danger-red); color:#fff;">＋ 新增雷點</button>
         </div>
-      </div>
-
-      <!-- 編輯特工檔案資料 -->
-      <div class="form-box">
-        <div class="form-title">編輯特工檔案數據 (EDIT PROFILE)</div>
-        <form id="profileCustomForm" onsubmit="handleSaveProfileForm(event)">
-          <div style="margin-bottom:10px;">
-            <label style="font-size:0.75rem;">頭像網址 (Avatar URL) 或 上傳本機圖檔</label>
-            <input type="url" id="profEditAvatar" placeholder="https://... 或選擇圖片" style="padding:8px; font-size:0.8rem; margin-bottom:4px;" />
-            <input type="file" accept="image/*" onchange="handleAvatarUpload(this)" style="font-size:0.75rem;" />
-          </div>
-
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
-            <div>
-              <label style="font-size:0.75rem;">特工代號*</label>
-              <input type="text" id="profEditName" required style="padding:8px;" />
-            </div>
-            <div>
-              <label style="font-size:0.75rem;">主權陣營屬性*</label>
-              <select id="profEditRole" style="padding:8px;">
-                <option value="支配者 (Dom)">支配者 (Dom)</option>
-                <option value="切換者 (Switch)">切換者 (Switch)</option>
-                <option value="服從者 (Sub)">服從者 (Sub)</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label style="font-size:0.75rem;">𝕏 (Twitter) 社群連結</label>
-            <input type="url" id="profEditTwitter" placeholder="https://x.com/your_handle" style="padding:8px;" />
-          </div>
-
-          <div class="form-group">
-            <label style="font-size:0.75rem;">安全詞宣告 (SAFEWORD)</label>
-            <input type="text" id="profEditSafeword" placeholder="例如：MAYDAY (紅燈/黃燈)" style="padding:8px;" />
-          </div>
-
-          <div class="form-group">
-            <label style="font-size:0.75rem;">特工簡介 / 實踐理念</label>
-            <textarea id="profEditBio" rows="2" placeholder="填寫個人簡介..." style="padding:8px; font-size:0.85rem;"></textarea>
-          </div>
-
-          <button type="submit" class="btn-submit" style="padding:12px; font-size:0.85rem;">儲存特工檔案 (SAVE)</button>
-        </form>
       </div>
     </div>
   </div>
@@ -666,20 +616,17 @@
               <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-cyan);" id="creatorRewardTotal">NT$ 0</div>
             </div>
           </div>
+        </div>
 
-          <div style="font-size:0.75rem; color:var(--text-muted); line-height:1.5;">
-            * 收益每月 10 號經由 UserDB 核算自動匯入特工加密錢包或指定帳戶。
-          </div>
+        <div id="creatorMyProductsBox" style="display:none; margin-top:20px; border-top:1px dashed var(--panel-border); padding-top:16px;">
+          <h3 style="color:#fff; font-size:1rem; margin-bottom:10px;">📦 我上架的裝備清單與庫存管理</h3>
+          <div id="creatorProductsListContainer"></div>
         </div>
       </div>
     </div>
   </div>
-  <div id="creatorMyProductsBox" style="display:none; margin-top:20px; border-top:1px dashed var(--panel-border); padding-top:16px;">
-  <h3 style="color:#fff; font-size:1rem; margin-bottom:10px;">📦 我上架的裝備清單與庫存管理</h3>
-  <div id="creatorProductsListContainer"></div>
-</div>
 
-  <!-- 5. 【獨立介面 04】個人調用紀錄 (Order History / My Dossier View) -->
+  <!-- 5. 個人調用紀錄 -->
   <div id="view-order-history" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -827,7 +774,13 @@
     </div>
   </div>
 
-  <!-- 🚨 全螢幕安全詞急停警報 (Emergency Safeword Modal) -->
+  <!-- 💡 商品圖片預覽燈箱 Lightbox -->
+  <div id="productLightbox" style="position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:99999; display:none; align-items:center; justify-content:center; padding:20px;" onclick="closeLightbox()">
+    <button onclick="closeLightbox()" style="position:absolute; top:20px; right:20px; background:transparent; border:none; color:#fff; font-size:2rem; cursor:pointer;">✕</button>
+    <img id="lightboxImg" src="" style="max-width:100%; max-height:90vh; border:1px solid var(--accent-cyan); box-shadow:0 0 30px rgba(0,255,136,0.3);" />
+  </div>
+
+  <!-- 🚨 全螢幕安全詞急停警報 -->
   <div class="safeword-emergency-overlay" id="safewordEmergencyModal">
     <div style="font-size:1.5rem; letter-spacing:4px; color:#ff334b; font-weight:bold;">
       ⚠️ [ EMERGENCY PROTOCOL ACTIVATED ] ⚠️
@@ -835,14 +788,10 @@
     <div style="font-size:0.85rem; color:rgba(255,255,255,0.7); margin-top:8px;">
       所有指令與實踐立即終止 // IMMEDIATE HALT
     </div>
-
-    <!-- 巨大安全詞顯示區 -->
     <div class="safeword-display-large" id="emergencySafewordDisplay">MAYDAY</div>
-
     <div style="max-width:360px; font-size:0.8rem; color:rgba(255,255,255,0.6); line-height:1.6;">
       請立刻停手、解開束縛裝備、提供溫水並確認受調者意識狀態（Aftercare 照護）。
     </div>
-
     <button class="safeword-dismiss-btn" onclick="dismissEmergencySafeword()">
       [ 雙方已恢復平靜 // 解除警報 ]
     </button>
