@@ -13,6 +13,7 @@ const PRODUCTS = [
     desc: "3D 列印工業級尼龍裝甲，前喉結避空人體工學曲線。磁吸快拆模組，隱形微型顯影認罪印記。",
     note: "客製雷雕銘牌與神經顯影印記",
     img: "./icons/icon-512.png",
+    images: ["./icons/icon-512.png", "./icons/icon-180.png"],
     specs: ["S 碼 (29-33cm)", "M 碼 (34-38cm)"]
   },
   {
@@ -24,6 +25,7 @@ const PRODUCTS = [
     desc: "航太級配重手柄，耐磨高密編織鞭身。破空阻力極小化，提供銳利而精確的神經末梢感知。",
     note: "附防掉手腕帶與專屬收納套筒",
     img: "./icons/icon-512.png",
+    images: ["./icons/icon-512.png", "./icons/icon-180.png"],
     options: [
       { name: "顏色", values: ["黑", "白", "藍", "紫黑", "黑紅"] },
       { name: "長度", values: ["1.2 米 (CQB 近距校準型)", "1.5 米 (EXTENDED 遠距壓制型)"] }
@@ -45,6 +47,7 @@ const PRODUCTS = [
     desc: "13 道古法脫漿、深層天然植物油浸潤與蜂蠟烘烤。手感細膩溫潤，極度親膚且抗拉緊實。",
     note: "每組 3 條（每條長度 7.5 公尺，直徑 6mm）",
     img: "./images/image_rope.jpg",
+    images: ["./images/image_rope.jpg", "./icons/icon-512.png"],
     specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"]
   },
   {
@@ -56,6 +59,7 @@ const PRODUCTS = [
     desc: "外層高強度工業織帶，內襯醫療級減壓 TPU。快拆戰術金屬插扣，長效配戴零勒痕壓迫。",
     note: "手腕與腳踝雙用通用尺寸",
     img: "./icons/icon-512.png",
+    images: ["./icons/icon-512.png", "./icons/icon-180.png"],
     specs: ["標準對裝 (手腕用)", "加長對裝 (腳踝用)"]
   }
 ];
@@ -122,8 +126,17 @@ function openProductDetail(productId) {
   const heroImgArea = document.getElementById("detailHeroImgArea");
   if (heroImgArea) {
     heroImgArea.innerHTML = `
-      <img src="${currentProduct.img}" onclick="openLightbox('${currentProduct.img}')" style="width:100%; height:100%; object-fit:cover; cursor:pointer;" title="點擊放大圖片細節" />
+      <img id="mainDetailImg" src="${currentProduct.img}" onclick="openLightbox(this.src)" style="width:100%; height:100%; object-fit:cover; cursor:pointer;" title="點擊放大圖片細節" />
     `;
+  }
+
+  // 多圖縮圖列（支援多張不同角度照片）
+  const thumbsRow = document.getElementById("detailThumbsRow");
+  if (thumbsRow) {
+    const images = currentProduct.images || [currentProduct.img];
+    thumbsRow.innerHTML = images.map((src) => `
+      <img src="${src}" onclick="switchDetailImage('${src}')" style="width:52px; height:52px; object-fit:cover; border:1px solid var(--panel-border); cursor:pointer; border-radius:3px;" />
+    `).join('');
   }
 
   document.getElementById("detailProductTitle").textContent = `${currentProduct.brandName} // ${currentProduct.title}`;
@@ -159,6 +172,11 @@ function openProductDetail(productId) {
   } else {
     chokerArea.innerHTML = "";
   }
+}
+
+function switchDetailImage(src) {
+  const mainImg = document.getElementById("mainDetailImg");
+  if (mainImg) mainImg.src = src;
 }
 
 function selectDetailSpec(spec, el) {
