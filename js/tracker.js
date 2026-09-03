@@ -301,35 +301,12 @@ function renderSessionHUD() {
 
 function startSession() {
   const activePartner = getActivePartner();
-  if (!activePartner) { alert("請先選定對象！"); return; }
-
-  try {
-    const docEl = document.documentElement;
-    if (docEl.requestFullscreen) docEl.requestFullscreen().catch(() => {});
-    else if (docEl.webkitRequestFullscreen) docEl.webkitRequestFullscreen().catch(() => {});
-  } catch (e) {}
-
-  isSessionActive = true;
-  sessionSecondsElapsed = 0;
-  playTerminalBeep("click");
-
-  activePartner.spCount = 0;
-  activePartner.whipCount = 0;
-  saveTrackerState();
-  renderTrackerApp();
-
-  clearInterval(currentSessionTimer);
-  currentSessionTimer = setInterval(() => {
-    sessionSecondsElapsed++;
-    const timerDisplay = document.getElementById("sessionTimerDisplay");
-    if (timerDisplay) {
-      const mins = String(Math.floor(sessionSecondsElapsed / 60)).padStart(2, '0');
-      const secs = String(sessionSecondsElapsed % 60).padStart(2, '0');
-      timerDisplay.textContent = `${mins}:${secs}`;
-    }
-  }, 1000);
-
-  renderSessionHUD();
+  if (!activePartner) {
+    alert("請先選擇或新增一個互動對象！");
+    return;
+  }
+  // ✦ 直接跳轉到專屬的獨立全螢幕實踐終端
+  window.location.href = "session.html";
 }
 
 function finishSessionPrompt() {
