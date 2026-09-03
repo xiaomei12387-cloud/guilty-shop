@@ -31,7 +31,6 @@
       justify-content: space-between;
     }
 
-    /* 頂部資訊列 */
     header {
       padding: 14px 20px;
       display: flex;
@@ -40,8 +39,8 @@
       border-bottom: 1px solid rgba(255,255,255,0.08);
       background: rgba(0,0,0,0.6);
     }
-    .info-partner { font-size: 1.1rem; font-weight: bold; }
-    .info-safeword { color: var(--accent-cyan); font-weight: bold; font-size: 1.1rem; }
+    .info-partner { font-size: 1.05rem; font-weight: bold; }
+    .info-safeword { color: var(--accent-cyan); font-weight: bold; font-size: 1.05rem; }
 
     /* 中央超大碼錶 */
     .timer-section {
@@ -53,73 +52,74 @@
       padding: 10px;
     }
     .timer-label {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       letter-spacing: 4px;
       color: var(--accent-cyan);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
     #timerDisplay {
-      font-size: clamp(5rem, 24vw, 9.5rem);
+      font-size: clamp(4.5rem, 20vw, 8.5rem);
       font-weight: 900;
       color: var(--accent-cyan);
       text-shadow: 0 0 35px rgba(0, 255, 136, 0.4);
       line-height: 0.9;
     }
 
-    /* 雙軌巨大觸控計數按鈕 (點擊全塊直接+1) */
+    /* 動態自訂計數按鈕網格 (自適應 2~4 格) */
     .counter-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
       padding: 0 16px;
-      height: 26vh;
+      max-height: 32vh;
+      overflow-y: auto;
     }
     .counter-btn-box {
       background: #0d0d12;
-      border-radius: 8px;
+      border-radius: 6px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 14px 10px;
       cursor: pointer;
-      border: 2px solid var(--panel-border, #222);
+      border: 2px solid var(--accent-cyan);
+      box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.08);
       transition: transform 0.08s, background-color 0.08s;
     }
     .counter-btn-box:active {
       transform: scale(0.96);
+      background: rgba(0, 255, 136, 0.2);
     }
-    .box-sp {
-      border-color: var(--accent-cyan);
-      box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.08);
-    }
-    .box-sp:active { background: rgba(0, 255, 136, 0.2); }
-    .box-whip {
+    .counter-btn-box.purple-theme {
       border-color: var(--accent-purple);
-      box-shadow: inset 0 0 20px rgba(181, 23, 158, 0.08);
+      box-shadow: inset 0 0 15px rgba(181, 23, 158, 0.08);
     }
-    .box-whip:active { background: rgba(181, 23, 158, 0.2); }
+    .counter-btn-box.purple-theme:active {
+      background: rgba(181, 23, 158, 0.2);
+    }
 
-    .counter-name { font-size: 0.85rem; color: #8c8f96; margin-bottom: 4px; }
+    .counter-name { font-size: 0.8rem; color: #8c8f96; margin-bottom: 2px; }
     .counter-num {
-      font-size: clamp(2.6rem, 10vw, 4rem);
+      font-size: clamp(2.2rem, 8vw, 3.4rem);
       font-weight: 900;
       line-height: 1;
     }
 
     /* 底部超巨型盲按急停板與結案 */
     .bottom-controls {
-      padding: 16px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
     .btn-panic-massive {
       width: 100%;
-      height: clamp(85px, 14vh, 120px);
+      height: clamp(80px, 13vh, 110px);
       background: #ff334b;
       border: 3px solid #fff;
       color: #fff;
-      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      font-size: clamp(1.3rem, 5vw, 2rem);
       font-weight: 900;
       letter-spacing: 3px;
       border-radius: 8px;
@@ -138,17 +138,16 @@
 
     .btn-finish {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       background: #141418;
       border: 1px solid rgba(255,255,255,0.2);
       color: #a1a1aa;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
     }
 
-    /* 急停警告覆蓋層 */
     #panicOverlay {
       position: fixed;
       inset: 0;
@@ -184,17 +183,8 @@
     <div id="timerDisplay">00:00</div>
   </div>
 
-  <!-- 雙軌巨大計數觸控板 -->
-  <div class="counter-grid">
-    <div class="counter-btn-box box-sp" onclick="addCount('SP')">
-      <div class="counter-name">SP 實施次數 (+1)</div>
-      <div class="counter-num" id="spNum" style="color:var(--accent-cyan);">0</div>
-    </div>
-    <div class="counter-btn-box box-whip" onclick="addCount('WHIP')">
-      <div class="counter-name">長鞭擊數 (+1)</div>
-      <div class="counter-num" id="whipNum" style="color:var(--accent-purple);">0</div>
-    </div>
-  </div>
+  <!-- 動態自訂計數項目觸控板容器 -->
+  <div class="counter-grid" id="dynamicCounterGrid"></div>
 
   <!-- 底部超巨大盲按停止板 -->
   <div class="bottom-controls">
@@ -215,7 +205,7 @@
       安全詞：<span id="panicWordText" style="color:#ff334b; font-size:1.8rem; font-weight:bold;">MAYDAY</span>
     </div>
     <div style="max-width:420px; font-size:0.85rem; color:#a1a1aa; line-height:1.7; margin-bottom:30px;">
-      所有動作即刻停止。解除束縛拘束器具，提供受調者溫水，進行 Aftercare 心理與生理確認。
+      所有動作即刻停止。解除束縛拘束器具，提供受調者溫水，進行 Aftercare 照護確認。
     </div>
     <button onclick="dismissAndReturn()" style="padding:16px 36px; background:#fff; color:#000; border:none; font-weight:bold; font-size:1rem; cursor:pointer; border-radius:4px;">
       [ 確認雙方安全 // 結案退出 ]
@@ -223,14 +213,13 @@
   </div>
 
   <script>
-    // 讀取當前主程式特工狀態
     let activeKey = null;
     let trackerState = null;
     let activePartner = null;
     let secondsElapsed = 0;
     let timer = null;
 
-    // 尋找當前登入者的 Key
+    // 尋找當前登入者 Key
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k && k.startsWith("guilty_tracker_")) {
@@ -240,34 +229,48 @@
     }
 
     if (activeKey) {
-      try {
-        trackerState = JSON.parse(localStorage.getItem(activeKey));
-      } catch (e) {}
+      try { trackerState = JSON.parse(localStorage.getItem(activeKey)); } catch(e){}
     }
 
     if (trackerState && trackerState.partners && trackerState.partners.length > 0) {
       activePartner = trackerState.partners.find(p => p.id === trackerState.activePartnerId) || trackerState.partners[0];
     }
 
-    // 初始化顯示
+    // 讀取特工自訂的實踐項目，若無則提供多樣化預設
+    let sessionMetrics = (activePartner && activePartner.customMetrics) || [
+      { id: "sp", name: "SP 掌/板", count: 0, color: "cyan" },
+      { id: "whip", name: "長鞭/散鞭", count: 0, color: "purple" },
+      { id: "wax", name: "低溫滴蠟", count: 0, color: "cyan" },
+      { id: "rope", name: "繩縛/懸吊段數", count: 0, color: "purple" }
+    ];
+
+    // 初始化頂部資訊
     const pName = activePartner ? activePartner.name : "特工對象";
     const sWord = (activePartner && activePartner.safeword) ? activePartner.safeword : "MAYDAY";
     document.getElementById("partnerNameDisplay").textContent = pName;
     document.getElementById("safewordDisplay").textContent = sWord;
     document.getElementById("panicWordText").textContent = sWord.toUpperCase();
 
-    // 啟動碼錶
-    let spCount = 0;
-    let whipCount = 0;
+    // 渲染動態計數按鈕
+    function renderCounters() {
+      const grid = document.getElementById("dynamicCounterGrid");
+      grid.innerHTML = sessionMetrics.map((m, idx) => `
+        <div class="counter-btn-box ${m.color === 'purple' ? 'purple-theme' : ''}" onclick="addCount(${idx})">
+          <div class="counter-name">${m.name} (+1)</div>
+          <div class="counter-num" style="color: ${m.color === 'purple' ? 'var(--accent-purple)' : 'var(--accent-cyan)'};">${m.count}</div>
+        </div>
+      `).join('');
+    }
+    renderCounters();
 
+    // 碼錶計時
     timer = setInterval(() => {
       secondsElapsed++;
-      const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
-      const s = String(secondsElapsed % 60).padStart(2, '0');
-      document.getElementById("timerDisplay").textContent = `${m}:${s}`;
+      const min = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+      const sec = String(secondsElapsed % 60).padStart(2, '0');
+      document.getElementById("timerDisplay").textContent = `${min}:${sec}`;
     }, 1000);
 
-    // 音效反饋
     function playBeep(isEmergency = false) {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -275,7 +278,6 @@
         const gain = ctx.createGain();
         osc.connect(gain);
         gain.connect(ctx.destination);
-
         if (isEmergency) {
           osc.type = "sawtooth";
           osc.frequency.setValueAtTime(880, ctx.currentTime);
@@ -293,17 +295,11 @@
       } catch (e) {}
     }
 
-    function addCount(type) {
+    function addCount(index) {
       playBeep(false);
       if (navigator.vibrate) navigator.vibrate(35);
-
-      if (type === 'SP') {
-        spCount++;
-        document.getElementById("spNum").textContent = spCount;
-      } else {
-        whipCount++;
-        document.getElementById("whipNum").textContent = whipCount;
-      }
+      sessionMetrics[index].count++;
+      renderCounters();
     }
 
     function triggerPanic() {
@@ -319,25 +315,27 @@
       const secs = secondsElapsed % 60;
       const durationStr = `${mins} 分 ${secs} 秒`;
 
+      // 組合各項統計文字
+      const metricsSummary = sessionMetrics.map(m => `${m.name}: ${m.count}`).join(" ｜ ");
+
       if (!activePartner.sessions) activePartner.sessions = [];
       activePartner.sessions.unshift({
         sessionId: "SES-" + Date.now().toString().slice(-6),
         date: new Date().toLocaleDateString("zh-TW"),
         duration: durationStr,
         durationMins: mins,
-        spCount: spCount,
-        whipCount: whipCount,
+        metrics: sessionMetrics,
+        summary: metricsSummary,
         note: noteText
       });
 
-      activePartner.spCount = spCount;
-      activePartner.whipCount = whipCount;
+      activePartner.customMetrics = sessionMetrics;
       localStorage.setItem(activeKey, JSON.stringify(trackerState));
     }
 
     function finishSession() {
       clearInterval(timer);
-      const note = prompt("請輸入本次實踐結案筆記：", "順利完成，雙方意識清醒。");
+      const note = prompt("請輸入本次實踐結案筆記：", "實踐順利完成，雙方意識清醒。");
       saveSessionRecord(note || "實踐正常完成。");
       window.location.href = "index.html#tracker";
     }
