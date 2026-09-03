@@ -73,10 +73,10 @@ function createDefaultTrackerState() {
       {
         id: "friend_sample",
         name: "KK",
-        agentId: "KK-ROPE",
-        role: "支配者 (Dom)",
+        agentId: "KK",
+        role: "老闆娘",
         avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=KK",
-        bio: "束室繩縛主理人，專精日式麻繩工藝與神經支配調教。",
+        bio: "GUILTY 共同創辦人與核心股東。",
         tags: ["精煉繩縛", "高空懸吊", "感官剝奪"],
         limits: ["❌ 拒絕生繩", "❌ 拒絕穿刺/見血"]
       }
@@ -84,7 +84,7 @@ function createDefaultTrackerState() {
     calendarEvents: [
       {
         id: "cal_1",
-        title: "水湳線下交流聚會",
+        title: "交流聚會",
         date: "2026-09-26",
         startTime: "14:00",
         endTime: "18:00",
