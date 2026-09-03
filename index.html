@@ -189,6 +189,68 @@
 
       </div>
 
+      <!-- 世界觀與三大矩陣 (歸位首頁大廳) -->
+      <div style="width: 100%; max-width: 620px; margin-top: 30px; text-align: left;">
+        <div class="manifesto-card" style="margin-bottom: 16px;">
+          <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
+          <p style="color:var(--text-muted); font-size:0.8rem;">
+            【欲室｜共犯 GUILTY】作為次文化武裝工程體系，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
+          </p>
+        </div>
+
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <div class="matrix-num">DIVISION 01</div>
+            <div class="matrix-title">義體外骨骼拘束器</div>
+            <div class="matrix-desc">工業級尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
+          </div>
+          <div class="matrix-card card-shushi">
+            <div class="matrix-num">DIVISION 02</div>
+            <div class="matrix-title">KK 特選精煉繩藝</div>
+            <div class="matrix-desc">深度脫漿、過油打蠟 13 道工序。觸感溫潤柔韌，極度親膚舒適。</div>
+          </div>
+          <div class="matrix-card">
+            <div class="matrix-num">DIVISION 03</div>
+            <div class="matrix-title">神經校準戰術裝備</div>
+            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重。</div>
+          </div>
+        </div>
+
+        <!-- 主理成員戰術卡片 (包含正確身分的 KK) -->
+        <section style="margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--panel-border);">
+          <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
+          <h2 style="font-size:1.2rem; margin-bottom:12px; color:#fff;">核心檔案：主理成員</h2>
+          <div class="team-grid">
+            <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
+              <div class="team-header">
+                <div class="team-role">DESIGN DIRECTOR</div>
+                <span style="font-size:0.7rem; color:var(--text-muted);">𝕏 ↗</span>
+              </div>
+              <div class="team-name">18X</div>
+              <div class="team-handle">@18X_inthc</div>
+            </a>
+
+            <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
+              <div class="team-header">
+                <div class="team-role">OPERATIONS</div>
+                <span style="font-size:0.7rem; color:var(--text-muted);">𝕏 ↗</span>
+              </div>
+              <div class="team-name">老王</div>
+              <div class="team-handle">@Take1809DL</div>
+            </a>
+
+            <a href="https://x.com/_meow_kk?s=20" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
+              <div class="team-header">
+                <div class="team-role">CO-FOUNDER & SHAREHOLDER</div>
+                <span style="font-size:0.7rem; color:var(--text-muted);">𝕏 ↗</span>
+              </div>
+              <div class="team-name">KK</div>
+              <div class="team-handle">@_meow_kk</div>
+            </a>
+          </div>
+        </section>
+      </div>
+
     </div>
   </div>
 
@@ -201,8 +263,6 @@
         <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 14px; cursor:pointer; font-size:0.8rem;">← 返回首頁大廳</button>
         <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 14px; cursor:pointer; font-size:0.8rem;">⚡ 開啟實踐計數終端 →</button>
       </div>
-
-      <!-- 裝備目錄庫 -->
       <section class="section-arsenal" id="section-arsenal">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
@@ -215,82 +275,6 @@
           <button class="filter-btn" onclick="filterBrand('shushi')">KK 特選繩藝</button>
         </div>
         <div class="product-list-grid" id="productGrid"></div>
-      </section>
-
-      <!-- 世界觀與三大矩陣 -->
-      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // WORLDVIEW & ARSENAL MATRIX ]</div>
-        <div class="manifesto-card" style="margin-bottom:20px;">
-          <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
-          <p style="color:var(--text-muted); font-size:0.85rem;">
-            【欲室｜共犯 GUILTY】作為次文化武裝工程體系，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
-          </p>
-        </div>
-
-        <div class="matrix-grid">
-          <div class="matrix-card">
-            <div class="matrix-num">DIVISION 01 // CYBERNETICS</div>
-            <div class="matrix-title">義體外骨骼拘束器</div>
-            <div class="matrix-desc">工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
-          </div>
-          <div class="matrix-card card-shushi">
-            <div class="matrix-num">DIVISION 02 // ROPE ART</div>
-            <div class="matrix-title">KK 特選精煉繩藝</div>
-            <div class="matrix-desc">經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌。</div>
-          </div>
-          <div class="matrix-card">
-            <div class="matrix-num">DIVISION 03 // CALIBRATION</div>
-            <div class="matrix-title">神經校準與戰術裝備</div>
-            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹精準神經回饋。</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 特工指南 FAQ -->
-      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // AGENT DOSSIER FAQ ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
-        
-        <div class="faq-item">
-          <div class="faq-q">Q1. 旗艦項圈尺寸如何挑選？（S 碼 vs M 碼）</div>
-          <div class="faq-a">• <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態、多數女性特工或脖圍偏細者著用。<br>• <strong>M 碼（34 – 38 cm）</strong>：適合中等或肌肉型特工著用。請先以皮尺貼合淨脖圍量測。</div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-q">Q2. 神經突觸長鞭（1.2M vs 1.5M）如何選擇？</div>
-          <div class="faq-a">• <strong>1.2 米 (CQB 近距校準型)</strong>：重心靈活回彈迅速，適合室內或新手練習控點。<br>• <strong>1.5 米 (EXTENDED 遠距壓制型)</strong>：鞭尾破空聲清脆響亮，具備強大壓迫感與長距牽制力。</div>
-        </div>
-
-        <div class="stealth-badge-card">
-          <div style="font-size: 1.8rem;">🔒</div>
-          <div>
-            <div style="color: var(--accent-cyan); font-weight: bold; font-size: 0.9rem;">100% 絕密隱私交付承諾 (STEALTH SHIPPING)</div>
-            <div style="color: var(--text-muted); font-size: 0.8rem;">超商寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>，保護每位特工隱私。</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 主理成員修正（KK 定位為共同創辦人與股東） -->
-      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
-        <div class="team-grid">
-          <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div class="team-header"><div class="team-role">DESIGN DIRECTOR</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">18X</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@18X_inthc</div>
-          </a>
-          <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div class="team-header"><div class="team-role">COMMUNITY & OPERATIONS</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">老王</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@Take1809DL</div>
-          </a>
-          <a href="https://x.com/_meow_kk?s=20" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
-            <div class="team-header"><div class="team-role">CO-FOUNDER & SHAREHOLDER</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">KK</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@_meow_kk</div>
-          </a>
-        </div>
       </section>
     </div>
   </div>
@@ -524,7 +508,7 @@
             </div>
             <div style="background:#000; padding:12px; border:1px solid var(--panel-border); text-align:center;">
               <div style="font-size:0.7rem; color:var(--text-muted);">預計累計分潤收益</div>
-              <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-cyan);" id="creatorRewardTotal">NT$ 0</div>
+              <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-cyan);" id="creatorRewardTotal">NT$ 720</div>
             </div>
           </div>
         </div>
@@ -800,10 +784,10 @@
   </div>
 
   <!-- 載入腳本 -->
-  <script src="./js/config.js?v=20260903_v6"></script>
-  <script src="./js/auth.js?v=20260903_v6"></script>
-  <script src="./js/shop.js?v=20260903_v6"></script>
-  <script src="./js/tracker.js?v=20260903_v6"></script>
+  <script src="./js/config.js?v=20260903_v7"></script>
+  <script src="./js/auth.js?v=20260903_v7"></script>
+  <script src="./js/shop.js?v=20260903_v7"></script>
+  <script src="./js/tracker.js?v=20260903_v7"></script>
 
   <script>
     // 開場原創向量貓眼與讀條動畫控制
