@@ -20,11 +20,10 @@ const PRODUCTS = [
     brand: "guilty",
     brandName: "欲室｜共犯",
     title: "神經突觸精密戰術長鞭",
-    price: 1500,
+    price: 2680,
     desc: "航太級配重手柄，耐磨高密編織鞭身。破空阻力極小化，提供銳利而精確的神經末梢感知。",
     note: "附防掉手腕帶與專屬收納套筒",
     img: "./icons/icon-512.png",
-    // ✦ 升級為雙重動態規格選項，顏色與長度一次滿足！
     options: [
       { name: "顏色", values: ["黑", "白", "藍", "紫黑", "黑紅"] },
       { name: "長度", values: ["1.2 米 (CQB 近距校準型)", "1.5 米 (EXTENDED 遠距壓制型)"] }
@@ -40,8 +39,8 @@ const PRODUCTS = [
   {
     id: "shushi-rope",
     brand: "shushi",
-    brandName: "shushi束室",
-    title: "束室特選・職人手工精煉麻繩【3條組】",
+    brandName: "KK 合作繩選",
+    title: "KK 特選・職人手工精煉麻繩【3條組】",
     price: 990,
     desc: "13 道古法脫漿、深層天然植物油浸潤與蜂蠟烘烤。手感細膩溫潤，極度親膚且抗拉緊實。",
     note: "每組 3 條（每條長度 7.5 公尺，直徑 6mm）",
@@ -108,7 +107,7 @@ function filterBrand(brand) {
 }
 
 // --------------------------------------------------------------------------
-// 2. 裝備詳細配置視圖
+// 2. 裝備詳細配置視圖與圖片燈箱 (Lightbox)
 // --------------------------------------------------------------------------
 function openProductDetail(productId) {
   currentProduct = PRODUCTS.find(p => p.id === productId);
@@ -120,9 +119,13 @@ function openProductDetail(productId) {
   setActiveView("view-product-detail");
   history.pushState({ view: "detail", productId }, "", `#detail-${productId}`);
 
-  document.getElementById("detailHeroImgArea").innerHTML = `
-    <img src="${currentProduct.img}" style="width:100%; height:100%; object-fit:cover;" />
-  `;
+  const heroImgArea = document.getElementById("detailHeroImgArea");
+  if (heroImgArea) {
+    heroImgArea.innerHTML = `
+      <img src="${currentProduct.img}" onclick="openLightbox('${currentProduct.img}')" style="width:100%; height:100%; object-fit:cover; cursor:pointer;" title="點擊放大圖片細節" />
+    `;
+  }
+
   document.getElementById("detailProductTitle").textContent = `${currentProduct.brandName} // ${currentProduct.title}`;
   document.getElementById("detailProductDesc").textContent = currentProduct.desc;
   document.getElementById("detailPriceDisplay").textContent = `NT$ ${currentProduct.price.toLocaleString()}`;
@@ -168,6 +171,21 @@ function selectChokerPrint(printText, el) {
   currentChokerPrint = printText;
   el.parentElement.querySelectorAll('.radio-card').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
+}
+
+// 全域 Lightbox 燈箱開關控制
+function openLightbox(imgSrc) {
+  const lightbox = document.getElementById("productLightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  if (lightbox && lightboxImg) {
+    lightboxImg.src = imgSrc;
+    lightbox.style.display = "flex";
+  }
+}
+
+function closeLightbox() {
+  const lightbox = document.getElementById("productLightbox");
+  if (lightbox) lightbox.style.display = "none";
 }
 
 // --------------------------------------------------------------------------
@@ -560,7 +578,7 @@ function removePromoCode() {
 }
 
 // --------------------------------------------------------------------------
-// 7. 簽署協議提交訂單 (含明確 action 標記，杜絕誤發通知)
+// 7. 簽署協議提交訂單
 // --------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("checkoutForm");
@@ -587,7 +605,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const fin = calculateFinancials();
     const orderData = {
-      action: "createOrder", // 明確標記為建立訂單
+      action: "createOrder",
       orderId: "CASE-" + Date.now().toString().slice(-6),
       product: cart.map(i => `${i.title} [${i.specText}] × ${i.qty}`).join(" + "),
       price: fin.totalAmount,
@@ -608,37 +626,13 @@ document.addEventListener("DOMContentLoaded", () => {
       headers: { "Content-Type": "text/plain;charset=utf-8" },
       body: JSON.stringify(orderData)
     }).then(() => {
-      // 本機歷史紀錄封存
       const historyOrders = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.ORDERS)) || [];
       historyOrders.unshift(orderData);
       localStorage.setItem(CONFIG.STORAGE_KEYS.ORDERS, JSON.stringify(historyOrders));
 
-      // 在 showProductDetail 函式中渲染主圖的地方加入 onclick 燈箱觸發
-const heroImgArea = document.getElementById("detailHeroImgArea");
-if (heroImgArea) {
-  heroImgArea.innerHTML = `<img src="${product.img}" onclick="openLightbox('${product.img}')" style="max-height:260px; object-fit:contain; cursor:pointer;" title="點擊放大細節" />`;
-}
-
-// Lightbox 燈箱開關函式
-function openLightbox(imgSrc) {
-  const lightbox = document.getElementById("productLightbox");
-  const lightboxImg = document.getElementById("lightboxImg");
-  if (lightbox && lightboxImg) {
-    lightboxImg.src = imgSrc;
-    lightbox.style.display = "flex";
-  }
-}
-
-function closeLightbox() {
-  const lightbox = document.getElementById("productLightbox");
-  if (lightbox) lightbox.style.display = "none";
-}
-
-      // 清空購物車
       cart = [];
       saveCart();
 
-      // 切換至成功頁面
       submitBtn.disabled = false;
       submitBtn.textContent = "確認協議並鎖定調用 (LOCK)";
       setActiveView("view-success");
