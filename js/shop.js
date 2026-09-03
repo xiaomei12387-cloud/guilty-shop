@@ -41,8 +41,8 @@ const PRODUCTS = [
   {
     id: "shushi-rope",
     brand: "shushi",
-    brandName: "KK 合作繩選",
-    title: "KK 特選・職人手工精煉麻繩【3條組】",
+    brandName: "束室合作繩選",
+    title: "職人手工精煉麻繩【3條組】",
     price: 990,
     desc: "13 道古法脫漿、深層天然植物油浸潤與蜂蠟烘烤。手感細膩溫潤，極度親膚且抗拉緊實。",
     note: "每組 3 條（每條長度 7.5 公尺，直徑 6mm）",
