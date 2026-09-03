@@ -338,12 +338,17 @@ function dismissEmergencySafeword() {
 function renderProfileDossier() {
   const prof = trackerState.profile;
 
-  document.getElementById("dossierAvatarPreview").src = prof.avatar;
-  document.getElementById("dossierNameDisplay").textContent = `${prof.name} [ID: ${prof.agentId || 'N/A'}]`;
-  document.getElementById("dossierRoleBadge").textContent = prof.role;
-  document.getElementById("dossierBioDisplay").textContent = prof.bio || "尚未填寫特工簡介。";
-
+  const avatarPreview = document.getElementById("dossierAvatarPreview");
+  const nameDisplay = document.getElementById("dossierNameDisplay");
+  const roleBadge = document.getElementById("dossierRoleBadge");
+  const bioDisplay = document.getElementById("dossierBioDisplay");
   const twLink = document.getElementById("dossierTwitterLink");
+
+  if (avatarPreview) avatarPreview.src = prof.avatar;
+  if (nameDisplay) nameDisplay.textContent = `${prof.name} [ID: ${prof.agentId || 'N/A'}]`;
+  if (roleBadge) roleBadge.textContent = prof.role;
+  if (bioDisplay) bioDisplay.textContent = prof.bio || "尚未填寫特工簡介。";
+
   if (twLink) {
     if (prof.twitter) {
       twLink.href = prof.twitter;
@@ -433,7 +438,8 @@ function handleSaveProfileForm(e) {
   const prof = trackerState.profile;
 
   prof.name = document.getElementById("profEditName").value.trim();
-  prof.agentId = document.getElementById("profEditAgentId").value.trim().toUpperCase();
+  const agentIdInput = document.getElementById("profEditAgentId");
+  if (agentIdInput) prof.agentId = agentIdInput.value.trim().toUpperCase();
   prof.role = document.getElementById("profEditRole").value;
   prof.twitter = document.getElementById("profEditTwitter").value.trim();
   prof.safeword = document.getElementById("profEditSafeword").value.trim();
