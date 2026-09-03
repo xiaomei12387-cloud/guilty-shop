@@ -243,28 +243,22 @@
         <div class="form-title" id="activePartnerNameDisplay">[ 當前實踐對象：載入中... ]</div>
         <div id="sessionHudArea"></div>
 
-        <div class="counter-board-grid">
-          <div class="counter-box box-cyan">
-            <div class="counter-title">SP 實施次數</div>
-            <div class="counter-val" id="spCountVal" style="color:var(--accent-cyan);">0</div>
-            <div class="counter-ctrl-grid">
-              <button class="counter-btn" onclick="adjustCounter('SP', 1)">+1</button>
-              <button class="counter-btn" onclick="adjustCounter('SP', 5)">+5</button>
-              <button class="counter-btn" onclick="adjustCounter('SP', -1)">-1</button>
-              <button class="counter-btn btn-reset" onclick="resetCounter('SP')">清零</button>
-            </div>
-          </div>
-          <div class="counter-box box-purple">
-            <div class="counter-title">神經長鞭擊數</div>
-            <div class="counter-val" id="whipCountVal" style="color:var(--accent-purple);">0</div>
-            <div class="counter-ctrl-grid">
-              <button class="counter-btn" onclick="adjustCounter('WHIP', 1)">+1</button>
-              <button class="counter-btn" onclick="adjustCounter('WHIP', 5)">+5</button>
-              <button class="counter-btn" onclick="adjustCounter('WHIP', -1)">-1</button>
-              <button class="counter-btn btn-reset" onclick="resetCounter('WHIP')">清零</button>
-            </div>
-          </div>
+       <!-- 多元實踐項目管理與即時調整 -->
+      <div class="form-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <div class="form-title" style="margin:0; border:none; padding:0;">實踐項目配置 (METRICS)</div>
+          <button onclick="addCustomMetricPrompt()" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">
+            ＋ 新增項目（如：繩縛/滴蠟/電擊）
+          </button>
         </div>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">
+          自由自訂本次實踐的記錄項目。進入全螢幕終端後，系統將自動為這些項目生成極大化觸控板：
+        </p>
+
+        <!-- 動態項目預覽卡片列 -->
+        <div id="activeMetricsPreviewGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:14px;"></div>
+
+        <div id="sessionHudArea"></div>
       </div>
 
       <!-- 📊 數據分析圖表 -->
