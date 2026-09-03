@@ -111,6 +111,13 @@ function loadAgentTrackerState() {
       if (!trackerState.partners) trackerState.partners = [];
       if (!trackerState.friends) trackerState.friends = createDefaultTrackerState().friends;
       if (!trackerState.calendarEvents) trackerState.calendarEvents = createDefaultTrackerState().calendarEvents;
+      
+      // 確保每個對象都有 customMetrics
+      trackerState.partners.forEach(p => {
+        if (!p.customMetrics || p.customMetrics.length === 0) {
+          p.customMetrics = JSON.parse(JSON.stringify(DEFAULT_METRICS));
+        }
+      });
     } catch (e) {
       trackerState = createDefaultTrackerState();
     }
@@ -321,8 +328,8 @@ function renderAnalyticsChart() {
   const activePartner = getActivePartner();
   const sessions = (activePartner && activePartner.sessions) ? [...activePartner.sessions].reverse().slice(-7) : [];
 
-  const labels = sessions.length > 0 ? sessions.map(s => s.date.slice(5) || s.date) : ["記錄一", "記錄二", "記錄三", "記錄四"];
-  const durationData = sessions.length > 0 ? sessions.map(s => s.durationMins || 0) : [0, 0, 0, 0];
+  const labels = sessions.length > 0 ? sessions.map(s => s.date.slice(5) || s.date) : ["紀錄 1", "紀錄 2", "紀錄 3", "紀錄 4"];
+  const durationData = sessions.length > 0 ? sessions.map(s => s.durationMins || 1) : [0, 0, 0, 0];
 
   if (analyticsChartInstance) analyticsChartInstance.destroy();
 
@@ -370,7 +377,9 @@ function renderSessionLogs() {
         <span style="color:var(--accent-cyan); font-weight:bold;">#${s.sessionId} [${s.duration}]</span>
         <button onclick="deleteSessionLog('${s.sessionId}')" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">✕</button>
       </div>
-      <div style="color:var(--text-muted); font-size:0.7rem; margin-bottom:4px;">${s.date} ｜ ${s.summary || (s.spCount !== undefined ? `SP: ${s.spCount} ｜ 鞭: ${s.whipCount}` : '實踐完成')}</div>
+      <div style="color:var(--text-muted); font-size:0.7rem; margin-bottom:4px;">
+        ${s.date} ｜ ${s.summary || (s.spCount !== undefined ? `SP: ${s.spCount} ｜ 鞭: ${s.whipCount}` : '實踐完成')}
+      </div>
       <div style="color:#d4d4d8; background:#141416; padding:6px;">💬 ${s.note}</div>
     </div>
   `).join('');
@@ -407,6 +416,10 @@ function renderPartnerList() {
 
 function selectActivePartner(id) {
   trackerState.activePartnerId = id;
+  const partner = getActivePartner();
+  if (partner && (!partner.customMetrics || partner.customMetrics.length === 0)) {
+    partner.customMetrics = JSON.parse(JSON.stringify(DEFAULT_METRICS));
+  }
   saveTrackerState();
   renderTrackerApp();
 }
@@ -590,53 +603,113 @@ function deleteCalendarEvent(id) {
 }
 
 // --------------------------------------------------------------------------
-// ⚙️ 創作者後台自動免密綁定與商品自主修改
+// ⚙️ 創作者後台：安全權限檢驗與專屬商品自主管理
 // --------------------------------------------------------------------------
 function initCreatorPortal() {
   const statusBox = document.getElementById("creatorAuthStatusBox");
   const dashBox = document.getElementById("creatorDashboardBox");
   const myProductsBox = document.getElementById("creatorProductsListContainer");
+  const portalSection = document.getElementById("creatorMyProductsBox");
   if (!statusBox) return;
 
-  if (memberProfile && (memberProfile.email || memberProfile.phone)) {
+  // 🔒 1. 訪客攔截：未登入特工身分時，徹底封鎖後台功能
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
     statusBox.innerHTML = `
-      <div style="color:var(--accent-cyan); font-weight:bold;">🟢 特工帳號已神經連線：${memberProfile.name} [ID: ${memberProfile.agentId || 'CREATOR'}]</div>
-      <div style="font-size:0.75rem; color:var(--text-muted);">已直接解鎖創作者後台，免重複輸入推廣碼與電話。</div>
+      <div style="background: rgba(255, 51, 75, 0.08); border: 1px solid var(--danger-red); padding: 12px; border-radius: 4px; color: var(--danger-red);">
+        ⚠️ [ 權限拒絕 // ACCESS DENIED ]<br>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">
+          您目前為訪客身分，無權調閱合作後台。請先登入官方認證之創作者特工帳號。
+        </span>
+      </div>
     `;
-    if (dashBox) dashBox.style.display = "block";
-    document.getElementById("creatorNameText").textContent = `${memberProfile.name} (創作者)`;
-    document.getElementById("creatorOrderCount").textContent = "3 件";
-    document.getElementById("creatorRewardTotal").textContent = "NT$ 720";
-  } else {
-    statusBox.innerHTML = `<span style="color:var(--danger-red);">⚠️ 尚未登入特工帳號，請先登入以檢索創作者分潤與商品管理。</span>`;
     if (dashBox) dashBox.style.display = "none";
+    if (portalSection) portalSection.style.display = "none";
+    if (myProductsBox) myProductsBox.innerHTML = "";
+    return;
   }
 
-  if (myProductsBox && typeof PRODUCTS !== "undefined") {
-    myProductsBox.innerHTML = PRODUCTS.map(p => `
+  // 🔒 2. 創作者身分比對
+  const agentId = (memberProfile.agentId || "").toUpperCase();
+  const isCreator = agentId.includes("KK") || agentId.includes("18X") || agentId.includes("CREATOR") || (memberProfile.isCreator === true);
+
+  if (!isCreator) {
+    statusBox.innerHTML = `
+      <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--panel-border); padding: 12px; border-radius: 4px; color: var(--text-muted);">
+        特工代號：<strong style="color:#fff;">${memberProfile.name}</strong> [ID: ${memberProfile.agentId || 'N/A'}]<br>
+        <span style="font-size: 0.75rem; color: var(--danger-red);">⚠️ 該特工身分尚未開通創作者/主理人分潤權限。</span>
+      </div>
+    `;
+    if (dashBox) dashBox.style.display = "none";
+    if (portalSection) portalSection.style.display = "none";
+    if (myProductsBox) myProductsBox.innerHTML = "";
+    return;
+  }
+
+  // 🟢 3. 認證通過：解鎖儀表板
+  statusBox.innerHTML = `
+    <div style="color:var(--accent-cyan); font-weight:bold;">🟢 創作者身分已核銷：${memberProfile.name} [ID: ${agentId}]</div>
+    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">終端已鎖定專屬分潤通道，僅可調校授權之裝備庫存與售價。</div>
+  `;
+  if (dashBox) dashBox.style.display = "block";
+  if (portalSection) portalSection.style.display = "block";
+
+  document.getElementById("creatorNameText").textContent = `${memberProfile.name} (授權特工)`;
+  document.getElementById("creatorOrderCount").textContent = "3 件";
+  document.getElementById("creatorRewardTotal").textContent = "NT$ 720";
+
+  // 🔒 4. 裝備歸屬過濾：KK 只能修改 shushi 合作商品，18X 只能修改 guilty 裝備
+  let authorizedProducts = PRODUCTS;
+  if (agentId.includes("KK")) {
+    authorizedProducts = PRODUCTS.filter(p => p.brand === "shushi");
+  } else if (agentId.includes("18X")) {
+    authorizedProducts = PRODUCTS.filter(p => p.brand === "guilty");
+  }
+
+  if (myProductsBox) {
+    if (authorizedProducts.length === 0) {
+      myProductsBox.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:10px 0;">[ 尚無授權管理的裝備檔案 ]</div>`;
+      return;
+    }
+
+    myProductsBox.innerHTML = authorizedProducts.map(p => `
       <div style="background:#0e0e12; border:1px solid var(--panel-border); padding:10px 14px; border-radius:4px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <strong style="color:#fff; font-size:0.85rem;">${p.title}</strong>
-          <div style="font-size:0.75rem; color:var(--text-muted);">當前售價：NT$ <span id="disp_price_${p.id}">${p.price}</span></div>
+          <div style="font-size:0.75rem; color:var(--text-muted);">當前售價：NT$ <span id="disp_price_${p.id}">${p.price.toLocaleString()}</span></div>
         </div>
-        <div style="display:flex; gap:6px;">
-          <button onclick="editProductPricePrompt('${p.id}')" style="background:#141416; border:1px solid var(--accent-purple); color:var(--accent-purple); font-size:0.75rem; padding:4px 8px; cursor:pointer;">修改價格</button>
-        </div>
+        <button onclick="editProductPricePrompt('${p.id}')" style="background:#141416; border:1px solid var(--accent-purple); color:var(--accent-purple); font-size:0.75rem; padding:5px 10px; cursor:pointer; border-radius:2px;">
+          修改價格
+        </button>
       </div>
     `).join('');
   }
 }
 
 function editProductPricePrompt(productId) {
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    alert("⚠️ 未授權操作：請先以創作者帳號登入！");
+    return;
+  }
+
   const p = PRODUCTS.find(x => x.id === productId);
   if (!p) return;
-  const newPrice = prompt(`請輸入「${p.title}」的新調用售價 (NT$)：`, p.price);
-  if (!newPrice || isNaN(newPrice)) return;
 
-  p.price = parseInt(newPrice);
+  const newPrice = prompt(`[ ${p.title} ]\n請輸入新的調用售價 (NT$)：`, p.price);
+  if (newPrice === null) return;
+
+  const parsedPrice = parseInt(newPrice, 10);
+  if (isNaN(parsedPrice) || parsedPrice <= 0) {
+    alert("❌ 請輸入有效的金額！");
+    return;
+  }
+
+  p.price = parsedPrice;
+
   const disp = document.getElementById(`disp_price_${productId}`);
-  if (disp) disp.textContent = p.price;
-  alert(`✔ 商品「${p.title}」售價已更新為 NT$ ${p.price.toLocaleString()}！`);
+  if (disp) disp.textContent = p.price.toLocaleString();
+  if (typeof renderProductCards === "function") renderProductCards();
+
+  alert(`✔ 裝備「${p.title}」售價已成功變更為 NT$ ${p.price.toLocaleString()}！`);
 }
 
 // --------------------------------------------------------------------------
