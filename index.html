@@ -27,7 +27,7 @@
 </head>
 <body>
 
- <!-- ========================================================================== -->
+  <!-- ========================================================================== -->
   <!-- 1. 開場加載：原版向量手繪機械貓眼 + 幾何 GUILTY 標誌 + 讀條 -->
   <!-- ========================================================================== -->
   <div id="intro-screen">
@@ -58,15 +58,83 @@
     <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
   </div>
 
-  <!-- ========================================================================== -->
-  <!-- 2. 首頁大廳：超巨大向量幾何標誌 × 螢光綠戰術暗黑美學 -->
-  <!-- ========================================================================== -->
+  <!-- 購物車抽屜 -->
+  <div class="cart-drawer" id="cartDrawer">
+    <div>
+      <div class="cart-header">
+        <div>
+          <span style="font-size:0.9rem; font-weight:bold; color:var(--accent-cyan);">[ ARSENAL CART ]</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">待調用裝備庫存</span>
+        </div>
+        <button onclick="toggleCart(false)" style="background:transparent; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <div id="cartFreeShippingBanner" style="padding:10px 0; border-bottom:1px dashed var(--panel-border); font-size:0.75rem;"></div>
+    </div>
+    <div class="cart-items-box" id="cartItemsContainer"></div>
+    <div style="border-top:1px solid var(--panel-border); padding-top:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span style="font-size:0.85rem; color:var(--text-muted);">裝備小計 (未含運)：</span>
+        <span id="cartDrawerSubtotal" style="font-size:1.1rem; color:var(--accent-cyan); font-weight:bold;">NT$ 0</span>
+      </div>
+      <button class="btn-submit" onclick="proceedToCheckoutFromCart()">進入終端簽署協議 (CHECKOUT)</button>
+    </div>
+  </div>
+
+  <!-- 頂部導覽列 -->
+  <header>
+    <div class="brand-container" onclick="showLandingView()">
+      <svg class="header-eye-icon" viewBox="0 0 100 100">
+        <polygon points="50,5 92,50 50,95 8,50" fill="none" stroke="var(--accent-cyan)" stroke-width="7" />
+        <path d="M50,25 Q60,50 50,75 Q40,50 50,25 Z" fill="var(--accent-cyan)" />
+      </svg>
+      <span style="font-size: 0.95rem; font-weight: bold; letter-spacing: 1px;">欲室｜共犯</span>
+    </div>
+    <div class="header-controls">
+      <div class="cart-btn-header" onclick="toggleCart(true)">
+        <span>🛒 裝備庫</span>
+        <span class="cart-count-badge" id="headerCartCount">0</span>
+      </div>
+      <div class="user-badge" id="memberBtn" onclick="toggleAuthModal(true)">[ 訪客 ]</div>
+      <div class="menu-toggle-btn" onclick="toggleNav(true)">
+        <div class="menu-line"></div><div class="menu-line"></div><div class="menu-line"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 側邊選單 -->
+  <div class="nav-overlay" id="navOverlay" onclick="toggleNav(false); toggleCart(false);"></div>
+  <div class="side-nav" id="sideNav">
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--panel-border); padding-bottom:10px;">
+        <span style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ TERMINAL MENU ]</span>
+        <button onclick="toggleNav(false)" style="background:transparent; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
+      </div>
+      <ul class="nav-menu-list">
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="showLandingView()">00 // 首頁分流大廳 (HOME)</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openShopCatalogView()" style="color:#00ff88; font-weight:bold;">01 // 裝備調用商城 (ARSENAL) 🛒</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">02 // 實踐計數終端 (TRACKER) ⚡</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">03 // 特工個人名片 (PROFILE CARD) ★</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openFriendsDossierView()" style="color:#00ff88; font-weight:bold;">04 // 好友名冊與行事曆 (FRIENDS & CAL) 👥</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">05 // 創作者合作後台 (PORTAL) ⚙️</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">06 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
+      </ul>
+    </div>
+    <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--panel-border); padding-top:14px;">
+      <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" style="color:#5865F2; text-decoration:none; display:block; margin-bottom:4px;">👾 特工 Discord 伺服器 ↗</a>
+      <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration:none; display:block; margin-bottom:6px;">𝕏 GUILTY 官方情報 ↗</a>
+      <span style="color:var(--text-muted);">欲室共犯 × KK // SYS.VER 03.0</span>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 2. 【首頁雙軌分流大廳】（超大原版 GUILTY 向量幾何標誌） -->
+  <!-- ======================================================== -->
   <div id="view-landing" class="view-section active">
     <div class="landing-container" style="display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:85vh; text-align:center; padding: 20px 16px;">
       
       <div style="width: 100%; max-width: 620px; background: rgba(10, 10, 14, 0.92); border: 1px solid rgba(0, 255, 136, 0.3); box-shadow: 0 0 35px rgba(0, 255, 136, 0.08), inset 0 0 25px rgba(0, 0, 0, 0.9); border-radius: 4px; padding: 38px 24px; position: relative;">
         
-        <!-- 四角硬派戰術準星裝飾 -->
+        <!-- 四角戰術準星裝飾 -->
         <div style="position:absolute; top:-1px; left:-1px; width:14px; height:14px; border-top:2px solid var(--accent-cyan); border-left:2px solid var(--accent-cyan);"></div>
         <div style="position:absolute; top:-1px; right:-1px; width:14px; height:14px; border-top:2px solid var(--accent-cyan); border-right:2px solid var(--accent-cyan);"></div>
         <div style="position:absolute; bottom:-1px; left:-1px; width:14px; height:14px; border-bottom:2px solid var(--accent-cyan); border-left:2px solid var(--accent-cyan);"></div>
@@ -78,7 +146,7 @@
 
         <!-- 真正的大尺寸 GUILTY 幾何原創字標 -->
         <div style="margin: 0 auto 20px; display: flex; justify-content: center;">
-          <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 420px; filter: drop-shadow(0 0 12px var(--glow-cyan));">
+          <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 440px; filter: drop-shadow(0 0 12px var(--glow-cyan));">
             <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
             <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
             <path class="logo-path" d="M190 85 L230 35 L270 85 L230 135 Z" />
@@ -122,36 +190,6 @@
       </div>
 
     </div>
-  </div>
-
-        <!-- 3 步驟白話調用指南卡片 -->
-        <div style="background: rgba(0, 0, 0, 0.6); border-left: 3px solid var(--accent-cyan); border-right: 1px solid rgba(255,255,255,0.06); border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 18px; border-radius: 4px; max-width: 520px; margin: 0 auto 30px; text-align: left;">
-          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px; font-size: 0.82rem;">⚡ 初次接入指南（3 步驟快速上手）：</div>
-          <div style="color: #a1a1aa; font-size: 0.76rem; line-height: 1.6;">
-            • <strong>選配裝備</strong>：挑選外骨骼項圈、精煉麻繩或精密長鞭。<br>
-            • <strong>極簡取件</strong>：自選超商門市取貨付款，100% 絕密隱密零件名義寄送。<br>
-            • <strong>神經聯網</strong>：開啟實踐終端記錄雙方次數、全螢幕碼錶與安全詞。
-          </div>
-        </div>
-
-        <!-- 雙軌戰術按鈕組 -->
-        <div class="hero-btn-group">
-          <button class="btn-grand-primary" onclick="openShopCatalogView()">
-            🛒 進入裝備商城 (ARSENAL)
-          </button>
-          <button class="btn-grand-outline" onclick="openTrackerAppView()">
-            ⚡ 開啟實踐終端 (TRACKER)
-          </button>
-        </div>
-      </div>
-
-      <div class="hero-scroll-indicator">
-        <div class="scroll-mouse">
-          <div class="scroll-wheel"></div>
-        </div>
-        <span>INITIALIZED</span>
-      </div>
-    </section>
   </div>
 
   <!-- ======================================================== -->
@@ -306,9 +344,9 @@
   <!-- ======================================================== -->
   <div id="view-friends-cal" class="view-section">
     <div class="detail-container">
-      <div class="terminal-hud-header" style="border-left-color: #38bdf8;">
+      <div class="terminal-hud-header" style="border-left-color: var(--accent-cyan);">
         <div>
-          <span style="font-size:0.95rem; font-weight:bold; color:#38bdf8;">[ ALLIANCE // 好友名冊與個人行事曆 ]</span>
+          <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ ALLIANCE // 好友名冊與個人行事曆 ]</span>
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">查看夥伴檔案（不可聊天）與個人日程排定</span>
         </div>
         <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回大廳</button>
@@ -316,8 +354,8 @@
 
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <div class="form-title" style="color:#38bdf8; margin:0; border:none; padding:0;">特工好友清單 (FRIENDS DOSSIER)</div>
-          <button onclick="addFriendByIdPrompt()" style="background:#38bdf8; color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 輸入 ID 加好友</button>
+          <div class="form-title" style="color:var(--accent-cyan); margin:0; border:none; padding:0;">特工好友清單 (FRIENDS DOSSIER)</div>
+          <button onclick="addFriendByIdPrompt()" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 輸入 ID 加好友</button>
         </div>
         <div id="friendsListContainer"></div>
       </div>
@@ -692,42 +730,18 @@
   </div>
 
   <!-- 載入腳本 -->
-  <script src="./js/config.js?v=20260903_v4"></script>
-  <script src="./js/auth.js?v=20260903_v4"></script>
-  <script src="./js/shop.js?v=20260903_v4"></script>
-  <script src="./js/tracker.js?v=20260903_v4"></script>
+  <script src="./js/config.js?v=20260903_v5"></script>
+  <script src="./js/auth.js?v=20260903_v5"></script>
+  <script src="./js/shop.js?v=20260903_v5"></script>
+  <script src="./js/tracker.js?v=20260903_v5"></script>
 
   <script>
-    // 開場貓眼讀條模擬控制
-    let splashInterval = null;
-    function initSplashLoader() {
-      const splash = document.getElementById("splashScreen");
-      const progress = document.getElementById("splashProgress");
-      const status = document.getElementById("splashStatus");
-      if (!splash) return;
-
-      let pct = 0;
-      splashInterval = setInterval(() => {
-        pct += Math.floor(Math.random() * 15) + 12;
-        if (pct >= 100) {
-          pct = 100;
-          clearInterval(splashInterval);
-          if (progress) progress.style.width = "100%";
-          if (status) status.textContent = "SYNAPSE LINKED // PROTOCOL GRANTED";
-          setTimeout(() => {
-            splash.classList.add("fade-out");
-          }, 350);
-        } else {
-          if (progress) progress.style.width = `${pct}%`;
-          if (status) status.textContent = `ESTABLISHING SYNAPSE LINK... ${pct}%`;
-        }
-      }, 90);
-    }
-
-    function skipSplash() {
-      if (splashInterval) clearInterval(splashInterval);
-      const splash = document.getElementById("splashScreen");
-      if (splash) splash.classList.add("fade-out");
+    // 開場原創向量貓眼與讀條動畫控制
+    let introTimer = setTimeout(() => enterSite(), 2800);
+    function enterSite() {
+      clearTimeout(introTimer);
+      const intro = document.getElementById('intro-screen');
+      if (intro) intro.classList.add('fade-out');
     }
 
     function setActiveView(viewId) {
@@ -803,7 +817,6 @@
 
     // 啟動加載
     history.replaceState({ view: 'landing' }, '', '#landing');
-    initSplashLoader();
     updateMemberUI();
     updateCartUI();
   </script>
