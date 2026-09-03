@@ -273,12 +273,12 @@
     </div>
   </div>
 
-  <!-- 1. 展廳主頁面 -->
+<!-- 1. 展廳主頁面 (極簡雙軌分流大廳) -->
   <div id="view-landing" class="view-section active">
-    <div class="landing-container">
-      <section class="hero-fullscreen" id="section-hero">
+    <div class="landing-container" style="display: flex; flex-direction: column; justify-content: center; min-height: 80vh; text-align: center;">
+      <section class="hero-fullscreen" id="section-hero" style="padding: 20px 0;">
         <div class="hero-code">[ PROTOCOL // A.D. 2678 HARDWARE ARSENAL ]</div>
-        <div style="margin-bottom: 24px;">
+        <div style="margin: 20px auto;">
           <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 320px;">
             <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
             <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
@@ -291,26 +291,33 @@
             <path class="logo-path" d="M545 90 L545 135" />
           </svg>
         </div>
+        
         <h1 class="hero-heading">我們不製造傷害，<br>我們定義支配。</h1>
         
         <!-- 白話文快速導引區 -->
-        <div style="background: rgba(0,255,136,0.05); border: 1px dashed var(--accent-cyan); padding: 12px 16px; border-radius: 4px; max-width: 500px; margin: 16px auto; text-align: left; font-size: 0.8rem;">
-          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px;">📌 第一次來？3 步驟輕鬆訂購：</div>
-          <div style="color: #d4d4d8; line-height: 1.5;">
-            1. 點擊下方<strong>「全系列裝備目錄庫」</strong>挑選裝備。<br>
-            2. 進入商品頁選擇尺寸與顏色，點擊<strong>「加入裝備庫」</strong>。<br>
-            3. 點右上角購物車，填寫收件資料（支援超商取貨付款）即可完成！
+        <div style="background: rgba(0,255,136,0.05); border: 1px dashed var(--accent-cyan); padding: 14px 18px; border-radius: 4px; max-width: 520px; margin: 20px auto; text-align: left; font-size: 0.85rem;">
+          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 6px;">📌 第一次來？3 步驟輕鬆調用：</div>
+          <div style="color: #d4d4d8; line-height: 1.6;">
+            1. 點擊下方<strong>「進入裝備調用商城」</strong>挑選實體裝備。<br>
+            2. 選擇規格與顏色加入裝備庫，填寫超商收件資料即可完成。<br>
+            3. 若要記錄雙人互動與實踐歷程，點擊<strong>「開啟實踐管理終端」</strong>。
           </div>
         </div>
 
-        <p class="hero-sub">工業義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。重塑冷冽硬派的次文化拘束哲學。</p>
+        <p class="hero-sub" style="max-width: 500px; margin: 0 auto 24px;">工業義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。重塑冷冽硬派的次文化拘束哲學。</p>
         
-        <!-- 雙生終端大按鈕分流 -->
-        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top:10px;">
-          <button class="btn-submit" onclick="scrollToSection('section-arsenal')" style="width:auto; padding:12px 20px; font-size:0.85rem;">🛒 進入裝備調用商城</button>
-          <button class="btn-submit" onclick="openTrackerAppView()" style="width:auto; padding:12px 20px; font-size:0.85rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--panel-border);">⚡ 開啟實踐管理終端</button>
+        <!-- 雙生終端大按鈕分流（主導航） -->
+        <div style="display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; max-width: 520px; margin: 0 auto;">
+          <button class="btn-submit" onclick="openShopCatalogView()" style="flex: 1; min-width: 220px; padding: 16px; font-size: 0.95rem;">
+            🛒 進入裝備調用商城
+          </button>
+          <button class="btn-submit" onclick="openTrackerAppView()" style="flex: 1; min-width: 220px; padding: 16px; font-size: 0.95rem; background: #141416; color: var(--accent-cyan); border: 1px solid var(--accent-cyan);">
+            ⚡ 開啟實踐管理終端
+          </button>
         </div>
       </section>
+    </div>
+  </div>
 
       <!-- 世界觀脈絡 -->
       <section class="section-manifesto" id="section-manifesto">
@@ -824,6 +831,17 @@
       renderTrackerApp();
       history.pushState({ view: 'tracker' }, '', '#tracker');
     }
+
+    function openShopCatalogView() {
+    toggleNav(false);
+    showLandingView(true);
+    setTimeout(() => {
+      const arsenalEl = document.getElementById('section-arsenal');
+      if (arsenalEl) {
+        arsenalEl.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  }
 
     function openProfileDossierView() {
       toggleNav(false);
