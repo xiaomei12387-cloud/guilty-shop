@@ -27,18 +27,26 @@
 </head>
 <body>
 
-  <!-- 開機動畫 -->
-  <div id="intro-screen">
-    <div class="intro-logo-box">
-      <svg class="cyber-cat-eye-svg" viewBox="0 0 100 100">
-        <polygon class="svg-eye-path" points="50,10 90,50 50,90 10,50" />
-        <polygon class="svg-eye-path" points="50,22 78,50 50,78 22,50" style="animation-delay: 0.2s;" />
-        <path class="svg-pupil" d="M50,26 Q57,50 50,74 Q43,50 50,26 Z" />
-      </svg>
-      <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:12px;">[ SYSTEM INITIALIZING // A.D. 2678 ]</div>
-      <div class="boot-progress-bar"><div class="boot-progress-fill"></div></div>
+  <!-- ========================================================================== -->
+  <!-- 1. 開場加載與貓眼掃描遮罩 (Splash Loading Gate) -->
+  <!-- ========================================================================== -->
+  <div id="splashScreen" class="splash-screen">
+    <div class="splash-content">
+      <!-- 貓眼瞳孔掃描動態 -->
+      <div class="cat-eye-container">
+        <div class="cat-eye-slit"></div>
+      </div>
+      
+      <div class="splash-brand">GUILTY PROTOCOL</div>
+      <div class="splash-sub">SYSTEM INITIALIZING // 認罪協議連線</div>
+
+      <!-- 終端讀條進度列 -->
+      <div class="splash-loader-bar">
+        <div class="splash-progress" id="splashProgress"></div>
+      </div>
+      <div class="splash-status" id="splashStatus">ESTABLISHING SYNAPSE LINK... 0%</div>
     </div>
-    <button class="skip-btn" onclick="enterSite()">[ 跳過認證 SKIP ]</button>
+    <button class="skip-btn" onclick="skipSplash()">[ 跳過認證 SKIP ]</button>
   </div>
 
   <!-- 購物車抽屜 -->
@@ -110,47 +118,61 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 1. 【首頁雙軌分流大廳】 (極致賽博戰術 HUD 終端 UI) -->
+  <!-- 2. 【首頁雙軌分流大廳】（超大 LOGO 水印 + 精品排版） -->
   <!-- ======================================================== -->
   <div id="view-landing" class="view-section active">
-    <div class="landing-container" style="display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:85vh; text-align:center; padding: 20px 16px;">
-      <div style="width: 100%; max-width: 560px; background: rgba(12, 12, 16, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 136, 0.25); box-shadow: 0 0 35px rgba(0, 255, 136, 0.08), inset 0 0 20px rgba(0, 0, 0, 0.8); border-radius: 6px; padding: 36px 24px; position: relative;">
-        <div style="position:absolute; top:-1px; left:-1px; width:12px; height:12px; border-top:2px solid var(--accent-cyan); border-left:2px solid var(--accent-cyan);"></div>
-        <div style="position:absolute; top:-1px; right:-1px; width:12px; height:12px; border-top:2px solid var(--accent-cyan); border-right:2px solid var(--accent-cyan);"></div>
-        <div style="position:absolute; bottom:-1px; left:-1px; width:12px; height:12px; border-bottom:2px solid var(--accent-cyan); border-left:2px solid var(--accent-cyan);"></div>
-        <div style="position:absolute; bottom:-1px; right:-1px; width:12px; height:12px; border-bottom:2px solid var(--accent-cyan); border-right:2px solid var(--accent-cyan);"></div>
+    <section class="hero-grand-section">
+      <!-- 超巨大背景浮雕水印 -->
+      <div class="hero-huge-bg-logo">GUILTY</div>
 
-        <div style="display: inline-block; font-size:0.68rem; font-family:monospace; color:var(--accent-cyan); letter-spacing:3px; background: rgba(0, 255, 136, 0.1); padding: 4px 10px; border-radius: 2px; margin-bottom: 18px;">
-          TERMINAL PROTOCOL // A.D. 2678
+      <div class="hero-content-wrapper">
+        <div class="hero-tech-tag">
+          <span class="pulse-dot"></span> PROTOCOL // A.D. 2678 HARDWARE ARSENAL
         </div>
-        <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; line-height: 1.35; margin-bottom: 12px; color: #fff;">
-          我們不製造傷害，<br><span style="color: var(--accent-cyan); text-shadow: 0 0 14px var(--accent-cyan);">我們定義支配。</span>
+
+        <h1 class="hero-grand-title">
+          <span class="title-sub">欲室・共犯</span>
+          我們不製造傷害，<br>
+          <span style="color: var(--accent-cyan); text-shadow: 0 0 20px var(--glow-cyan);">我們定義支配。</span>
         </h1>
-        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
-          工業義體拘束器 × 精煉繩藝美學 × 戰術感官校準。<br>為特工重塑冷冽硬派的次文化實踐秩序。
+
+        <p class="hero-grand-desc">
+          工業級 SLS 尼龍外骨骼 × 13 道工序精煉繩藝 × 戰術神經校準。<br>
+          重塑冷冽硬派的次文化實踐秩序。
         </p>
-        <div style="background: rgba(0, 0, 0, 0.6); border-left: 3px solid var(--accent-cyan); padding: 12px 16px; border-radius: 3px; margin: 0 auto 26px; text-align: left; font-size: 0.8rem;">
-          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px;">⚡ 初次接入指南（3 步驟快速上手）：</div>
-          <div style="color: #a1a1aa; font-size: 0.75rem; line-height: 1.6;">
-            • <strong>選配裝備</strong>：點擊「進入裝備商城」挑選外骨骼項圈或精密長鞭。<br>
-            • <strong>極簡取件</strong>：自選超商門市取貨付款，100% 隱私零件名義寄送。<br>
-            • <strong>神經聯網</strong>：點擊「開啟實踐終端」記錄雙方次數、碼錶計時與安全詞。
+
+        <!-- 3 步驟白話調用指南卡片 -->
+        <div style="background: rgba(0, 0, 0, 0.6); border-left: 3px solid var(--accent-cyan); border-right: 1px solid rgba(255,255,255,0.06); border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 18px; border-radius: 4px; max-width: 520px; margin: 0 auto 30px; text-align: left;">
+          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px; font-size: 0.82rem;">⚡ 初次接入指南（3 步驟快速上手）：</div>
+          <div style="color: #a1a1aa; font-size: 0.76rem; line-height: 1.6;">
+            • <strong>選配裝備</strong>：挑選外骨骼項圈、精煉麻繩或精密長鞭。<br>
+            • <strong>極簡取件</strong>：自選超商門市取貨付款，100% 絕密隱密零件名義寄送。<br>
+            • <strong>神經聯網</strong>：開啟實踐終端記錄雙方次數、全螢幕碼錶與安全詞。
           </div>
         </div>
-        <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-          <button class="btn-submit" onclick="openShopCatalogView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; box-shadow: 0 0 20px rgba(0, 255, 136, 0.25);">
-            🛒 進入裝備調用商城 (ARSENAL)
+
+        <!-- 雙軌戰術按鈕組 -->
+        <div class="hero-btn-group">
+          <button class="btn-grand-primary" onclick="openShopCatalogView()">
+            🛒 進入裝備商城 (ARSENAL)
           </button>
-          <button class="btn-submit" onclick="openTrackerAppView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; background: #16161b; color: var(--accent-cyan); border: 1px solid var(--accent-cyan);">
-            ⚡ 開啟實踐管理終端 (TRACKER)
+          <button class="btn-grand-outline" onclick="openTrackerAppView()">
+            ⚡ 開啟實踐終端 (TRACKER)
           </button>
         </div>
       </div>
-    </div>
+
+      <div class="hero-scroll-indicator">
+        <div class="scroll-mouse">
+          <div class="scroll-wheel"></div>
+        </div>
+        <span>INITIALIZED</span>
+      </div>
+    </section>
   </div>
 
   <!-- ======================================================== -->
-  <!-- 2. 【獨立裝備商城視圖】 (view-shop) -->
+  <!-- 3. 【獨立裝備商城視圖】 (view-shop) -->
   <!-- ======================================================== -->
   <div id="view-shop" class="view-section">
     <div class="landing-container">
@@ -175,7 +197,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 3. 【實踐計數終端 + 數據圖表】 (view-tracker) -->
+  <!-- 4. 【實踐計數終端 + 數據圖表】 (view-tracker) -->
   <!-- ======================================================== -->
   <div id="view-tracker" class="view-section">
     <div class="detail-container">
@@ -224,7 +246,7 @@
         </div>
       </div>
 
-      <!-- 📊 需求 4：歷程趨勢圖表化分析容器 -->
+      <!-- 📊 數據分析圖表 -->
       <div class="form-box">
         <div class="form-title">實踐歷程數據分析 (ANALYTICS)</div>
         <div style="background:#09090c; border:1px solid var(--panel-border); padding:12px; border-radius:4px;">
@@ -253,7 +275,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 4. 【特工名片】 (view-dossier) -->
+  <!-- 5. 【特工名片】 (view-dossier) -->
   <!-- ======================================================== -->
   <div id="view-dossier" class="view-section">
     <div class="detail-container">
@@ -297,7 +319,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 5. 【需求 1 & 2：好友系統與個人行事曆視圖】 (view-friends-cal) -->
+  <!-- 6. 【好友系統與個人行事曆】 (view-friends-cal) -->
   <!-- ======================================================== -->
   <div id="view-friends-cal" class="view-section">
     <div class="detail-container">
@@ -309,7 +331,6 @@
         <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回大廳</button>
       </div>
 
-      <!-- 好友清單區塊 -->
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <div class="form-title" style="color:#38bdf8; margin:0; border:none; padding:0;">特工好友清單 (FRIENDS DOSSIER)</div>
@@ -318,18 +339,16 @@
         <div id="friendsListContainer"></div>
       </div>
 
-      <!-- 個人行事曆區塊 -->
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
           <div class="form-title" style="color:var(--accent-cyan); margin:0; border:none; padding:0;">個人實踐與活動行事曆 (SCHEDULE)</div>
           <button onclick="toggleCalendarForm(true)" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 新增日程</button>
         </div>
 
-        <!-- 新增活動輸入面板 -->
         <div id="calendarAddBox" style="display:none; background:#101015; border:1px dashed var(--accent-cyan); padding:12px; border-radius:4px; margin-bottom:14px;">
           <div class="form-group">
             <label style="font-size:0.75rem;">活動名稱 / 實踐主題*</label>
-            <input type="text" id="calEventTitle" placeholder="例如：水湳繩縛私約 或 拘久屋聚會" style="padding:8px;" />
+            <input type="text" id="calEventTitle" placeholder="例如：水湳繩縛交流 或 拘束體驗" style="padding:8px;" />
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
             <div>
@@ -384,7 +403,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 6. 【創作者合作後台 + 商品自主修改】 (view-creator-portal) -->
+  <!-- 7. 【創作者合作後台 + 商品自主修改】 (view-creator-portal) -->
   <!-- ======================================================== -->
   <div id="view-creator-portal" class="view-section">
     <div class="detail-container">
@@ -419,7 +438,6 @@
           </div>
         </div>
 
-        <!-- 📦 需求 8：上架裝備自主修改區塊 -->
         <div id="creatorMyProductsBox" style="margin-top:20px; border-top:1px dashed var(--panel-border); padding-top:16px;">
           <h3 style="color:#fff; font-size:0.95rem; margin-bottom:10px;">📦 我上架的裝備自主修正（修改售價與現貨）</h3>
           <div id="creatorProductsListContainer"></div>
@@ -428,7 +446,7 @@
     </div>
   </div>
 
-  <!-- 7. 個人調用紀錄 (view-order-history) -->
+  <!-- 8. 個人調用紀錄 (view-order-history) -->
   <div id="view-order-history" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -448,7 +466,7 @@
     </div>
   </div>
 
-  <!-- 8. 商品詳細配置頁 (view-product-detail) -->
+  <!-- 9. 商品詳細配置頁 (view-product-detail) -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="openShopCatalogView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回裝備目錄</button>
@@ -456,7 +474,6 @@
         <div id="detailHeroImgArea" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"></div>
       </div>
 
-      <!-- 需求 3：多張細節縮圖列 -->
       <div id="detailThumbsRow" style="display:flex; gap:8px; margin:10px 0; overflow-x:auto;"></div>
 
       <div class="form-box">
@@ -476,7 +493,7 @@
     </div>
   </div>
 
-  <!-- 9. 終端結帳視圖 (view-checkout) -->
+  <!-- 10. 終端結帳視圖 (view-checkout) -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
@@ -556,7 +573,7 @@
     </div>
   </div>
 
-  <!-- 10. 成功下單頁面 (view-success) -->
+  <!-- 11. 成功下單頁面 (view-success) -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
@@ -692,12 +709,44 @@
   </div>
 
   <!-- 載入腳本 -->
-  <script src="./js/config.js?v=20260903_v3"></script>
-  <script src="./js/auth.js?v=20260903_v3"></script>
-  <script src="./js/shop.js?v=20260903_v3"></script>
-  <script src="./js/tracker.js?v=20260903_v3"></script>
+  <script src="./js/config.js?v=20260903_v4"></script>
+  <script src="./js/auth.js?v=20260903_v4"></script>
+  <script src="./js/shop.js?v=20260903_v4"></script>
+  <script src="./js/tracker.js?v=20260903_v4"></script>
 
   <script>
+    // 開場貓眼讀條模擬控制
+    let splashInterval = null;
+    function initSplashLoader() {
+      const splash = document.getElementById("splashScreen");
+      const progress = document.getElementById("splashProgress");
+      const status = document.getElementById("splashStatus");
+      if (!splash) return;
+
+      let pct = 0;
+      splashInterval = setInterval(() => {
+        pct += Math.floor(Math.random() * 15) + 12;
+        if (pct >= 100) {
+          pct = 100;
+          clearInterval(splashInterval);
+          if (progress) progress.style.width = "100%";
+          if (status) status.textContent = "SYNAPSE LINKED // PROTOCOL GRANTED";
+          setTimeout(() => {
+            splash.classList.add("fade-out");
+          }, 350);
+        } else {
+          if (progress) progress.style.width = `${pct}%`;
+          if (status) status.textContent = `ESTABLISHING SYNAPSE LINK... ${pct}%`;
+        }
+      }, 90);
+    }
+
+    function skipSplash() {
+      if (splashInterval) clearInterval(splashInterval);
+      const splash = document.getElementById("splashScreen");
+      if (splash) splash.classList.add("fade-out");
+    }
+
     function setActiveView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
       const target = document.getElementById(viewId);
@@ -755,13 +804,6 @@
       history.pushState({ view: 'order-history' }, '', '#history');
     }
 
-    let introTimer = setTimeout(() => enterSite(), 2400);
-    function enterSite() {
-      clearTimeout(introTimer);
-      const intro = document.getElementById('intro-screen');
-      if (intro) intro.classList.add('fade-out');
-    }
-
     function toggleNav(isOpen) {
       const sideNav = document.getElementById('sideNav');
       const overlay = document.getElementById('navOverlay');
@@ -776,8 +818,9 @@
       }
     }
 
-    // 啟動
+    // 啟動加載
     history.replaceState({ view: 'landing' }, '', '#landing');
+    initSplashLoader();
     updateMemberUI();
     updateCartUI();
   </script>
