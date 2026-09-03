@@ -259,14 +259,27 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 1. 【首頁雙軌分流大廳】（只有品牌 + 兩個按鈕，乾淨俐落） -->
+  <!-- 1. 【首頁雙軌分流大廳】（極致賽博戰術 HUD 終端 UI） -->
   <!-- ======================================================== -->
   <div id="view-landing" class="view-section active">
-    <div class="landing-container" style="display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:82vh; text-align:center;">
-      <section class="hero-fullscreen" style="padding: 10px 0; width: 100%;">
-        <div class="hero-code">[ PROTOCOL // A.D. 2678 HARDWARE ARSENAL ]</div>
-        <div style="margin: 20px auto;">
-          <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 320px;">
+    <div class="landing-container" style="display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:85vh; text-align:center; padding: 20px 16px;">
+      
+      <!-- 核心全息戰術外框 -->
+      <div style="width: 100%; max-width: 560px; background: rgba(12, 12, 16, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 136, 0.25); box-shadow: 0 0 35px rgba(0, 255, 136, 0.08), inset 0 0 20px rgba(0, 0, 0, 0.8); border-radius: 6px; padding: 36px 24px; position: relative;">
+        
+        <!-- 四角戰術瞄準線裝飾 -->
+        <div style="position:absolute; top:-1px; left:-1px; width:12px; height:12px; border-top:2px solid var(--accent-cyan); border-left:2px solid var(--accent-cyan);"></div>
+        <div style="position:absolute; top:-1px; right:-1px; width:12px; height:12px; border-top:2px solid var(--accent-cyan); border-right:2px solid var(--accent-cyan);"></div>
+        <div style="position:absolute; bottom:-1px; left:-1px; width:12px; height:12px; border-bottom:2px solid var(--accent-cyan); border-left:2px solid var(--accent-cyan);"></div>
+        <div style="position:absolute; bottom:-1px; right:-1px; width:12px; height:12px; border-bottom:2px solid var(--accent-cyan); border-right:2px solid var(--accent-cyan);"></div>
+
+        <div style="display: inline-block; font-size:0.68rem; font-family:monospace; color:var(--accent-cyan); letter-spacing:3px; background: rgba(0, 255, 136, 0.1); padding: 4px 10px; border-radius: 2px; margin-bottom: 18px;">
+          TERMINAL PROTOCOL // A.D. 2678
+        </div>
+
+        <!-- 向量標誌 -->
+        <div style="margin: 0 auto 16px; display: flex; justify-content: center;">
+          <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 280px; filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.3));">
             <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
             <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
             <path class="logo-path" d="M190 85 L230 35 L270 85 L230 135 Z" />
@@ -279,29 +292,38 @@
           </svg>
         </div>
         
-        <h1 class="hero-heading">我們不製造傷害，<br>我們定義支配。</h1>
-        
-        <div style="background: rgba(0,255,136,0.05); border: 1px dashed var(--accent-cyan); padding: 14px 18px; border-radius: 4px; max-width: 500px; margin: 20px auto; text-align: left; font-size: 0.85rem;">
-          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 6px;">📌 第一次來？3 步驟輕鬆調用：</div>
-          <div style="color: #d4d4d8; line-height: 1.6;">
-            1. 點擊<strong>「進入裝備調用商城」</strong>挑選實體裝備。<br>
-            2. 選擇規格與顏色加入裝備庫，填寫超商收件資料即可完成。<br>
-            3. 若要記錄雙人互動與實踐歷程，點擊<strong>「開啟實踐管理終端」</strong>。
+        <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; line-height: 1.35; margin-bottom: 12px; color: #fff; text-shadow: 0 0 16px rgba(255,255,255,0.2);">
+          我們不製造傷害，<br><span style="color: var(--accent-cyan); text-shadow: 0 0 14px var(--accent-cyan);">我們定義支配。</span>
+        </h1>
+
+        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; letter-spacing: 0.5px;">
+          工業義體拘束器 × 精煉繩藝美學 × 戰術感官校準。<br>為特工重塑冷冽硬派的次文化實踐秩序。
+        </p>
+
+        <!-- 3 步驟白話調用指南卡片 -->
+        <div style="background: rgba(0, 0, 0, 0.6); border-left: 3px solid var(--accent-cyan); border-right: 1px solid rgba(255,255,255,0.06); border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 12px 16px; border-radius: 3px; margin: 0 auto 26px; text-align: left; font-size: 0.8rem;">
+          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px; font-size: 0.82rem; display: flex; align-items: center; gap: 6px;">
+            <span>⚡</span> 初次接入指南（3 步驟快速上手）：
+          </div>
+          <div style="color: #a1a1aa; font-size: 0.75rem; line-height: 1.6;">
+            • <strong>選配裝備</strong>：點擊「進入裝備商城」挑選外骨骼項圈或精密長鞭。<br>
+            • <strong>極簡取件</strong>：自選超商門市取貨付款，100% 隱私零件名義寄送。<br>
+            • <strong>神經聯網</strong>：點擊「開啟實踐終端」記錄雙方次數、碼錶計時與安全詞。
           </div>
         </div>
 
-        <p class="hero-sub" style="max-width: 500px; margin: 0 auto 28px;">工業義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。重塑冷冽硬派的次文化拘束哲學。</p>
-        
-        <!-- 雙軌大按鈕 -->
-        <div style="display:flex; gap:16px; flex-wrap:wrap; justify-content:center; max-width:520px; margin:0 auto;">
-          <button class="btn-submit" onclick="openShopCatalogView()" style="flex:1; min-width:220px; padding:16px; font-size:0.95rem;">
-            🛒 進入裝備調用商城
+        <!-- 雙軌戰術大按鈕 -->
+        <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
+          <button class="btn-submit" onclick="openShopCatalogView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; box-shadow: 0 0 20px rgba(0, 255, 136, 0.25);">
+            🛒 進入裝備調用商城 (ARSENAL)
           </button>
-          <button class="btn-submit" onclick="openTrackerAppView()" style="flex:1; min-width:220px; padding:16px; font-size:0.95rem; background:#141416; color:var(--accent-cyan); border:1px solid var(--accent-cyan);">
-            ⚡ 開啟實踐管理終端
+          <button class="btn-submit" onclick="openTrackerAppView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; background: #16161b; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); box-shadow: inset 0 0 12px rgba(0, 255, 136, 0.08);">
+            ⚡ 開啟實踐管理終端 (TRACKER)
           </button>
         </div>
-      </section>
+
+      </div>
+
     </div>
   </div>
 
