@@ -168,7 +168,8 @@ function sendRegisterOtp() {
 function handleRegisterSubmit(e) {
   e.preventDefault();
   const name = document.getElementById("regNameInput").value.trim();
-  const agentId = document.getElementById("regAgentIdInput").value.trim().toUpperCase() || "AGENT-" + Math.random().toString(36).substring(2, 6).toUpperCase();
+  const agentIdInput = document.getElementById("regAgentIdInput");
+  const agentId = agentIdInput ? agentIdInput.value.trim().toUpperCase() : "AGENT-001";
   const email = document.getElementById("regEmailInput").value.trim().toLowerCase();
   const otp = document.getElementById("regOtpInput").value.trim();
   const phone = document.getElementById("regPhoneInput").value.trim();
@@ -205,13 +206,15 @@ function handleRegisterSubmit(e) {
 
     if (data.result === "success") {
       memberProfile = data.user;
+      // 確保將自定義 ID 寫入本地 Profile
+      memberProfile.agentId = agentId;
       localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
       updateMemberUI();
 
       if (typeof loadAgentTrackerState === "function") loadAgentTrackerState();
 
       toggleAuthModal(false);
-      alert(`【認罪建檔成功】歡迎加入共犯矩陣，特工 ${memberProfile.name} (ID: ${memberProfile.agentId})！`);
+      alert(`【認罪建檔成功】歡迎加入共犯矩陣，特工 ${memberProfile.name} (ID: ${agentId})！`);
     } else {
       alert("❌ 註冊失敗：" + (data.msg || "驗證碼無效或過期。"));
     }
@@ -278,7 +281,8 @@ function handleProfileUpdate(e) {
   if (!memberProfile) return;
 
   const newName = document.getElementById("profNameInput").value.trim();
-  const newAgentId = document.getElementById("profAgentIdInput").value.trim().toUpperCase();
+  const agentIdInp = document.getElementById("profAgentIdInput");
+  const newAgentId = agentIdInp ? agentIdInp.value.trim().toUpperCase() : (memberProfile.agentId || "AGENT-001");
   const newLoc = document.getElementById("profLocationInput").value.trim();
 
   memberProfile.name = newName;
@@ -289,6 +293,7 @@ function handleProfileUpdate(e) {
 
   if (typeof trackerState !== "undefined" && trackerState.profile) {
     trackerState.profile.name = newName;
+    trackerState.profile.agentId = newAgentId;
     trackerState.profile.role = memberProfile.role || "服從者 (Sub)";
     if (typeof saveTrackerState === "function") saveTrackerState();
   }
