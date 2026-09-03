@@ -114,7 +114,7 @@
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openShopCatalogView()" style="color:#00ff88; font-weight:bold;">01 // 裝備調用商城 (ARSENAL) 🛒</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">02 // 實踐計數終端 (TRACKER) ⚡</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">03 // 特工個人名片 (PROFILE CARD) ★</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openFriendsDossierView()" style="color:#00ff88; font-weight:bold;">04 // 好友名冊與行事曆 (FRIENDS & CAL) 👥</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openFriendsDossierView()" style="color:var(--accent-cyan); font-weight:bold;">04 // 好友名冊與行事曆 (FRIENDS & CAL) 👥</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">05 // 創作者合作後台 (PORTAL) ⚙️</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">06 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
       </ul>
@@ -239,11 +239,13 @@
         <div class="mode-switch-btn btn-sub" id="btnModeSub" onclick="switchTrackerMode('sub')">⛓️ 被動方終端 (Sub)</div>
       </div>
 
+      <!-- 當前對象與全螢幕入口 -->
       <div class="form-box">
         <div class="form-title" id="activePartnerNameDisplay">[ 當前實踐對象：載入中... ]</div>
         <div id="sessionHudArea"></div>
+      </div>
 
-       <!-- 多元實踐項目管理與即時調整 -->
+      <!-- 多元實踐項目管理與配置 -->
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div class="form-title" style="margin:0; border:none; padding:0;">實踐項目配置 (METRICS)</div>
@@ -252,13 +254,9 @@
           </button>
         </div>
         <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">
-          自由自訂本次實踐的記錄項目。進入全螢幕終端後，系統將自動為這些項目生成極大化觸控板：
+          自由自訂本次實踐的記錄項目。進入獨立全螢幕終端後，系統將自動生成對應的極大化觸控板：
         </p>
-
-        <!-- 動態項目預覽卡片列 -->
-        <div id="activeMetricsPreviewGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px; margin-bottom:14px;"></div>
-
-        <div id="sessionHudArea"></div>
+        <div id="activeMetricsPreviewGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:8px;"></div>
       </div>
 
       <!-- 📊 數據分析圖表 -->
@@ -724,10 +722,10 @@
   </div>
 
   <!-- 載入腳本 -->
-  <script src="./js/config.js?v=20260903_v5"></script>
-  <script src="./js/auth.js?v=20260903_v5"></script>
-  <script src="./js/shop.js?v=20260903_v5"></script>
-  <script src="./js/tracker.js?v=20260903_v5"></script>
+  <script src="./js/config.js?v=20260903_v6"></script>
+  <script src="./js/auth.js?v=20260903_v6"></script>
+  <script src="./js/shop.js?v=20260903_v6"></script>
+  <script src="./js/tracker.js?v=20260903_v6"></script>
 
   <script>
     // 開場原創向量貓眼與讀條動畫控制
