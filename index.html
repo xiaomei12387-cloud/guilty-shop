@@ -264,6 +264,24 @@
     </div>
   </div>
 
+  <!-- 註冊表單內加入 ID 輸入 -->
+<div class="form-group">
+  <label>自訂特工 ID (AGENT ID)*</label>
+  <input type="text" id="regAgentIdInput" required placeholder="例如：AGENT-001 或 18X" style="text-transform:uppercase;" />
+</div>
+
+<!-- 檔案編輯視圖內加入 ID 輸入 -->
+<div class="form-group">
+  <label>自訂特工 ID*</label>
+  <input type="text" id="profAgentIdInput" required style="text-transform:uppercase;" />
+</div>
+
+<!-- 商品詳細頁燈箱彈窗結構 (在 body 底部加入) -->
+<div id="productLightbox" style="position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:99999; display:none; align-items:center; justify-content:center; padding:20px;" onclick="closeLightbox()">
+  <button onclick="closeLightbox()" style="position:absolute; top:20px; right:20px; background:transparent; border:none; color:#fff; font-size:2rem; cursor:pointer;">✕</button>
+  <img id="lightboxImg" src="" style="max-width:100%; max-height:90vh; border:1px solid var(--accent-cyan); box-shadow:0 0 30px rgba(0,255,136,0.3);" />
+</div>
+
   <!-- 1. 展廳主頁面 -->
   <div id="view-landing" class="view-section active">
     <div class="landing-container">
