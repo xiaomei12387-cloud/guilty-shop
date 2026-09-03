@@ -18,8 +18,12 @@
   <link rel="stylesheet" href="./css/style.css" />
   <link rel="stylesheet" href="./css/tracker.css" />
 
+  <!-- 📷 名片截圖引擎 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- 相機掃碼引擎 -->
   <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- 📊 數據圖表引擎 (Chart.js) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -31,19 +35,6 @@
         <polygon class="svg-eye-path" points="50,22 78,50 50,78 22,50" style="animation-delay: 0.2s;" />
         <path class="svg-pupil" d="M50,26 Q57,50 50,74 Q43,50 50,26 Z" />
       </svg>
-
-      <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 260px;">
-        <path class="logo-path logo-path-anim" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
-        <path class="logo-path logo-path-anim" d="M150 35 L110 85 L150 125 L190 85" />
-        <path class="logo-path logo-path-anim" d="M190 85 L230 35 L270 85 L230 135 Z" />
-        <path class="logo-path" d="M230 35 L230 135" />
-        <path class="logo-path" d="M270 85 L310 35 L350 85 L390 125" />
-        <path class="logo-path" d="M390 85 L440 35 L490 85" />
-        <path class="logo-path" d="M440 35 L440 135" />
-        <path class="logo-path" d="M500 35 L545 90 L590 35" />
-        <path class="logo-path" d="M545 90 L545 135" />
-      </svg>
-
       <div style="font-size:0.7rem; color:var(--accent-cyan); letter-spacing:2px; margin-top:12px;">[ SYSTEM INITIALIZING // A.D. 2678 ]</div>
       <div class="boot-progress-bar"><div class="boot-progress-fill"></div></div>
     </div>
@@ -62,138 +53,13 @@
       </div>
       <div id="cartFreeShippingBanner" style="padding:10px 0; border-bottom:1px dashed var(--panel-border); font-size:0.75rem;"></div>
     </div>
-
     <div class="cart-items-box" id="cartItemsContainer"></div>
-
     <div style="border-top:1px solid var(--panel-border); padding-top:14px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
         <span style="font-size:0.85rem; color:var(--text-muted);">裝備小計 (未含運)：</span>
         <span id="cartDrawerSubtotal" style="font-size:1.1rem; color:var(--accent-cyan); font-weight:bold;">NT$ 0</span>
       </div>
       <button class="btn-submit" onclick="proceedToCheckoutFromCart()">進入終端簽署協議 (CHECKOUT)</button>
-    </div>
-  </div>
-
-  <!-- 特工登入／註冊彈窗 -->
-  <div class="auth-modal" id="authModal">
-    <div class="auth-box">
-      <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
-      
-      <div id="authGuestView">
-        <div class="auth-header">
-          <div class="auth-title">特工神經認證通道</div>
-          <div class="auth-sub">[ PROTOCOL // AGENT AUTHENTICATION ]</div>
-        </div>
-
-        <div class="auth-tab-grid">
-          <div class="auth-tab-btn active" id="tabBtnLogin" onclick="switchAuthTab('login')">特工登入 (LOGIN)</div>
-          <div class="auth-tab-btn" id="tabBtnRegister" onclick="switchAuthTab('register')">新註冊 (REGISTER)</div>
-        </div>
-
-        <form id="loginForm" onsubmit="handleLoginSubmit(event)">
-          <div class="form-group">
-            <label>特工帳號（Email 信箱 或 手機號碼）*</label>
-            <input type="text" id="loginAccountInput" required placeholder="例如：agent@guilty.app 或 0912345678" />
-          </div>
-          <div class="form-group">
-            <label>加密通行密碼*</label>
-            <input type="password" id="loginPasswordInput" required placeholder="請輸入密碼" />
-          </div>
-          <div class="nda-protocol-box">
-            <strong>⚠️ [ NEURAL ACCESS PROTOCOL // 認罪保密協議 ]</strong><br>
-            進入本終端代表您已充分知悉並同意遵守 SSC（安全・理智・知情同意）原則。
-            <label class="nda-checkbox-label">
-              <input type="checkbox" id="loginNdaCheckbox" required />
-              <span>我已閱讀並自願簽署《特工認罪保密協議》*</span>
-            </label>
-          </div>
-          <button type="submit" class="btn-submit" id="btnLoginSubmit" style="padding:12px; font-size:0.9rem;">驗證密鑰並登入 (ACCESS)</button>
-        </form>
-
-        <form id="registerForm" onsubmit="handleRegisterSubmit(event)" style="display:none;">
-          <div class="form-group">
-            <label>特工代號 / 嫌疑人稱號*</label>
-            <input type="text" id="regNameInput" required placeholder="例如：18X / 支配者 K" />
-          </div>
-          <div class="form-group">
-            <label>自訂特工 ID (AGENT ID)*</label>
-            <input type="text" id="regAgentIdInput" required placeholder="例如：AGENT-001 或 18X" style="text-transform:uppercase;" />
-          </div>
-          <div class="form-group">
-            <label>安全信箱 (Email)*</label>
-            <div style="display:flex; gap:6px;">
-              <input type="email" id="regEmailInput" required placeholder="agent@guilty-cyber.app" />
-              <button type="button" id="btnSendRegOtp" onclick="sendRegisterOtp()" style="background:var(--accent-cyan); color:#000; border:none; padding:0 12px; font-size:0.75rem; font-weight:bold; cursor:pointer; white-space:nowrap;">發送驗證碼</button>
-            </div>
-            <div id="regOtpNotice" style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;"></div>
-          </div>
-          <div class="form-group">
-            <label>6 位數信箱驗證碼 (OTP)*</label>
-            <input type="text" id="regOtpInput" required maxlength="6" placeholder="輸入信箱 6 位數代碼" style="letter-spacing:4px; font-size:1.1rem; text-align:center; font-weight:bold;" />
-          </div>
-          <div class="form-group">
-            <label>聯絡電話 (手機號碼)*</label>
-            <input type="tel" id="regPhoneInput" required placeholder="0912-345-678" />
-          </div>
-          <div class="form-group">
-            <label>設定加密通行密碼*</label>
-            <input type="password" id="regPasswordInput" required minlength="6" placeholder="至少 6 碼英數密碼" />
-          </div>
-          <button type="submit" class="btn-submit" id="btnRegSubmit" style="padding:12px; font-size:0.9rem;">驗證信箱並建立檔案 (REGISTER)</button>
-        </form>
-      </div>
-
-      <div id="authProfileView" style="display:none;">
-        <div class="auth-header">
-          <div class="auth-title">特工系統檔案</div>
-          <div class="auth-sub" id="profileAccountBadge" style="color:var(--accent-cyan);">[ VERIFIED AGENT ]</div>
-        </div>
-        <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)">
-          <div class="form-group">
-            <label>主權陣營屬性 (ROLE)*</label>
-            <div class="role-toggle-grid">
-              <div class="role-btn active" id="roleDom" onclick="setProfileRole('支配者 (Dom)')">支配 [Dom]</div>
-              <div class="role-btn" id="roleSwitch" onclick="setProfileRole('切換者 (Switch)')">切換 [Switch]</div>
-              <div class="role-btn" id="roleSub" onclick="setProfileRole('服從者 (Sub)')">服從 [Sub]</div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>特工代號*</label>
-            <input type="text" id="profNameInput" required />
-          </div>
-          <div class="form-group">
-            <label>自訂特工 ID*</label>
-            <input type="text" id="profAgentIdInput" required style="text-transform:uppercase;" />
-          </div>
-          <div class="form-group">
-            <label>常用交付超商門市</label>
-            <input type="text" id="profLocationInput" placeholder="例如：7-11 鑫台北門市" />
-          </div>
-          <button type="submit" class="btn-submit" style="padding:12px; font-size:0.9rem;">更新檔案數據 (SAVE)</button>
-          <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:12px; cursor:pointer;">[ 斷開神經連結 / 退出登入 ]</button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- 相機掃描彈窗 -->
-  <div class="auth-modal" id="scannerModal">
-    <div class="auth-box" style="max-width: 380px; text-align: center; position: relative;">
-      <button class="auth-close" onclick="closeQrScanner()">✕</button>
-      <div class="auth-header" style="margin-bottom: 12px;">
-        <div class="auth-title" style="font-size: 1rem; color: var(--accent-cyan);">[ NEURAL SCANNER // 掃描名片 ]</div>
-        <div class="auth-sub">對準特工的專屬 QR Code 進行神經同步</div>
-      </div>
-      <div id="qrReaderBox" style="width: 100%; min-height: 250px; background: #000; border: 1px solid var(--panel-border); border-radius: 4px; overflow: hidden; position: relative;"></div>
-      <div style="margin-top: 14px; display: flex; gap: 8px;">
-        <label style="flex: 1; padding: 10px; background: #141416; border: 1px solid var(--panel-border); color: var(--text-muted); font-size: 0.75rem; border-radius: 3px; cursor: pointer; text-align: center;">
-          📁 選取 QR 截圖
-          <input type="file" accept="image/*" onchange="scanQrFromImageFile(this)" style="display: none;" />
-        </label>
-        <button type="button" class="btn-secondary" onclick="closeQrScanner(); addNewPartnerPrompt();" style="flex: 1; padding: 10px; font-size: 0.75rem;">
-          ⌨️ 手動輸入
-        </button>
-      </div>
     </div>
   </div>
 
@@ -205,19 +71,7 @@
         <path d="M50,25 Q60,50 50,75 Q40,50 50,25 Z" fill="var(--accent-cyan)" />
       </svg>
       <span style="font-size: 0.95rem; font-weight: bold; letter-spacing: 1px;">欲室｜共犯</span>
-      <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 95px; height: auto;">
-        <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
-        <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
-        <path class="logo-path" d="M190 85 L230 35 L270 85 L230 135 Z" />
-        <path class="logo-path" d="M230 35 L230 135" />
-        <path class="logo-path" d="M270 85 L310 35 L350 85 L390 125" />
-        <path class="logo-path" d="M390 85 L440 35 L490 85" />
-        <path class="logo-path" d="M440 35 L440 135" />
-        <path class="logo-path" d="M500 35 L545 90 L590 35" />
-        <path class="logo-path" d="M545 90 L545 135" />
-      </svg>
     </div>
-
     <div class="header-controls">
       <div class="cart-btn-header" onclick="toggleCart(true)">
         <span>🛒 裝備庫</span>
@@ -225,9 +79,7 @@
       </div>
       <div class="user-badge" id="memberBtn" onclick="toggleAuthModal(true)">[ 訪客 ]</div>
       <div class="menu-toggle-btn" onclick="toggleNav(true)">
-        <div class="menu-line"></div>
-        <div class="menu-line"></div>
-        <div class="menu-line"></div>
+        <div class="menu-line"></div><div class="menu-line"></div><div class="menu-line"></div>
       </div>
     </div>
   </header>
@@ -240,34 +92,29 @@
         <span style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:1px;">[ TERMINAL MENU ]</span>
         <button onclick="toggleNav(false)" style="background:transparent; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
       </div>
-
       <ul class="nav-menu-list">
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="showLandingView()">00 // 首頁分流大廳 (HOME)</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openShopCatalogView()" style="color:#00ff88; font-weight:bold;">01 // 裝備調用商城 (ARSENAL) 🛒</a></li>
         <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">02 // 實踐計數終端 (TRACKER) ⚡</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">03 // 特工個人主頁 (PROFILE CARD) ★</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">04 // 創作者合作後台 (PORTAL) ⚙️</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">05 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">03 // 特工個人名片 (PROFILE CARD) ★</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openFriendsDossierView()" style="color:#38bdf8; font-weight:bold;">04 // 好友名冊與行事曆 (FRIENDS & CAL) 👥</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">05 // 創作者合作後台 (PORTAL) ⚙️</a></li>
+        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">06 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
       </ul>
     </div>
-
     <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--panel-border); padding-top:14px;">
       <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" style="color:#5865F2; text-decoration:none; display:block; margin-bottom:4px;">👾 特工 Discord 伺服器 ↗</a>
       <a href="https://x.com/guiltyshopBDSM" target="_blank" rel="noopener noreferrer" style="color:#fff; text-decoration:none; display:block; margin-bottom:6px;">𝕏 GUILTY 官方情報 ↗</a>
-      <span style="color:var(--text-muted);">欲室共犯 × KK // SYS.VER 02.0</span>
+      <span style="color:var(--text-muted);">欲室共犯 × KK // SYS.VER 03.0</span>
     </div>
   </div>
 
   <!-- ======================================================== -->
-  <!-- 1. 【首頁雙軌分流大廳】（極致賽博戰術 HUD 終端 UI） -->
+  <!-- 1. 【首頁雙軌分流大廳】 (極致賽博戰術 HUD 終端 UI) -->
   <!-- ======================================================== -->
   <div id="view-landing" class="view-section active">
     <div class="landing-container" style="display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:85vh; text-align:center; padding: 20px 16px;">
-      
-      <!-- 核心全息戰術外框 -->
-      <div style="width: 100%; max-width: 560px; background: rgba(12, 12, 16, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 136, 0.25); box-shadow: 0 0 35px rgba(0, 255, 136, 0.08), inset 0 0 20px rgba(0, 0, 0, 0.8); border-radius: 6px; padding: 36px 24px; position: relative;">
-        
-        <!-- 四角戰術瞄準線裝飾 -->
+      <div style="width: 100%; max-width: 560px; background: rgba(12, 12, 16, 0.88); backdrop-filter: blur(12px); border: 1px solid rgba(0, 255, 136, 0.25); box-shadow: 0 0 35px rgba(0, 255, 136, 0.08), inset 0 0 20px rgba(0, 0, 0, 0.8); border-radius: 6px; padding: 36px 24px; position: relative;">
         <div style="position:absolute; top:-1px; left:-1px; width:12px; height:12px; border-top:2px solid var(--accent-cyan); border-left:2px solid var(--accent-cyan);"></div>
         <div style="position:absolute; top:-1px; right:-1px; width:12px; height:12px; border-top:2px solid var(--accent-cyan); border-right:2px solid var(--accent-cyan);"></div>
         <div style="position:absolute; bottom:-1px; left:-1px; width:12px; height:12px; border-bottom:2px solid var(--accent-cyan); border-left:2px solid var(--accent-cyan);"></div>
@@ -276,72 +123,41 @@
         <div style="display: inline-block; font-size:0.68rem; font-family:monospace; color:var(--accent-cyan); letter-spacing:3px; background: rgba(0, 255, 136, 0.1); padding: 4px 10px; border-radius: 2px; margin-bottom: 18px;">
           TERMINAL PROTOCOL // A.D. 2678
         </div>
-
-        <!-- 向量標誌 -->
-        <div style="margin: 0 auto 16px; display: flex; justify-content: center;">
-          <svg class="guilty-vector-logo" viewBox="0 0 650 160" style="width: 100%; max-width: 280px; filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.3));">
-            <path class="logo-path" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85" />
-            <path class="logo-path" d="M150 35 L110 85 L150 125 L190 85" />
-            <path class="logo-path" d="M190 85 L230 35 L270 85 L230 135 Z" />
-            <path class="logo-path" d="M230 35 L230 135" />
-            <path class="logo-path" d="M270 85 L310 35 L350 85 L390 125" />
-            <path class="logo-path" d="M390 85 L440 35 L490 85" />
-            <path class="logo-path" d="M440 35 L440 135" />
-            <path class="logo-path" d="M500 35 L545 90 L590 35" />
-            <path class="logo-path" d="M545 90 L545 135" />
-          </svg>
-        </div>
-        
-        <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; line-height: 1.35; margin-bottom: 12px; color: #fff; text-shadow: 0 0 16px rgba(255,255,255,0.2);">
+        <h1 style="font-size: 1.6rem; font-weight: 900; letter-spacing: 2px; line-height: 1.35; margin-bottom: 12px; color: #fff;">
           我們不製造傷害，<br><span style="color: var(--accent-cyan); text-shadow: 0 0 14px var(--accent-cyan);">我們定義支配。</span>
         </h1>
-
-        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px; letter-spacing: 0.5px;">
+        <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 24px;">
           工業義體拘束器 × 精煉繩藝美學 × 戰術感官校準。<br>為特工重塑冷冽硬派的次文化實踐秩序。
         </p>
-
-        <!-- 3 步驟白話調用指南卡片 -->
-        <div style="background: rgba(0, 0, 0, 0.6); border-left: 3px solid var(--accent-cyan); border-right: 1px solid rgba(255,255,255,0.06); border-top: 1px solid rgba(255,255,255,0.06); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 12px 16px; border-radius: 3px; margin: 0 auto 26px; text-align: left; font-size: 0.8rem;">
-          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px; font-size: 0.82rem; display: flex; align-items: center; gap: 6px;">
-            <span>⚡</span> 初次接入指南（3 步驟快速上手）：
-          </div>
+        <div style="background: rgba(0, 0, 0, 0.6); border-left: 3px solid var(--accent-cyan); padding: 12px 16px; border-radius: 3px; margin: 0 auto 26px; text-align: left; font-size: 0.8rem;">
+          <div style="color: var(--accent-cyan); font-weight: bold; margin-bottom: 4px;">⚡ 初次接入指南（3 步驟快速上手）：</div>
           <div style="color: #a1a1aa; font-size: 0.75rem; line-height: 1.6;">
             • <strong>選配裝備</strong>：點擊「進入裝備商城」挑選外骨骼項圈或精密長鞭。<br>
             • <strong>極簡取件</strong>：自選超商門市取貨付款，100% 隱私零件名義寄送。<br>
             • <strong>神經聯網</strong>：點擊「開啟實踐終端」記錄雙方次數、碼錶計時與安全詞。
           </div>
         </div>
-
-        <!-- 雙軌戰術大按鈕 -->
         <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
           <button class="btn-submit" onclick="openShopCatalogView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; box-shadow: 0 0 20px rgba(0, 255, 136, 0.25);">
             🛒 進入裝備調用商城 (ARSENAL)
           </button>
-          <button class="btn-submit" onclick="openTrackerAppView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; background: #16161b; color: var(--accent-cyan); border: 1px solid var(--accent-cyan); box-shadow: inset 0 0 12px rgba(0, 255, 136, 0.08);">
+          <button class="btn-submit" onclick="openTrackerAppView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; background: #16161b; color: var(--accent-cyan); border: 1px solid var(--accent-cyan);">
             ⚡ 開啟實踐管理終端 (TRACKER)
           </button>
         </div>
-
       </div>
-
     </div>
   </div>
 
   <!-- ======================================================== -->
-  <!-- 2. 【獨立裝備商城視圖】（點擊商城按鈕才會進到這裡） -->
+  <!-- 2. 【獨立裝備商城視圖】 (view-shop) -->
   <!-- ======================================================== -->
   <div id="view-shop" class="view-section">
     <div class="landing-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 14px; cursor:pointer; font-size:0.8rem; border-radius:2px;">
-          ← 返回首頁大廳
-        </button>
-        <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 14px; cursor:pointer; font-size:0.8rem; border-radius:2px;">
-          ⚡ 開啟實踐計數終端 →
-        </button>
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 14px; cursor:pointer; font-size:0.8rem;">← 返回首頁大廳</button>
+        <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 14px; cursor:pointer; font-size:0.8rem;">⚡ 開啟實踐計數終端 →</button>
       </div>
-
-      <!-- 裝備目錄庫 -->
       <section class="section-arsenal" id="section-arsenal">
         <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 01 // ARSENAL CATALOG ]</div>
         <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
@@ -355,101 +171,23 @@
         </div>
         <div class="product-list-grid" id="productGrid"></div>
       </section>
-
-      <!-- 世界觀與三大矩陣 -->
-      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 02 // WORLDVIEW & ARSENAL MATRIX ]</div>
-        <div class="manifesto-card" style="margin-bottom:20px;">
-          <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
-          <p style="color:var(--text-muted); font-size:0.85rem;">
-            【欲室｜共犯 GUILTY】作為地下義體武裝研究所，攜手合作夥伴【KK】，去肉慾化、去低俗符號，將親密支配與服從昇華為純粹的工業藝術。
-          </p>
-        </div>
-
-        <div class="matrix-grid">
-          <div class="matrix-card">
-            <div class="matrix-num">DIVISION 01 // CYBERNETICS</div>
-            <div class="matrix-title">義體外骨骼拘束器</div>
-            <div class="matrix-desc">工業級 SLS 尼龍裝甲結合 TPU 柔性內襯，提供前喉結避空與隱形顯影印記。</div>
-          </div>
-          <div class="matrix-card card-shushi">
-            <div class="matrix-num">DIVISION 02 // ROPE ART</div>
-            <div class="matrix-title">KK 特選精煉繩藝</div>
-            <div class="matrix-desc">經深度脫漿、過油打蠟 13 道工序，消除生澀毛刺，觸感溫潤柔韌。</div>
-          </div>
-          <div class="matrix-card">
-            <div class="matrix-num">DIVISION 03 // CALIBRATION</div>
-            <div class="matrix-title">神經校準與戰術裝備</div>
-            <div class="matrix-desc">重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，貫徹精準神經回饋。</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 特工指南 FAQ -->
-      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 03 // AGENT DOSSIER FAQ ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:16px;">特工調用指南・常見問題</h2>
-        
-        <div class="faq-item">
-          <div class="faq-q">Q1. 旗艦項圈尺寸如何挑選？（S 碼 vs M 碼）</div>
-          <div class="faq-a">• <strong>S 碼（29 – 33 cm）</strong>：適合纖細體態、多數女性特工或脖圍偏細者著用。<br>• <strong>M 碼（34 – 38 cm）</strong>：適合中等或肌肉型特工著用。請先以皮尺貼合淨脖圍量測。</div>
-        </div>
-
-        <div class="faq-item">
-          <div class="faq-q">Q2. 神經突觸長鞭（1.2M vs 1.5M）如何選擇？</div>
-          <div class="faq-a">• <strong>1.2 米 (CQB 近距校準型)</strong>：重心靈活回彈迅速，適合室內或新手練習控點。<br>• <strong>1.5 米 (EXTENDED 遠距壓制型)</strong>：鞭尾破空聲清脆響亮，具備強大壓迫感與長距牽制力。</div>
-        </div>
-
-        <div class="stealth-badge-card">
-          <div style="font-size: 1.8rem;">🔒</div>
-          <div>
-            <div style="color: var(--accent-cyan); font-weight: bold; font-size: 0.9rem;">100% 絕密隱私交付承諾 (STEALTH SHIPPING)</div>
-            <div style="color: var(--text-muted); font-size: 0.8rem;">超商寄件品名一律標註為<strong>「精密 3D 工藝零件」</strong>，保護每位特工隱私。</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 主理成員 -->
-      <section style="padding: 40px 0; border-top: 1px solid var(--panel-border);">
-        <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
-        <h2 style="font-size:1.4rem; margin-bottom:16px;">核心檔案：主理成員</h2>
-        <div class="team-grid">
-          <a href="https://x.com/18X_inthc" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div class="team-header"><div class="team-role">DESIGN DIRECTOR</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">18X</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@18X_inthc</div>
-          </a>
-          <a href="https://x.com/Take1809DL" target="_blank" rel="noopener noreferrer" class="team-card">
-            <div class="team-header"><div class="team-role">COMMUNITY & OPERATIONS</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">老王</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@Take1809DL</div>
-          </a>
-          <a href="https://x.com/_meow_kk?s=20" target="_blank" rel="noopener noreferrer" class="team-card card-shushi">
-            <div class="team-header"><div class="team-role">STRATEGIC ALLIANCE</div><span style="font-size:0.7rem; color:var(--text-muted);">X ↗</span></div>
-            <div style="font-size:1.1rem; font-weight:bold;">KK</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">@_meow_kk</div>
-          </a>
-        </div>
-      </section>
     </div>
   </div>
 
-  <!-- 3. 【實踐計數終端】 (Tracker View) -->
+  <!-- ======================================================== -->
+  <!-- 3. 【實踐計數終端 + 數據圖表】 (view-tracker) -->
+  <!-- ======================================================== -->
   <div id="view-tracker" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
         <div>
           <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-cyan);">[ TERMINAL // PROTOCOL TRACKER ]</span>
-          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">神經實踐實時計數板</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">神經實踐實時計數板與數據分析</span>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
-          <button onclick="syncTrackerToCloud()" style="background:#141416; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 8px; font-size:0.75rem; cursor:pointer; border-radius:3px;">
-            ☁️ 備份
-          </button>
-          <button class="safeword-panic-btn" onclick="triggerEmergencySafeword()">
-            🛑 SAFEWORD 急停
-          </button>
-          <button onclick="openProfileDossierView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">我的特工主頁 ★</button>
+          <button onclick="syncTrackerToCloud()" style="background:#141416; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 8px; font-size:0.75rem; cursor:pointer; border-radius:3px;">☁️ 備份</button>
+          <button class="safeword-panic-btn" onclick="triggerEmergencySafeword()">🛑 SAFEWORD 急停</button>
+          <button onclick="openProfileDossierView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">我的名片 ★</button>
         </div>
       </div>
 
@@ -459,7 +197,7 @@
       </div>
 
       <div class="form-box">
-        <div class="form-title" id="activePartnerNameDisplay">[ 當前對象：載入中... ]</div>
+        <div class="form-title" id="activePartnerNameDisplay">[ 當前實踐對象：載入中... ]</div>
         <div id="sessionHudArea"></div>
 
         <div class="counter-board-grid">
@@ -473,7 +211,6 @@
               <button class="counter-btn btn-reset" onclick="resetCounter('SP')">清零</button>
             </div>
           </div>
-
           <div class="counter-box box-purple">
             <div class="counter-title">神經長鞭擊數</div>
             <div class="counter-val" id="whipCountVal" style="color:var(--accent-purple);">0</div>
@@ -487,21 +224,27 @@
         </div>
       </div>
 
+      <!-- 📊 需求 4：歷程趨勢圖表化分析容器 -->
+      <div class="form-box">
+        <div class="form-title">實踐歷程數據分析 (ANALYTICS)</div>
+        <div style="background:#09090c; border:1px solid var(--panel-border); padding:12px; border-radius:4px;">
+          <canvas id="sessionAnalyticsChart" style="max-height: 220px; width: 100%;"></canvas>
+        </div>
+      </div>
+
+      <!-- 對象清單 -->
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div class="form-title" style="margin-bottom:0; border:none; padding:0;">互動對象清單 (PARTNERS)</div>
           <div style="display:flex; gap:6px;">
-            <button onclick="openQrScanner()" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px; display:flex; align-items:center; gap:4px;">
-              📷 掃碼新增
-            </button>
-            <button onclick="addNewPartnerPrompt()" style="background:#141416; color:var(--text-muted); border:1px solid var(--panel-border); padding:5px 8px; font-size:0.75rem; cursor:pointer; border-radius:2px;">
-              ＋ 手動
-            </button>
+            <button onclick="openQrScanner()" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer;">📷 掃碼新增</button>
+            <button onclick="addNewPartnerPrompt()" style="background:#141416; color:var(--text-muted); border:1px solid var(--panel-border); padding:5px 8px; font-size:0.75rem; cursor:pointer;">＋ 手動</button>
           </div>
         </div>
         <div id="trackerPartnerList"></div>
       </div>
 
+      <!-- 實踐歷程封存紀錄 -->
       <div class="form-box">
         <div class="form-title">實踐歷程封存紀錄 (SESSION LOGS)</div>
         <div id="sessionLogsContainer"></div>
@@ -509,7 +252,9 @@
     </div>
   </div>
 
-  <!-- 4. 【特工個人主頁】 (Profile Dossier View) -->
+  <!-- ======================================================== -->
+  <!-- 4. 【特工名片】 (view-dossier) -->
+  <!-- ======================================================== -->
   <div id="view-dossier" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -518,32 +263,24 @@
           <span style="font-size:0.7rem; color:var(--text-muted); display:block;">個人偏好標籤與專屬名片</span>
         </div>
         <div style="display:flex; gap:8px;">
-          <button id="btnExportCard" onclick="exportDossierToImage()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">
-            📷 匯出名片圖
-          </button>
+          <button id="btnExportCard" onclick="exportDossierToImage()" style="background:var(--accent-cyan); color:#000; border:none; padding:4px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer;">📷 匯出名片圖</button>
           <button onclick="openTrackerAppView()" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:4px 10px; font-size:0.75rem; cursor:pointer;">⚡ 計數終端</button>
         </div>
       </div>
 
       <div id="dossierExportTarget" style="padding: 6px; background: #08080a; border-radius: 6px;">
         <div class="dossier-hero-card">
-          <div class="dossier-avatar-container">
-            <img id="dossierAvatarPreview" src="" class="dossier-avatar" crossorigin="anonymous" />
-          </div>
+          <div class="dossier-avatar-container"><img id="dossierAvatarPreview" src="" class="dossier-avatar" crossorigin="anonymous" /></div>
           <div class="dossier-name" id="dossierNameDisplay">特工</div>
           <span class="partner-role-badge" id="dossierRoleBadge">支配者 (Dom)</span>
-          <div style="margin-top:8px;">
-            <a id="dossierTwitterLink" href="#" target="_blank" style="font-size:0.8rem; color:#1DA1F2; text-decoration:none;">𝕏 Twitter ↗</a>
-          </div>
+          <div style="margin-top:8px;"><a id="dossierTwitterLink" href="#" target="_blank" style="font-size:0.8rem; color:#1DA1F2; text-decoration:none;">𝕏 Twitter ↗</a></div>
           <p id="dossierBioDisplay" style="font-size:0.8rem; color:var(--text-muted); max-width:400px; margin:8px auto 0; line-height:1.6;"></p>
         </div>
-
         <div class="qr-pass-card">
           <div style="font-size:0.85rem; font-weight:bold; color:var(--accent-cyan);">[ NEURAL PASS // 掃碼連線特工名片 ]</div>
-          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">出示供對方掃描，即可一鍵將您加為互動對象！</div>
+          <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">出示供對方掃描，即可一鍵加為好友！</div>
           <div class="qr-box" id="myQrCodeBox"></div>
         </div>
-
         <div class="form-box">
           <div class="form-title">實踐偏好與雷點矩陣 (PREFERENCE MATRIX)</div>
           <div style="margin-bottom:14px;">
@@ -556,56 +293,120 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="form-box" style="margin-top: 14px;">
-        <div class="form-title">擴充自訂標籤 (CUSTOM TAGS)</div>
-        <div class="custom-tag-input-row" style="margin-bottom: 8px;">
-          <input type="text" id="newCustomPrefInput" placeholder="輸入自訂偏好（例如：低溫蠟燭）" />
-          <button type="button" onclick="addCustomTag('pref')">＋ 新增偏好</button>
+  <!-- ======================================================== -->
+  <!-- 5. 【需求 1 & 2：好友系統與個人行事曆視圖】 (view-friends-cal) -->
+  <!-- ======================================================== -->
+  <div id="view-friends-cal" class="view-section">
+    <div class="detail-container">
+      <div class="terminal-hud-header" style="border-left-color: #38bdf8;">
+        <div>
+          <span style="font-size:0.95rem; font-weight:bold; color:#38bdf8;">[ ALLIANCE // 好友名冊與個人行事曆 ]</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">查看夥伴檔案（不可聊天）與個人日程排定</span>
         </div>
-        <div class="custom-tag-input-row">
-          <input type="text" id="newCustomLimitInput" placeholder="輸入自訂雷點（例如：拒絕拍照）" />
-          <button type="button" onclick="addCustomTag('limit')" style="background:var(--danger-red); color:#fff;">＋ 新增雷點</button>
+        <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回大廳</button>
+      </div>
+
+      <!-- 好友清單區塊 -->
+      <div class="form-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="form-title" style="color:#38bdf8; margin:0; border:none; padding:0;">特工好友清單 (FRIENDS DOSSIER)</div>
+          <button onclick="addFriendByIdPrompt()" style="background:#38bdf8; color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 輸入 ID 加好友</button>
         </div>
+        <div id="friendsListContainer"></div>
+      </div>
+
+      <!-- 個人行事曆區塊 -->
+      <div class="form-box">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="form-title" style="color:var(--accent-cyan); margin:0; border:none; padding:0;">個人實踐與活動行事曆 (SCHEDULE)</div>
+          <button onclick="toggleCalendarForm(true)" style="background:var(--accent-cyan); color:#000; border:none; padding:5px 10px; font-size:0.75rem; font-weight:bold; cursor:pointer; border-radius:2px;">＋ 新增日程</button>
+        </div>
+
+        <!-- 新增活動輸入面板 -->
+        <div id="calendarAddBox" style="display:none; background:#101015; border:1px dashed var(--accent-cyan); padding:12px; border-radius:4px; margin-bottom:14px;">
+          <div class="form-group">
+            <label style="font-size:0.75rem;">活動名稱 / 實踐主題*</label>
+            <input type="text" id="calEventTitle" placeholder="例如：水湳繩縛私約 或 拘久屋聚會" style="padding:8px;" />
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+            <div>
+              <label style="font-size:0.75rem;">日期*</label>
+              <input type="date" id="calEventDate" style="padding:8px;" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem;">公開權限</label>
+              <select id="calEventPrivacy" style="padding:8px;">
+                <option value="friends">僅限好友可見</option>
+                <option value="private">僅自己可見</option>
+              </select>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+            <div>
+              <label style="font-size:0.75rem;">開始時間</label>
+              <input type="time" id="calEventStart" style="padding:8px;" value="14:00" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem;">結束時間</label>
+              <input type="time" id="calEventEnd" style="padding:8px;" value="17:00" />
+            </div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-submit" onclick="saveCalendarEvent()" style="flex:1; padding:10px; font-size:0.8rem;">鎖定並發布日程</button>
+            <button type="button" onclick="toggleCalendarForm(false)" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:10px; font-size:0.8rem;">取消</button>
+          </div>
+        </div>
+
+        <div id="calendarEventsListContainer"></div>
       </div>
     </div>
   </div>
 
-  <!-- 5. 【創作者合作後台】 (Creator Portal View) -->
+  <!-- 👤 點擊好友彈出的唯讀 Profile 彈窗 -->
+  <div class="auth-modal" id="friendProfileModal">
+    <div class="auth-box" style="max-width: 420px; position: relative;">
+      <button class="auth-close" onclick="closeFriendProfileModal()">✕</button>
+      <div style="text-align:center; padding:10px 0;">
+        <img id="fpAvatar" src="" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--accent-cyan); background:#000;" />
+        <h3 id="fpName" style="color:#fff; margin:8px 0 2px;">特工名稱</h3>
+        <span id="fpRole" class="partner-role-badge">服從者 (Sub)</span>
+        <div id="fpId" style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">ID: GUILTY-001</div>
+        <p id="fpBio" style="font-size:0.8rem; color:#a1a1aa; margin:10px 0; line-height:1.5; text-align:left; background:#0e0e12; padding:10px; border-radius:4px;"></p>
+        <div style="text-align:left; font-size:0.75rem; color:var(--accent-cyan); font-weight:bold; margin-bottom:4px;">偏好項目：</div>
+        <div id="fpPrefs" class="tags-wrap-box" style="margin-bottom:10px;"></div>
+        <div style="text-align:left; font-size:0.75rem; color:var(--danger-red); font-weight:bold; margin-bottom:4px;">絕對雷點：</div>
+        <div id="fpLimits" class="tags-wrap-box"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 6. 【創作者合作後台 + 商品自主修改】 (view-creator-portal) -->
+  <!-- ======================================================== -->
   <div id="view-creator-portal" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header" style="border-left-color: var(--accent-purple);">
         <div>
           <span style="font-size:0.95rem; font-weight:bold; color:var(--accent-purple);">[ CREATOR PORTAL // 創作者合作通道 ]</span>
-          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">專屬推廣碼查詢與分潤統計</span>
+          <span style="font-size:0.7rem; color:var(--text-muted); display:block;">專屬推廣碼查詢與上架裝備管理</span>
         </div>
         <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回大廳</button>
       </div>
 
       <div class="form-box">
-        <div class="form-title" style="color:var(--accent-purple);">創作者身分登錄核銷</div>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:14px;">
-          請輸入官方審核通過之<strong>「專屬特工推廣碼」</strong>與<strong>「綁定手機號碼」</strong>以檢索案件調用成果：
-        </p>
+        <div class="form-title" style="color:var(--accent-purple);">創作者管理中心</div>
+        <div id="creatorAuthStatusBox" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">
+          檢索登入身分中...
+        </div>
 
-        <form id="creatorVerifyForm" onsubmit="handleCreatorVerify(event)">
-          <div class="form-group">
-            <label>創作者專屬代碼 (PROMO CODE)*</label>
-            <input type="text" id="creatorCodeInput" placeholder="例如：WANG18X" style="text-transform:uppercase; border-color:rgba(181,23,158,0.4);" required />
-          </div>
-          <div class="form-group">
-            <label>綁定特工聯絡電話*</label>
-            <input type="tel" id="creatorPhoneInput" placeholder="0912-345-678" required />
-          </div>
-          <button type="submit" class="btn-submit" id="btnCreatorVerifySubmit" style="background:var(--accent-purple); color:#fff;">驗證通行密鑰 (VERIFY)</button>
-        </form>
-
-        <div id="creatorDashboardBox" style="display:none; margin-top:20px; border-top:1px dashed var(--panel-border); padding-top:16px;">
+        <div id="creatorDashboardBox" style="display:none;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3 style="color:#fff; font-size:1.1rem;" id="creatorNameText">特工創作者</h3>
             <span class="badge badge-shushi" id="creatorCommissionBadge">分潤率 10%</span>
           </div>
-          
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0;">
             <div style="background:#000; padding:12px; border:1px solid var(--panel-border); text-align:center;">
               <div style="font-size:0.7rem; color:var(--text-muted);">累計推薦調用次數</div>
@@ -618,15 +419,16 @@
           </div>
         </div>
 
-        <div id="creatorMyProductsBox" style="display:none; margin-top:20px; border-top:1px dashed var(--panel-border); padding-top:16px;">
-          <h3 style="color:#fff; font-size:1rem; margin-bottom:10px;">📦 我上架的裝備清單與庫存管理</h3>
+        <!-- 📦 需求 8：上架裝備自主修改區塊 -->
+        <div id="creatorMyProductsBox" style="margin-top:20px; border-top:1px dashed var(--panel-border); padding-top:16px;">
+          <h3 style="color:#fff; font-size:0.95rem; margin-bottom:10px;">📦 我上架的裝備自主修正（修改售價與現貨）</h3>
           <div id="creatorProductsListContainer"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- 6. 【個人調用紀錄】 (My Dossier View) -->
+  <!-- 7. 個人調用紀錄 (view-order-history) -->
   <div id="view-order-history" class="view-section">
     <div class="detail-container">
       <div class="terminal-hud-header">
@@ -636,28 +438,26 @@
         </div>
         <button onclick="showLandingView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:4px 10px; font-size:0.75rem; cursor:pointer;">← 返回大廳</button>
       </div>
-
       <div class="form-box">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <div class="form-title" style="margin-bottom:0; border:none; padding:0;">案件調用歷史清單</div>
-          <button onclick="refreshOrderHistoryCloud()" style="background:#141416; border:1px solid var(--panel-border); color:var(--accent-cyan); font-size:0.75rem; padding:4px 10px; cursor:pointer; border-radius:2px;">
-            ↻ 同步雲端紀錄
-          </button>
+          <button onclick="refreshOrderHistoryCloud()" style="background:#141416; border:1px solid var(--panel-border); color:var(--accent-cyan); font-size:0.75rem; padding:4px 10px; cursor:pointer;">↻ 同步雲端紀錄</button>
         </div>
         <div id="orderHistoryListContainer"></div>
       </div>
     </div>
   </div>
 
-  <!-- 7. 【商品詳細配置頁】 -->
+  <!-- 8. 商品詳細配置頁 (view-product-detail) -->
   <div id="view-product-detail" class="view-section">
     <div class="detail-container">
       <button onclick="openShopCatalogView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; margin-bottom:16px; font-size:0.8rem;">← 返回裝備目錄</button>
       <div class="checkout-hero-img-box" id="detailHeroBox">
-        <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
-        <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
         <div id="detailHeroImgArea" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;"></div>
       </div>
+
+      <!-- 需求 3：多張細節縮圖列 -->
+      <div id="detailThumbsRow" style="display:flex; gap:8px; margin:10px 0; overflow-x:auto;"></div>
 
       <div class="form-box">
         <div class="form-title" id="detailProductTitle">裝備檔案配置</div>
@@ -676,91 +476,87 @@
     </div>
   </div>
 
-  <!-- 8. 【終端結帳視圖】 -->
+  <!-- 9. 終端結帳視圖 (view-checkout) -->
   <div id="view-checkout" class="view-section">
     <div class="detail-container">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
         <button onclick="openShopCatalogView()" style="background:transparent; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px 12px; cursor:pointer; font-size:0.8rem;">← 返回商城目錄</button>
-        <button onclick="toggleCart(true)" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; cursor:pointer; font-size:0.8rem;">檢視購物車清單 ↗</button>
+        <button onclick="toggleCart(true)" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 12px; cursor:pointer; font-size:0.8rem;">檢視購物車 ↗</button>
       </div>
-
       <div class="form-box">
         <div class="form-title">01 // 調用裝備清單明細</div>
         <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
         <div id="checkoutFinancialSummary"></div>
       </div>
-
       <form id="checkoutForm">
         <div class="form-box">
           <div class="form-title">02 // 嫌疑人 / 收件終端資料</div>
           <div class="form-group">
-            <label>配戴者 / 收件人真實姓名*</label>
-            <input type="text" id="custName" required placeholder="超商取貨需核對身分證件" />
+            <label>真實姓名*</label>
+            <input type="text" id="custName" required placeholder="超商取貨需核對證件" />
           </div>
           <div class="form-group">
-            <label>特工安全信箱 (接收調用通知與案件封存)*</label>
+            <label>安全信箱*</label>
             <input type="email" id="custEmail" required placeholder="agent@guilty-cyber.app" />
           </div>
           <div class="form-group">
-            <label>聯絡終端（手機號碼）*</label>
-            <input type="tel" id="custPhone" required placeholder="0912-345-678" onchange="onPhoneChanged()" />
+            <label>聯絡手機*</label>
+            <input type="tel" id="custPhone" required placeholder="0912-345-678" />
           </div>
           <div class="form-group">
-            <label>客製需求 / 訂製配色 / 銘牌備註</label>
-            <input type="text" id="custEngraving" maxlength="30" placeholder="例如：自訂色系-狼灰配緋紅 / GUILTY-01" />
+            <label>訂製備註</label>
+            <input type="text" id="custEngraving" maxlength="30" placeholder="例如：黑紅配色 / 刻印 GUILTY" />
           </div>
         </div>
-
         <div class="form-box">
-          <div class="form-title">03 // 物流交付途徑 (100% 絕密隱密包裝)</div>
+          <div class="form-title">03 // 物流交付途徑 (100% 隱私包裝)</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
             <div class="radio-card active" onclick="selectShipping('711', this)">7-11 超商 (+NT$60)</div>
             <div class="radio-card" onclick="selectShipping('family', this)">全家 超商 (+NT$60)</div>
             <div class="radio-card" onclick="selectShipping('home', this)">黑貓 宅配 (+NT$120)</div>
-            <div class="radio-card" onclick="selectShipping('meetup', this)" style="border-color: rgba(0, 255, 136, 0.4);">線下面交 (+NT$0)</div>
+            <div class="radio-card" onclick="selectShipping('meetup', this)">線下面交 (+NT$0)</div>
           </div>
           <div id="cvsDropdownContainer">
-            <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 選擇取貨門市*</label>
+            <label style="font-size:0.75rem; color:var(--accent-cyan);">▼ 選擇門市*</label>
             <div class="store-select-grid">
-              <select id="cvsCitySelect" onchange="onCityChanged(this.value)"><option value="">-- 載入縣市中... --</option></select>
-              <select id="cvsDistSelect" onchange="onDistChanged(this.value)" disabled><option value="">-- 選擇區域 --</option></select>
+              <select id="cvsCitySelect" onchange="onCityChanged(this.value)"><option value="">-- 縣市 --</option></select>
+              <select id="cvsDistSelect" onchange="onDistChanged(this.value)" disabled><option value="">-- 行政區 --</option></select>
             </div>
             <select id="cvsStoreSelect" onchange="onStorePicked(this.value)" disabled style="margin-bottom: 6px;">
-              <option value="">-- 選擇門市名稱 (店號) --</option>
+              <option value="">-- 門市名稱 --</option>
             </select>
             <div class="store-confirmed-card" id="storeConfirmedCard" style="display:none;">
-              <div style="color:var(--accent-cyan); font-weight:bold;">✔ 已鎖定取貨門市：</div>
+              <div style="color:var(--accent-cyan); font-weight:bold;">✔ 取貨門市已鎖定：</div>
               <div id="confirmedStoreNameText" style="color:#fff; font-size:0.9rem; font-weight:bold;"></div>
               <div id="confirmedStoreAddrText" style="color:var(--text-muted); font-size:0.75rem;"></div>
             </div>
           </div>
           <div class="form-group" id="manualLocationGroup" style="display:none; margin-top:10px;">
-            <label>收件詳細地址 / 面交地點*</label>
-            <input type="text" id="manualShippingLocation" placeholder="例如：台北市中山區南京東路一段..." />
+            <label>詳細地址 / 面交地點*</label>
+            <input type="text" id="manualShippingLocation" placeholder="填寫詳細地址..." />
           </div>
           <input type="hidden" id="finalShippingLocation" />
           <div style="margin-top:12px; padding-top:10px; border-top:1px dashed var(--panel-border);">
             <label style="display:flex; align-items:center; gap:8px; font-size:0.75rem; color:var(--text-muted); cursor:pointer;">
               <input type="checkbox" id="saveToProfileCheck" checked style="width:16px; height:16px; accent-color:var(--accent-cyan);" />
-              <span>儲存為特工常用交付門市</span>
+              <span>儲存為常用門市</span>
             </label>
           </div>
         </div>
-
         <div class="form-box">
           <div class="form-title">04 // 支付結算通道</div>
           <div class="radio-grid" style="margin-bottom: 14px;">
             <div class="radio-card active" id="payMethodCod" onclick="selectPayment('cod', this)">超商取貨付款</div>
             <div class="radio-card" id="payMethodBank" onclick="selectPayment('bank', this)">銀行 ATM 匯款</div>
           </div>
-          <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted);">貨物送達超商後，取貨現場付款即可。</div>
+          <div id="paymentNote" style="font-size:0.8rem; color:var(--text-muted);">貨到門市付款即可。</div>
         </div>
         <button type="submit" class="btn-submit">確認協議並鎖定調用 (LOCK)</button>
       </form>
     </div>
   </div>
 
-  <!-- 9. 【成功下單頁面】 -->
+  <!-- 10. 成功下單頁面 (view-success) -->
   <div id="view-success" class="view-section">
     <div class="detail-container">
       <div class="success-card">
@@ -782,26 +578,124 @@
 
   <!-- 安全詞急停警報 -->
   <div class="safeword-emergency-overlay" id="safewordEmergencyModal">
-    <div style="font-size:1.5rem; letter-spacing:4px; color:#ff334b; font-weight:bold;">
-      ⚠️ [ EMERGENCY PROTOCOL ACTIVATED ] ⚠️
-    </div>
-    <div style="font-size:0.85rem; color:rgba(255,255,255,0.7); margin-top:8px;">
-      所有指令與實踐立即終止 // IMMEDIATE HALT
-    </div>
+    <div style="font-size:1.5rem; letter-spacing:4px; color:#ff334b; font-weight:bold;">⚠️ [ EMERGENCY PROTOCOL ACTIVATED ] ⚠️</div>
+    <div style="font-size:0.85rem; color:rgba(255,255,255,0.7); margin-top:8px;">所有指令與實踐立即終止 // IMMEDIATE HALT</div>
     <div class="safeword-display-large" id="emergencySafewordDisplay">MAYDAY</div>
-    <div style="max-width:360px; font-size:0.8rem; color:rgba(255,255,255,0.6); line-height:1.6;">
-      請立刻停手、解開束縛裝備、提供溫水並確認受調者意識狀態（Aftercare 照護）。
-    </div>
-    <button class="safeword-dismiss-btn" onclick="dismissEmergencySafeword()">
-      [ 雙方已恢復平靜 // 解除警報 ]
-    </button>
+    <button class="safeword-dismiss-btn" onclick="dismissEmergencySafeword()">[ 雙方已恢復平靜 // 解除警報 ]</button>
   </div>
 
-  <!-- 載入模組 -->
-  <script src="./js/config.js?v=20260903"></script>
-  <script src="./js/auth.js?v=20260903"></script>
-  <script src="./js/shop.js?v=20260903"></script>
-  <script src="./js/tracker.js?v=20260903"></script>
+  <!-- 登入註冊彈窗 -->
+  <div class="auth-modal" id="authModal">
+    <div class="auth-box">
+      <button class="auth-close" onclick="toggleAuthModal(false)">✕</button>
+      <div id="authGuestView">
+        <div class="auth-header">
+          <div class="auth-title">特工神經認證通道</div>
+          <div class="auth-sub">[ PROTOCOL // AGENT AUTHENTICATION ]</div>
+        </div>
+        <div class="auth-tab-grid">
+          <div class="auth-tab-btn active" id="tabBtnLogin" onclick="switchAuthTab('login')">登入 (LOGIN)</div>
+          <div class="auth-tab-btn" id="tabBtnRegister" onclick="switchAuthTab('register')">新註冊 (REGISTER)</div>
+        </div>
+        <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+          <div class="form-group">
+            <label>帳號（Email 或 手機）*</label>
+            <input type="text" id="loginAccountInput" required />
+          </div>
+          <div class="form-group">
+            <label>密碼*</label>
+            <input type="password" id="loginPasswordInput" required />
+          </div>
+          <div class="nda-protocol-box">
+            <label class="nda-checkbox-label">
+              <input type="checkbox" id="loginNdaCheckbox" required />
+              <span>我自願遵守 SSC 原則並簽署保密協議*</span>
+            </label>
+          </div>
+          <button type="submit" class="btn-submit" id="btnLoginSubmit" style="padding:12px;">驗證登入 (ACCESS)</button>
+        </form>
+        <form id="registerForm" onsubmit="handleRegisterSubmit(event)" style="display:none;">
+          <div class="form-group">
+            <label>特工代號*</label>
+            <input type="text" id="regNameInput" required />
+          </div>
+          <div class="form-group">
+            <label>自訂個人 ID (例如：AGENT-007)*</label>
+            <input type="text" id="regAgentIdInput" required style="text-transform:uppercase;" />
+          </div>
+          <div class="form-group">
+            <label>安全信箱 (Email)*</label>
+            <div style="display:flex; gap:6px;">
+              <input type="email" id="regEmailInput" required />
+              <button type="button" id="btnSendRegOtp" onclick="sendRegisterOtp()" style="background:var(--accent-cyan); color:#000; border:none; padding:0 12px; font-weight:bold; cursor:pointer;">發送驗證碼</button>
+            </div>
+            <div id="regOtpNotice" style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;"></div>
+          </div>
+          <div class="form-group">
+            <label>6 位數驗證碼*</label>
+            <input type="text" id="regOtpInput" required maxlength="6" style="letter-spacing:4px; text-align:center; font-weight:bold;" />
+          </div>
+          <div class="form-group">
+            <label>手機號碼*</label>
+            <input type="tel" id="regPhoneInput" required />
+          </div>
+          <div class="form-group">
+            <label>設定通行密碼*</label>
+            <input type="password" id="regPasswordInput" required minlength="6" />
+          </div>
+          <button type="submit" class="btn-submit" id="btnRegSubmit" style="padding:12px;">建立檔案 (REGISTER)</button>
+        </form>
+      </div>
+
+      <div id="authProfileView" style="display:none;">
+        <div class="auth-header">
+          <div class="auth-title">特工系統檔案</div>
+          <div class="auth-sub" id="profileAccountBadge" style="color:var(--accent-cyan);">[ VERIFIED AGENT ]</div>
+        </div>
+        <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)">
+          <div class="form-group">
+            <label>主權屬性*</label>
+            <div class="role-toggle-grid">
+              <div class="role-btn active" id="roleDom" onclick="setProfileRole('支配者 (Dom)')">支配 [Dom]</div>
+              <div class="role-btn" id="roleSwitch" onclick="setProfileRole('切換者 (Switch)')">切換 [Switch]</div>
+              <div class="role-btn" id="roleSub" onclick="setProfileRole('服從者 (Sub)')">服從 [Sub]</div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>特工代號*</label>
+            <input type="text" id="profNameInput" required />
+          </div>
+          <div class="form-group">
+            <label>特工 ID*</label>
+            <input type="text" id="profAgentIdInput" required style="text-transform:uppercase;" />
+          </div>
+          <div class="form-group">
+            <label>常用取件超商</label>
+            <input type="text" id="profLocationInput" />
+          </div>
+          <button type="submit" class="btn-submit" style="padding:12px;">更新檔案 (SAVE)</button>
+          <button type="button" onclick="logoutMember()" style="width:100%; background:transparent; border:none; color:var(--text-muted); font-size:0.75rem; margin-top:12px; cursor:pointer;">[ 斷開連結 / 登出 ]</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 相機掃碼 Modal -->
+  <div class="auth-modal" id="scannerModal">
+    <div class="auth-box" style="max-width: 380px; text-align: center;">
+      <button class="auth-close" onclick="closeQrScanner()">✕</button>
+      <div id="qrReaderBox" style="width: 100%; min-height: 250px; background: #000;"></div>
+      <div style="margin-top: 10px;">
+        <button type="button" class="btn-secondary" onclick="closeQrScanner(); addNewPartnerPrompt();" style="width:100%;">手動輸入</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 載入腳本 -->
+  <script src="./js/config.js?v=20260903_v3"></script>
+  <script src="./js/auth.js?v=20260903_v3"></script>
+  <script src="./js/shop.js?v=20260903_v3"></script>
+  <script src="./js/tracker.js?v=20260903_v3"></script>
 
   <script>
     function setActiveView(viewId) {
@@ -839,9 +733,18 @@
       history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
+    function openFriendsDossierView() {
+      toggleNav(false);
+      setActiveView('view-friends-cal');
+      renderFriendsList();
+      renderCalendarEvents();
+      history.pushState({ view: 'friends-cal' }, '', '#friends');
+    }
+
     function openCreatorPortalView() {
       toggleNav(false);
       setActiveView('view-creator-portal');
+      initCreatorPortal();
       history.pushState({ view: 'creator-portal' }, '', '#creator-portal');
     }
 
@@ -852,107 +755,7 @@
       history.pushState({ view: 'order-history' }, '', '#history');
     }
 
-    function renderOrderHistoryList(cloudOrders = null) {
-      const container = document.getElementById('orderHistoryListContainer');
-      if (!container) return;
-
-      const orders = cloudOrders || JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.ORDERS)) || [];
-      if (orders.length === 0) {
-        container.innerHTML = `
-          <div style="text-align:center; color:var(--text-muted); padding:30px 0; font-size:0.85rem;">
-            [ 尚無案件調用紀錄 ]<br>完成任何裝備調用後，案件檔案將自動登錄於此。
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = orders.map(o => `
-        <div class="history-item">
-          <div class="history-header">
-            <div>
-              <strong style="color:var(--accent-cyan); font-size:0.95rem;">#${o.orderId || '案件檔案'}</strong>
-              <span style="font-size:0.7rem; color:var(--text-muted); display:block;">${o.createdAt || ''}</span>
-            </div>
-            <div style="text-align:right;">
-              <span style="color:#fff; font-weight:bold; font-size:0.95rem;">NT$ ${Number(o.price || 0).toLocaleString()}</span>
-              <span style="font-size:0.7rem; color:var(--accent-cyan); display:block;">[ ${o.shipping || '超商交付'} ]</span>
-            </div>
-          </div>
-          <div style="font-size:0.8rem; color:#d4d4d8; margin:6px 0;"><strong>裝備明細：</strong>${o.product || '自訂裝備'}</div>
-          <div style="font-size:0.75rem; color:var(--text-muted);"><strong>交付終端：</strong>${o.location || '超商門市'}</div>
-          ${o.engraving && o.engraving !== '無' ? `<div style="font-size:0.75rem; color:var(--text-muted);"><strong>銘牌刻印：</strong>${o.engraving}</div>` : ''}
-        </div>
-      `).join('');
-    }
-
-    function refreshOrderHistoryCloud() {
-      const phone = memberProfile ? memberProfile.phone : (document.getElementById('custPhone') ? document.getElementById('custPhone').value.trim() : '');
-      if (!phone) {
-        alert('請先登入特工帳號以同步雲端案件檔案！');
-        return;
-      }
-
-      const cbName = 'histCb_' + Date.now();
-      window[cbName] = function(cloudOrders) {
-        const s = document.getElementById(cbName);
-        if (s) s.remove();
-        delete window[cbName];
-
-        if (cloudOrders && cloudOrders.length > 0) {
-          localStorage.setItem(CONFIG.STORAGE_KEYS.ORDERS, JSON.stringify(cloudOrders));
-          renderOrderHistoryList(cloudOrders);
-          alert(`✔ 已從雲端同步 ${cloudOrders.length} 筆案件檔案！`);
-        } else {
-          alert('雲端目前尚無此特工電話的調用紀錄。');
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = cbName;
-      script.src = `${CONFIG.API_URL}?phone=${encodeURIComponent(phone)}&callback=${cbName}&_t=${Date.now()}`;
-      document.body.appendChild(script);
-    }
-
-    function handleCreatorVerify(e) {
-      e.preventDefault();
-      const code = document.getElementById('creatorCodeInput').value.trim().toUpperCase();
-      const phone = document.getElementById('creatorPhoneInput').value.trim();
-      const btn = document.getElementById('btnCreatorVerifySubmit');
-
-      btn.disabled = true;
-      btn.textContent = '密鑰檢索中...';
-
-      const cbName = 'creatorCb_' + Date.now();
-      window[cbName] = function(res) {
-        const s = document.getElementById(cbName);
-        if (s) s.remove();
-        delete window[cbName];
-        btn.disabled = false;
-        btn.textContent = '驗證通行密鑰 (VERIFY)';
-
-        if (res && res.result === 'success') {
-          document.getElementById('creatorNameText').textContent = res.creatorName || '合作特工';
-          document.getElementById('creatorCommissionBadge').textContent = `分潤率 ${res.rate || 10}%`;
-          document.getElementById('creatorOrderCount').textContent = `${res.orderCount || 0} 件`;
-          document.getElementById('creatorRewardTotal').textContent = `NT$ ${(res.totalReward || 0).toLocaleString()}`;
-          document.getElementById('creatorDashboardBox').style.display = 'block';
-        } else {
-          alert('❌ 驗證失敗：無此推廣碼或電話未綁定。');
-        }
-      };
-
-      const script = document.createElement('script');
-      script.id = cbName;
-      script.src = `${CONFIG.API_URL}?action=verifyCreator&code=${encodeURIComponent(code)}&phone=${encodeURIComponent(phone)}&callback=${cbName}&_t=${Date.now()}`;
-      script.onerror = () => {
-        btn.disabled = false;
-        btn.textContent = '驗證通行密鑰 (VERIFY)';
-        alert('連線逾時，請檢查網路狀態。');
-      };
-      document.body.appendChild(script);
-    }
-
-    let introTimer = setTimeout(() => enterSite(), 2800);
+    let introTimer = setTimeout(() => enterSite(), 2400);
     function enterSite() {
       clearTimeout(introTimer);
       const intro = document.getElementById('intro-screen');
@@ -973,7 +776,7 @@
       }
     }
 
-    // 系統啟動初始化
+    // 啟動
     history.replaceState({ view: 'landing' }, '', '#landing');
     updateMemberUI();
     updateCartUI();
