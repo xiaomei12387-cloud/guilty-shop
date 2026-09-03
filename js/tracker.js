@@ -63,7 +63,6 @@ function createDefaultTrackerState() {
       }
     ],
     activePartnerId: "partner_default_sub",
-    // ✦ 需求 1：好友清單
     friends: [
       {
         id: "friend_sample",
@@ -76,7 +75,6 @@ function createDefaultTrackerState() {
         limits: ["❌ 拒絕生繩", "❌ 拒絕穿刺/見血"]
       }
     ],
-    // ✦ 需求 2：個人行事曆排程
     calendarEvents: [
       {
         id: "cal_1",
@@ -213,15 +211,11 @@ function adjustCounter(type, delta) {
   if (type === "SP") {
     activePartner.spCount = Math.max(0, (activePartner.spCount || 0) + delta);
     const spEl = document.getElementById("spCountVal");
-    const fsSpEl = document.getElementById("fsSpVal");
     if (spEl) spEl.textContent = activePartner.spCount;
-    if (fsSpEl) fsSpEl.textContent = activePartner.spCount;
   } else if (type === "WHIP") {
     activePartner.whipCount = Math.max(0, (activePartner.whipCount || 0) + delta);
     const whipEl = document.getElementById("whipCountVal");
-    const fsWhipEl = document.getElementById("fsWhipVal");
     if (whipEl) whipEl.textContent = activePartner.whipCount;
-    if (fsWhipEl) fsWhipEl.textContent = activePartner.whipCount;
   }
   saveTrackerState();
 }
@@ -238,65 +232,23 @@ function resetCounter(type) {
 }
 
 // --------------------------------------------------------------------------
-// ⚡ 實踐階段 HUD（原生全螢幕 + 巨大盲按急停）
+// ⚡ 實踐入口 HUD（跳轉獨立全螢幕終端）
 // --------------------------------------------------------------------------
 function renderSessionHUD() {
   const container = document.getElementById("sessionHudArea");
   if (!container) return;
-  const activePartner = getActivePartner();
 
-  if (isSessionActive) {
-    container.innerHTML = `
-      <div id="fullScreenSessionOverlay" style="position:fixed; inset:0; z-index:999999; background:#050507; display:flex; flex-direction:column; justify-content:space-between; padding:16px 14px; box-sizing:border-box;">
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">
-          <div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">實踐對象</div>
-            <div style="font-size:1.05rem; font-weight:900; color:#fff;">${activePartner ? activePartner.name : '未知'}</div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:0.75rem; color:var(--text-muted);">安全詞</div>
-            <div style="font-size:1.05rem; font-weight:900; color:var(--accent-cyan);">${(activePartner && activePartner.safeword) || 'MAYDAY'}</div>
-          </div>
-        </div>
-
-        <div style="text-align:center; margin:auto 0;">
-          <div style="font-size:0.8rem; letter-spacing:3px; color:var(--accent-cyan); font-family:monospace;">● SESSION RUNNING</div>
-          <div id="sessionTimerDisplay" style="font-size:clamp(4.5rem, 18vw, 7rem); font-weight:900; color:var(--accent-cyan); font-family:monospace; line-height:1; margin:10px 0;">00:00</div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px;">
-            <div style="background:#101015; border:1px solid var(--accent-cyan); border-radius:6px; padding:14px 10px;" onclick="adjustCounter('SP', 1)">
-              <div style="font-size:0.75rem; color:var(--text-muted);">SP (點擊+1)</div>
-              <div id="fsSpVal" style="font-size:2.8rem; font-weight:900; color:var(--accent-cyan);">${(activePartner && activePartner.spCount) || 0}</div>
-            </div>
-            <div style="background:#101015; border:1px solid var(--accent-purple); border-radius:6px; padding:14px 10px;" onclick="adjustCounter('WHIP', 1)">
-              <div style="font-size:0.75rem; color:var(--text-muted);">長鞭 (點擊+1)</div>
-              <div id="fsWhipVal" style="font-size:2.8rem; font-weight:900; color:var(--accent-purple);">${(activePartner && activePartner.whipCount) || 0}</div>
-            </div>
-          </div>
-        </div>
-
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <button onclick="triggerEmergencySafeword()" style="width:100%; min-height:100px; background:#e63946; border:3px solid #ff334b; border-radius:8px; color:#fff; font-size:clamp(1.4rem, 5vw, 2rem); font-weight:900; cursor:pointer; box-shadow:0 0 35px rgba(255, 51, 75, 0.7);">
-            🛑 SAFEWORD 急停停止
-          </button>
-          <button onclick="finishSessionPrompt()" style="width:100%; padding:14px; background:#1c1c24; border:1px solid rgba(255,255,255,0.2); border-radius:6px; color:#a1a1aa; font-size:0.9rem; font-weight:bold; cursor:pointer;">
-            ■ 正常結束並結案封存
-          </button>
-        </div>
+  container.innerHTML = `
+    <div style="background:linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(10, 10, 14, 0.98)); border:1px solid var(--panel-border); border-left:4px solid var(--accent-cyan); padding:16px 18px; border-radius:4px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div style="font-size:0.85rem; font-weight:bold; color:#fff; letter-spacing:1px;">[ PROTOCOL SESSION // 全螢幕沉浸實踐 ]</div>
+        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">啟動專屬全螢幕視窗：極大化碼錶、整塊觸控計數與盲按急停</div>
       </div>
-    `;
-  } else {
-    container.innerHTML = `
-      <div style="background:linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(10, 10, 14, 0.98)); border:1px solid var(--panel-border); border-left:4px solid var(--accent-cyan); padding:16px 18px; border-radius:4px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-        <div>
-          <div style="font-size:0.85rem; font-weight:bold; color:#fff;">[ PROTOCOL SESSION // 實踐階段計時 ]</div>
-          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">啟動後即刻進入全螢幕碼錶計時與擊數累計</div>
-        </div>
-        <button class="btn-submit" onclick="startSession()" style="width:auto; padding:14px 28px; font-size:0.95rem; font-weight:bold;">
-          ▶ 開始本次實踐
-        </button>
-      </div>
-    `;
-  }
+      <button class="btn-submit" onclick="startSession()" style="width:auto; padding:14px 28px; font-size:0.95rem; font-weight:bold;">
+        ▶ 開啟獨立全螢幕實踐終端
+      </button>
+    </div>
+  `;
 }
 
 function startSession() {
@@ -305,44 +257,7 @@ function startSession() {
     alert("請先選擇或新增一個互動對象！");
     return;
   }
-  // ✦ 直接跳轉到專屬的獨立全螢幕實踐終端
   window.location.href = "session.html";
-}
-
-function finishSessionPrompt() {
-  if (!isSessionActive) return;
-  const activePartner = getActivePartner();
-  if (!activePartner) return;
-
-  const note = prompt("請輸入本次實踐筆記：", "實踐順利完成，雙方意識清醒。");
-  if (note === null) return;
-
-  clearInterval(currentSessionTimer);
-  isSessionActive = false;
-  try {
-    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
-  } catch (e) {}
-
-  const mins = Math.floor(sessionSecondsElapsed / 60);
-  const secs = sessionSecondsElapsed % 60;
-  const durationText = `${mins} 分 ${secs} 秒`;
-
-  if (!activePartner.sessions) activePartner.sessions = [];
-  activePartner.sessions.unshift({
-    sessionId: "SES-" + Date.now().toString().slice(-6),
-    date: new Date().toLocaleDateString("zh-TW"),
-    duration: durationText,
-    durationMins: mins,
-    spCount: activePartner.spCount || 0,
-    whipCount: activePartner.whipCount || 0,
-    note: note.trim() || "未填寫筆記"
-  });
-
-  saveTrackerState();
-  renderSessionHUD();
-  renderSessionLogs();
-  renderAnalyticsChart();
-  alert(`✔ 本次實踐已封存！\n總時長：${durationText}`);
 }
 
 function triggerEmergencySafeword() {
@@ -357,25 +272,6 @@ function triggerEmergencySafeword() {
   const d = document.getElementById("emergencySafewordDisplay");
   if (d) d.textContent = word.toUpperCase();
 
-  if (isSessionActive) {
-    clearInterval(currentSessionTimer);
-    isSessionActive = false;
-    try { if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); } catch(e){}
-    if (activePartner) {
-      if (!activePartner.sessions) activePartner.sessions = [];
-      activePartner.sessions.unshift({
-        sessionId: "EMG-" + Date.now().toString().slice(-6),
-        date: new Date().toLocaleDateString("zh-TW"),
-        duration: "急停中斷",
-        durationMins: Math.floor(sessionSecondsElapsed / 60),
-        spCount: activePartner.spCount || 0,
-        whipCount: activePartner.whipCount || 0,
-        note: "⚠️ 觸發安全詞急停協議中斷。"
-      });
-      saveTrackerState();
-    }
-  }
-
   modal.classList.add("active");
   renderSessionHUD();
   renderSessionLogs();
@@ -389,7 +285,7 @@ function dismissEmergencySafeword() {
 }
 
 // --------------------------------------------------------------------------
-// 📊 需求 4：歷程圖表化分析引擎 (Chart.js)
+// 📊 歷程圖表化分析引擎 (Chart.js)
 // --------------------------------------------------------------------------
 function renderAnalyticsChart() {
   const canvas = document.getElementById("sessionAnalyticsChart");
@@ -398,7 +294,7 @@ function renderAnalyticsChart() {
   const activePartner = getActivePartner();
   const sessions = (activePartner && activePartner.sessions) ? [...activePartner.sessions].reverse().slice(-7) : [];
 
-  const labels = sessions.length > 0 ? sessions.map(s => s.date.slice(5) || s.date) : ["Day 1", "Day 2", "Day 3", "Day 4"];
+  const labels = sessions.length > 0 ? sessions.map(s => s.date.slice(5) || s.date) : ["記錄一", "記錄二", "記錄三", "記錄四"];
   const spData = sessions.length > 0 ? sessions.map(s => s.spCount) : [0, 0, 0, 0];
   const whipData = sessions.length > 0 ? sessions.map(s => s.whipCount) : [0, 0, 0, 0];
 
@@ -528,7 +424,7 @@ function addNewPartnerPrompt() {
 }
 
 // --------------------------------------------------------------------------
-// 👥 需求 1：好友名冊與查看對方檔案 (不能聊天)
+// 👥 好友名冊與查看對方檔案 (不能聊天)
 // --------------------------------------------------------------------------
 function renderFriendsList() {
   const container = document.getElementById("friendsListContainer");
@@ -550,7 +446,7 @@ function renderFriendsList() {
         </div>
       </div>
       <div style="display:flex; gap:6px;">
-        <button onclick="viewFriendProfile('${f.id}')" style="background:transparent; border:1px solid #38bdf8; color:#38bdf8; font-size:0.7rem; padding:4px 8px; cursor:pointer;">查看檔案</button>
+        <button onclick="viewFriendProfile('${f.id}')" style="background:transparent; border:1px solid var(--accent-cyan); color:var(--accent-cyan); font-size:0.7rem; padding:4px 8px; cursor:pointer;">查看檔案</button>
         <button onclick="removeFriend('${f.id}')" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">✕</button>
       </div>
     </div>
@@ -613,7 +509,7 @@ function removeFriend(friendId) {
 }
 
 // --------------------------------------------------------------------------
-// 📅 需求 2：個人行事曆排程系統
+// 📅 個人行事曆排程系統
 // --------------------------------------------------------------------------
 function toggleCalendarForm(show) {
   const box = document.getElementById("calendarAddBox");
@@ -657,7 +553,7 @@ function renderCalendarEvents() {
   }
 
   container.innerHTML = trackerState.calendarEvents.map(e => `
-    <div style="background:#0a0a0d; border:1px solid var(--panel-border); border-left:3px solid #38bdf8; padding:10px 14px; border-radius:3px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+    <div style="background:#0a0a0d; border:1px solid var(--panel-border); border-left:3px solid var(--accent-cyan); padding:10px 14px; border-radius:3px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
       <div>
         <div style="color:#fff; font-size:0.88rem; font-weight:bold;">${e.title}</div>
         <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
@@ -677,7 +573,7 @@ function deleteCalendarEvent(id) {
 }
 
 // --------------------------------------------------------------------------
-// ⚙️ 需求 8：創作者後台自動免密綁定與商品自主修改
+// ⚙️ 創作者後台自動免密綁定與商品自主修改
 // --------------------------------------------------------------------------
 function initCreatorPortal() {
   const statusBox = document.getElementById("creatorAuthStatusBox");
@@ -685,7 +581,6 @@ function initCreatorPortal() {
   const myProductsBox = document.getElementById("creatorProductsListContainer");
   if (!statusBox) return;
 
-  // 若特工已登入，自動辨識是否具備創作者權限
   if (memberProfile && (memberProfile.email || memberProfile.phone)) {
     statusBox.innerHTML = `
       <div style="color:var(--accent-cyan); font-weight:bold;">🟢 特工帳號已神經連線：${memberProfile.name} [ID: ${memberProfile.agentId || 'CREATOR'}]</div>
@@ -700,7 +595,6 @@ function initCreatorPortal() {
     if (dashBox) dashBox.style.display = "none";
   }
 
-  // 渲染可自主修正的商品列表
   if (myProductsBox && typeof PRODUCTS !== "undefined") {
     myProductsBox.innerHTML = PRODUCTS.map(p => `
       <div style="background:#0e0e12; border:1px solid var(--panel-border); padding:10px 14px; border-radius:4px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
