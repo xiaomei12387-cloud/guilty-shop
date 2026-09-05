@@ -11,8 +11,8 @@ const PRODUCTS = [
     price: 1990,
     desc: "以航太級尼龍結合高韌性醫療 TPU 內襯，精密計算前喉結避空壓點，提供兼具絕對控制與舒適度的神經防護。",
     note: "附贈專屬高強度不鏽鋼戰術扣具與防拆雷射標籤。",
-    img: "./icons/icon-512.png",
-    images: ["./icons/icon-512.png", "./icons/icon-512.png", "./icons/icon-512.png"],
+    img: "./images/image_choker.jpg",
+    images: ["./images/image_choker.jpg", "./images/image_choker_detail.jpg", "./icons/icon-512.png"],
     specs: [],
     chokerSizes: ["S 碼 (29 – 33 cm)", "M 碼 (34 – 38 cm)"]
   },
@@ -24,8 +24,8 @@ const PRODUCTS = [
     price: 1500,
     desc: "12 股重磅手工編織戰術纖維，尾端導入高回彈微型配重。破空聲清脆冷冽，落點精確無偏差。",
     note: "總長度約 1.3 公尺，握柄採高抓地力霧面防滑橡膠。",
-    img: "./icons/icon-512.png",
-    images: ["./icons/icon-512.png", "./icons/icon-512.png"],
+    img: "./images/image_whip.jpg",
+    images: ["./images/image_whip.jpg", "./icons/icon-512.png"],
     specs: ["標準暗黑黑化版", "神經霓虹綠特仕版"]
   },
   {
@@ -36,8 +36,8 @@ const PRODUCTS = [
     price: 350,
     desc: "13 道古法脫漿、深層天然植物油浸潤與蜂蠟烘烤。手感細膩溫潤，極度親膚且抗拉緊實。",
     note: "單條裝（長度 7.5 公尺，直徑 6mm）",
-    img: "./icons/icon-512.png",
-    images: ["./icons/icon-512.png", "./icons/icon-512.png"],
+    img: "./images/image_rope.jpg",
+    images: ["./images/image_rope.jpg", "./icons/icon-512.png"],
     specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"]
   }
 ];
@@ -45,7 +45,8 @@ const PRODUCTS = [
 let cart = JSON.parse(localStorage.getItem("guilty_cart")) || [];
 let currentFilteredBrand = "all";
 let activeCheckoutItem = null;
-let activePromoDiscount = 0; // 折扣金額
+let activePromoDiscount = 0; 
+let activeDiscountRate = 1.0; // 8折用
 
 function saveCart() {
   localStorage.setItem("guilty_cart", JSON.stringify(cart));
@@ -162,9 +163,6 @@ function renderProductCards() {
   `).join('');
 }
 
-// --------------------------------------------------------------------------
-// 📦 商品詳細頁面配置與多圖燈箱支援
-// --------------------------------------------------------------------------
 let selectedProductSpec = "";
 let selectedProductSize = "";
 
@@ -180,7 +178,6 @@ function openProductDetail(productId) {
   document.getElementById("detailProductDesc").textContent = p.desc;
   document.getElementById("detailPriceDisplay").textContent = `NT$ ${p.price.toLocaleString()}`;
 
-  // 主圖渲染
   const heroArea = document.getElementById("detailHeroImgArea");
   heroArea.innerHTML = `
     <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
@@ -188,19 +185,17 @@ function openProductDetail(productId) {
     <img src="${p.images ? p.images[0] : p.img}" onclick="openLightbox(this.src)" style="width:100%; height:100%; object-fit:cover; cursor:zoom-in;" />
   `;
 
-  // 縮圖列渲染
   const thumbsRow = document.getElementById("detailThumbsRow");
   if (p.images && p.images.length > 1) {
     thumbsRow.style.display = "flex";
     thumbsRow.innerHTML = p.images.map((imgSrc, idx) => `
-      <img src="${imgSrc}" onclick="switchDetailMainImage('${imgSrc}')" style="width:65px; height:65px; object-fit:cover; border:1px solid ${idx===0?'var(--accent-cyan)':'var(--panel-border)'}; cursor:pointer; border-radius:3px;" />
+      <img src="${imgSrc}" onclick="switchDetailMainImage('${imgSrc}')" style="width:65px; height:65px; object-fit:cover; border:1px solid ${idx===0?'var(--accent-cyan)'':'var(--panel-border)'}; cursor:pointer; border-radius:3px;" />
     `).join('');
   } else {
     thumbsRow.style.display = "none";
     thumbsRow.innerHTML = "";
   }
 
-  // 動態規格與尺寸渲染
   const optArea = document.getElementById("detailDynamicOptions");
   let html = "";
   if (p.specs && p.specs.length > 0) {
@@ -308,7 +303,7 @@ function buyNowFromDetail() {
 }
 
 // --------------------------------------------------------------------------
-// 💳 結帳與優惠碼核銷引擎
+// 💳 結帳與真實密鑰核銷引擎（LOVEGUILTY, IAMSUB, WANG18X）
 // --------------------------------------------------------------------------
 let selectedShippingMethod = "711";
 let selectedPaymentMethod = "cod";
@@ -338,17 +333,26 @@ function renderCheckoutSummary() {
   `).join('');
 
   let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  if (subtotal >= 1800) activeShippingFee = 0; // 滿 1800 免運
+  
+  // 套用 8 折 (IAMSUB)
+  let discountedSubtotal = Math.round(subtotal * activeDiscountRate);
+  let finalSubtotal = Math.max(0, discountedSubtotal - activePromoDiscount);
 
-  const finalTotal = Math.max(0, subtotal - activePromoDiscount + activeShippingFee);
+  // 門檻依折扣後實計金額計算
+  activeShippingFee = (finalSubtotal >= 1800) ? 0 : 60;
+  if (selectedShippingMethod === 'home') activeShippingFee = Math.max(activeShippingFee, 120);
+  if (selectedShippingMethod === 'meetup') activeShippingFee = 0;
+
+  let totalPayable = finalSubtotal + activeShippingFee;
 
   summaryContainer.innerHTML = `
     <div style="font-size:0.82rem; line-height:1.7;">
       <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">裝備小計：</span><span>NT$ ${subtotal.toLocaleString()}</span></div>
-      ${activePromoDiscount > 0 ? `<div style="display:flex; justify-content:space-between; color:var(--accent-cyan);"><span style="color:var(--accent-cyan);">密鑰折抵 (Promo)：</span><span>- NT$ ${activePromoDiscount.toLocaleString()}</span></div>` : ''}
+      ${activeDiscountRate < 1.0 ? `<div style="display:flex; justify-content:space-between; color:var(--accent-cyan);"><span>特工首購 8 折優惠 (IAMSUB)：</span><span>- NT$ ${(subtotal - discountedSubtotal).toLocaleString()}</span></div>` : ''}
+      ${activePromoDiscount > 0 ? `<div style="display:flex; justify-content:space-between; color:var(--accent-cyan);"><span>協議密鑰折抵：</span><span>- NT$ ${activePromoDiscount.toLocaleString()}</span></div>` : ''}
       <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">物流運費：</span><span>${activeShippingFee === 0 ? '<strong style="color:var(--accent-cyan);">免運 (FREE)</strong>' : 'NT$ ' + activeShippingFee}</span></div>
       <div style="display:flex; justify-content:space-between; border-top:1px solid var(--panel-border); margin-top:6px; padding-top:6px; font-weight:bold; font-size:1.05rem;">
-        <span style="color:#fff;">應付總額 (TOTAL)：</span><span style="color:var(--accent-cyan);">NT$ ${finalTotal.toLocaleString()}</span>
+        <span style="color:#fff;">應付總額 (TOTAL)：</span><span style="color:var(--accent-cyan);">NT$ ${totalPayable.toLocaleString()}</span>
       </div>
     </div>
   `;
@@ -361,24 +365,49 @@ function applyPromoCode() {
   if (!input || !msg) return;
 
   const code = input.value.trim().toUpperCase();
-  if (code === "IAMSUB" || code === "GUILTY90") {
-    activePromoDiscount = 200;
-    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 密鑰核銷成功：折抵 NT$ 200</span>`;
+  
+  if (code === "LOVEGUILTY") {
+    // 盲鳥價：貓痕義體項圈降至 990（僅限 ATM）
+    let choker = cart.find(i => i.productId === "guilty-choker");
+    if (!choker) {
+      msg.innerHTML = `<span style="color:var(--danger-red);">❌ 密鑰適用失敗：購物車內需包含「貓痕義體項圈」</span>`;
+      return;
+    }
+    // 強制切換付款方式為 ATM
+    const bankCard = document.getElementById("payMethodBank");
+    if (bankCard) selectPayment('bank', bankCard);
+
+    activePromoDiscount = (1990 - 990) * choker.qty;
+    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 盲鳥協議 [LOVEGUILTY] 啟動：項圈折至 NT$ 990（已鎖定 ATM 結算）</span>`;
     if (removeBtn) removeBtn.style.display = "inline-block";
     renderCheckoutSummary();
-  } else if (code === "FREESHIP") {
-    activeShippingFee = 0;
-    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 密鑰核銷成功：免運費</span>`;
+  } 
+  else if (code === "IAMSUB") {
+    activeDiscountRate = 0.8; // 8折
+    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 首購認證 [IAMSUB] 啟動：全單享 8 折優惠</span>`;
     if (removeBtn) removeBtn.style.display = "inline-block";
     renderCheckoutSummary();
-  } else {
-    msg.innerHTML = `<span style="color:var(--danger-red);">❌ 無效的折扣密鑰</span>`;
+  } 
+  else if (code === "WANG18X") {
+    // 早鳥價：貓痕義體項圈降至 1580
+    let choker = cart.find(i => i.productId === "guilty-choker");
+    if (!choker) {
+      msg.innerHTML = `<span style="color:var(--danger-red);">❌ 密鑰適用失敗：購物車內需包含「貓痕義體項圈」</span>`;
+      return;
+    }
+    activePromoDiscount = (1990 - 1580) * choker.qty;
+    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 早鳥排產協議 [WANG18X] 啟動：項圈折至 NT$ 1,580</span>`;
+    if (removeBtn) removeBtn.style.display = "inline-block";
+    renderCheckoutSummary();
+  } 
+  else {
+    msg.innerHTML = `<span style="color:var(--danger-red);">❌ 無效的特工密鑰</span>`;
   }
 }
 
 function removePromoCode() {
   activePromoDiscount = 0;
-  activeShippingFee = 60;
+  activeDiscountRate = 1.0;
   const input = document.getElementById("promoCodeInput");
   const msg = document.getElementById("promoStatusMsg");
   const removeBtn = document.getElementById("removePromoBtn");
@@ -414,9 +443,16 @@ function selectShipping(method, el) {
 
 function selectPayment(method, el) {
   selectedPaymentMethod = method;
-  const parent = el.closest(".radio-grid");
-  if (parent) parent.querySelectorAll(".radio-card").forEach(c => c.classList.remove("active"));
-  el.classList.add("active");
+  const parent = el ? el.closest(".radio-grid") : null;
+  if (parent) {
+    parent.querySelectorAll(".radio-card").forEach(c => c.classList.remove("active"));
+    if (el) el.classList.add("active");
+  } else if (method === 'bank') {
+    const bankCard = document.getElementById("payMethodBank");
+    const codCard = document.getElementById("payMethodCod");
+    if (bankCard) bankCard.classList.add("active");
+    if (codCard) codCard.classList.remove("active");
+  }
 
   const note = document.getElementById("paymentNote");
   if (note) {
