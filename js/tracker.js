@@ -462,7 +462,7 @@ function addNewPartnerPrompt() {
 }
 
 // --------------------------------------------------------------------------
-// 👤 特工名片渲染 (Dossier - IG/X 風格) 與頭像上傳（修復 5）
+// 👤 特工名片渲染與頭像上傳 (Base64)
 // --------------------------------------------------------------------------
 function renderProfileDossier() {
   const prof = trackerState.profile;
@@ -545,7 +545,6 @@ function renderMyQrCode() {
   qrContainer.innerHTML = `<img src="${url}" crossorigin="anonymous" style="width:140px; height:140px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
 }
 
-// ✦ 檔案上傳轉 Base64 處理
 function handleAvatarFileUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -599,7 +598,7 @@ function exportDossierToImage() {
 }
 
 // --------------------------------------------------------------------------
-// ⚙️ 創作者合作後台與審核申請邏輯
+// ⚙️ 創作者合作後台與自動化審核申請 (`applyCreator` 串接)
 // --------------------------------------------------------------------------
 function initCreatorPortal() {
   const statusBox = document.getElementById("creatorAuthStatusBox");
@@ -614,7 +613,7 @@ function initCreatorPortal() {
       <div style="background: rgba(255, 51, 75, 0.08); border: 1px solid var(--danger-red); padding: 12px; border-radius: 4px; color: var(--danger-red);">
         ⚠️ [ 權限拒絕 // ACCESS DENIED ]<br>
         <span style="font-size: 0.75rem; color: var(--text-muted);">
-          您目前為訪客身分，無權調閱合作後台。請先點擊頂部進行特工身分登入。
+          您目前為訪客身分,無權調閱合作後台。請先點擊頂部進行特工身分登入。
         </span>
       </div>
     `;
@@ -670,16 +669,48 @@ function initCreatorPortal() {
   }
 }
 
+// ✦ 串接 Apps Script 的 `applyCreator` (寫入 CreatorDB 並觸發 Discord)
 function submitCreatorApplication() {
-  const name = document.getElementById("applyCreatorName").value.trim();
-  const channel = document.getElementById("applyCreatorChannel").value.trim();
-  if (!name || !channel) {
-    alert("請完整填寫申請代號與推廣渠道！");
+  const brandName = document.getElementById("applyCreatorName").value.trim();
+  const portfolio = document.getElementById("applyCreatorChannel").value.trim();
+  const contact = (memberProfile && (memberProfile.email || memberProfile.phone)) ? (memberProfile.email || memberProfile.phone) : "未登入聯絡方式";
+
+  if (!brandName || !portfolio) {
+    alert("請完整填寫品牌代號與推廣渠道！");
     return;
   }
-  alert("✔ 創作者權限申請已加密發送至總部審核！\n預計 24 小時內完成神經授權開通。");
-  document.getElementById("applyCreatorName").value = "";
-  document.getElementById("applyCreatorChannel").value = "";
+
+  if (!CONFIG || !CONFIG.API_URL) {
+    alert("❌ 系統錯誤：未設定 API 連結。");
+    return;
+  }
+
+  const submitBtn = event.target;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "發送神經協議中...";
+
+  fetch(CONFIG.API_URL, {
+    method: "POST",
+    mode: "no-cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      action: "applyCreator",
+      brandName: brandName,
+      contact: contact,
+      portfolio: portfolio
+    })
+  }).then(() => {
+    alert("✔ 創作者入駐申請已成功提交！\n後台已同步至試算表 CreatorDB 並發送 Discord 通知，審核通過後將核發專屬金鑰。");
+    document.getElementById("applyCreatorName").value = "";
+    document.getElementById("applyCreatorChannel").value = "";
+    submitBtn.disabled = false;
+    submitBtn.textContent = "提交審核申請";
+  }).catch((err) => {
+    console.error(err);
+    alert("❌ 傳送失敗，請確認網路連線或稍後再試。");
+    submitBtn.disabled = false;
+    submitBtn.textContent = "提交審核申請";
+  });
 }
 
 function editProductPricePrompt(productId) {
