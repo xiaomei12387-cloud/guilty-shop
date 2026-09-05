@@ -247,6 +247,106 @@ function dismissEmergencySafeword() {
 }
 
 // --------------------------------------------------------------------------
+// 🔑 驗證創作者專屬金鑰 (AccessKey)
+// --------------------------------------------------------------------------
+function verifyCreatorAccessKey() {
+  const keyInput = document.getElementById("inputCreatorAccessKey");
+  const msgDiv = document.getElementById("verifyKeyMsg");
+  if (!keyInput || !msgDiv) return;
+
+  const key = keyInput.value.trim().toUpperCase();
+  if (!key) {
+    msgDiv.innerHTML = `<span style="color:var(--danger-red);">請輸入專屬金鑰！</span>`;
+    return;
+  }
+
+  msgDiv.innerHTML = `<span style="color:var(--text-muted);">正在向總部驗證金鑰...</span>`;
+
+  const url = `${CONFIG.API_URL}?action=verifyCreator&key=${encodeURIComponent(key)}`;
+  
+  fetch(url)
+    .then(res => res.json())
+    .then(resData => {
+      if (resData.result === "success") {
+        msgDiv.innerHTML = `<span style="color:var(--accent-cyan);">✔ 驗證成功！正在解鎖創作者後台...</span>`;
+        
+        // 將驗證通過狀態寫入 localStorage 永久紀錄
+        localStorage.setItem("guilty_creator_auth", JSON.stringify({
+          name: resData.creatorName,
+          key: key,
+          authTime: Date.now()
+        }));
+
+        setTimeout(() => {
+          initCreatorPortal();
+        }, 1000);
+      } else {
+        msgDiv.innerHTML = `<span style="color:var(--danger-red);">❌ ${resData.msg || '驗證失敗，請確認代碼或審核狀態。'}</span>`;
+      }
+    })
+    .catch(() => {
+      msgDiv.innerHTML = `<span style="color:var(--danger-red);">❌ 連線驗證伺服器失敗，請稍後再試。</span>`;
+    });
+}
+
+// 覆寫原本的 initCreatorPortal 判定，加入已驗證金鑰的快取檢查
+const originalInitCreatorPortal = initCreatorPortal;
+initCreatorPortal = function() {
+  const cachedAuth = localStorage.getItem("guilty_creator_auth");
+  let isCachedCreator = false;
+  if (cachedAuth) {
+    try {
+      const authObj = JSON.parse(cachedAuth);
+      if (authObj && authObj.key) isCachedCreator = true;
+    } catch(e){}
+  }
+
+  if (isCachedCreator) {
+    // 若本機已有快取驗證授權，直接強制視為創作者
+    const statusBox = document.getElementById("creatorAuthStatusBox");
+    const applyBox = document.getElementById("creatorApplyBox");
+    const verifyBox = document.getElementById("creatorVerifyKeyBox");
+    const dashBox = document.getElementById("creatorDashboardBox");
+    const portalSection = document.getElementById("creatorMyProductsBox");
+
+    if (statusBox) statusBox.innerHTML = `<div style="color:var(--accent-cyan); font-weight:bold;">🟢 創作者神經通道已連線（本機已授權）</div>`;
+    if (applyBox) applyBox.style.display = "none";
+    if (verifyBox) verifyBox.style.display = "none";
+    if (dashBox) dashBox.style.display = "block";
+    if (portalSection) portalSection.style.display = "block";
+
+    const myProductsBox = document.getElementById("creatorProductsListContainer");
+    if (myProductsBox) {
+      myProductsBox.innerHTML = PRODUCTS.map(p => `
+        <div style="background:#0e0e12; border:1px solid var(--panel-border); padding:10px 14px; border-radius:4px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <strong style="color:#fff; font-size:0.85rem;">${p.title}</strong>
+            <div style="font-size:0.75rem; color:var(--text-muted);">當前售價：NT$ <span id="disp_price_${p.id}">${p.price.toLocaleString()}</span></div>
+          </div>
+          <button onclick="editProductPricePrompt('${p.id}')" style="background:#141416; border:1px solid var(--accent-purple); color:var(--accent-purple); font-size:0.75rem; padding:5px 10px; cursor:pointer; border-radius:2px;">
+            修改價格
+          </button>
+        </div>
+      `).join('');
+    }
+    return;
+  }
+
+  // 否則執行標準判定
+  originalInitCreatorPortal();
+  
+  // 如果身分不是創作者，額外把「輸入金鑰區塊」顯示出來
+  const verifyBox = document.getElementById("creatorVerifyKeyBox");
+  if (verifyBox && memberProfile && (memberProfile.email || memberProfile.phone)) {
+    const agentId = (memberProfile.agentId || "").toUpperCase();
+    const isCreator = agentId.includes("KK") || agentId.includes("18X") || agentId.includes("CREATOR");
+    if (!isCreator) {
+      verifyBox.style.display = "block";
+    }
+  }
+};
+
+// --------------------------------------------------------------------------
 // 🛠️ 多元實踐項目管理與主畫面計數微調板
 // --------------------------------------------------------------------------
 function getPartnerMetrics(partner) {
