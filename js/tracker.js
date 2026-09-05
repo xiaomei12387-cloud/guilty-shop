@@ -17,7 +17,7 @@ const DEFAULT_PRESET_TAGS = {
 const DEFAULT_METRICS = [
   { id: "sp", name: "SP 掌/板", count: 0, color: "cyan" },
   { id: "whip", name: "長鞭/散鞭", count: 0, color: "purple" },
-  { id: "rope", name: "繩縛/懸吊段數", count: 0, color: "cyan" },
+  { id: "rope", name: "繩縛段數", count: 0, color: "cyan" },
   { id: "wax", name: "低溫滴蠟", count: 0, color: "purple" }
 ];
 
@@ -42,12 +42,12 @@ function createDefaultTrackerState() {
   return {
     currentMode: "dom",
     profile: {
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(agentName),
+      avatar: (memberProfile && memberProfile.avatar) || "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(agentName),
       name: agentName,
       agentId: agentId,
       role: agentRole,
       twitter: "",
-      safeword: "MAYDAY (紅色停止 / 黃色減速)",
+      safeword: "MAYDAY",
       bio: "尚未填寫特工宣言與實踐簡介。",
       allPreferences: [...DEFAULT_PRESET_TAGS.preferences],
       allLimits: [...DEFAULT_PRESET_TAGS.hardLimits],
@@ -73,18 +73,18 @@ function createDefaultTrackerState() {
       {
         id: "friend_sample",
         name: "KK",
-        agentId: "KK",
-        role: "老闆娘",
+        agentId: "KK-SHAREHOLDER",
+        role: "股東 / 支配者 (Dom)",
         avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=KK",
         bio: "GUILTY 共同創辦人與核心股東。",
-        tags: ["精煉繩縛", "高空懸吊", "感官剝奪"],
+        tags: ["精煉繩縛", "感官剝奪", "任務調教"],
         limits: ["❌ 拒絕生繩", "❌ 拒絕穿刺/見血"]
       }
     ],
     calendarEvents: [
       {
         id: "cal_1",
-        title: "交流聚會",
+        title: "水湳線下交流聚會",
         date: "2026-09-26",
         startTime: "14:00",
         endTime: "18:00",
@@ -112,7 +112,6 @@ function loadAgentTrackerState() {
       if (!trackerState.friends) trackerState.friends = createDefaultTrackerState().friends;
       if (!trackerState.calendarEvents) trackerState.calendarEvents = createDefaultTrackerState().calendarEvents;
       
-      // 確保每個對象都有 customMetrics
       trackerState.partners.forEach(p => {
         if (!p.customMetrics || p.customMetrics.length === 0) {
           p.customMetrics = JSON.parse(JSON.stringify(DEFAULT_METRICS));
@@ -195,7 +194,7 @@ function renderTrackerApp() {
 
   renderPartnerList();
   renderSessionHUD();
-  renderMetricsPreview();
+  renderMainMetricsBoard();
   renderSessionLogs();
   renderAnalyticsChart();
 }
@@ -214,10 +213,10 @@ function renderSessionHUD() {
   if (!container) return;
 
   container.innerHTML = `
-    <div style="background:linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(10, 10, 14, 0.98)); border:1px solid var(--panel-border); border-left:4px solid var(--accent-cyan); padding:16px 18px; border-radius:4px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+    <div style="background:linear-gradient(135deg, rgba(20, 20, 26, 0.95), rgba(10, 10, 14, 0.98)); border:1px solid var(--panel-border); border-left:4px solid var(--accent-cyan); padding:16px 18px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
       <div>
         <div style="font-size:0.85rem; font-weight:bold; color:#fff; letter-spacing:1px;">[ PROTOCOL SESSION // 全螢幕沉浸實踐 ]</div>
-        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">啟動專屬全螢幕視窗：極大化碼錶、多元觸控計數與盲按急停</div>
+        <div style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">啟動專屬全螢幕視窗：極大化碼錶、多元觸控計數與盲按急停警報</div>
       </div>
       <button class="btn-submit" onclick="startSession()" style="width:auto; padding:14px 28px; font-size:0.95rem; font-weight:bold;">
         ▶ 開啟獨立全螢幕實踐終端
@@ -257,7 +256,7 @@ function dismissEmergencySafeword() {
 }
 
 // --------------------------------------------------------------------------
-// 🛠️ 多元實踐項目管理 (Metrics Management)
+// 🛠️ 多元實踐項目管理與主畫面計數微調板（修復 1）
 // --------------------------------------------------------------------------
 function getPartnerMetrics(partner) {
   if (!partner.customMetrics || partner.customMetrics.length === 0) {
@@ -266,8 +265,8 @@ function getPartnerMetrics(partner) {
   return partner.customMetrics;
 }
 
-function renderMetricsPreview() {
-  const container = document.getElementById("activeMetricsPreviewGrid");
+function renderMainMetricsBoard() {
+  const container = document.getElementById("mainMetricsBoardGrid");
   if (!container) return;
   const activePartner = getActivePartner();
   if (!activePartner) {
@@ -277,11 +276,29 @@ function renderMetricsPreview() {
 
   const metrics = getPartnerMetrics(activePartner);
   container.innerHTML = metrics.map((m, idx) => `
-    <div style="background:#0a0a0d; border:1px solid ${m.color === 'purple' ? 'var(--accent-purple)' : 'var(--accent-cyan)'}; padding:8px 12px; border-radius:3px; display:flex; justify-content:space-between; align-items:center;">
-      <span style="font-size:0.8rem; color:#fff;">${m.name}</span>
-      <button onclick="removeMetric(${idx})" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:0.85rem; padding-left:8px;">✕</button>
+    <div style="background:#000; border:1px solid ${m.color === 'purple' ? 'var(--accent-purple)' : 'var(--accent-cyan)'}; padding:12px; border-radius:4px; position:relative;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+        <span style="font-size:0.78rem; color:var(--text-muted); font-weight:bold;">${m.name}</span>
+        <button onclick="removeMetric(${idx})" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">✕</button>
+      </div>
+      <div style="font-size:2rem; font-weight:900; color:${m.color === 'purple' ? 'var(--accent-purple)' : 'var(--accent-cyan)'}; margin-bottom:8px;">${m.count}</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+        <button onclick="adjustMainMetric(${idx}, 1)" style="background:#141418; border:1px solid var(--panel-border); color:#fff; padding:6px; font-weight:bold; cursor:pointer;">+1</button>
+        <button onclick="adjustMainMetric(${idx}, -1)" style="background:#141416; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px; font-weight:bold; cursor:pointer;">-1</button>
+      </div>
     </div>
   `).join('');
+}
+
+function adjustMainMetric(idx, delta) {
+  const activePartner = getActivePartner();
+  if (!activePartner) return;
+  const metrics = getPartnerMetrics(activePartner);
+  metrics[idx].count = Math.max(0, metrics[idx].count + delta);
+  playTerminalBeep("click");
+  if (navigator.vibrate) navigator.vibrate(30);
+  saveTrackerState();
+  renderMainMetricsBoard();
 }
 
 function addCustomMetricPrompt() {
@@ -302,7 +319,7 @@ function addCustomMetricPrompt() {
   });
 
   saveTrackerState();
-  renderMetricsPreview();
+  renderMainMetricsBoard();
 }
 
 function removeMetric(idx) {
@@ -315,7 +332,7 @@ function removeMetric(idx) {
   }
   metrics.splice(idx, 1);
   saveTrackerState();
-  renderMetricsPreview();
+  renderMainMetricsBoard();
 }
 
 // --------------------------------------------------------------------------
@@ -454,7 +471,245 @@ function addNewPartnerPrompt() {
 }
 
 // --------------------------------------------------------------------------
-// 👥 好友名冊與查看對方檔案 (不能聊天)
+// 👤 特工名片渲染 (Dossier - IG/X 風格)
+// --------------------------------------------------------------------------
+function renderProfileDossier() {
+  const prof = trackerState.profile;
+  const ap = document.getElementById("dossierAvatarPreview");
+  const nd = document.getElementById("dossierNameDisplay");
+  const rb = document.getElementById("dossierRoleBadge");
+  const bd = document.getElementById("dossierBioDisplay");
+  const idDisp = document.getElementById("dossierAgentIdDisplay");
+  const twLink = document.getElementById("dossierTwitterLink");
+
+  // ✦ 修復 5：確保頭像與各欄位穩定渲染
+  if (ap) ap.src = prof.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Agent";
+  if (nd) nd.textContent = prof.name || "特工";
+  if (rb) rb.textContent = prof.role || "支配者 (Dom)";
+  if (idDisp) idDisp.textContent = `ID: ${prof.agentId || 'AGENT-001'}`;
+  if (bd) bd.textContent = prof.bio || "尚未填寫特工宣言與簡介。";
+
+  if (twLink) {
+    if (prof.twitter) {
+      twLink.href = prof.twitter;
+      twLink.style.display = "inline-block";
+      twLink.textContent = `𝕏 ${prof.twitter.replace('https://', '')} ↗`;
+    } else {
+      twLink.style.display = "none";
+    }
+  }
+
+  // 更新統計數據
+  const statFriends = document.getElementById("statFriendsCount");
+  const statPartners = document.getElementById("statPartnersCount");
+  const statSessions = document.getElementById("statSessionsCount");
+  if (statFriends) statFriends.textContent = (trackerState.friends || []).length;
+  if (statPartners) statPartners.textContent = (trackerState.partners || []).length;
+  
+  const activePartner = getActivePartner();
+  const totalSessions = activePartner && activePartner.sessions ? activePartner.sessions.length : 0;
+  if (statSessions) statSessions.textContent = totalSessions;
+
+  renderDossierTags();
+  renderMyQrCode();
+}
+
+function renderDossierTags() {
+  const prof = trackerState.profile;
+  const prefBox = document.getElementById("myPrefTagsBox");
+  const limitBox = document.getElementById("myLimitTagsBox");
+  if (prefBox) {
+    prefBox.innerHTML = (prof.allPreferences || []).map(t => `<div class="tag-pill ${(prof.selectedTags||[]).includes(t)?'active':''}" onclick="toggleTagSelection('pref','${t}')">${t}</div>`).join('');
+  }
+  if (limitBox) {
+    limitBox.innerHTML = (prof.allLimits || []).map(l => `<div class="tag-pill ${(prof.limits||[]).includes(l)?'active-limit':''}" onclick="toggleTagSelection('limit','${l}')">${l}</div>`).join('');
+  }
+}
+
+function toggleTagSelection(type, tag) {
+  const prof = trackerState.profile;
+  if (type === "pref") {
+    prof.selectedTags = prof.selectedTags.includes(tag) ? prof.selectedTags.filter(t => t !== tag) : [...prof.selectedTags, tag];
+  } else {
+    prof.limits = prof.limits.includes(tag) ? prof.limits.filter(t => t !== tag) : [...prof.limits, tag];
+  }
+  saveTrackerState();
+  renderDossierTags();
+  renderMyQrCode();
+}
+
+function renderMyQrCode() {
+  const qrContainer = document.getElementById("myQrCodeBox");
+  if (!qrContainer) return;
+  const prof = trackerState.profile;
+  const payload = {
+    name: prof.name,
+    agentId: prof.agentId,
+    role: prof.role,
+    avatar: prof.avatar,
+    safeword: prof.safeword,
+    tags: prof.selectedTags,
+    limits: prof.limits
+  };
+  const str = "GUILTY:" + encodeURIComponent(JSON.stringify(payload));
+  const url = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(str)}&bgcolor=050508&color=00ff88&margin=4`;
+  qrContainer.innerHTML = `<img src="${url}" crossorigin="anonymous" style="width:140px; height:140px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
+}
+
+function handleProfileUpdate(e) {
+  e.preventDefault();
+  const prof = trackerState.profile;
+
+  prof.name = document.getElementById("profEditName").value.trim();
+  prof.agentId = document.getElementById("profEditAgentId").value.trim().toUpperCase();
+  prof.role = document.getElementById("profEditRole").value;
+  prof.safeword = document.getElementById("profEditSafeword").value.trim();
+  prof.twitter = document.getElementById("profEditTwitter").value.trim();
+  prof.bio = document.getElementById("profEditBio").value.trim();
+  
+  const customAvatar = document.getElementById("profEditAvatar").value.trim();
+  if (customAvatar) prof.avatar = customAvatar;
+
+  saveTrackerState();
+  closeEditProfileDrawer();
+  renderProfileDossier();
+  alert("✔ 特工檔案與名片已成功更新！");
+}
+
+function exportDossierToImage() {
+  const target = document.getElementById("dossierExportTarget");
+  const btn = document.getElementById("btnExportCard");
+  if (!target || typeof html2canvas === "undefined") return;
+
+  if (btn) { btn.disabled = true; btn.textContent = "繪製中..."; }
+  target.classList.add("exporting-mode");
+
+  html2canvas(target, { backgroundColor: "#08080a", scale: 2, useCORS: true }).then(canvas => {
+    target.classList.remove("exporting-mode");
+    if (btn) { btn.disabled = false; btn.textContent = "📷 匯出名片圖"; }
+    const link = document.createElement("a");
+    link.download = `GUILTY_${trackerState.profile.agentId || 'AGENT'}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }).catch(() => {
+    target.classList.remove("exporting-mode");
+    if (btn) { btn.disabled = false; btn.textContent = "📷 匯出名片圖"; }
+    alert("長圖生成失敗！");
+  });
+}
+
+// --------------------------------------------------------------------------
+// ⚙️ 創作者後台與審核申請邏輯（修復 4）
+// --------------------------------------------------------------------------
+function initCreatorPortal() {
+  const statusBox = document.getElementById("creatorAuthStatusBox");
+  const applyBox = document.getElementById("creatorApplyBox");
+  const dashBox = document.getElementById("creatorDashboardBox");
+  const portalSection = document.getElementById("creatorMyProductsBox");
+  const myProductsBox = document.getElementById("creatorProductsListContainer");
+  if (!statusBox) return;
+
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    statusBox.innerHTML = `
+      <div style="background: rgba(255, 51, 75, 0.08); border: 1px solid var(--danger-red); padding: 12px; border-radius: 4px; color: var(--danger-red);">
+        ⚠️ [ 權限拒絕 // ACCESS DENIED ]<br>
+        <span style="font-size: 0.75rem; color: var(--text-muted);">
+          您目前為訪客身分，無權調閱合作後台。請先點擊頂部進行特工身分登入。
+        </span>
+      </div>
+    `;
+    if (applyBox) applyBox.style.display = "none";
+    if (dashBox) dashBox.style.display = "none";
+    if (portalSection) portalSection.style.display = "none";
+    return;
+  }
+
+  const agentId = (memberProfile.agentId || "").toUpperCase();
+  const isCreator = agentId.includes("KK") || agentId.includes("18X") || agentId.includes("CREATOR") || (memberProfile.isCreator === true);
+
+  if (!isCreator) {
+    statusBox.innerHTML = `
+      <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--panel-border); padding: 12px; border-radius: 4px; color: var(--text-muted); margin-bottom: 12px;">
+        特工代號：<strong style="color:#fff;">${memberProfile.name}</strong> [ID: ${memberProfile.agentId || 'N/A'}]<br>
+        <span style="font-size: 0.75rem; color: var(--danger-red);">⚠️ 您的特工帳號尚未開通創作者分潤權限。可透過下方送出審核申請。</span>
+      </div>
+    `;
+    if (applyBox) applyBox.style.display = "block";
+    if (dashBox) dashBox.style.display = "none";
+    if (portalSection) portalSection.style.display = "none";
+    return;
+  }
+
+  statusBox.innerHTML = `
+    <div style="color:var(--accent-cyan); font-weight:bold;">🟢 創作者身分已核銷：${memberProfile.name} [ID: ${agentId}]</div>
+    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">終端已鎖定專屬分潤通道，可管理授權之裝備庫存與售價。</div>
+  `;
+  if (applyBox) applyBox.style.display = "none";
+  if (dashBox) dashBox.style.display = "block";
+  if (portalSection) portalSection.style.display = "block";
+
+  let authorizedProducts = PRODUCTS;
+  if (agentId.includes("KK")) {
+    authorizedProducts = PRODUCTS.filter(p => p.brand === "shushi");
+  } else if (agentId.includes("18X")) {
+    authorizedProducts = PRODUCTS.filter(p => p.brand === "guilty");
+  }
+
+  if (myProductsBox) {
+    myProductsBox.innerHTML = authorizedProducts.map(p => `
+      <div style="background:#0e0e12; border:1px solid var(--panel-border); padding:10px 14px; border-radius:4px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <strong style="color:#fff; font-size:0.85rem;">${p.title}</strong>
+          <div style="font-size:0.75rem; color:var(--text-muted);">當前售價：NT$ <span id="disp_price_${p.id}">${p.price.toLocaleString()}</span></div>
+        </div>
+        <button onclick="editProductPricePrompt('${p.id}')" style="background:#141416; border:1px solid var(--accent-purple); color:var(--accent-purple); font-size:0.75rem; padding:5px 10px; cursor:pointer; border-radius:2px;">
+          修改價格
+        </button>
+      </div>
+    `).join('');
+  }
+}
+
+function submitCreatorApplication() {
+  const name = document.getElementById("applyCreatorName").value.trim();
+  const channel = document.getElementById("applyCreatorChannel").value.trim();
+  if (!name || !channel) {
+    alert("請完整填寫申請代號與推廣渠道！");
+    return;
+  }
+  alert("✔ 創作者權限申請已加密發送至總部審核！\n預計 24 小時內完成神經授權開通。");
+  document.getElementById("applyCreatorName").value = "";
+  document.getElementById("applyCreatorChannel").value = "";
+}
+
+function editProductPricePrompt(productId) {
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
+    alert("⚠️ 未授權操作：請先以創作者帳號登入！");
+    return;
+  }
+
+  const p = PRODUCTS.find(x => x.id === productId);
+  if (!p) return;
+
+  const newPrice = prompt(`[ ${p.title} ]\n請輸入新的調用售價 (NT$)：`, p.price);
+  if (newPrice === null) return;
+
+  const parsedPrice = parseInt(newPrice, 10);
+  if (isNaN(parsedPrice) || parsedPrice <= 0) {
+    alert("❌ 請輸入有效的金額！");
+    return;
+  }
+
+  p.price = parsedPrice;
+  const disp = document.getElementById(`disp_price_${productId}`);
+  if (disp) disp.textContent = p.price.toLocaleString();
+  if (typeof renderProductCards === "function") renderProductCards();
+
+  alert(`✔ 裝備「${p.title}」售價已成功變更為 NT$ ${p.price.toLocaleString()}！`);
+}
+
+// --------------------------------------------------------------------------
+// 👥 好友名冊與行事曆
 // --------------------------------------------------------------------------
 function renderFriendsList() {
   const container = document.getElementById("friendsListContainer");
@@ -484,28 +739,24 @@ function renderFriendsList() {
 }
 
 function addFriendByIdPrompt() {
-  const friendId = prompt("請輸入對方的專屬特工 ID (例如：AGENT-001 或 KK-ROPE)：");
+  const friendId = prompt("請輸入對方的專屬特工 ID (例如：AGENT-001 或 KK-SHAREHOLDER)：");
   if (!friendId || !friendId.trim()) return;
 
   const cleanId = friendId.trim().toUpperCase();
   const existing = trackerState.friends.find(f => f.agentId === cleanId);
-  if (existing) {
-    alert("該特工已在您的好友名冊中！");
-    return;
-  }
+  if (existing) { alert("該特工已在您的好友名冊中！"); return; }
 
-  const newFriend = {
+  trackerState.friends.push({
     id: "friend_" + Date.now(),
     name: "特工・" + cleanId.slice(-4),
     agentId: cleanId,
-    role: "未知屬性",
+    role: "特工",
     avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanId}`,
     bio: "此特工透過專屬 ID 建立神經連結。",
     tags: ["實踐調教", "繩藝拘束"],
     limits: ["❌ 拒絕穿刺/見血"]
-  };
+  });
 
-  trackerState.friends.push(newFriend);
   saveTrackerState();
   renderFriendsList();
   alert(`✔ 成功將特工 (ID: ${cleanId}) 加入好友名冊！`);
@@ -553,18 +804,11 @@ function saveCalendarEvent() {
   const end = document.getElementById("calEventEnd").value;
   const privacy = document.getElementById("calEventPrivacy").value;
 
-  if (!title || !date) {
-    alert("請完整輸入活動名稱與日期！");
-    return;
-  }
+  if (!title || !date) { alert("請完整輸入活動名稱與日期！"); return; }
 
   trackerState.calendarEvents.push({
     id: "cal_" + Date.now(),
-    title,
-    date,
-    startTime: start,
-    endTime: end,
-    privacy
+    title, date, startTime: start, endTime: end, privacy
   });
 
   saveTrackerState();
@@ -600,198 +844,6 @@ function deleteCalendarEvent(id) {
   trackerState.calendarEvents = trackerState.calendarEvents.filter(e => e.id !== id);
   saveTrackerState();
   renderCalendarEvents();
-}
-
-// --------------------------------------------------------------------------
-// ⚙️ 創作者後台：安全權限檢驗與專屬商品自主管理
-// --------------------------------------------------------------------------
-function initCreatorPortal() {
-  const statusBox = document.getElementById("creatorAuthStatusBox");
-  const dashBox = document.getElementById("creatorDashboardBox");
-  const myProductsBox = document.getElementById("creatorProductsListContainer");
-  const portalSection = document.getElementById("creatorMyProductsBox");
-  if (!statusBox) return;
-
-  // 🔒 1. 訪客攔截：未登入特工身分時，徹底封鎖後台功能
-  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
-    statusBox.innerHTML = `
-      <div style="background: rgba(255, 51, 75, 0.08); border: 1px solid var(--danger-red); padding: 12px; border-radius: 4px; color: var(--danger-red);">
-        ⚠️ [ 權限拒絕 // ACCESS DENIED ]<br>
-        <span style="font-size: 0.75rem; color: var(--text-muted);">
-          您目前為訪客身分，無權調閱合作後台。請先登入官方認證之創作者特工帳號。
-        </span>
-      </div>
-    `;
-    if (dashBox) dashBox.style.display = "none";
-    if (portalSection) portalSection.style.display = "none";
-    if (myProductsBox) myProductsBox.innerHTML = "";
-    return;
-  }
-
-  // 🔒 2. 創作者身分比對
-  const agentId = (memberProfile.agentId || "").toUpperCase();
-  const isCreator = agentId.includes("KK") || agentId.includes("18X") || agentId.includes("CREATOR") || (memberProfile.isCreator === true);
-
-  if (!isCreator) {
-    statusBox.innerHTML = `
-      <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid var(--panel-border); padding: 12px; border-radius: 4px; color: var(--text-muted);">
-        特工代號：<strong style="color:#fff;">${memberProfile.name}</strong> [ID: ${memberProfile.agentId || 'N/A'}]<br>
-        <span style="font-size: 0.75rem; color: var(--danger-red);">⚠️ 該特工身分尚未開通創作者/主理人分潤權限。</span>
-      </div>
-    `;
-    if (dashBox) dashBox.style.display = "none";
-    if (portalSection) portalSection.style.display = "none";
-    if (myProductsBox) myProductsBox.innerHTML = "";
-    return;
-  }
-
-  // 🟢 3. 認證通過：解鎖儀表板
-  statusBox.innerHTML = `
-    <div style="color:var(--accent-cyan); font-weight:bold;">🟢 創作者身分已核銷：${memberProfile.name} [ID: ${agentId}]</div>
-    <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">終端已鎖定專屬分潤通道，僅可調校授權之裝備庫存與售價。</div>
-  `;
-  if (dashBox) dashBox.style.display = "block";
-  if (portalSection) portalSection.style.display = "block";
-
-  document.getElementById("creatorNameText").textContent = `${memberProfile.name} (授權特工)`;
-  document.getElementById("creatorOrderCount").textContent = "3 件";
-  document.getElementById("creatorRewardTotal").textContent = "NT$ 720";
-
-  // 🔒 4. 裝備歸屬過濾：KK 只能修改 shushi 合作商品，18X 只能修改 guilty 裝備
-  let authorizedProducts = PRODUCTS;
-  if (agentId.includes("KK")) {
-    authorizedProducts = PRODUCTS.filter(p => p.brand === "shushi");
-  } else if (agentId.includes("18X")) {
-    authorizedProducts = PRODUCTS.filter(p => p.brand === "guilty");
-  }
-
-  if (myProductsBox) {
-    if (authorizedProducts.length === 0) {
-      myProductsBox.innerHTML = `<div style="font-size:0.8rem; color:var(--text-muted); padding:10px 0;">[ 尚無授權管理的裝備檔案 ]</div>`;
-      return;
-    }
-
-    myProductsBox.innerHTML = authorizedProducts.map(p => `
-      <div style="background:#0e0e12; border:1px solid var(--panel-border); padding:10px 14px; border-radius:4px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <strong style="color:#fff; font-size:0.85rem;">${p.title}</strong>
-          <div style="font-size:0.75rem; color:var(--text-muted);">當前售價：NT$ <span id="disp_price_${p.id}">${p.price.toLocaleString()}</span></div>
-        </div>
-        <button onclick="editProductPricePrompt('${p.id}')" style="background:#141416; border:1px solid var(--accent-purple); color:var(--accent-purple); font-size:0.75rem; padding:5px 10px; cursor:pointer; border-radius:2px;">
-          修改價格
-        </button>
-      </div>
-    `).join('');
-  }
-}
-
-function editProductPricePrompt(productId) {
-  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) {
-    alert("⚠️ 未授權操作：請先以創作者帳號登入！");
-    return;
-  }
-
-  const p = PRODUCTS.find(x => x.id === productId);
-  if (!p) return;
-
-  const newPrice = prompt(`[ ${p.title} ]\n請輸入新的調用售價 (NT$)：`, p.price);
-  if (newPrice === null) return;
-
-  const parsedPrice = parseInt(newPrice, 10);
-  if (isNaN(parsedPrice) || parsedPrice <= 0) {
-    alert("❌ 請輸入有效的金額！");
-    return;
-  }
-
-  p.price = parsedPrice;
-
-  const disp = document.getElementById(`disp_price_${productId}`);
-  if (disp) disp.textContent = p.price.toLocaleString();
-  if (typeof renderProductCards === "function") renderProductCards();
-
-  alert(`✔ 裝備「${p.title}」售價已成功變更為 NT$ ${p.price.toLocaleString()}！`);
-}
-
-// --------------------------------------------------------------------------
-// 👤 特工名片渲染 (Dossier)
-// --------------------------------------------------------------------------
-function renderProfileDossier() {
-  const prof = trackerState.profile;
-  const ap = document.getElementById("dossierAvatarPreview");
-  const nd = document.getElementById("dossierNameDisplay");
-  const rb = document.getElementById("dossierRoleBadge");
-  const bd = document.getElementById("dossierBioDisplay");
-  if (ap) ap.src = prof.avatar;
-  if (nd) nd.textContent = `${prof.name} [ID: ${prof.agentId || 'N/A'}]`;
-  if (rb) rb.textContent = prof.role;
-  if (bd) bd.textContent = prof.bio || "尚未填寫特工簡介。";
-
-  renderDossierTags();
-  renderMyQrCode();
-}
-
-function renderDossierTags() {
-  const prof = trackerState.profile;
-  const prefBox = document.getElementById("myPrefTagsBox");
-  const limitBox = document.getElementById("myLimitTagsBox");
-  if (prefBox) {
-    prefBox.innerHTML = prof.allPreferences.map(t => `<div class="tag-pill ${prof.selectedTags.includes(t)?'active':''}" onclick="toggleTagSelection('pref','${t}')">${t}</div>`).join('');
-  }
-  if (limitBox) {
-    limitBox.innerHTML = prof.allLimits.map(l => `<div class="tag-pill ${prof.limits.includes(l)?'active-limit':''}" onclick="toggleTagSelection('limit','${l}')">${l}</div>`).join('');
-  }
-}
-
-function toggleTagSelection(type, tag) {
-  const prof = trackerState.profile;
-  if (type === "pref") {
-    prof.selectedTags = prof.selectedTags.includes(tag) ? prof.selectedTags.filter(t => t !== tag) : [...prof.selectedTags, tag];
-  } else {
-    prof.limits = prof.limits.includes(tag) ? prof.limits.filter(t => t !== tag) : [...prof.limits, tag];
-  }
-  saveTrackerState();
-  renderDossierTags();
-  renderMyQrCode();
-}
-
-function renderMyQrCode() {
-  const qrContainer = document.getElementById("myQrCodeBox");
-  if (!qrContainer) return;
-  const prof = trackerState.profile;
-  const payload = {
-    name: prof.name,
-    agentId: prof.agentId,
-    role: prof.role,
-    avatar: prof.avatar,
-    safeword: prof.safeword,
-    tags: prof.selectedTags,
-    limits: prof.limits
-  };
-  const str = "GUILTY:" + encodeURIComponent(JSON.stringify(payload));
-  const url = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(str)}&bgcolor=08080a&color=00ff88&margin=4`;
-  qrContainer.innerHTML = `<img src="${url}" crossorigin="anonymous" style="width:160px; height:160px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
-}
-
-function exportDossierToImage() {
-  const target = document.getElementById("dossierExportTarget");
-  const btn = document.getElementById("btnExportCard");
-  if (!target || typeof html2canvas === "undefined") return;
-
-  if (btn) { btn.disabled = true; btn.textContent = "繪製中..."; }
-  target.classList.add("exporting-mode");
-
-  html2canvas(target, { backgroundColor: "#08080a", scale: 2, useCORS: true }).then(canvas => {
-    target.classList.remove("exporting-mode");
-    if (btn) { btn.disabled = false; btn.textContent = "📷 匯出名片圖"; }
-    const link = document.createElement("a");
-    link.download = `GUILTY_${trackerState.profile.agentId || 'AGENT'}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  }).catch(() => {
-    target.classList.remove("exporting-mode");
-    if (btn) { btn.disabled = false; btn.textContent = "📷 匯出名片圖"; }
-    alert("長圖生成失敗！");
-  });
 }
 
 function syncTrackerToCloud(silent = false) {
