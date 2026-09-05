@@ -140,9 +140,6 @@ function saveTrackerState(skipCloud = false) {
   }
 }
 
-// --------------------------------------------------------------------------
-// 🔊 音效與震動
-// --------------------------------------------------------------------------
 function playTerminalBeep(type = "click") {
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -170,9 +167,6 @@ function playTerminalBeep(type = "click") {
   } catch (e) {}
 }
 
-// --------------------------------------------------------------------------
-// ⚡ 實踐終端主介面渲染
-// --------------------------------------------------------------------------
 function getActivePartner() {
   if (!trackerState.partners || trackerState.partners.length === 0) return null;
   return trackerState.partners.find(p => p.id === trackerState.activePartnerId) || trackerState.partners[0];
@@ -205,9 +199,6 @@ function switchTrackerMode(mode) {
   renderTrackerApp();
 }
 
-// --------------------------------------------------------------------------
-// ⚡ 實踐入口 HUD（跳轉獨立全螢幕終端）
-// --------------------------------------------------------------------------
 function renderSessionHUD() {
   const container = document.getElementById("sessionHudArea");
   if (!container) return;
@@ -256,7 +247,7 @@ function dismissEmergencySafeword() {
 }
 
 // --------------------------------------------------------------------------
-// 🛠️ 多元實踐項目管理與主畫面計數微調板（修復 1）
+// 🛠️ 多元實踐項目管理與主畫面計數微調板
 // --------------------------------------------------------------------------
 function getPartnerMetrics(partner) {
   if (!partner.customMetrics || partner.customMetrics.length === 0) {
@@ -395,7 +386,7 @@ function renderSessionLogs() {
         <button onclick="deleteSessionLog('${s.sessionId}')" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer;">✕</button>
       </div>
       <div style="color:var(--text-muted); font-size:0.7rem; margin-bottom:4px;">
-        ${s.date} ｜ ${s.summary || (s.spCount !== undefined ? `SP: ${s.spCount} ｜ 鞭: ${s.whipCount}` : '實踐完成')}
+        ${s.date} ｜ ${s.summary || '實踐完成'}
       </div>
       <div style="color:#d4d4d8; background:#141416; padding:6px;">💬 ${s.note}</div>
     </div>
@@ -471,7 +462,7 @@ function addNewPartnerPrompt() {
 }
 
 // --------------------------------------------------------------------------
-// 👤 特工名片渲染 (Dossier - IG/X 風格)
+// 👤 特工名片渲染 (Dossier - IG/X 風格) 與頭像上傳（修復 5）
 // --------------------------------------------------------------------------
 function renderProfileDossier() {
   const prof = trackerState.profile;
@@ -482,7 +473,6 @@ function renderProfileDossier() {
   const idDisp = document.getElementById("dossierAgentIdDisplay");
   const twLink = document.getElementById("dossierTwitterLink");
 
-  // ✦ 修復 5：確保頭像與各欄位穩定渲染
   if (ap) ap.src = prof.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Agent";
   if (nd) nd.textContent = prof.name || "特工";
   if (rb) rb.textContent = prof.role || "支配者 (Dom)";
@@ -499,7 +489,6 @@ function renderProfileDossier() {
     }
   }
 
-  // 更新統計數據
   const statFriends = document.getElementById("statFriendsCount");
   const statPartners = document.getElementById("statPartnersCount");
   const statSessions = document.getElementById("statSessionsCount");
@@ -556,6 +545,20 @@ function renderMyQrCode() {
   qrContainer.innerHTML = `<img src="${url}" crossorigin="anonymous" style="width:140px; height:140px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
 }
 
+// ✦ 檔案上傳轉 Base64 處理
+function handleAvatarFileUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64Str = e.target.result;
+    trackerState.profile.avatar = base64Str;
+    const previewImg = document.getElementById("profEditAvatarPreview");
+    if (previewImg) previewImg.src = base64Str;
+  };
+  reader.readAsDataURL(file);
+}
+
 function handleProfileUpdate(e) {
   e.preventDefault();
   const prof = trackerState.profile;
@@ -566,9 +569,6 @@ function handleProfileUpdate(e) {
   prof.safeword = document.getElementById("profEditSafeword").value.trim();
   prof.twitter = document.getElementById("profEditTwitter").value.trim();
   prof.bio = document.getElementById("profEditBio").value.trim();
-  
-  const customAvatar = document.getElementById("profEditAvatar").value.trim();
-  if (customAvatar) prof.avatar = customAvatar;
 
   saveTrackerState();
   closeEditProfileDrawer();
@@ -599,7 +599,7 @@ function exportDossierToImage() {
 }
 
 // --------------------------------------------------------------------------
-// ⚙️ 創作者後台與審核申請邏輯（修復 4）
+// ⚙️ 創作者合作後台與審核申請邏輯
 // --------------------------------------------------------------------------
 function initCreatorPortal() {
   const statusBox = document.getElementById("creatorAuthStatusBox");
@@ -789,9 +789,6 @@ function removeFriend(friendId) {
   renderFriendsList();
 }
 
-// --------------------------------------------------------------------------
-// 📅 個人行事曆排程系統
-// --------------------------------------------------------------------------
 function toggleCalendarForm(show) {
   const box = document.getElementById("calendarAddBox");
   if (box) box.style.display = show ? "block" : "none";
