@@ -631,15 +631,23 @@ function renderMyQrCode() {
   const qrContainer = document.getElementById("myQrCodeBox");
   if (!qrContainer) return;
   const prof = trackerState.profile;
+  
+  // ✦ 修正：若頭像是 Base64 上傳的字串，不要全部塞進 QR 碼導致字數爆掉
+  let safeAvatar = prof.avatar;
+  if (safeAvatar && safeAvatar.startsWith("data:")) {
+    safeAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(prof.name || "Agent");
+  }
+
   const payload = {
     name: prof.name,
     agentId: prof.agentId,
     role: prof.role,
-    avatar: prof.avatar,
+    avatar: safeAvatar,
     safeword: prof.safeword,
     tags: prof.selectedTags,
     limits: prof.limits
   };
+  
   const str = "GUILTY:" + encodeURIComponent(JSON.stringify(payload));
   const url = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(str)}&bgcolor=050508&color=00ff88&margin=4`;
   qrContainer.innerHTML = `<img src="${url}" crossorigin="anonymous" style="width:140px; height:140px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
