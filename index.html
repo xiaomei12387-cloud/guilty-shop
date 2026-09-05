@@ -183,7 +183,7 @@
 
       </div>
 
-      <!-- 世界觀與三大矩陣 -->
+      <!-- 世界觀與三大矩陣 (歸位首頁大廳) -->
       <div style="width: 100%; max-width: 620px; margin-top: 30px; text-align: left;">
         <div class="manifesto-card" style="margin-bottom: 16px;">
           <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
@@ -210,7 +210,7 @@
           </div>
         </div>
 
-        <!-- 主理成員戰術卡片 -->
+        <!-- 主理成員戰術卡片 (包含正確身分的 KK) -->
         <section style="margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--panel-border);">
           <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
           <h2 style="font-size:1.2rem; margin-bottom:12px; color:#fff;">核心檔案：主理成員</h2>
@@ -301,7 +301,7 @@
         <div id="sessionHudArea"></div>
       </div>
 
-      <!-- 主畫面計數控制板（修復 1：恢復主畫面即時計數微調） -->
+      <!-- 主畫面計數控制板（恢復主畫面即時計數微調） -->
       <div class="form-box">
         <div class="form-title">即時實踐次數微調板 (METRICS BOARD)</div>
         <div id="mainMetricsBoardGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:16px;"></div>
@@ -360,10 +360,12 @@
 
       <!-- IG / X 風格名片主卡片 -->
       <div id="dossierExportTarget" style="background:#0c0c0f; border:1px solid var(--panel-border); border-radius:8px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.7);">
+        <!-- 頂部封面橫幅 -->
         <div style="height:110px; background:linear-gradient(135deg, #12121a, #08080a); border-bottom:1px solid var(--panel-border); position:relative;">
           <div style="position:absolute; top:12px; right:14px; font-size:0.65rem; font-family:monospace; color:var(--accent-cyan); background:rgba(0,255,136,0.1); padding:2px 8px; border-radius:2px;">SECURE ID</div>
         </div>
 
+        <!-- 頭像與基本資訊區 -->
         <div style="padding: 0 20px 20px; position: relative;">
           <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:-42px; margin-bottom:12px;">
             <div style="width:84px; height:84px; border-radius:50%; border:3px solid var(--accent-cyan); background:#000; overflow:hidden; box-shadow:0 0 20px rgba(0,255,136,0.3);">
@@ -384,12 +386,14 @@
             <a id="dossierTwitterLink" href="#" target="_blank" style="font-size:0.78rem; color:#38bdf8; text-decoration:none; display:none;">𝕏 連結帳號 ↗</a>
           </div>
 
+          <!-- 數據追蹤統計列 (IG 風格) -->
           <div style="display:flex; gap:20px; border-top:1px solid var(--panel-border); border-bottom:1px solid var(--panel-border); padding:10px 0; margin-bottom:16px; font-size:0.78rem;">
             <div><strong style="color:#fff;" id="statFriendsCount">1</strong> <span style="color:var(--text-muted);">好友</span></div>
             <div><strong style="color:#fff;" id="statPartnersCount">1</strong> <span style="color:var(--text-muted);">實踐對象</span></div>
             <div><strong style="color:#fff;" id="statSessionsCount">0</strong> <span style="color:var(--text-muted);">封存案件</span></div>
           </div>
 
+          <!-- 偏好與雷點矩陣 -->
           <div style="margin-bottom:14px;">
             <label style="font-size:0.72rem; color:var(--accent-cyan); font-weight:bold; margin-bottom:6px; display:block;">✦ 實踐偏好 (PREFERENCES)：</label>
             <div class="tags-wrap-box" id="myPrefTagsBox"></div>
@@ -399,6 +403,7 @@
             <div class="tags-wrap-box" id="myLimitTagsBox"></div>
           </div>
 
+          <!-- QR 碼名片捷徑 -->
           <div style="margin-top:20px; background:#050508; border:1px solid var(--panel-border); padding:14px; border-radius:6px; text-align:center;">
             <div style="font-size:0.75rem; font-weight:bold; color:var(--accent-cyan); margin-bottom:4px;">[ NEURAL PASS // 掃碼連線 ]</div>
             <div class="qr-box" id="myQrCodeBox" style="display:flex; justify-content:center; margin-top:8px;"></div>
@@ -408,7 +413,7 @@
     </div>
   </div>
 
-  <!-- ⚙️ 編輯個人檔案抽屜（修復 6：獨立 IG/X 風格編輯介面） -->
+  <!-- ⚙️ 編輯個人檔案抽屜（支援頭像上傳） -->
   <div class="nav-overlay" id="editProfileOverlay" onclick="closeEditProfileDrawer()"></div>
   <div class="side-nav" id="editProfileDrawer" style="right: -420px; width: 100%; max-width: 400px;">
     <div>
@@ -417,9 +422,13 @@
         <button onclick="closeEditProfileDrawer()" style="background:transparent; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
       </div>
       <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)" style="margin-top:16px;">
-        <div class="form-group">
-          <label>頭像圖片網址 (Avatar URL)</label>
-          <input type="text" id="profEditAvatar" placeholder="https://..." />
+        <div class="form-group" style="text-align: center; margin-bottom: 16px;">
+          <label style="margin-bottom: 8px;">特工頭像上傳 (Avatar Upload)</label>
+          <div style="display: flex; justify-content: center; align-items: center; gap: 12px;">
+            <img id="profEditAvatarPreview" src="" style="width: 50px; height: 50px; border-radius: 50%; border: 1px solid var(--accent-cyan); object-fit: cover;" />
+            <input type="file" id="avatarFileInput" accept="image/*" onchange="handleAvatarFileUpload(event)" style="font-size: 0.75rem; color: var(--text-muted); padding: 4px;" />
+          </div>
+          <input type="hidden" id="profEditAvatar" />
         </div>
         <div class="form-group">
           <label>特工代號 (Name)*</label>
@@ -557,7 +566,6 @@
           檢索登入身分中...
         </div>
 
-        <!-- ✦ 修復 4：無權限時提供明確的申請審核表單 -->
         <div id="creatorApplyBox" style="display:none; background:#000; border:1px dashed var(--accent-purple); padding:16px; border-radius:4px; margin-bottom:16px;">
           <div style="color:var(--accent-purple); font-weight:bold; font-size:0.85rem; margin-bottom:6px;">📝 申請開通創作者分潤權限</div>
           <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">填寫您的合作代號與推廣渠道，審核通過後即可解鎖後台管理與改價權限。</div>
@@ -655,7 +663,7 @@
         <div class="form-title">01 // 調用裝備清單明細</div>
         <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
         
-        <!-- ✦ 修復 7：恢復優惠碼折抵輸入區塊 -->
+        <!-- 優惠碼輸入區 -->
         <div style="margin-top: 14px; border-top: 1px dashed var(--panel-border); padding-top: 12px;">
           <label style="font-size:0.75rem; color:var(--accent-cyan); margin-bottom:4px;">▼ 折扣密鑰 / 優惠碼 (Promo Code)</label>
           <div style="display:flex; gap:6px;">
@@ -872,13 +880,13 @@
   </div>
 
   <!-- 載入腳本 -->
-  <script src="./js/config.js?v=20260903_v8"></script>
-  <script src="./js/auth.js?v=20260903_v8"></script>
-  <script src="./js/shop.js?v=20260903_v8"></script>
-  <script src="./js/tracker.js?v=20260903_v8"></script>
+  <script src="./js/config.js?v=20260903_v9"></script>
+  <script src="./js/auth.js?v=20260903_v9"></script>
+  <script src="./js/shop.js?v=20260903_v9"></script>
+  <script src="./js/tracker.js?v=20260903_v9"></script>
 
   <script>
-    // 開場貓眼與讀條動畫
+    // 開場原創向量貓眼與讀條動畫
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
       clearTimeout(introTimer);
@@ -943,7 +951,6 @@
       history.pushState({ view: 'order-history' }, '', '#history');
     }
 
-    // ✦ 實現名片 IG/X 風格編輯抽屜控制
     function openEditProfileDrawer() {
       const drawer = document.getElementById("editProfileDrawer");
       const overlay = document.getElementById("editProfileOverlay");
@@ -957,6 +964,9 @@
       document.getElementById("profEditTwitter").value = prof.twitter || "";
       document.getElementById("profEditBio").value = prof.bio || "";
       document.getElementById("profEditAvatar").value = prof.avatar || "";
+      
+      const previewImg = document.getElementById("profEditAvatarPreview");
+      if (previewImg) previewImg.src = prof.avatar || "";
 
       drawer.style.right = "0";
       overlay.classList.add("active");
