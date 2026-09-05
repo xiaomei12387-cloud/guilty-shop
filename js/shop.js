@@ -46,7 +46,7 @@ let cart = JSON.parse(localStorage.getItem("guilty_cart")) || [];
 let currentFilteredBrand = "all";
 let activeCheckoutItem = null;
 let activePromoDiscount = 0; 
-let activeDiscountRate = 1.0; // 8折用
+let activeDiscountRate = 1.0;
 
 function saveCart() {
   localStorage.setItem("guilty_cart", JSON.stringify(cart));
@@ -135,13 +135,16 @@ function toggleCart(isOpen) {
 function filterBrand(brand) {
   currentFilteredBrand = brand;
   document.querySelectorAll(".filter-btn").forEach(btn => btn.classList.remove("active"));
-  event.target.classList.add("active");
+  if (event && event.target) event.target.classList.add("active");
   renderProductCards();
 }
 
 function renderProductCards() {
   const grid = document.getElementById("productGrid");
-  if (!grid) return;
+  if (!grid) {
+    console.error("❌ 找不到 productGrid 容器，商城無法渲染！");
+    return;
+  }
 
   const filtered = currentFilteredBrand === "all" ? PRODUCTS : PRODUCTS.filter(p => p.brand === currentFilteredBrand);
 
@@ -179,49 +182,57 @@ function openProductDetail(productId) {
   document.getElementById("detailPriceDisplay").textContent = `NT$ ${p.price.toLocaleString()}`;
 
   const heroArea = document.getElementById("detailHeroImgArea");
-  heroArea.innerHTML = `
-    <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
-    <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
-    <img src="${p.images ? p.images[0] : p.img}" onclick="openLightbox(this.src)" style="width:100%; height:100%; object-fit:cover; cursor:zoom-in;" />
-  `;
+  if (heroArea) {
+    heroArea.innerHTML = `
+      <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+      <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+      <img src="${p.images ? p.images[0] : p.img}" onclick="openLightbox(this.src)" style="width:100%; height:100%; object-fit:cover; cursor:zoom-in;" />
+    `;
+  }
 
   const thumbsRow = document.getElementById("detailThumbsRow");
-  if (p.images && p.images.length > 1) {
-    thumbsRow.style.display = "flex";
-    thumbsRow.innerHTML = p.images.map((imgSrc, idx) => `
-      <img src="${imgSrc}" onclick="switchDetailMainImage('${imgSrc}')" style="width:65px; height:65px; object-fit:cover; border:1px solid ${idx===0?'var(--accent-cyan)'':'var(--panel-border)'}; cursor:pointer; border-radius:3px;" />
-    `).join('');
-  } else {
-    thumbsRow.style.display = "none";
-    thumbsRow.innerHTML = "";
+  if (thumbsRow) {
+    if (p.images && p.images.length > 1) {
+      thumbsRow.style.display = "flex";
+      thumbsRow.innerHTML = p.images.map((imgSrc, idx) => `
+        <img src="${imgSrc}" onclick="switchDetailMainImage('${imgSrc}')" style="width:65px; height:65px; object-fit:cover; border:1px solid ${idx===0?'var(--accent-cyan)':'var(--panel-border)'}; cursor:pointer; border-radius:3px;" />
+      `).join('');
+    } else {
+      thumbsRow.style.display = "none";
+      thumbsRow.innerHTML = "";
+    }
   }
 
   const optArea = document.getElementById("detailDynamicOptions");
-  let html = "";
-  if (p.specs && p.specs.length > 0) {
-    html += `
-      <div class="form-group">
-        <label>✦ 色彩 / 材質配置*</label>
-        <div class="radio-grid">
-          ${p.specs.map(s => `<div class="radio-card ${s === selectedProductSpec ? 'active' : ''}" onclick="selectSpec('${s}', this)">${s}</div>`).join('')}
+  if (optArea) {
+    let html = "";
+    if (p.specs && p.specs.length > 0) {
+      html += `
+        <div class="form-group">
+          <label>✦ 色彩 / 材質配置*</label>
+          <div class="radio-grid">
+            ${p.specs.map(s => `<div class="radio-card ${s === selectedProductSpec ? 'active' : ''}" onclick="selectSpec('${s}', this)">${s}</div>`).join('')}
+          </div>
         </div>
-      </div>
-    `;
+      `;
+    }
+    optArea.innerHTML = html;
   }
-  optArea.innerHTML = html;
 
   const chokerArea = document.getElementById("detailChokerSpecificArea");
-  if (p.chokerSizes && p.chokerSizes.length > 0) {
-    chokerArea.innerHTML = `
-      <div class="form-group">
-        <label>✦ 項圈尺寸選擇 (Size)*</label>
-        <div class="radio-grid">
-          ${p.chokerSizes.map(sz => `<div class="radio-card ${sz === selectedProductSize ? 'active' : ''}" onclick="selectChokerSize('${sz}', this)">${sz}</div>`).join('')}
+  if (chokerArea) {
+    if (p.chokerSizes && p.chokerSizes.length > 0) {
+      chokerArea.innerHTML = `
+        <div class="form-group">
+          <label>✦ 項圈尺寸選擇 (Size)*</label>
+          <div class="radio-grid">
+            ${p.chokerSizes.map(sz => `<div class="radio-card ${sz === selectedProductSize ? 'active' : ''}" onclick="selectChokerSize('${sz}', this)">${sz}</div>`).join('')}
+          </div>
         </div>
-      </div>
-    `;
-  } else {
-    chokerArea.innerHTML = "";
+      `;
+    } else {
+      chokerArea.innerHTML = "";
+    }
   }
 
   setActiveView("view-product-detail");
@@ -334,11 +345,9 @@ function renderCheckoutSummary() {
 
   let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
   
-  // 套用 8 折 (IAMSUB)
   let discountedSubtotal = Math.round(subtotal * activeDiscountRate);
   let finalSubtotal = Math.max(0, discountedSubtotal - activePromoDiscount);
 
-  // 門檻依折扣後實計金額計算
   activeShippingFee = (finalSubtotal >= 1800) ? 0 : 60;
   if (selectedShippingMethod === 'home') activeShippingFee = Math.max(activeShippingFee, 120);
   if (selectedShippingMethod === 'meetup') activeShippingFee = 0;
@@ -367,13 +376,11 @@ function applyPromoCode() {
   const code = input.value.trim().toUpperCase();
   
   if (code === "LOVEGUILTY") {
-    // 盲鳥價：貓痕義體項圈降至 990（僅限 ATM）
     let choker = cart.find(i => i.productId === "guilty-choker");
     if (!choker) {
       msg.innerHTML = `<span style="color:var(--danger-red);">❌ 密鑰適用失敗：購物車內需包含「貓痕義體項圈」</span>`;
       return;
     }
-    // 強制切換付款方式為 ATM
     const bankCard = document.getElementById("payMethodBank");
     if (bankCard) selectPayment('bank', bankCard);
 
@@ -383,13 +390,12 @@ function applyPromoCode() {
     renderCheckoutSummary();
   } 
   else if (code === "IAMSUB") {
-    activeDiscountRate = 0.8; // 8折
+    activeDiscountRate = 0.8;
     msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 首購認證 [IAMSUB] 啟動：全單享 8 折優惠</span>`;
     if (removeBtn) removeBtn.style.display = "inline-block";
     renderCheckoutSummary();
   } 
   else if (code === "WANG18X") {
-    // 早鳥價：貓痕義體項圈降至 1580
     let choker = cart.find(i => i.productId === "guilty-choker");
     if (!choker) {
       msg.innerHTML = `<span style="color:var(--danger-red);">❌ 密鑰適用失敗：購物車內需包含「貓痕義體項圈」</span>`;
