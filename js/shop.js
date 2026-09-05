@@ -141,10 +141,7 @@ function filterBrand(brand) {
 
 function renderProductCards() {
   const grid = document.getElementById("productGrid");
-  if (!grid) {
-    console.error("❌ 找不到 productGrid 容器，商城無法渲染！");
-    return;
-  }
+  if (!grid) return;
 
   const filtered = currentFilteredBrand === "all" ? PRODUCTS : PRODUCTS.filter(p => p.brand === currentFilteredBrand);
 
@@ -314,11 +311,12 @@ function buyNowFromDetail() {
 }
 
 // --------------------------------------------------------------------------
-// 💳 結帳與真實密鑰核銷引擎（LOVEGUILTY, IAMSUB, WANG18X）
+// 💳 結帳、優惠碼與串接試算表 StoreDB 超商聯動引擎
 // --------------------------------------------------------------------------
 let selectedShippingMethod = "711";
 let selectedPaymentMethod = "cod";
 let activeShippingFee = 60;
+let cachedStoreLocations = [];
 
 function proceedToCheckoutFromCart() {
   if (cart.length === 0) {
@@ -327,6 +325,7 @@ function proceedToCheckoutFromCart() {
   }
   toggleCart(false);
   renderCheckoutSummary();
+  loadCvsCities(selectedShippingMethod);
   setActiveView("view-checkout");
   history.pushState({ view: 'checkout' }, '', '#checkout');
 }
@@ -443,6 +442,7 @@ function selectShipping(method, el) {
     if (cvsBox) cvsBox.style.display = "block";
     if (manualBox) manualBox.style.display = "none";
     activeShippingFee = 60;
+    loadCvsCities(method);
   }
   renderCheckoutSummary();
 }
@@ -463,5 +463,111 @@ function selectPayment(method, el) {
   const note = document.getElementById("paymentNote");
   if (note) {
     note.textContent = method === 'cod' ? "貨到超商門市付款即可。" : "請於 24 小時內完成轉帳，並回報後台對帳。";
+  }
+}
+
+// --------------------------------------------------------------------------
+// 📍 StoreDB 超商試算表聯動邏輯
+// --------------------------------------------------------------------------
+function loadCvsCities(brand) {
+  const citySelect = document.getElementById("cvsCitySelect");
+  const distSelect = document.getElementById("cvsDistSelect");
+  const storeSelect = document.getElementById("cvsStoreSelect");
+  if (!citySelect) return;
+
+  citySelect.innerHTML = `<option value="">載入縣市中...</option>`;
+  if (distSelect) { distSelect.innerHTML = `<option value="">-- 行政區 --</option>`; distSelect.disabled = true; }
+  if (storeSelect) { storeSelect.innerHTML = `<option value="">-- 門市名稱 --</option>`; storeSelect.disabled = true; }
+
+  const url = `${CONFIG.API_URL}?action=getCvsLocations&brand=${brand}`;
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      cachedStoreLocations = data || [];
+      const cities = [...new Set(cachedStoreLocations.map(item => item.city))].filter(Boolean);
+      
+      citySelect.innerHTML = `<option value="">-- 選擇縣市 --</option>` + cities.map(c => `<option value="${c}">${c}</option>`).join('');
+    })
+    .catch(() => {
+      citySelect.innerHTML = `<option value="">載入失敗，請重試</option>`;
+    });
+}
+
+function onCityChanged(cityName) {
+  const distSelect = document.getElementById("cvsDistSelect");
+  const storeSelect = document.getElementById("cvsStoreSelect");
+  if (!distSelect) return;
+
+  if (!cityName) {
+    distSelect.innerHTML = `<option value="">-- 行政區 --</option>`;
+    distSelect.disabled = true;
+    if (storeSelect) { storeSelect.innerHTML = `<option value="">-- 門市名稱 --</option>`; storeSelect.disabled = true; }
+    return;
+  }
+
+  const filtered = cachedStoreLocations.filter(i => i.city === cityName);
+  const dists = [...new Set(filtered.map(item => item.dist))].filter(Boolean);
+
+  distSelect.innerHTML = `<option value="">-- 選擇行政區 --</option>` + dists.map(d => `<option value="${d}">${d}</option>`).join('');
+  distSelect.disabled = false;
+  if (storeSelect) { storeSelect.innerHTML = `<option value="">-- 門市名稱 --</option>`; storeSelect.disabled = true; }
+}
+
+function onDistChanged(distName) {
+  const storeSelect = document.getElementById("cvsStoreSelect");
+  const cityName = document.getElementById("cvsCitySelect").value;
+  if (!storeSelect) return;
+
+  if (!distName) {
+    storeSelect.innerHTML = `<option value="">-- 門市名稱 --</option>`;
+    storeSelect.disabled = true;
+    return;
+  }
+
+  const brand = selectedShippingMethod; // '711' 或 'family'
+  const url = `${CONFIG.API_URL}?action=getCvsLocations&brand=${brand}&city=${encodeURIComponent(cityName)}&dist=${encodeURIComponent(distName)}`;
+  
+  storeSelect.innerHTML = `<option value="">載入門市中...</option>`;
+  storeSelect.disabled = true;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(stores => {
+      if (!stores || stores.length === 0) {
+        storeSelect.innerHTML = `<option value="">此區域無可用門市</option>`;
+        return;
+      }
+      storeSelect.innerHTML = `<option value="">-- 選擇門市 (${stores.length}家) --</option>` + stores.map(s => `
+        <option value="${s.id}" data-name="${s.name}" data-addr="${s.addr}">${s.name} (${s.id}) - ${s.addr}</option>
+      `).join('');
+      storeSelect.disabled = false;
+    })
+    .catch(() => {
+      storeSelect.innerHTML = `<option value="">門市載入失敗</option>`;
+    });
+}
+
+function onStorePicked(storeId) {
+  const storeSelect = document.getElementById("cvsStoreSelect");
+  const confirmedCard = document.getElementById("storeConfirmedCard");
+  const nameText = document.getElementById("confirmedStoreNameText");
+  const addrText = document.getElementById("confirmedStoreAddrText");
+  const hiddenInput = document.getElementById("finalShippingLocation");
+
+  if (!storeId || !storeSelect) {
+    if (confirmedCard) confirmedCard.style.display = "none";
+    return;
+  }
+
+  const opt = storeSelect.options[storeSelect.selectedIndex];
+  const storeName = opt.getAttribute("data-name") || "";
+  const storeAddr = opt.getAttribute("data-addr") || "";
+  const fullText = `[${selectedShippingMethod.toUpperCase()}] ${storeName} (${storeId}) - ${storeAddr}`;
+
+  if (confirmedCard && nameText && addrText && hiddenInput) {
+    nameText.textContent = `${storeName} (代號: ${storeId})`;
+    addrText.textContent = storeAddr;
+    confirmedCard.style.display = "block";
+    hiddenInput.value = fullText;
   }
 }
