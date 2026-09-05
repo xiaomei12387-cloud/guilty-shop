@@ -347,15 +347,8 @@ initCreatorPortal = function() {
 };
 
 // --------------------------------------------------------------------------
-// 🛠️ 多元實踐項目管理與主畫面計數微調板
+// 🛠️ 多元實踐項目管理與自由自訂加減數量
 // --------------------------------------------------------------------------
-function getPartnerMetrics(partner) {
-  if (!partner.customMetrics || partner.customMetrics.length === 0) {
-    partner.customMetrics = JSON.parse(JSON.stringify(DEFAULT_METRICS));
-  }
-  return partner.customMetrics;
-}
-
 function renderMainMetricsBoard() {
   const container = document.getElementById("mainMetricsBoardGrid");
   if (!container) return;
@@ -372,10 +365,11 @@ function renderMainMetricsBoard() {
         <span style="font-size:0.78rem; color:var(--text-muted); font-weight:bold;">${m.name}</span>
         <button onclick="removeMetric(${idx})" style="background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:0.8rem;">✕</button>
       </div>
-      <div style="font-size:2rem; font-weight:900; color:${m.color === 'purple' ? 'var(--accent-purple)' : 'var(--accent-cyan)'}; margin-bottom:8px;">${m.count}</div>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-        <button onclick="adjustMainMetric(${idx}, 1)" style="background:#141418; border:1px solid var(--panel-border); color:#fff; padding:6px; font-weight:bold; cursor:pointer;">+1</button>
-        <button onclick="adjustMainMetric(${idx}, -1)" style="background:#141416; border:1px solid var(--panel-border); color:var(--text-muted); padding:6px; font-weight:bold; cursor:pointer;">-1</button>
+      <div style="font-size:2rem; font-weight:900; color:${m.color === 'purple' ? 'var(--accent-purple)' : 'var(--accent-cyan)'}; margin-bottom:8px; cursor:pointer;" onclick="customPromptMetric(${idx})" title="點擊數字可自訂數量">${m.count}</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px;">
+        <button onclick="adjustMainMetric(${idx}, 1)" style="background:#141418; border:1px solid var(--panel-border); color:#fff; padding:6px 0; font-weight:bold; cursor:pointer;">+1</button>
+        <button onclick="adjustMainMetric(${idx}, 5)" style="background:#141418; border:1px solid var(--panel-border); color:#fff; padding:6px 0; font-weight:bold; cursor:pointer;">+5</button>
+        <button onclick="customPromptMetric(${idx})" style="background:#141418; border:1px solid var(--accent-cyan); color:var(--accent-cyan); padding:6px 0; font-weight:bold; cursor:pointer;" title="自訂">自訂</button>
       </div>
     </div>
   `).join('');
@@ -392,38 +386,73 @@ function adjustMainMetric(idx, delta) {
   renderMainMetricsBoard();
 }
 
-function addCustomMetricPrompt() {
+function customPromptMetric(idx) {
   const activePartner = getActivePartner();
-  if (!activePartner) { alert("請先選定對象！"); return; }
-
-  const name = prompt("請輸入實踐項目名稱（例如：低溫滴蠟、電擊次數、繩縛段數、放置時間）：");
-  if (!name || !name.trim()) return;
-
-  const color = confirm("點擊『確定』設定為螢光綠，點擊『取消』設定為霓虹紫") ? "cyan" : "purple";
+  if (!activePartner) return;
   const metrics = getPartnerMetrics(activePartner);
+  const current = metrics[idx].count;
 
-  metrics.push({
-    id: "m_" + Date.now(),
-    name: name.trim(),
-    count: 0,
-    color: color
-  });
+  const input = prompt(`[ ${metrics.name} ]\n請輸入要調整的最終數量或增減值（若前面加 + 或 - 可直接增減，例如 +10 或 -3）：`, current);
+  if (input === null) return;
+
+  const trimmed = input.trim();
+  if (trimmed.startsWith("+") || trimmed.startsWith("-")) {
+    const val = parseInt(trimmed, 10);
+    if (!isNaN(val)) metrics[idx].count = Math.max(0, metrics[idx].count + val);
+  } else {
+    const val = parseInt(trimmed, 10);
+    if (!isNaN(val)) metrics[idx].count = Math.max(0, val);
+  }
 
   saveTrackerState();
   renderMainMetricsBoard();
 }
 
-function removeMetric(idx) {
-  const activePartner = getActivePartner();
-  if (!activePartner) return;
-  const metrics = getPartnerMetrics(activePartner);
-  if (metrics.length <= 1) {
-    alert("至少需保留一個實踐項目！");
-    return;
+// --------------------------------------------------------------------------
+// 👤 特工名片喜好與雷點「完全自訂新增」邏輯
+// --------------------------------------------------------------------------
+function renderDossierTags() {
+  const prof = trackerState.profile;
+  const prefBox = document.getElementById("myPrefTagsBox");
+  const limitBox = document.getElementById("myLimitTagsBox");
+
+  if (prefBox) {
+    const prefs = prof.allPreferences || DEFAULT_PRESET_TAGS.preferences;
+    prefBox.innerHTML = prefs.map(t => `
+      <div class="tag-pill ${(prof.selectedTags||[]).includes(t)?'active':''}" onclick="toggleTagSelection('pref','${t}')">${t}</div>
+    `).join('') + `<div class="tag-pill" style="border:1px dashed var(--accent-cyan); color:var(--accent-cyan);" onclick="addNewCustomTagPrompt('pref')">＋ 自訂喜歡</div>`;
   }
-  metrics.splice(idx, 1);
+
+  if (limitBox) {
+    const limits = prof.allLimits || DEFAULT_PRESET_TAGS.hardLimits;
+    limitBox.innerHTML = limits.map(l => `
+      <div class="tag-pill ${(prof.limits||[]).includes(l)?'active-limit':''}" onclick="toggleTagSelection('limit','${l}')">${l}</div>
+    `).join('') + `<div class="tag-pill" style="border:1px dashed var(--danger-red); color:var(--danger-red);" onclick="addNewCustomTagPrompt('limit')">＋ 自訂雷點</div>`;
+  }
+}
+
+function addNewCustomTagPrompt(type) {
+  const prof = trackerState.profile;
+  const label = type === 'pref' ? '喜歡的實踐項目/偏好' : '絕對雷點';
+  const val = prompt(`請輸入您想新增的【${label}】：`);
+  if (!val || !val.trim()) return;
+
+  const cleanVal = val.trim();
+  if (type === 'pref') {
+    if (!prof.allPreferences) prof.allPreferences = [...DEFAULT_PRESET_TAGS.preferences];
+    if (!prof.allPreferences.includes(cleanVal)) prof.allPreferences.push(cleanVal);
+    if (!prof.selectedTags) prof.selectedTags = [];
+    if (!prof.selectedTags.includes(cleanVal)) prof.selectedTags.push(cleanVal);
+  } else {
+    if (!prof.allLimits) prof.allLimits = [...DEFAULT_PRESET_TAGS.hardLimits];
+    if (!prof.allLimits.includes(cleanVal)) prof.allLimits.push(cleanVal);
+    if (!prof.limits) prof.limits = [];
+    if (!prof.limits.includes(cleanVal)) prof.limits.push(cleanVal);
+  }
+
   saveTrackerState();
-  renderMainMetricsBoard();
+  renderDossierTags();
+  renderMyQrCode();
 }
 
 // --------------------------------------------------------------------------
