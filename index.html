@@ -183,7 +183,7 @@
 
       </div>
 
-      <!-- 世界觀與三大矩陣 (歸位首頁大廳) -->
+      <!-- 世界觀與三大矩陣 -->
       <div style="width: 100%; max-width: 620px; margin-top: 30px; text-align: left;">
         <div class="manifesto-card" style="margin-bottom: 16px;">
           <div class="manifesto-quote">「在 2678 年的賽博秩序中，肉體拘束被視為原始粗糙。我們以參數化外骨骼接管神經，以匠人繩藝溫潤禁忌。」</div>
@@ -210,7 +210,7 @@
           </div>
         </div>
 
-        <!-- 主理成員戰術卡片 (包含正確身分的 KK) -->
+        <!-- 主理成員戰術卡片 -->
         <section style="margin-top: 36px; padding-top: 24px; border-top: 1px solid var(--panel-border);">
           <div style="font-size:0.75rem; color:var(--accent-cyan); letter-spacing:2px; margin-bottom:8px;">[ 04 // CREW DOSSIER ]</div>
           <h2 style="font-size:1.2rem; margin-bottom:12px; color:#fff;">核心檔案：主理成員</h2>
@@ -268,6 +268,7 @@
           <button class="filter-btn" onclick="filterBrand('guilty')">欲室｜共犯 義體</button>
           <button class="filter-btn" onclick="filterBrand('shushi')">束室特選繩藝</button>
         </div>
+        <!-- ✦ 核心修復：補回商品列表渲染容器 -->
         <div class="product-list-grid" id="productGrid"></div>
       </section>
     </div>
@@ -301,7 +302,7 @@
         <div id="sessionHudArea"></div>
       </div>
 
-      <!-- 主畫面計數控制板（恢復主畫面即時計數微調） -->
+      <!-- 主畫面計數控制板 -->
       <div class="form-box">
         <div class="form-title">即時實踐次數微調板 (METRICS BOARD)</div>
         <div id="mainMetricsBoardGrid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:16px;"></div>
@@ -343,7 +344,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 5. 【特工名片】 (view-dossier - IG/X 風格重構) -->
+  <!-- 5. 【特工名片】 (view-dossier) -->
   <!-- ======================================================== -->
   <div id="view-dossier" class="view-section">
     <div class="detail-container" style="max-width: 600px;">
@@ -358,14 +359,11 @@
         </div>
       </div>
 
-      <!-- IG / X 風格名片主卡片 -->
       <div id="dossierExportTarget" style="background:#0c0c0f; border:1px solid var(--panel-border); border-radius:8px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,0.7);">
-        <!-- 頂部封面橫幅 -->
         <div style="height:110px; background:linear-gradient(135deg, #12121a, #08080a); border-bottom:1px solid var(--panel-border); position:relative;">
           <div style="position:absolute; top:12px; right:14px; font-size:0.65rem; font-family:monospace; color:var(--accent-cyan); background:rgba(0,255,136,0.1); padding:2px 8px; border-radius:2px;">SECURE ID</div>
         </div>
 
-        <!-- 頭像與基本資訊區 -->
         <div style="padding: 0 20px 20px; position: relative;">
           <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:-42px; margin-bottom:12px;">
             <div style="width:84px; height:84px; border-radius:50%; border:3px solid var(--accent-cyan); background:#000; overflow:hidden; box-shadow:0 0 20px rgba(0,255,136,0.3);">
@@ -386,14 +384,12 @@
             <a id="dossierTwitterLink" href="#" target="_blank" style="font-size:0.78rem; color:#38bdf8; text-decoration:none; display:none;">𝕏 連結帳號 ↗</a>
           </div>
 
-          <!-- 數據追蹤統計列 (IG 風格) -->
           <div style="display:flex; gap:20px; border-top:1px solid var(--panel-border); border-bottom:1px solid var(--panel-border); padding:10px 0; margin-bottom:16px; font-size:0.78rem;">
             <div><strong style="color:#fff;" id="statFriendsCount">1</strong> <span style="color:var(--text-muted);">好友</span></div>
             <div><strong style="color:#fff;" id="statPartnersCount">1</strong> <span style="color:var(--text-muted);">實踐對象</span></div>
             <div><strong style="color:#fff;" id="statSessionsCount">0</strong> <span style="color:var(--text-muted);">封存案件</span></div>
           </div>
 
-          <!-- 偏好與雷點矩陣 -->
           <div style="margin-bottom:14px;">
             <label style="font-size:0.72rem; color:var(--accent-cyan); font-weight:bold; margin-bottom:6px; display:block;">✦ 實踐偏好 (PREFERENCES)：</label>
             <div class="tags-wrap-box" id="myPrefTagsBox"></div>
@@ -403,7 +399,6 @@
             <div class="tags-wrap-box" id="myLimitTagsBox"></div>
           </div>
 
-          <!-- QR 碼名片捷徑 -->
           <div style="margin-top:20px; background:#050508; border:1px solid var(--panel-border); padding:14px; border-radius:6px; text-align:center;">
             <div style="font-size:0.75rem; font-weight:bold; color:var(--accent-cyan); margin-bottom:4px;">[ NEURAL PASS // 掃碼連線 ]</div>
             <div class="qr-box" id="myQrCodeBox" style="display:flex; justify-content:center; margin-top:8px;"></div>
@@ -413,7 +408,7 @@
     </div>
   </div>
 
-  <!-- ⚙️ 編輯個人檔案抽屜（支援頭像上傳） -->
+  <!-- ⚙️ 編輯個人檔案抽屜 -->
   <div class="nav-overlay" id="editProfileOverlay" onclick="closeEditProfileDrawer()"></div>
   <div class="side-nav" id="editProfileDrawer" style="right: -420px; width: 100%; max-width: 400px;">
     <div>
@@ -548,7 +543,7 @@
   </div>
 
   <!-- ======================================================== -->
-  <!-- 7. 【創作者合作後台（含權限申請表單）】 (view-creator-portal) -->
+  <!-- 7. 【創作者合作後台】 (view-creator-portal) -->
   <!-- ======================================================== -->
   <div id="view-creator-portal" class="view-section">
     <div class="detail-container">
@@ -663,7 +658,6 @@
         <div class="form-title">01 // 調用裝備清單明細</div>
         <div id="checkoutOrderItemsList" style="margin-bottom: 12px;"></div>
         
-        <!-- 優惠碼輸入區 -->
         <div style="margin-top: 14px; border-top: 1px dashed var(--panel-border); padding-top: 12px;">
           <label style="font-size:0.75rem; color:var(--accent-cyan); margin-bottom:4px;">▼ 折扣密鑰 / 優惠碼 (Promo Code)</label>
           <div style="display:flex; gap:6px;">
@@ -880,13 +874,12 @@
   </div>
 
   <!-- 載入腳本 -->
-  <script src="./js/config.js?v=20260903_v9"></script>
-  <script src="./js/auth.js?v=20260903_v9"></script>
-  <script src="./js/shop.js?v=20260903_v9"></script>
-  <script src="./js/tracker.js?v=20260903_v9"></script>
+  <script src="./js/config.js?v=20260903_v10"></script>
+  <script src="./js/auth.js?v=20260903_v10"></script>
+  <script src="./js/shop.js?v=20260903_v10"></script>
+  <script src="./js/tracker.js?v=20260903_v10"></script>
 
   <script>
-    // 開場原創向量貓眼與讀條動畫
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
       clearTimeout(introTimer);
