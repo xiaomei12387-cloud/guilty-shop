@@ -542,8 +542,8 @@
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- 7. 【創作者合作後台】 (view-creator-portal) -->
+<!-- ======================================================== -->
+  <!-- 7. 【創作者合作後台（含金鑰驗證與審核申請）】 (view-creator-portal) -->
   <!-- ======================================================== -->
   <div id="view-creator-portal" class="view-section">
     <div class="detail-container">
@@ -561,11 +561,23 @@
           檢索登入身分中...
         </div>
 
+        <!-- ✦ 新增：已有審核通過的金鑰？直接輸入驗證區塊 -->
+        <div id="creatorVerifyKeyBox" style="display:none; background:#000; border:1px solid var(--accent-purple); padding:14px; border-radius:4px; margin-bottom:16px;">
+          <div style="color:var(--accent-purple); font-weight:bold; font-size:0.82rem; margin-bottom:4px;">🔑 已取得審核金鑰？在此輸入解鎖後台</div>
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:10px;">輸入主理人發放的專屬 AccessKey（例如 GK-XXXXXX）即可綁定權限。</div>
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="inputCreatorAccessKey" placeholder="輸入專屬金鑰 (AccessKey)..." style="padding:8px; font-size:0.8rem; text-transform:uppercase;" />
+            <button class="btn-submit" onclick="verifyCreatorAccessKey()" style="background:var(--accent-purple); color:#fff; padding:0 14px; font-size:0.8rem; width:auto;">立即驗證</button>
+          </div>
+          <div id="verifyKeyMsg" style="font-size:0.7rem; margin-top:6px;"></div>
+        </div>
+
+        <!-- 尚未申請時顯示的申請表單 -->
         <div id="creatorApplyBox" style="display:none; background:#000; border:1px dashed var(--accent-purple); padding:16px; border-radius:4px; margin-bottom:16px;">
           <div style="color:var(--accent-purple); font-weight:bold; font-size:0.85rem; margin-bottom:6px;">📝 申請開通創作者分潤權限</div>
-          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">填寫您的合作代號與推廣渠道，審核通過後即可解鎖後台管理與改價權限。</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">填寫您的合作代號與推廣渠道，審核通過後將發放專屬金鑰。</div>
           <div class="form-group">
-            <label>申請人特工代號</label>
+            <label>申請人特工代號 / 品牌名</label>
             <input type="text" id="applyCreatorName" placeholder="輸入姓名或代號..." style="padding:8px;" />
           </div>
           <div class="form-group">
@@ -575,6 +587,7 @@
           <button class="btn-submit" onclick="submitCreatorApplication()" style="background:var(--accent-purple); color:#fff; padding:10px; font-size:0.8rem;">提交審核申請</button>
         </div>
 
+        <!-- 審核通過後的創作者儀表板 -->
         <div id="creatorDashboardBox" style="display:none;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3 style="color:#fff; font-size:1.1rem;" id="creatorNameText">特工創作者</h3>
@@ -583,11 +596,11 @@
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0;">
             <div style="background:#000; padding:12px; border:1px solid var(--panel-border); text-align:center;">
               <div style="font-size:0.7rem; color:var(--text-muted);">累計推薦調用次數</div>
-              <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-purple);" id="creatorOrderCount">3 件</div>
+              <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-purple);" id="creatorOrderCount">0 件</div>
             </div>
             <div style="background:#000; padding:12px; border:1px solid var(--panel-border); text-align:center;">
               <div style="font-size:0.7rem; color:var(--text-muted);">預計累計分潤收益</div>
-              <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-cyan);" id="creatorRewardTotal">NT$ 720</div>
+              <div style="font-size:1.6rem; font-weight:bold; color:var(--accent-cyan);" id="creatorRewardTotal">NT$ 0</div>
             </div>
           </div>
         </div>
