@@ -32,61 +32,61 @@
     }
 
     header {
-      padding: 12px 18px;
+      padding: 10px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
     }
-    .info-partner { font-size: 1rem; font-weight: bold; }
-    .info-safeword { color: var(--accent-cyan); font-weight: bold; font-size: 1rem; }
+    .info-partner { font-size: 0.95rem; font-weight: bold; }
+    .info-safeword { color: var(--accent-cyan); font-weight: bold; font-size: 0.95rem; }
 
-    /* 中央極限碼錶 */
+    /* 中央碼錶區 */
     .timer-section {
       text-align: center;
-      padding: 10px 0;
+      padding: 4px 0;
     }
     .timer-label {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       letter-spacing: 3px;
       color: var(--accent-cyan);
     }
     #timerDisplay {
-      font-size: clamp(3.8rem, 16vw, 7rem);
+      font-size: clamp(3.2rem, 14vw, 5.8rem);
       font-weight: 900;
       color: var(--accent-cyan);
-      text-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+      text-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
       line-height: 1;
     }
 
-    /* 動態多項目計數網格 */
+    /* 多元動態計數網格 */
     .counter-grid {
       flex: 1;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 10px;
-      padding: 0 14px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+      padding: 0 12px;
       overflow-y: auto;
-      max-height: 38vh;
+      max-height: 32vh;
     }
     .counter-card {
       background: #0d0d12;
       border: 2px solid var(--accent-cyan);
       border-radius: 6px;
-      padding: 12px;
+      padding: 10px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: inset 0 0 15px rgba(0, 255, 136, 0.05);
+      box-shadow: inset 0 0 12px rgba(0, 255, 136, 0.05);
     }
     .counter-card.purple-theme {
       border-color: var(--accent-purple);
-      box-shadow: inset 0 0 15px rgba(181, 23, 158, 0.05);
+      box-shadow: inset 0 0 12px rgba(181, 23, 158, 0.05);
     }
     .counter-top { display: flex; justify-content: space-between; align-items: center; }
-    .counter-name { font-size: 0.8rem; color: #8c8f96; font-weight: bold; }
-    .counter-num { font-size: 2.4rem; font-weight: 900; line-height: 1; margin: 6px 0; }
+    .counter-name { font-size: 0.75rem; color: #8c8f96; font-weight: bold; }
+    .counter-num { font-size: 2.2rem; font-weight: 900; line-height: 1; margin: 4px 0; }
     
     .counter-ctrl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
     .ctrl-btn {
@@ -94,48 +94,48 @@
       border: 1px solid rgba(255,255,255,0.15);
       color: #fff;
       font-weight: bold;
-      padding: 8px 0;
-      font-size: 0.85rem;
+      padding: 7px 0;
+      font-size: 0.8rem;
       border-radius: 4px;
       cursor: pointer;
     }
     .ctrl-btn:active { background: #fff; color: #000; }
 
-    /* 底部超巨型盲按急停板與結案 (佔據 40%+ 面積) */
+    /* 底部超巨型盲按急停板（極限放大至佔據半壁江山） */
     .bottom-controls {
-      padding: 12px 14px;
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      background: rgba(0,0,0,0.9);
-      border-top: 1px solid rgba(255,255,255,0.1);
+      gap: 6px;
+      background: rgba(0,0,0,0.95);
+      border-top: 2px solid #ff334b;
     }
     .btn-panic-massive {
       width: 100%;
-      height: clamp(90px, 16vh, 130px);
+      height: clamp(120px, 22vh, 170px);
       background: #ff334b;
-      border: 3px solid #fff;
+      border: 4px solid #fff;
       color: #fff;
-      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      font-size: clamp(1.6rem, 6vw, 2.6rem);
       font-weight: 900;
-      letter-spacing: 2px;
-      border-radius: 8px;
+      letter-spacing: 3px;
+      border-radius: 10px;
       cursor: pointer;
-      box-shadow: 0 0 45px rgba(255, 51, 75, 0.8);
-      animation: panicGlow 1.2s infinite alternate;
+      box-shadow: 0 0 60px rgba(255, 51, 75, 0.9);
+      animation: panicGlow 1s infinite alternate;
     }
     @keyframes panicGlow {
-      from { box-shadow: 0 0 20px rgba(255, 51, 75, 0.4); transform: scale(1); }
-      to { box-shadow: 0 0 55px rgba(255, 51, 75, 1); transform: scale(1.01); }
+      from { box-shadow: 0 0 25px rgba(255, 51, 75, 0.5); transform: scale(1); }
+      to { box-shadow: 0 0 70px rgba(255, 51, 75, 1); transform: scale(1.02); }
     }
 
     .btn-finish {
       width: 100%;
-      padding: 12px;
+      padding: 10px;
       background: #141418;
       border: 1px solid rgba(255,255,255,0.2);
       color: #a1a1aa;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
@@ -145,7 +145,7 @@
       position: fixed;
       inset: 0;
       background: #000;
-      border: 10px solid #ff334b;
+      border: 12px solid #ff334b;
       z-index: 99999;
       display: none;
       flex-direction: column;
@@ -161,25 +161,23 @@
 
   <header>
     <div>
-      <div style="font-size:0.65rem; color:#8c8f96;">實踐對象</div>
+      <div style="font-size:0.6rem; color:#8c8f96;">實踐對象</div>
       <div class="info-partner" id="partnerNameDisplay">載入中...</div>
     </div>
     <div style="text-align:right;">
-      <div style="font-size:0.65rem; color:#8c8f96;">安全詞</div>
+      <div style="font-size:0.6rem; color:#8c8f96;">安全詞</div>
       <div class="info-safeword" id="safewordDisplay">MAYDAY</div>
     </div>
   </header>
 
-  <!-- 中央極限碼錶 -->
   <div class="timer-section">
-    <div class="timer-label">● SESSION RUNNING</div>
+    <div class="timer-label">● PROTOCOL RUNNING</div>
     <div id="timerDisplay">00:00</div>
   </div>
 
-  <!-- 多元動態計數網格（支援 [+1] / [+5]） -->
   <div class="counter-grid" id="sessionCounterGrid"></div>
 
-  <!-- 底部超巨大盲按急停板 -->
+  <!-- 底部極限加大急停板 -->
   <div class="bottom-controls">
     <button class="btn-panic-massive" onclick="triggerPanic()">
       🛑 SAFEWORD 急停停止
@@ -189,16 +187,15 @@
     </button>
   </div>
 
-  <!-- 急停全面封鎖畫面（持續警報與震動） -->
   <div id="panicOverlay">
-    <div style="font-size:clamp(1.8rem, 6vw, 2.6rem); color:#ff334b; font-weight:900; letter-spacing:4px; margin-bottom:14px;">
+    <div style="font-size:clamp(2rem, 7vw, 3rem); color:#ff334b; font-weight:900; letter-spacing:4px; margin-bottom:12px;">
       ⚠️ 急停協議觸發 ⚠️
     </div>
-    <div style="font-size:1.1rem; color:#fff; margin-bottom:20px;">
-      安全詞：<span id="panicWordText" style="color:#ff334b; font-size:1.8rem; font-weight:bold;">MAYDAY</span>
+    <div style="font-size:1.1rem; color:#fff; margin-bottom:18px;">
+      安全詞：<span id="panicWordText" style="color:#ff334b; font-size:2rem; font-weight:bold;">MAYDAY</span>
     </div>
-    <div style="max-width:420px; font-size:0.85rem; color:#a1a1aa; line-height:1.7; margin-bottom:26px;">
-      警報已鎖定！所有動作即刻停止。解除束縛器具，提供溫水，進行 Aftercare 照護。
+    <div style="max-width:420px; font-size:0.85rem; color:#a1a1aa; line-height:1.7; margin-bottom:24px;">
+      警報強烈發信中！所有動作即刻停止。解開束縛器具，給予溫水，進行 Aftercare 照護。
     </div>
     <button onclick="dismissAndReturn()" style="padding:16px 36px; background:#fff; color:#000; border:none; font-weight:bold; font-size:1rem; cursor:pointer; border-radius:4px;">
       [ 確認雙方安全 // 解除警報並退出 ]
@@ -275,10 +272,10 @@
         if (isEmergency) {
           osc.type = "sawtooth";
           osc.frequency.setValueAtTime(880, ctx.currentTime);
-          osc.frequency.exponentialRampToValueAtTime(320, ctx.currentTime + 0.3);
-          gain.gain.setValueAtTime(0.4, ctx.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-          osc.start(); osc.stop(ctx.currentTime + 0.3);
+          osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.35);
+          gain.gain.setValueAtTime(0.5, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+          osc.start(); osc.stop(ctx.currentTime + 0.35);
         } else {
           osc.type = "sine";
           osc.frequency.setValueAtTime(650, ctx.currentTime);
@@ -297,20 +294,19 @@
       if (el) el.textContent = sessionMetrics[index].count;
     }
 
-    // 🛑 觸發持續急停警報與連續震動
+    // 🛑 觸發持續警報音效與連續強震
     function triggerPanic() {
       clearInterval(timer);
       document.getElementById("panicOverlay").classList.add("active");
 
-      // 持續發出警報音效與震動迴圈
       playBeep(true);
-      if (navigator.vibrate) navigator.vibrate([400, 150, 400, 150, 800]);
+      if (navigator.vibrate) navigator.vibrate([500, 150, 500, 150, 1000]);
 
       clearInterval(emergencyInterval);
       emergencyInterval = setInterval(() => {
         playBeep(true);
-        if (navigator.vibrate) navigator.vibrate([400, 150, 400]);
-      }, 1800);
+        if (navigator.vibrate) navigator.vibrate([500, 150, 500]);
+      }, 1500);
     }
 
     function saveSessionRecord(noteText) {
