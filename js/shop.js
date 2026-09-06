@@ -524,7 +524,7 @@ function onDistChanged(distName) {
     return;
   }
 
-  const brand = selectedShippingMethod; // '711' 或 'family'
+  const brand = selectedShippingMethod; 
   const url = `${CONFIG.API_URL}?action=getCvsLocations&brand=${brand}&city=${encodeURIComponent(cityName)}&dist=${encodeURIComponent(distName)}`;
   
   storeSelect.innerHTML = `<option value="">載入門市中...</option>`;
@@ -570,4 +570,32 @@ function onStorePicked(storeId) {
     confirmedCard.style.display = "block";
     hiddenInput.value = fullText;
   }
+}
+
+// --------------------------------------------------------------------------
+// 📄 渲染訂單成功明細與 ATM 匯款資訊
+// --------------------------------------------------------------------------
+function renderSuccessOrderSummary(order) {
+  const detailsBox = document.getElementById("successOrderDetailsContent");
+  const atmBox = document.getElementById("successAtmBox");
+  const atmTotal = document.getElementById("successAtmTotal");
+  if (!detailsBox) return;
+
+  if (order.payment.includes("ATM") || order.payment.includes("銀行")) {
+    if (atmBox) atmBox.style.display = "block";
+    if (atmTotal) atmTotal.textContent = `NT$ ${order.price.toLocaleString()}`;
+  } else {
+    if (atmBox) atmBox.style.display = "none";
+  }
+
+  detailsBox.innerHTML = `
+    <div><strong>案件編號：</strong><span style="color:var(--accent-cyan);">${order.orderId}</span></div>
+    <div><strong>調用裝備：</strong>${order.product}</div>
+    <div><strong>協議總額：</strong><span style="color:var(--accent-cyan); font-weight:bold;">NT$ ${order.price.toLocaleString()} (${order.payment})</span></div>
+    <div><strong>收件特工：</strong>${order.name} (${order.phone})</div>
+    <div><strong>安全信箱：</strong>${order.email || '未提供'}</div>
+    <div><strong>配送途徑：</strong>${order.shipping}</div>
+    <div><strong>取件地點：</strong><span style="color:#fff;">${order.location}</span></div>
+    ${order.engraving ? `<div><strong>客製備註：</strong>${order.engraving}</div>` : ''}
+  `;
 }
