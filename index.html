@@ -1031,6 +1031,86 @@
     history.replaceState({ view: 'landing' }, '', '#landing');
     updateMemberUI();
     updateCartUI();
+
+    // ✦ 結帳表單送出與串接 Apps Script 邏輯
+  const checkoutFormEl = document.getElementById("checkoutForm");
+  if (checkoutFormEl) {
+    checkoutFormEl.addEventListener("submit", function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById("custName").value.trim();
+      const email = document.getElementById("custEmail").value.trim();
+      const phone = document.getElementById("custPhone").value.trim();
+      const engraving = document.getElementById("custEngraving").value.trim();
+      
+      let location = "";
+      if (selectedShippingMethod === 'home' || selectedShippingMethod === 'meetup') {
+        location = document.getElementById("manualShippingLocation").value.trim();
+      } else {
+        location = document.getElementById("finalShippingLocation").value;
+      }
+
+      if (!location) {
+        alert("⚠️ 請選擇或填寫完整的取件地點/超商門市！");
+        return;
+      }
+
+      const orderId = "GUILTY-" + Date.now().toString().slice(-6);
+      const productSummary = cart.map(i => `${i.title} (規格:${i.spec}) x${i.qty}`).join(" ｜ ");
+      
+      let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+      let discounted = Math.round(subtotal * activeDiscountRate) - activePromoDiscount;
+      let finalPrice = Math.max(0, discounted) + activeShippingFee;
+
+      const orderPayload = {
+        action: "createOrder",
+        orderId: orderId,
+        createdAt: new Date().toLocaleString("zh-TW"),
+        product: productSummary,
+        price: finalPrice,
+        name: name,
+        phone: phone,
+        email: email,
+        engraving: engraving,
+        shipping: selectedShippingMethod === '711' ? '7-11 超商' : selectedShippingMethod === 'family' ? '全家超商' : selectedShippingMethod === 'home' ? '黑貓宅配' : '線下面交',
+        location: location,
+        payment: selectedPaymentMethod === 'cod' ? '超商取貨付款' : '銀行 ATM 匯款',
+        status: "[ 排程調用中 ]",
+        saveToProfile: document.getElementById("saveToProfileCheck").checked
+      };
+
+      // 1. 發送至 Apps Script (寫入試算表與發送 Discord 通知)
+      fetch(CONFIG.API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(orderPayload)
+      }).then(() => {
+        // 2. 渲染成功明細到 view-success 畫面
+        if (typeof renderSuccessOrderSummary === "function") {
+          renderSuccessOrderSummary(orderPayload);
+        }
+
+        // 3. 清空購物車並跳轉
+        localStorage.removeItem("guilty_cart");
+        cart = [];
+        updateCartUI();
+        setActiveView("view-success");
+        history.pushState({ view: 'success' }, '', '#success');
+      }).catch((err) => {
+        console.error(err);
+        // 即使網路異常也強制進入成功畫面並顯示明細
+        if (typeof renderSuccessOrderSummary === "function") {
+          renderSuccessOrderSummary(orderPayload);
+        }
+        localStorage.removeItem("guilty_cart");
+        cart = [];
+        updateCartUI();
+        setActiveView("view-success");
+        history.pushState({ view: 'success' }, '', '#success');
+      });
+    });
+  }
   </script>
 </body>
 </html>
