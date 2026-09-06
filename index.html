@@ -753,14 +753,42 @@
 
   <!-- 11. 成功下單頁面 (view-success) -->
   <div id="view-success" class="view-section">
-    <div class="detail-container">
-      <div class="success-card">
-        <div class="success-badge">[ PROTOCOL // CASE LOCKED ]</div>
-        <h2 class="success-title">認罪協議已簽署完畢</h2>
-        <p style="color:var(--text-muted); font-size:0.85rem;">裝備調用指令已注入終端，檔案已加密封存。</p>
-        <div style="display:flex; gap:10px; margin-top:24px;">
-          <button class="btn-submit" style="padding:12px 20px;" onclick="showLandingView()">返回大廳 (HOME)</button>
+    <div class="detail-container" style="max-width: 600px;">
+      <div style="background: rgba(10, 10, 14, 0.95); border: 1px solid var(--accent-cyan); border-radius: 6px; padding: 28px 24px; box-shadow: 0 0 30px rgba(0, 255, 136, 0.15);">
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+          <div style="display:inline-block; font-size:0.7rem; font-family:monospace; color:var(--accent-cyan); background:rgba(0, 255, 136, 0.1); border:1px solid var(--accent-cyan); padding:3px 10px; margin-bottom:8px;">
+            [ PROTOCOL // CASE LOCKED ]
+          </div>
+          <h2 style="font-size: 1.35rem; color: #fff; font-weight: bold; margin-bottom: 4px;">認罪協議已簽署完畢</h2>
+          <p style="color: var(--text-muted); font-size: 0.78rem;">裝備調用指令已注入終端，檔案與訂單明細已加密封存。</p>
         </div>
+
+        <!-- 💰 若選擇 ATM 匯款，顯示專屬匯款資訊 -->
+        <div id="successAtmBox" style="display:none; background: #141418; border: 1px dashed var(--accent-cyan); padding: 14px; border-radius: 4px; margin-bottom: 16px;">
+          <div style="color: var(--accent-cyan); font-weight: bold; font-size: 0.82rem; margin-bottom: 6px;">🏦 銀行 ATM 匯款專屬通道：</div>
+        <div style="font-size: 0.78rem; color: #d4d4d8; line-height: 1.6;">
+            • <strong>匯款銀行</strong>：玉山銀行 (代號 808)<br>
+            • <strong>指定帳號</strong>：<code>0942-940-181818</code><br>
+            • <strong>應付總額</strong>：<span id="successAtmTotal" style="color: var(--accent-cyan); font-weight: bold; font-size: 0.95rem;">NT$ 0</span><br>
+            <span style="color: var(--danger-red); font-size: 0.72rem; display: block; margin-top: 4px;">⚠️ 請於 24 小時內完成轉帳，並至 Discord #ticket 頻道回報帳號末五碼對帳。</span>
+          </div>
+        </div>
+
+        <!-- 📋 訂單與收件明細卡片 -->
+        <div style="background: #08080a; border: 1px solid var(--panel-border); padding: 16px; border-radius: 4px; margin-bottom: 20px;">
+          <div style="font-size: 0.75rem; color: var(--accent-cyan); font-weight: bold; margin-bottom: 10px; border-bottom: 1px dashed var(--panel-border); padding-bottom: 6px;">
+            📄 調用案件詳細明細 (DOSSIER SUMMARY)
+          </div>
+          <div id="successOrderDetailsContent" style="font-size: 0.78rem; color: #d4d4d8; line-height: 1.8;">
+            <!-- 動態注入明細 -->
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-submit" style="padding: 12px; font-size: 0.85rem;" onclick="showLandingView()">返回大廳 (HOME)</button>
+        </div>
+
       </div>
     </div>
   </div>
