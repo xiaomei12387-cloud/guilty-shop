@@ -518,7 +518,7 @@ function renderProfileDossier() {
   if (nd) nd.textContent = prof.name || "特工";
   if (rb) rb.textContent = prof.role || "支配者 (Dom)";
   if (idDisp) idDisp.textContent = `ID: ${prof.agentId || 'AGENT-001'}`;
-  if (bd) bd.textContent = prof.bio || "尚未填寫特工宣言與簡介。";
+  if (bd) bd.textContent = prof.bio || "尚未填寫特工宣言與實踐簡介。";
 
   if (twLink) {
     if (prof.twitter) {
@@ -600,7 +600,6 @@ function addNewCustomTagPrompt(type) {
   renderMyQrCode();
 }
 
-// ✦ 升級版：生成通用網址 QR 碼，支援 LINE、iPhone/Android 原生相機與 IG 隨掃即開
 function renderMyQrCode() {
   const qrContainer = document.getElementById("myQrCodeBox");
   if (!qrContainer) return;
@@ -670,97 +669,57 @@ function exportDossierToImage() {
 }
 
 // --------------------------------------------------------------------------
-// 📷 升級版：行動裝置相機鏡頭安全支援與自動防呆備援
+// 📷 終端原生相機 / 照片解析掃碼引擎（100% 解決手機瀏覽器黑屏或無法啟動鏡頭的問題）
 // --------------------------------------------------------------------------
 function openQrScanner() {
-  const modal = document.getElementById("scannerModal");
-  const readerBox = document.getElementById("qrReaderBox");
-  if (!modal || !readerBox) {
-    addByIdFallback();
-    return;
-  }
+  let fileInput = document.getElementById("nativeQrFileInput");
+  if (!fileInput) {
+    fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.id = "nativeQrFileInput";
+    fileInput.accept = "image/*";
+    fileInput.capture = "environment"; // 優先調用後鏡頭拍照
+    fileInput.style.display = "none";
+    fileInput.onchange = function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
 
-  readerBox.style.width = "100%";
-  readerBox.style.minHeight = "280px";
-  readerBox.style.background = "#000";
-  readerBox.innerHTML = "";
-
-  modal.classList.add("active");
-
-  const isSecure = window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-  
-  if (!isSecure) {
-    alert("⚠️ 安全限制：行動裝置瀏覽器規定必須在 HTTPS 安全連線下才能啟動相機鏡頭。將自動切換為手動輸入特工 ID。");
-    closeQrScanner();
-    addFriendByIdPrompt();
-    return;
-  }
-
-  try {
-    if (typeof Html5Qrcode !== "undefined") {
-      const html5QrCode = new Html5Qrcode("qrReaderBox");
-      html5QrScannerInstance = html5QrCode;
-
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 220, height: 220 } },
-        (decodedText) => {
-          html5QrCode.stop().then(() => {
+      if (typeof Html5Qrcode !== "undefined") {
+        const html5QrCode = new Html5Qrcode("hiddenQrParseBox");
+        html5QrCode.scanFile(file, true)
+          .then(decodedText => {
             handleScannedQrResult(decodedText);
-          }).catch(() => {
-            handleScannedQrResult(decodedText);
+          })
+          .catch(err => {
+            alert("❌ 無法從照片中辨識出有效的 QR 碼，請確保畫面清晰或改用手動輸入 ID！");
+            addFriendByIdPrompt();
           });
-        },
-        (errorMessage) => {}
-      ).catch(err => {
-        console.warn("相機啟動失敗，改用手動輸入：", err);
-        closeQrScanner();
-        alert("無法啟動相機鏡頭（可能未授權或無可用相機）。請改用手動輸入 ID！");
+      } else {
+        alert("❌ 掃碼解析引擎未載入，請改用手動輸入 ID！");
         addFriendByIdPrompt();
-      });
-    } else if (typeof Html5QrcodeScanner !== "undefined") {
-      if (!html5QrScannerInstance) {
-        html5QrScannerInstance = new Html5QrcodeScanner("qrReaderBox", { fps: 10, qrbox: 250 }, false);
       }
-      html5QrScannerInstance.render((decodedText) => {
-        closeQrScanner();
-        handleScannedQrResult(decodedText);
-      }, () => {});
-    } else {
-      closeQrScanner();
-      addFriendByIdPrompt();
-    }
-  } catch (e) {
-    console.error(e);
-    closeQrScanner();
-    addFriendByIdPrompt();
+    };
+    document.body.appendChild(fileInput);
   }
+
+  let parseBox = document.getElementById("hiddenQrParseBox");
+  if (!parseBox) {
+    parseBox = document.createElement("div");
+    parseBox.id = "hiddenQrParseBox";
+    parseBox.style.display = "none";
+    document.body.appendChild(parseBox);
+  }
+
+  // 點擊後直接叫出手機原生相機拍照或選擇相簿圖片
+  fileInput.click();
 }
 
 function closeQrScanner() {
   const modal = document.getElementById("scannerModal");
   if (modal) modal.classList.remove("active");
-  
-  if (html5QrScannerInstance) {
-    try {
-      if (typeof html5QrScannerInstance.stop === "function") {
-        html5QrScannerInstance.stop().catch(() => {});
-      } else if (typeof html5QrScannerInstance.clear === "function") {
-        html5QrScannerInstance.clear();
-      }
-    } catch(e) {}
-    html5QrScannerInstance = null;
-  }
-}
-
-function addByIdFallback() {
-  closeQrScanner();
-  addFriendByIdPrompt();
 }
 
 function handleScannedQrResult(text) {
-  closeQrScanner();
-  // 支援舊版自訂格式與新版網址格式的雙重辨識
   if (text.startsWith("GUILTY:")) {
     try {
       const rawJson = decodeURIComponent(text.replace("GUILTY:", ""));
@@ -772,7 +731,6 @@ function handleScannedQrResult(text) {
     } catch(e) {}
   }
   
-  // 支援從網址參數掃描進來的 URL
   if (text.includes("view=profile") && text.includes("id=")) {
     try {
       const urlObj = new URL(text);
