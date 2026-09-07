@@ -73,20 +73,22 @@ function updateCartUI() {
   let subtotal = 0;
   container.innerHTML = cart.map((item, index) => {
     subtotal += item.price * item.qty;
+    const safeId = String(item.productId || "");
+
     return `
       <div class="cart-item-card">
-        <img src="${item.img}" class="cart-item-thumb" onclick="openProductDetail('${item.productId}')" />
+        <img src="${item.img}" class="cart-item-thumb" onclick="openProductDetail('${safeId}')" />
         <div class="cart-item-info">
-          <div class="cart-item-title" onclick="openProductDetail('${item.productId}')">${item.title}</div>
+          <div class="cart-item-title" onclick="openProductDetail('${safeId}')">${item.title}</div>
           <div class="cart-item-spec">規格：${item.spec}</div>
           <div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div>
           <div class="cart-qty-ctrl">
-            <button class="qty-btn" onclick="changeCartQty(${index}, -1)">-</button>
+            <button class="qty-btn" onclick="changeCartIndexQty(${index}, -1)">-</button>
             <span class="qty-num">${item.qty}</span>
-            <button class="qty-btn" onclick="changeCartQty(${index}, 1)">+</button>
+            <button class="qty-btn" onclick="changeCartIndexQty(${index}, 1)">+</button>
           </div>
         </div>
-        <button class="cart-item-del" onclick="removeCartItem(${index})">✕</button>
+        <button class="cart-item-del" onclick="removeCartIndexItem(${index})">✕</button>
       </div>
     `;
   }).join('');
@@ -103,7 +105,9 @@ function updateCartUI() {
   }
 }
 
-function changeCartQty(index, delta) {
+// ✦ 改用安全且支援未來無限新商品的動態索引判定
+function changeCartIndexQty(index, delta) {
+  if (!cart[index]) return;
   cart[index].qty += delta;
   if (cart[index].qty <= 0) {
     cart.splice(index, 1);
@@ -111,7 +115,8 @@ function changeCartQty(index, delta) {
   saveCart();
 }
 
-function removeCartItem(index) {
+function removeCartIndexItem(index) {
+  if (!cart[index]) return;
   cart.splice(index, 1);
   saveCart();
 }
