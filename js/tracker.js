@@ -600,29 +600,21 @@ function addNewCustomTagPrompt(type) {
   renderMyQrCode();
 }
 
+// ✦ 升級版：生成通用網址 QR 碼，支援 LINE、iPhone/Android 原生相機與 IG 隨掃即開
 function renderMyQrCode() {
   const qrContainer = document.getElementById("myQrCodeBox");
   if (!qrContainer) return;
   const prof = trackerState.profile;
   
-  let safeAvatar = prof.avatar;
-  if (safeAvatar && safeAvatar.startsWith("data:")) {
-    safeAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=" + encodeURIComponent(prof.name || "Agent");
-  }
+  const baseUrl = window.location.origin + window.location.pathname;
+  const targetUrl = `${baseUrl}?view=profile&id=${encodeURIComponent(prof.agentId || 'AGENT-001')}&name=${encodeURIComponent(prof.name || '特工')}`;
 
-  const payload = {
-    name: prof.name,
-    agentId: prof.agentId,
-    role: prof.role,
-    avatar: safeAvatar,
-    safeword: prof.safeword,
-    tags: prof.selectedTags,
-    limits: prof.limits
-  };
+  const url = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(targetUrl)}&bgcolor=050508&color=00ff88&margin=4`;
   
-  const str = "GUILTY:" + encodeURIComponent(JSON.stringify(payload));
-  const url = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(str)}&bgcolor=050508&color=00ff88&margin=4`;
-  qrContainer.innerHTML = `<img src="${url}" crossorigin="anonymous" style="width:140px; height:140px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />`;
+  qrContainer.innerHTML = `
+    <img src="${url}" crossorigin="anonymous" style="width:140px; height:140px; border:1px solid var(--accent-cyan); padding:4px; background:#000;" />
+    <div style="font-size:0.65rem; color:var(--text-muted); margin-top:6px;">支援 LINE / 原生相機掃描</div>
+  `;
 }
 
 function handleAvatarFileUpload(event) {
@@ -678,7 +670,7 @@ function exportDossierToImage() {
 }
 
 // --------------------------------------------------------------------------
-// 📷 QR 碼掃描相機與好友新增互動邏輯
+// 📷 升級版：行動裝置相機鏡頭安全支援與自動防呆備援
 // --------------------------------------------------------------------------
 function openQrScanner() {
   const modal = document.getElementById("scannerModal");
@@ -688,31 +680,76 @@ function openQrScanner() {
     return;
   }
 
+  readerBox.style.width = "100%";
+  readerBox.style.minHeight = "280px";
+  readerBox.style.background = "#000";
+  readerBox.innerHTML = "";
+
   modal.classList.add("active");
 
+  const isSecure = window.location.protocol === "https:" || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  
+  if (!isSecure) {
+    alert("⚠️ 安全限制：行動裝置瀏覽器規定必須在 HTTPS 安全連線下才能啟動相機鏡頭。將自動切換為手動輸入特工 ID。");
+    closeQrScanner();
+    addFriendByIdPrompt();
+    return;
+  }
+
   try {
-    if (typeof Html5QrcodeScanner !== "undefined") {
+    if (typeof Html5Qrcode !== "undefined") {
+      const html5QrCode = new Html5Qrcode("qrReaderBox");
+      html5QrScannerInstance = html5QrCode;
+
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 220, height: 220 } },
+        (decodedText) => {
+          html5QrCode.stop().then(() => {
+            handleScannedQrResult(decodedText);
+          }).catch(() => {
+            handleScannedQrResult(decodedText);
+          });
+        },
+        (errorMessage) => {}
+      ).catch(err => {
+        console.warn("相機啟動失敗，改用手動輸入：", err);
+        closeQrScanner();
+        alert("無法啟動相機鏡頭（可能未授權或無可用相機）。請改用手動輸入 ID！");
+        addFriendByIdPrompt();
+      });
+    } else if (typeof Html5QrcodeScanner !== "undefined") {
       if (!html5QrScannerInstance) {
         html5QrScannerInstance = new Html5QrcodeScanner("qrReaderBox", { fps: 10, qrbox: 250 }, false);
       }
       html5QrScannerInstance.render((decodedText) => {
+        closeQrScanner();
         handleScannedQrResult(decodedText);
-      }, (errorMessage) => {});
+      }, () => {});
     } else {
-      addByIdFallback();
+      closeQrScanner();
+      addFriendByIdPrompt();
     }
   } catch (e) {
-    addByIdFallback();
+    console.error(e);
+    closeQrScanner();
+    addFriendByIdPrompt();
   }
 }
 
 function closeQrScanner() {
   const modal = document.getElementById("scannerModal");
   if (modal) modal.classList.remove("active");
+  
   if (html5QrScannerInstance) {
     try {
-      html5QrScannerInstance.clear();
+      if (typeof html5QrScannerInstance.stop === "function") {
+        html5QrScannerInstance.stop().catch(() => {});
+      } else if (typeof html5QrScannerInstance.clear === "function") {
+        html5QrScannerInstance.clear();
+      }
     } catch(e) {}
+    html5QrScannerInstance = null;
   }
 }
 
@@ -723,39 +760,63 @@ function addByIdFallback() {
 
 function handleScannedQrResult(text) {
   closeQrScanner();
+  // 支援舊版自訂格式與新版網址格式的雙重辨識
   if (text.startsWith("GUILTY:")) {
     try {
       const rawJson = decodeURIComponent(text.replace("GUILTY:", ""));
       const data = JSON.parse(rawJson);
-      
       if (data && data.agentId) {
-        const existing = trackerState.friends.find(f => f.agentId === data.agentId);
-        if (existing) {
-          alert(`特工 [${data.agentId}] 已經在您的好友名冊中了！`);
-          return;
-        }
-
-        trackerState.friends.push({
-          id: "friend_" + Date.now(),
-          name: data.name || "特工",
-          agentId: data.agentId,
-          role: data.role || "特工",
-          avatar: data.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${data.agentId}`,
-          bio: data.bio || "透過神經 QR 碼掃描接入。",
-          tags: data.tags || [],
-          limits: data.limits || []
-        });
-
-        saveTrackerState();
-        renderFriendsList();
-        alert(`✔ 成功透過 QR 碼結交新特工：${data.name} (ID: ${data.agentId})！`);
+        addScannedFriendToSystem(data);
+        return;
       }
-    } catch(e) {
-      alert("❌ 無效的 GUILTY 神經名片格式！");
-    }
-  } else {
-    alert("❌ 未知的 QR 碼識別資料： " + text);
+    } catch(e) {}
   }
+  
+  // 支援從網址參數掃描進來的 URL
+  if (text.includes("view=profile") && text.includes("id=")) {
+    try {
+      const urlObj = new URL(text);
+      const agentId = urlObj.searchParams.get("id");
+      const name = urlObj.searchParams.get("name") || "外交通道特工";
+      if (agentId) {
+        addScannedFriendToSystem({
+          name: name,
+          agentId: agentId,
+          role: "認證特工",
+          avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${agentId}`,
+          bio: "透過外部相機掃描網址接入。",
+          tags: ["實踐調教", "繩藝拘束"],
+          limits: ["❌ 拒絕穿刺/見血"]
+        });
+        return;
+      }
+    } catch(e) {}
+  }
+
+  alert("❌ 未知的 QR 碼識別資料： " + text);
+}
+
+function addScannedFriendToSystem(data) {
+  const existing = trackerState.friends.find(f => f.agentId === data.agentId);
+  if (existing) {
+    alert(`特工 [${data.agentId}] 已經在您的好友名冊中了！`);
+    return;
+  }
+
+  trackerState.friends.push({
+    id: "friend_" + Date.now(),
+    name: data.name || "特工",
+    agentId: data.agentId,
+    role: data.role || "特工",
+    avatar: data.avatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${data.agentId}`,
+    bio: data.bio || "透過神經 QR 碼接入。",
+    tags: data.tags || [],
+    limits: data.limits || []
+  });
+
+  saveTrackerState();
+  renderFriendsList();
+  alert(`✔ 成功結交新特工：${data.name} (ID: ${data.agentId})！`);
 }
 
 // --------------------------------------------------------------------------
