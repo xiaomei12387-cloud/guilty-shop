@@ -542,8 +542,8 @@
     </div>
   </div>
 
-<!-- ======================================================== -->
-  <!-- 7. 【創作者合作後台（含金鑰驗證與審核申請）】 (view-creator-portal) -->
+  <!-- ======================================================== -->
+  <!-- 7. 【創作者合作後台】 (view-creator-portal) -->
   <!-- ======================================================== -->
   <div id="view-creator-portal" class="view-section">
     <div class="detail-container">
@@ -561,7 +561,6 @@
           檢索登入身分中...
         </div>
 
-        <!-- ✦ 新增：已有審核通過的金鑰？直接輸入驗證區塊 -->
         <div id="creatorVerifyKeyBox" style="display:none; background:#000; border:1px solid var(--accent-purple); padding:14px; border-radius:4px; margin-bottom:16px;">
           <div style="color:var(--accent-purple); font-weight:bold; font-size:0.82rem; margin-bottom:4px;">🔑 已取得審核金鑰？在此輸入解鎖後台</div>
           <div style="font-size:0.72rem; color:var(--text-muted); margin-bottom:10px;">輸入主理人發放的專屬 AccessKey（例如 GK-XXXXXX）即可綁定權限。</div>
@@ -572,7 +571,6 @@
           <div id="verifyKeyMsg" style="font-size:0.7rem; margin-top:6px;"></div>
         </div>
 
-        <!-- 尚未申請時顯示的申請表單 -->
         <div id="creatorApplyBox" style="display:none; background:#000; border:1px dashed var(--accent-purple); padding:16px; border-radius:4px; margin-bottom:16px;">
           <div style="color:var(--accent-purple); font-weight:bold; font-size:0.85rem; margin-bottom:6px;">📝 申請開通創作者分潤權限</div>
           <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:12px;">填寫您的合作代號與推廣渠道，審核通過後將發放專屬金鑰。</div>
@@ -587,7 +585,6 @@
           <button class="btn-submit" onclick="submitCreatorApplication()" style="background:var(--accent-purple); color:#fff; padding:10px; font-size:0.8rem;">提交審核申請</button>
         </div>
 
-        <!-- 審核通過後的創作者儀表板 -->
         <div id="creatorDashboardBox" style="display:none;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <h3 style="color:#fff; font-size:1.1rem;" id="creatorNameText">特工創作者</h3>
@@ -1032,85 +1029,157 @@
     updateMemberUI();
     updateCartUI();
 
-    // ✦ 結帳表單送出與串接 Apps Script 邏輯
-  const checkoutFormEl = document.getElementById("checkoutForm");
-  if (checkoutFormEl) {
-    checkoutFormEl.addEventListener("submit", function(e) {
-      e.preventDefault();
-      
-      const name = document.getElementById("custName").value.trim();
-      const email = document.getElementById("custEmail").value.trim();
-      const phone = document.getElementById("custPhone").value.trim();
-      const engraving = document.getElementById("custEngraving").value.trim();
-      
-      let location = "";
-      if (selectedShippingMethod === 'home' || selectedShippingMethod === 'meetup') {
-        location = document.getElementById("manualShippingLocation").value.trim();
-      } else {
-        location = document.getElementById("finalShippingLocation").value;
+    // ✦ 自動偵測網址列的外部名片分享參數 (支援 LINE 與原生相機掃描進入)
+    window.addEventListener("DOMContentLoaded", () => {
+      const params = new URLSearchParams(window.location.search);
+      const viewParam = params.get("view");
+      const agentIdParam = params.get("id");
+
+      if (viewParam === "profile" && agentIdParam) {
+        const scannedAgent = {
+          id: "ext_" + agentIdParam,
+          name: params.get("name") || "外交通道特工",
+          agentId: agentIdParam,
+          role: "認證特工",
+          avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${agentIdParam}`,
+          bio: "透過外部 QR 碼（LINE / 原生相機）掃描接入的特工檔案。",
+          tags: ["實踐調教", "繩藝拘束"],
+          limits: ["❌ 拒絕穿刺/見血"]
+        };
+
+        setTimeout(() => {
+          showExternalFriendProfile(scannedAgent);
+        }, 500);
       }
+    });
 
-      if (!location) {
-        alert("⚠️ 請選擇或填寫完整的取件地點/超商門市！");
-        return;
+    function showExternalFriendProfile(friend) {
+      window.pendingExternalFriend = friend;
+      const modal = document.getElementById("friendProfileModal");
+      if (!modal) return;
+
+      document.getElementById("fpAvatar").src = friend.avatar;
+      document.getElementById("fpName").textContent = friend.name;
+      document.getElementById("fpRole").textContent = friend.role;
+      document.getElementById("fpId").textContent = `ID: ${friend.agentId}`;
+      document.getElementById("fpBio").textContent = friend.bio;
+
+      document.getElementById("fpPrefs").innerHTML = (friend.tags || []).map(t => `<div class="tag-pill active">${t}</div>`).join('');
+      document.getElementById("fpLimits").innerHTML = (friend.limits || []).map(l => `<div class="tag-pill active-limit">${l}</div>`).join('');
+
+      const authBox = modal.querySelector(".auth-box");
+      let addBtn = document.getElementById("extAddFriendBtn");
+      if (!addBtn) {
+        addBtn = document.createElement("button");
+        addBtn.id = "extAddFriendBtn";
+        addBtn.className = "btn-submit";
+        addBtn.style.marginTop = "16px";
+        addBtn.style.padding = "10px";
+        addBtn.style.fontSize = "0.85rem";
+        authBox.appendChild(addBtn);
       }
-
-      const orderId = "GUILTY-" + Date.now().toString().slice(-6);
-      const productSummary = cart.map(i => `${i.title} (規格:${i.spec}) x${i.qty}`).join(" ｜ ");
-      
-      let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
-      let discounted = Math.round(subtotal * activeDiscountRate) - activePromoDiscount;
-      let finalPrice = Math.max(0, discounted) + activeShippingFee;
-
-      const orderPayload = {
-        action: "createOrder",
-        orderId: orderId,
-        createdAt: new Date().toLocaleString("zh-TW"),
-        product: productSummary,
-        price: finalPrice,
-        name: name,
-        phone: phone,
-        email: email,
-        engraving: engraving,
-        shipping: selectedShippingMethod === '711' ? '7-11 超商' : selectedShippingMethod === 'family' ? '全家超商' : selectedShippingMethod === 'home' ? '黑貓宅配' : '線下面交',
-        location: location,
-        payment: selectedPaymentMethod === 'cod' ? '超商取貨付款' : '銀行 ATM 匯款',
-        status: "[ 排程調用中 ]",
-        saveToProfile: document.getElementById("saveToProfileCheck").checked
+      addBtn.textContent = `＋ 將 ${friend.name} 加為好友 (ADD ALLIANCE)`;
+      addBtn.onclick = function() {
+        saveExternalFriendToMyList(friend);
       };
 
-      // 1. 發送至 Apps Script (寫入試算表與發送 Discord 通知)
-      fetch(CONFIG.API_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(orderPayload)
-      }).then(() => {
-        // 2. 渲染成功明細到 view-success 畫面
-        if (typeof renderSuccessOrderSummary === "function") {
-          renderSuccessOrderSummary(orderPayload);
+      modal.classList.add("active");
+    }
+
+    function saveExternalFriendToMyList(friend) {
+      if (!trackerState.friends) trackerState.friends = [];
+      const existing = trackerState.friends.find(f => f.agentId === friend.agentId);
+      
+      if (existing) {
+        alert(`特工 [${friend.agentId}] 已經在您的好友名冊中了！`);
+      } else {
+        trackerState.friends.push(friend);
+        if (typeof saveTrackerState === "function") saveTrackerState();
+        alert(`✔ 成功將特工 ${friend.name} (ID: ${friend.agentId}) 加入好友名冊！`);
+      }
+      closeFriendProfileModal();
+      openFriendsDossierView();
+    }
+
+    // ✦ 結帳表單送出與串接 Apps Script 邏輯
+    const checkoutFormEl = document.getElementById("checkoutForm");
+    if (checkoutFormEl) {
+      checkoutFormEl.addEventListener("submit", function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById("custName").value.trim();
+        const email = document.getElementById("custEmail").value.trim();
+        const phone = document.getElementById("custPhone").value.trim();
+        const engraving = document.getElementById("custEngraving").value.trim();
+        
+        let location = "";
+        if (selectedShippingMethod === 'home' || selectedShippingMethod === 'meetup') {
+          location = document.getElementById("manualShippingLocation").value.trim();
+        } else {
+          location = document.getElementById("finalShippingLocation").value;
         }
 
-        // 3. 清空購物車並跳轉
-        localStorage.removeItem("guilty_cart");
-        cart = [];
-        updateCartUI();
-        setActiveView("view-success");
-        history.pushState({ view: 'success' }, '', '#success');
-      }).catch((err) => {
-        console.error(err);
-        // 即使網路異常也強制進入成功畫面並顯示明細
-        if (typeof renderSuccessOrderSummary === "function") {
-          renderSuccessOrderSummary(orderPayload);
+        if (!location) {
+          alert("⚠️ 請選擇或填寫完整的取件地點/超商門市！");
+          return;
         }
-        localStorage.removeItem("guilty_cart");
-        cart = [];
-        updateCartUI();
-        setActiveView("view-success");
-        history.pushState({ view: 'success' }, '', '#success');
+
+        const orderId = "GUILTY-" + Date.now().toString().slice(-6);
+        const productSummary = cart.map(i => `${i.title} (規格:${i.spec}) x${i.qty}`).join(" ｜ ");
+        
+        let subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
+        let discounted = Math.round(subtotal * activeDiscountRate) - activePromoDiscount;
+        let finalPrice = Math.max(0, discounted) + activeShippingFee;
+
+        const orderPayload = {
+          action: "createOrder",
+          orderId: orderId,
+          createdAt: new Date().toLocaleString("zh-TW"),
+          product: productSummary,
+          price: finalPrice,
+          name: name,
+          phone: phone,
+          email: email,
+          engraving: engraving,
+          shipping: selectedShippingMethod === '711' ? '7-11 超商' : selectedShippingMethod === 'family' ? '全家超商' : selectedShippingMethod === 'home' ? '黑貓宅配' : '線下面交',
+          location: location,
+          payment: selectedPaymentMethod === 'cod' ? '超商取貨付款' : '銀行 ATM 匯款',
+          status: "[ 排程調用中 ]",
+          saveToProfile: document.getElementById("saveToProfileCheck").checked
+        };
+
+        // 1. 發送至 Apps Script (寫入試算表與發送 Discord 通知)
+        fetch(CONFIG.API_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(orderPayload)
+        }).then(() => {
+          // 2. 渲染成功明細到 view-success 畫面
+          if (typeof renderSuccessOrderSummary === "function") {
+            renderSuccessOrderSummary(orderPayload);
+          }
+
+          // 3. 清空購物車並跳轉
+          localStorage.removeItem("guilty_cart");
+          cart = [];
+          updateCartUI();
+          setActiveView("view-success");
+          history.pushState({ view: 'success' }, '', '#success');
+        }).catch((err) => {
+          console.error(err);
+          // 即使網路異常也強制進入成功畫面並顯示明細
+          if (typeof renderSuccessOrderSummary === "function") {
+            renderSuccessOrderSummary(orderPayload);
+          }
+          localStorage.removeItem("guilty_cart");
+          cart = [];
+          updateCartUI();
+          setActiveView("view-success");
+          history.pushState({ view: 'success' }, '', '#success');
+        });
       });
-    });
-  }
+    }
   </script>
 </body>
 </html>
