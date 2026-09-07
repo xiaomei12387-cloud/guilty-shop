@@ -110,7 +110,33 @@ function setProfileRole(role) {
 }
 
 // --------------------------------------------------------------------------
-// 2. 發送與註冊
+// 2. 雲端 Tracker 自動還原機制 (Cross-device Sync)
+// --------------------------------------------------------------------------
+function restoreTrackerFromCloud() {
+  if (!memberProfile || (!memberProfile.email && !memberProfile.phone)) return;
+  
+  const identifier = memberProfile.email || memberProfile.phone;
+  const url = `${CONFIG.API_URL}?action=getTrackerState&account=${encodeURIComponent(identifier)}&_t=${Date.now()}`;
+
+  fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      if (data && data.result === "success" && data.data) {
+        try {
+          const cloudState = JSON.parse(data.data);
+          const key = `guilty_tracker_${identifier.replace(/[^a-zA-Z0-9]/g, '_')}`;
+          localStorage.setItem(key, JSON.stringify(cloudState));
+          if (typeof loadAgentTrackerState === "function") {
+            loadAgentTrackerState();
+          }
+        } catch(e) {}
+      }
+    })
+    .catch(() => {});
+}
+
+// --------------------------------------------------------------------------
+// 3. 發送與註冊
 // --------------------------------------------------------------------------
 function sendRegisterOtp() {
   const emailInput = document.getElementById("regEmailInput");
@@ -206,7 +232,6 @@ function handleRegisterSubmit(e) {
 
     if (data.result === "success") {
       memberProfile = data.user;
-      // 確保將自定義 ID 寫入本地 Profile
       memberProfile.agentId = agentId;
       localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
       updateMemberUI();
@@ -256,7 +281,9 @@ function handleLoginSubmit(e) {
       updateMemberUI();
 
       if (typeof loadAgentTrackerState === "function") loadAgentTrackerState();
-      if (typeof restoreTrackerFromCloud === "function") restoreTrackerFromCloud();
+      
+      // ✦ 登入成功後自動向雲端還原個人資料、頭像、簡介與設定
+      restoreTrackerFromCloud();
 
       toggleAuthModal(false);
       alert(`【神經接入成功】歡迎回到終端，特工 ${memberProfile.name}！`);
