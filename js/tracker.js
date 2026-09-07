@@ -518,7 +518,7 @@ function renderProfileDossier() {
   if (nd) nd.textContent = prof.name || "特工";
   if (rb) rb.textContent = prof.role || "支配者 (Dom)";
   if (idDisp) idDisp.textContent = `ID: ${prof.agentId || 'AGENT-001'}`;
-  if (bd) bd.textContent = prof.bio || "尚未填寫特工宣言與實踐簡介。";
+  if (bd) bd.textContent = prof.bio || "尚未填寫特工宣言與簡介。";
 
   if (twLink) {
     if (prof.twitter) {
@@ -678,7 +678,7 @@ function openQrScanner() {
     fileInput.type = "file";
     fileInput.id = "nativeQrFileInput";
     fileInput.accept = "image/*";
-    fileInput.capture = "environment"; // 優先調用後鏡頭拍照
+    fileInput.capture = "environment";
     fileInput.style.display = "none";
     fileInput.onchange = function(e) {
       const file = e.target.files[0];
@@ -710,7 +710,6 @@ function openQrScanner() {
     document.body.appendChild(parseBox);
   }
 
-  // 點擊後直接叫出手機原生相機拍照或選擇相簿圖片
   fileInput.click();
 }
 
@@ -754,6 +753,7 @@ function handleScannedQrResult(text) {
   alert("❌ 未知的 QR 碼識別資料： " + text);
 }
 
+// ✦ 升級版：支援雲端雙向互加好友與實踐對象（Partners）聯動
 function addScannedFriendToSystem(data) {
   const existing = trackerState.friends.find(f => f.agentId === data.agentId);
   if (existing) {
@@ -761,7 +761,7 @@ function addScannedFriendToSystem(data) {
     return;
   }
 
-  trackerState.friends.push({
+  const newFriend = {
     id: "friend_" + Date.now(),
     name: data.name || "特工",
     agentId: data.agentId,
@@ -770,11 +770,49 @@ function addScannedFriendToSystem(data) {
     bio: data.bio || "透過神經 QR 碼接入。",
     tags: data.tags || [],
     limits: data.limits || []
-  });
+  };
+
+  trackerState.friends.push(newFriend);
+
+  const alsoPartner = confirm(`✔ 成功將特工 ${data.name} 加入好友！\n\n是否要同時將其納入【即時實踐對象清單 (Partners)】以便記錄實踐次數？`);
+  if (alsoPartner) {
+    if (!trackerState.partners) trackerState.partners = [];
+    const partnerExists = trackerState.partners.some(p => p.agentId === data.agentId);
+    if (!partnerExists) {
+      trackerState.partners.push({
+        id: "partner_" + Date.now(),
+        name: data.name,
+        role: data.role || "服從者 (Sub)",
+        agentId: data.agentId,
+        avatar: data.avatar,
+        safeword: data.safeword || "MAYDAY",
+        tags: data.tags || [],
+        limits: data.limits || [],
+        customMetrics: JSON.parse(JSON.stringify(DEFAULT_METRICS)),
+        sessions: []
+      });
+    }
+  }
 
   saveTrackerState();
   renderFriendsList();
-  alert(`✔ 成功結交新特工：${data.name} (ID: ${data.agentId})！`);
+  if (typeof renderPartnerList === "function") renderPartnerList();
+
+  // 向雲端發送雙向互加請求
+  if (memberProfile && (memberProfile.email || memberProfile.phone)) {
+    fetch(CONFIG.API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "addMutualFriend",
+        myAccount: memberProfile.email || memberProfile.phone,
+        targetAgentId: data.agentId
+      })
+    });
+  }
+
+  alert(`✔ 雙向神經結盟完成：已將 ${data.name} 登錄至您的網絡！`);
 }
 
 // --------------------------------------------------------------------------
@@ -950,7 +988,7 @@ function addFriendByIdPrompt() {
   const existing = trackerState.friends.find(f => f.agentId === cleanId);
   if (existing) { alert("該特工已在您的好友名冊中！"); return; }
 
-  trackerState.friends.push({
+  const newFriend = {
     id: "friend_" + Date.now(),
     name: "特工・" + cleanId.slice(-4),
     agentId: cleanId,
@@ -959,11 +997,27 @@ function addFriendByIdPrompt() {
     bio: "此特工透過專屬 ID 建立神經連結。",
     tags: ["實踐調教", "繩藝拘束"],
     limits: ["❌ 拒絕穿刺/見血"]
-  });
+  };
 
+  trackerState.friends.push(newFriend);
   saveTrackerState();
   renderFriendsList();
-  alert(`✔ 成功將特工 (ID: ${cleanId}) 加入好友名冊！`);
+
+  // 同步向雲端發送雙向互加請求
+  if (memberProfile && (memberProfile.email || memberProfile.phone)) {
+    fetch(CONFIG.API_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        action: "addMutualFriend",
+        myAccount: memberProfile.email || memberProfile.phone,
+        targetAgentId: cleanId
+      })
+    });
+  }
+
+  alert(`✔ 成功將特工 (ID: ${cleanId}) 加入好友名冊並向雲端同步！`);
 }
 
 function viewFriendProfile(friendId) {
