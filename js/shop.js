@@ -11,8 +11,8 @@ const PRODUCTS = [
     price: 1990,
     desc: "以航太級尼龍結合高韌性醫療 TPU 內襯，精密計算前喉結避空壓點，提供兼具絕對控制與舒適度的神經防護。",
     note: "附贈專屬高強度不鏽鋼戰術扣具與防拆雷射標籤。",
-    img: "./images/collar_all",
-    images: ["./images/collar-all", "./images/collar_01", "./icons/collar_02.png"],
+    img: "./images/collar_all.png",
+    images: ["./images/collar_all.png", "./images/collar_01.png", "./images/collar_02.png", "./images/collar_03.png", "./images/collar_04.png", "./images/collar_05.png"],
     specs: [],
     chokerSizes: ["S 碼 (29 – 33 cm)", "M 碼 (34 – 38 cm)"]
   },
@@ -24,8 +24,8 @@ const PRODUCTS = [
     price: 1500,
     desc: "12 股重磅手工編織戰術纖維，尾端導入高回彈微型配重。破空聲清脆冷冽，落點精確無偏差。",
     note: "總長度約 1.3 公尺，握柄採高抓地力霧面防滑橡膠。",
-    img: "./images/image_whip.jpg",
-    images: ["./images/image_whip.jpg", "./icons/icon-512.png"],
+    img: "./images/whip_01.png",
+    images: ["./images/whip_01.png", "./images/whip_02.png", "./images/whip_03.png"],
     specs: ["標準暗黑黑化版", "神經霓虹綠特仕版"]
   },
   {
