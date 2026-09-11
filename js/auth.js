@@ -54,6 +54,11 @@ function updateMemberUI() {
   const memberBtn = document.getElementById("memberBtn");
   if (!memberBtn) return;
 
+  // 無論登入與否，點擊皆直接引導至個人主頁（特工個人名片）
+  memberBtn.onclick = function() {
+    openProfileDossierView();
+  };
+
   if (memberProfile && (memberProfile.email || memberProfile.phone)) {
     const roleBadge = memberProfile.role ? memberProfile.role.split(" ")[0] : "特工";
     const displayId = memberProfile.agentId ? ` [ID: ${memberProfile.agentId}]` : "";
