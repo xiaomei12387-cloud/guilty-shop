@@ -16,17 +16,22 @@ const PRODUCTS = [
     specs: [],
     chokerSizes: ["S 碼 (29 – 33 cm)", "M 碼 (34 – 38 cm)"]
   },
+ // 📦 戰術長鞭／皮革防護系列規格更新
   {
-    id: "guilty-whip",
+    id: "product-whip-01",
     brand: "guilty",
     brandName: "欲室｜共犯 義體",
-    title: "SYNAPSE TACTICAL WHIP // 神經突觸戰術長鞭",
+    title: "神經校準戰術長鞭",
     price: 1500,
-    desc: "12 股重磅手工編織戰術纖維，尾端導入高回彈微型配重。破空聲清脆冷冽，落點精確無偏差。",
-    note: "總長度約 1.3 公尺，握柄採高抓地力霧面防滑橡膠。",
-    img: "./images/whip_01.png",
-    images: ["./images/whip_01.png", "./images/whip_02.png", "./images/whip_03.png"],
-    specs: ["標準暗黑黑化版", "神經霓虹綠特仕版"]
+    desc: "重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，具備俐落破空手感與精準神經打擊反饋。",
+    note: "提供 1.2米 / 1.5米 規格定制，特殊配色歡迎洽詢客服。",
+    img: "./images/whip.png", // ✦ 改這裡：換成你的鞭子圖片路徑
+    images: ["./images/whip.png"], // ✦ 這裡也一起改
+    specs: ["黑", "白", "藍", "紫黑", "黑紅", "其他顏色洽客服"],
+    whipLengths: [
+      { name: "1.2米", price: 1500 },
+      { name: "1.5米", price: 1700 }
+    ]
   },
   {
     id: "shushi-rope",
