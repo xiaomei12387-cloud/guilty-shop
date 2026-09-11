@@ -25,8 +25,8 @@ const PRODUCTS = [
     price: 1500,
     desc: "重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，具備俐落破空手感與精準神經打擊反饋。",
     note: "提供 1.2米 / 1.5米 規格定制，特殊配色歡迎洽詢客服。",
-    img: "./images/whip.png", // ✦ 改這裡：換成你的鞭子圖片路徑
-    images: ["./images/whip.png"], // ✦ 這裡也一起改
+    img: "./images/whip_01.png", // ✦ 改這裡：換成你的鞭子圖片路徑
+    images: ["./images/whip_01.png","./images/whip_02.png","./images/whip_03.png"], // ✦ 這裡也一起改
     specs: ["黑", "白", "藍", "紫黑", "黑紅", "其他顏色洽客服"],
     whipLengths: [
       { name: "1.2米", price: 1500 },
