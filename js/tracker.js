@@ -246,6 +246,85 @@ function dismissEmergencySafeword() {
   if (navigator.vibrate) navigator.vibrate(0);
 }
 
+// 全域變數用來儲存循環計時器
+let emergencyLoopTimer = null;
+
+// 1. 觸發急停警報
+function triggerEmergencySafeword() {
+  const modal = document.getElementById("safewordEmergencyModal");
+  if (!modal) return;
+
+  // 顯示彈窗
+  modal.style.display = "flex";
+  modal.classList.add("active");
+
+  const activePartner = getActivePartner ? getActivePartner() : null;
+  const word = (activePartner && activePartner.safeword) ? activePartner.safeword : "MAYDAY";
+  const d = document.getElementById("emergencySafewordDisplay");
+  if (d) d.textContent = word.toUpperCase();
+
+  // 清除可能殘留的舊迴圈
+  if (emergencyLoopTimer) clearInterval(emergencyLoopTimer);
+
+  // 立即執行第一次聲音與震動
+  playContinuousEmergencySignal();
+
+  // 啟動無限循環（每 800 毫秒重複一次警報聲與震動，直到手動解除）
+  emergencyLoopTimer = setInterval(() => {
+    playContinuousEmergencySignal();
+  }, 800);
+}
+
+// 2. 單次警報與震動發送單元
+function playContinuousEmergencySignal() {
+  // 手機震動脈衝（支援大部分 Android 與部分瀏覽器）
+  if (navigator.vibrate) {
+    navigator.vibrate([400, 100, 400, 100, 800]);
+  }
+
+  // Web Audio API 持續高頻警報音
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.type = "sawtooth"; // 鋸齒波，聲音較尖銳具警報感
+    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 高音
+    osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.35); // 下滑音警报
+
+    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.35);
+  } catch (e) {
+    console.warn("音效解碼受限:", e);
+  }
+}
+
+// 3. 雙方恢復平靜 // 解除警報
+function dismissEmergencySafeword() {
+  const modal = document.getElementById("safewordEmergencyModal");
+  if (modal) {
+    modal.style.display = "none";
+    modal.classList.remove("active");
+  }
+
+  // 徹底清除無限循環計時器，讓聲音與震動停下來
+  if (emergencyLoopTimer) {
+    clearInterval(emergencyLoopTimer);
+    emergencyLoopTimer = null;
+  }
+
+  // 強制停止手機當下的震動
+  if (navigator.vibrate) {
+    navigator.vibrate(0);
+  }
+}
+
 // --------------------------------------------------------------------------
 // 🔑 驗證創作者專屬金鑰 (AccessKey) 與後台渲染
 // --------------------------------------------------------------------------
