@@ -11,8 +11,8 @@ const PRODUCTS = [
     price: 1990,
     desc: "以航太級尼龍結合高韌性醫療 TPU 內襯，精密計算前喉結避空壓點，提供兼具絕對控制與舒適度的神經防護。",
     note: "附贈專屬高強度不鏽鋼戰術扣具與防拆雷射標籤。",
-    img: "./images/image_choker.jpg",
-    images: ["./images/image_choker.jpg", "./images/image_choker_detail.jpg", "./icons/icon-512.png"],
+    img: "./images/collar_all",
+    images: ["./images/collar-all", "./images/collar_01", "./icons/collar_02.png"],
     specs: [],
     chokerSizes: ["S 碼 (29 – 33 cm)", "M 碼 (34 – 38 cm)"]
   },
