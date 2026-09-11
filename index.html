@@ -94,7 +94,8 @@
         <span>🛒 裝備庫</span>
         <span class="cart-count-badge" id="headerCartCount">0</span>
       </div>
-      <div class="user-badge" id="memberBtn" onclick="openProfileDossierView()">[ 訪客 ]</div>
+      <!-- 在頂部 header 區塊 -->
+<div class="user-badge" id="memberBtn" onclick="openProfileDossierView()">[ 訪客 ]</div>
       <div class="menu-toggle-btn" onclick="toggleNav(true)">
         <div class="menu-line"></div><div class="menu-line"></div><div class="menu-line"></div>
       </div>
@@ -110,14 +111,18 @@
         <button onclick="toggleNav(false)" style="background:transparent; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">✕</button>
       </div>
       <ul class="nav-menu-list">
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="showLandingView()">00 // 首頁分流大廳 (HOME)</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openShopCatalogView()" style="color:#00ff88; font-weight:bold;">01 // 裝備調用商城 (ARSENAL) 🛒</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">02 // 實踐計數終端 (TRACKER) ⚡</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">03 // 特工個人名片 (PROFILE CARD) ★</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openFriendsDossierView()" style="color:var(--accent-cyan); font-weight:bold;">04 // 好友名冊與行事曆 (FRIENDS & CAL) 👥</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">05 // 創作者合作後台 (PORTAL) ⚙️</a></li>
-        <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">06 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
-      </ul>
+  <li class="nav-menu-item"><a href="javascript:void(0)" onclick="showLandingView()">00 // 首頁分流大廳 (HOME)</a></li>
+  <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openShopCatalogView()" style="color:#00ff88; font-weight:bold;">01 // 裝備調用商城 (ARSENAL) 🛒</a></li>
+  <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openTrackerAppView()" style="color:var(--accent-cyan); font-weight:bold;">02 // 實踐計數終端 (TRACKER) ⚡</a></li>
+  <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openProfileDossierView()" style="color:var(--accent-cyan); font-weight:bold;">03 // 特工個人名片 (PROFILE CARD) ★</a></li>
+  <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openFriendsDossierView()" style="color:var(--accent-cyan); font-weight:bold;">04 // 好友名冊與行事曆 (FRIENDS & CAL) 👥</a></li>
+  <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openCreatorPortalView()" style="color:#b5179e; font-weight:bold;">05 // 創作者合作後台 (PORTAL) ⚙️</a></li>
+  <li class="nav-menu-item"><a href="javascript:void(0)" onclick="openOrderHistory()" style="color:#fff; font-weight:bold;">06 // 個人調用紀錄 (MY DOSSIER) 📋</a></li>
+  <!-- ✦ 新增側邊選單登出按鈕 -->
+  <li class="nav-menu-item" style="border-top:1px dashed var(--panel-border); margin-top:10px; padding-top:10px;">
+    <a href="javascript:void(0)" onclick="toggleNav(false); logoutMember();" style="color:var(--danger-red); font-weight:bold;">🚪 斷開神經連線 (LOGOUT)</a>
+  </li>
+</ul>
     </div>
     <div style="font-size:0.75rem; color:var(--text-muted); border-top:1px solid var(--panel-border); padding-top:14px;">
       <a href="https://discord.gg/pYDhFGsvnw" target="_blank" rel="noopener noreferrer" style="color:#5865F2; text-decoration:none; display:block; margin-bottom:4px;">👾 特工 Discord 伺服器 ↗</a>
