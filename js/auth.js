@@ -54,7 +54,7 @@ function updateMemberUI() {
   const memberBtn = document.getElementById("memberBtn");
   if (!memberBtn) return;
 
-  // 無論登入與否，點擊皆直接引導至個人主頁（特工個人名片）
+  // ✦ 點擊右上角直接進入個人主頁
   memberBtn.onclick = function() {
     openProfileDossierView();
   };
@@ -66,16 +66,9 @@ function updateMemberUI() {
     memberBtn.style.color = "var(--accent-cyan)";
     memberBtn.style.borderColor = "var(--accent-cyan)";
 
-    const custName = document.getElementById("custName");
-    const custEmail = document.getElementById("custEmail");
-    const custPhone = document.getElementById("custPhone");
-    const manualLoc = document.getElementById("manualShippingLocation");
-
-    if (custName && !custName.value) custName.value = memberProfile.name || "";
-    if (custEmail && !custEmail.value) custEmail.value = memberProfile.email || "";
-    if (custPhone && !custPhone.value) custPhone.value = memberProfile.phone || "";
-    if (manualLoc && !manualLoc.value && memberProfile.defaultLocation) {
-      manualLoc.value = memberProfile.defaultLocation;
+    // 自動還原雲端資料與設定
+    if (typeof restoreTrackerFromCloud === "function") {
+      restoreTrackerFromCloud();
     }
   } else {
     memberBtn.innerHTML = "[ 訪客 ACCESS ]";
