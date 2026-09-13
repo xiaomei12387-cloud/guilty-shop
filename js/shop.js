@@ -16,7 +16,7 @@ const PRODUCTS = [
     specs: [],
     chokerSizes: ["S 碼 (29 – 33 cm)", "M 碼 (34 – 38 cm)"]
   },
- // 📦 戰術長鞭／皮革防護系列規格更新
+  // 📦 戰術長鞭／皮革防護系列規格更新
   {
     id: "product-whip-01",
     brand: "guilty",
@@ -24,9 +24,9 @@ const PRODUCTS = [
     title: "神經校準戰術長鞭",
     price: 1500,
     desc: "重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，具備俐落破空手感與精準神經打擊反饋。",
-    note: "提供 1.2米 / 1.5米 規格定制，特殊配色歡迎洽詢客服。",
-    img: "./images/whip_01.png", // ✦ 改這裡：換成你的鞭子圖片路徑
-    images: ["./images/whip_01.png","./images/whip_02.png","./images/whip_03.png"], // ✦ 這裡也一起改
+    note: "提供 1.2米 / 1.5米 規格定制，選擇「其他顏色洽客服」將額外加收 NT$ 100 客製費用。",
+    img: "./images/image_rope.jpg", 
+    images: ["./images/image_rope.jpg"], 
     specs: ["黑", "白", "藍", "紫黑", "黑紅", "其他顏色洽客服"],
     whipLengths: [
       { name: "1.2米", price: 1500 },
@@ -53,9 +53,147 @@ let activeCheckoutItem = null;
 let activePromoDiscount = 0; 
 let activeDiscountRate = 1.0;
 
+let selectedProductSpec = "";
+let selectedProductSize = "";
+let selectedWhipLength = "";
+let currentDetailPrice = 0;
+
 function saveCart() {
   localStorage.setItem("guilty_cart", JSON.stringify(cart));
   updateCartUI();
+}
+
+function openProductDetail(productId) {
+  const p = PRODUCTS.find(x => x.id === productId);
+  if (!p) return;
+
+  activeCheckoutItem = p;
+  selectedProductSpec = (p.specs && p.specs.length > 0) ? p.specs[0] : "標準配置";
+  selectedProductSize = (p.chokerSizes && p.chokerSizes.length > 0) ? p.chokerSizes[0] : "";
+  
+  // 初始化鞭子預設長度與價格
+  selectedWhipLength = (p.whipLengths && p.whipLengths.length > 0) ? p.whipLengths[0].name : "";
+  currentDetailPrice = (p.whipLengths && p.whipLengths.length > 0) ? p.whipLengths[0].price : p.price;
+
+  document.getElementById("detailProductTitle").textContent = p.title;
+  document.getElementById("detailProductDesc").textContent = p.desc;
+  document.getElementById("detailPriceDisplay").textContent = `NT$ ${currentDetailPrice.toLocaleString()}`;
+
+  const heroArea = document.getElementById("detailHeroImgArea");
+  if (heroArea) {
+    heroArea.innerHTML = `
+      <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+      <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+      <img src="${p.images ? p.images[0] : p.img}" onclick="openLightbox(this.src)" style="width:100%; height:100%; object-fit:cover; cursor:zoom-in;" />
+    `;
+  }
+
+  const thumbsRow = document.getElementById("detailThumbsRow");
+  if (thumbsRow) {
+    if (p.images && p.images.length > 1) {
+      thumbsRow.style.display = "flex";
+      thumbsRow.innerHTML = p.images.map((imgSrc, idx) => `
+        <img src="${imgSrc}" onclick="switchDetailMainImage('${imgSrc}')" style="width:65px; height:65px; object-fit:cover; border:1px solid ${idx===0?'var(--accent-cyan)':'var(--panel-border)'}; cursor:pointer; border-radius:3px;" />
+      `).join('');
+    } else {
+      thumbsRow.style.display = "none";
+      thumbsRow.innerHTML = "";
+    }
+  }
+
+  const optArea = document.getElementById("detailDynamicOptions");
+  if (optArea) {
+    let html = "";
+    // ✦ 鞭子長度規格按鈕 (1.2米 / 1.5米)
+    if (p.whipLengths && p.whipLengths.length > 0) {
+      html += `
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 選擇長度規格 (Length)*</label>
+          <div class="radio-grid">
+            ${p.whipLengths.map((l, idx) => `
+              <div class="radio-card ${idx === 0 ? 'active' : ''}" onclick="selectWhipLength('${l.name}', ${l.price}, this)">
+                ${l.name} (NT$ ${l.price.toLocaleString()})
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // 色彩 / 材質配置
+    if (p.specs && p.specs.length > 0) {
+      html += `
+        <div class="form-group" style="margin-bottom:12px;">
+          <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 色彩 / 材質配置* (選其他顏色 +NT$100)</label>
+          <div class="radio-grid" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));">
+            ${p.specs.map(s => `
+              <div class="radio-card ${s === selectedProductSpec ? 'active' : ''}" onclick="selectSpec('${s}', this)" ${s === '其他顏色洽客服' ? 'style="border-style:dashed; color:var(--accent-purple);"' : ''}>
+                ${s}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+    optArea.innerHTML = html;
+  }
+
+  const chokerArea = document.getElementById("detailChokerSpecificArea");
+  if (chokerArea) {
+    if (p.chokerSizes && p.chokerSizes.length > 0) {
+      chokerArea.innerHTML = `
+        <div class="form-group">
+          <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 項圈尺寸選擇 (Size)*</label>
+          <div class="radio-grid">
+            ${p.chokerSizes.map(sz => `<div class="radio-card ${sz === selectedProductSize ? 'active' : ''}" onclick="selectChokerSize('${sz}', this)">${sz}</div>`).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      chokerArea.innerHTML = "";
+    }
+  }
+
+  setActiveView("view-product-detail");
+  history.pushState({ view: 'detail', id: p.id }, '', '#detail');
+}
+
+// ✦ 智慧更新價格（長度基礎價 + 其他顏色加收 100 元）
+function updateWhipDetailPrice() {
+  const p = activeCheckoutItem;
+  if (!p) return;
+
+  let basePrice = p.price;
+  if (p.whipLengths) {
+    const foundLen = p.whipLengths.find(l => l.name === selectedWhipLength);
+    if (foundLen) basePrice = foundLen.price;
+  }
+
+  let extra = (selectedProductSpec === "其他顏色洽客服") ? 100 : 0;
+  currentDetailPrice = basePrice + extra;
+
+  const priceDisplay = document.getElementById("detailPriceDisplay");
+  if (priceDisplay) {
+    priceDisplay.textContent = `NT$ ${currentDetailPrice.toLocaleString()}`;
+  }
+}
+
+function selectWhipLength(lenName, basePrice, el) {
+  selectedWhipLength = lenName;
+  updateWhipDetailPrice();
+
+  const parent = el.closest(".radio-grid");
+  if (parent) parent.querySelectorAll(".radio-card").forEach(c => c.classList.remove("active"));
+  el.classList.add("active");
+}
+
+function selectSpec(spec, el) {
+  selectedProductSpec = spec;
+  updateWhipDetailPrice(); // 切換顏色時自動計算加價
+
+  const parent = el.closest(".radio-grid");
+  if (parent) parent.querySelectorAll(".radio-card").forEach(c => c.classList.remove("active"));
+  el.classList.add("active");
 }
 
 function updateCartUI() {
@@ -110,7 +248,6 @@ function updateCartUI() {
   }
 }
 
-// ✦ 改用安全且支援未來無限新商品的動態索引判定
 function changeCartIndexQty(index, delta) {
   if (!cart[index]) return;
   cart[index].qty += delta;
@@ -173,79 +310,6 @@ function renderProductCards() {
   `).join('');
 }
 
-let selectedProductSpec = "";
-let selectedProductSize = "";
-
-function openProductDetail(productId) {
-  const p = PRODUCTS.find(x => x.id === productId);
-  if (!p) return;
-
-  activeCheckoutItem = p;
-  selectedProductSpec = (p.specs && p.specs.length > 0) ? p.specs[0] : "標準配置";
-  selectedProductSize = (p.chokerSizes && p.chokerSizes.length > 0) ? p.chokerSizes[0] : "";
-
-  document.getElementById("detailProductTitle").textContent = p.title;
-  document.getElementById("detailProductDesc").textContent = p.desc;
-  document.getElementById("detailPriceDisplay").textContent = `NT$ ${p.price.toLocaleString()}`;
-
-  const heroArea = document.getElementById("detailHeroImgArea");
-  if (heroArea) {
-    heroArea.innerHTML = `
-      <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
-      <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
-      <img src="${p.images ? p.images[0] : p.img}" onclick="openLightbox(this.src)" style="width:100%; height:100%; object-fit:cover; cursor:zoom-in;" />
-    `;
-  }
-
-  const thumbsRow = document.getElementById("detailThumbsRow");
-  if (thumbsRow) {
-    if (p.images && p.images.length > 1) {
-      thumbsRow.style.display = "flex";
-      thumbsRow.innerHTML = p.images.map((imgSrc, idx) => `
-        <img src="${imgSrc}" onclick="switchDetailMainImage('${imgSrc}')" style="width:65px; height:65px; object-fit:cover; border:1px solid ${idx===0?'var(--accent-cyan)':'var(--panel-border)'}; cursor:pointer; border-radius:3px;" />
-      `).join('');
-    } else {
-      thumbsRow.style.display = "none";
-      thumbsRow.innerHTML = "";
-    }
-  }
-
-  const optArea = document.getElementById("detailDynamicOptions");
-  if (optArea) {
-    let html = "";
-    if (p.specs && p.specs.length > 0) {
-      html += `
-        <div class="form-group">
-          <label>✦ 色彩 / 材質配置*</label>
-          <div class="radio-grid">
-            ${p.specs.map(s => `<div class="radio-card ${s === selectedProductSpec ? 'active' : ''}" onclick="selectSpec('${s}', this)">${s}</div>`).join('')}
-          </div>
-        </div>
-      `;
-    }
-    optArea.innerHTML = html;
-  }
-
-  const chokerArea = document.getElementById("detailChokerSpecificArea");
-  if (chokerArea) {
-    if (p.chokerSizes && p.chokerSizes.length > 0) {
-      chokerArea.innerHTML = `
-        <div class="form-group">
-          <label>✦ 項圈尺寸選擇 (Size)*</label>
-          <div class="radio-grid">
-            ${p.chokerSizes.map(sz => `<div class="radio-card ${sz === selectedProductSize ? 'active' : ''}" onclick="selectChokerSize('${sz}', this)">${sz}</div>`).join('')}
-          </div>
-        </div>
-      `;
-    } else {
-      chokerArea.innerHTML = "";
-    }
-  }
-
-  setActiveView("view-product-detail");
-  history.pushState({ view: 'detail', id: p.id }, '', '#detail');
-}
-
 function switchDetailMainImage(src) {
   const heroArea = document.getElementById("detailHeroImgArea");
   if (heroArea) {
@@ -268,13 +332,6 @@ function closeLightbox() {
   if (lightbox) lightbox.style.display = "none";
 }
 
-function selectSpec(spec, el) {
-  selectedProductSpec = spec;
-  const parent = el.closest(".radio-grid");
-  if (parent) parent.querySelectorAll(".radio-card").forEach(c => c.classList.remove("active"));
-  el.classList.add("active");
-}
-
 function selectChokerSize(size, el) {
   selectedProductSize = size;
   const parent = el.closest(".radio-grid");
@@ -284,7 +341,14 @@ function selectChokerSize(size, el) {
 
 function addCurrentProductToCart() {
   if (!activeCheckoutItem) return;
-  const specText = selectedProductSize ? `${selectedProductSpec} / ${selectedProductSize}` : selectedProductSpec;
+
+  let specParts = [];
+  if (selectedWhipLength) specParts.push(selectedWhipLength);
+  if (selectedProductSpec) specParts.push(selectedProductSpec);
+  if (selectedProductSize) specParts.push(selectedProductSize);
+  const specText = specParts.join(" / ") || "標準配置";
+
+  const finalPrice = currentDetailPrice || activeCheckoutItem.price;
 
   const existing = cart.find(i => i.productId === activeCheckoutItem.id && i.spec === specText);
   if (existing) {
@@ -293,7 +357,7 @@ function addCurrentProductToCart() {
     cart.push({
       productId: activeCheckoutItem.id,
       title: activeCheckoutItem.title,
-      price: activeCheckoutItem.price,
+      price: finalPrice,
       img: activeCheckoutItem.img,
       spec: specText,
       qty: 1
@@ -306,12 +370,19 @@ function addCurrentProductToCart() {
 
 function buyNowFromDetail() {
   if (!activeCheckoutItem) return;
-  const specText = selectedProductSize ? `${selectedProductSpec} / ${selectedProductSize}` : selectedProductSpec;
-  
+
+  let specParts = [];
+  if (selectedWhipLength) specParts.push(selectedWhipLength);
+  if (selectedProductSpec) specParts.push(selectedProductSpec);
+  if (selectedProductSize) specParts.push(selectedProductSize);
+  const specText = specParts.join(" / ") || "標準配置";
+
+  const finalPrice = currentDetailPrice || activeCheckoutItem.price;
+
   cart = [{
     productId: activeCheckoutItem.id,
     title: activeCheckoutItem.title,
-    price: activeCheckoutItem.price,
+    price: finalPrice,
     img: activeCheckoutItem.img,
     spec: specText,
     qty: 1
@@ -353,7 +424,6 @@ function renderCheckoutSummary() {
   `).join('');
 
   let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-  
   let discountedSubtotal = Math.round(subtotal * activeDiscountRate);
   let finalSubtotal = Math.max(0, discountedSubtotal - activePromoDiscount);
 
@@ -495,7 +565,6 @@ function loadCvsCities(brand) {
     .then(data => {
       cachedStoreLocations = data || [];
       const cities = [...new Set(cachedStoreLocations.map(item => item.city))].filter(Boolean);
-      
       citySelect.innerHTML = `<option value="">-- 選擇縣市 --</option>` + cities.map(c => `<option value="${c}">${c}</option>`).join('');
     })
     .catch(() => {
