@@ -696,10 +696,10 @@
             <label>安全信箱*</label>
             <input type="email" id="custEmail" required placeholder="agent@guilty-cyber.app" />
           </div>
-          <div class="form-group">
-            <label>聯絡手機*</label>
-            <input type="tel" id="custPhone" required placeholder="0912-345-678" />
-          </div>
+         <div class="form-group">
+  <label>聯絡手機 (台灣 09 手機)*</label>
+  <input type="tel" id="custPhone" required placeholder="0912345678" pattern="^09[0-9]{8}$" maxlength="10" title="請輸入正確的 10 碼台灣手機號碼 (例如 0912345678)" />
+</div>
           <div class="form-group">
             <label>訂製備註</label>
             <input type="text" id="custEngraving" maxlength="30" placeholder="例如：黑紅配色 / 刻印 GUILTY" />
@@ -1115,6 +1115,12 @@
         const name = document.getElementById("custName").value.trim();
         const email = document.getElementById("custEmail").value.trim();
         const phone = document.getElementById("custPhone").value.trim();
+const phoneRegex = /^09\d{8}$/;
+if (!phoneRegex.test(phone)) {
+  alert("⚠️ 聯絡手機格式錯誤！請輸入正確的 10 碼台灣手機號碼（例如 0912345678）。");
+  document.getElementById("custPhone").focus();
+  return;
+};
         const engraving = document.getElementById("custEngraving").value.trim();
         
         let location = "";
