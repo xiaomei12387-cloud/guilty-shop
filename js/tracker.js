@@ -140,6 +140,13 @@ function saveTrackerState(skipCloud = false) {
   }
 }
 
+function triggerHeavyVibration() {
+  if ("vibrate" in navigator) {
+    // 震動 500ms，停 100ms，再震動 500ms，連續循環直到解除警報
+    navigator.vibrate([500, 100, 500, 100, 800, 200]);
+  }
+}
+
 function playTerminalBeep(type = "click") {
   try {
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -165,6 +172,63 @@ function playTerminalBeep(type = "click") {
       osc.stop(audioCtx.currentTime + 0.08);
     }
   } catch (e) {}
+}
+
+// 建立全域音訊物件，支援匯入音效
+let emergencyAudio = new Audio('./audio/emergency_alarm.mp3'); 
+emergencyAudio.loop = true; // 循環播放直到解除
+
+// 觸發急停警報（結合強力震動與大音量循環播放）
+function triggerEmergencySafeword() {
+  const modal = document.getElementById("safewordEmergencyModal");
+  if (modal) modal.classList.add("active");
+
+  // 1. 強制啟動強力震動
+  triggerHeavyVibration();
+  
+  // 每秒重複震動確保不會停
+  window.vibrationInterval = setInterval(() => {
+    if ("vibrate" in navigator) {
+      navigator.vibrate([500, 100, 500]);
+    }
+  }, 1500);
+
+  // 2. 播放夠大聲的匯入音效
+  emergencyAudio.currentTime = 0;
+  emergencyAudio.play().catch(err => {
+    console.log("音訊播放遭瀏覽器阻擋，需使用者互動解鎖:", err);
+  });
+}
+
+// 解除急停警報
+function dismissEmergencySafeword() {
+  const modal = document.getElementById("safewordEmergencyModal");
+  if (modal) modal.classList.remove("active");
+
+  // 停止震動
+  if ("vibrate" in navigator) {
+    navigator.vibrate(0);
+  }
+  if (window.vibrationInterval) {
+    clearInterval(window.vibrationInterval);
+  }
+
+  // 停止音效
+  emergencyAudio.pause();
+  emergencyAudio.currentTime = 0;
+}
+
+// ✦ 額外支援：讓使用者上傳／匯入自訂超大聲警報音效
+function handleCustomAlarmImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    emergencyAudio.src = e.target.result; // 將匯入的音效轉為資料流並套用
+    alert("✔ 自訂高分貝警報音效已成功匯入並綁定！");
+  };
+  reader.readAsDataURL(file);
 }
 
 function getActivePartner() {
