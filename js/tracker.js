@@ -142,7 +142,6 @@ function saveTrackerState(skipCloud = false) {
 
 function triggerHeavyVibration() {
   if ("vibrate" in navigator) {
-    // 震動 500ms，停 100ms，再震動 500ms，連續循環直到解除警報
     navigator.vibrate([500, 100, 500, 100, 800, 200]);
   }
 }
@@ -174,38 +173,69 @@ function playTerminalBeep(type = "click") {
   } catch (e) {}
 }
 
-// 建立全域音訊物件，支援匯入音效
+// --------------------------------------------------------------------------
+// 🔊 高分貝警報音效與自訂檔案匯入引擎
+// --------------------------------------------------------------------------
 let emergencyAudio = new Audio('./audio/emergency_alarm.mp3'); 
-emergencyAudio.loop = true; // 循環播放直到解除
+emergencyAudio.loop = true;
 
-// 觸發急停警報（結合強力震動與大音量循環播放）
+function handleCustomAlarmImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    emergencyAudio.src = e.target.result;
+    emergencyAudio.load();
+    
+    emergencyAudio.play().then(() => {
+      emergencyAudio.pause();
+      emergencyAudio.currentTime = 0;
+      alert("✔ 自訂高分貝警報音效已成功匯入、綁定並解鎖！");
+    }).catch(err => {
+      console.log("音訊解鎖提示:", err);
+      alert("✔ 自訂音效已匯入！");
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+// 觸發急停警報（強制強力震動與循環播放）
 function triggerEmergencySafeword() {
   const modal = document.getElementById("safewordEmergencyModal");
-  if (modal) modal.classList.add("active");
+  if (!modal) return;
 
-  // 1. 強制啟動強力震動
+  modal.style.display = "flex";
+  modal.classList.add("active");
+
+  const activePartner = getActivePartner();
+  const word = (activePartner && activePartner.safeword) ? activePartner.safeword : "MAYDAY";
+  const d = document.getElementById("emergencySafewordDisplay");
+  if (d) d.textContent = word.toUpperCase();
+
+  // 1. 啟動強力震動
   triggerHeavyVibration();
-  
-  // 每秒重複震動確保不會停
   window.vibrationInterval = setInterval(() => {
     if ("vibrate" in navigator) {
       navigator.vibrate([500, 100, 500]);
     }
   }, 1500);
 
-  // 2. 播放夠大聲的匯入音效
+  // 2. 播放匯入的高分貝音效
   emergencyAudio.currentTime = 0;
   emergencyAudio.play().catch(err => {
-    console.log("音訊播放遭瀏覽器阻擋，需使用者互動解鎖:", err);
+    console.log("警報音訊播放遭到瀏覽器阻擋:", err);
   });
 }
 
 // 解除急停警報
 function dismissEmergencySafeword() {
   const modal = document.getElementById("safewordEmergencyModal");
-  if (modal) modal.classList.remove("active");
+  if (modal) {
+    modal.style.display = "none";
+    modal.classList.remove("active");
+  }
 
-  // 停止震動
   if ("vibrate" in navigator) {
     navigator.vibrate(0);
   }
@@ -213,22 +243,8 @@ function dismissEmergencySafeword() {
     clearInterval(window.vibrationInterval);
   }
 
-  // 停止音效
   emergencyAudio.pause();
   emergencyAudio.currentTime = 0;
-}
-
-// ✦ 額外支援：讓使用者上傳／匯入自訂超大聲警報音效
-function handleCustomAlarmImport(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    emergencyAudio.src = e.target.result; // 將匯入的音效轉為資料流並套用
-    alert("✔ 自訂高分貝警報音效已成功匯入並綁定！");
-  };
-  reader.readAsDataURL(file);
 }
 
 function getActivePartner() {
@@ -287,106 +303,6 @@ function startSession() {
     return;
   }
   window.location.href = "session.html";
-}
-
-function triggerEmergencySafeword() {
-  const modal = document.getElementById("safewordEmergencyModal");
-  if (!modal) return;
-
-  playTerminalBeep("emergency");
-  if (navigator.vibrate) navigator.vibrate([400, 100, 400, 100, 800]);
-
-  const activePartner = getActivePartner();
-  const word = (activePartner && activePartner.safeword) ? activePartner.safeword : "MAYDAY";
-  const d = document.getElementById("emergencySafewordDisplay");
-  if (d) d.textContent = word.toUpperCase();
-
-  modal.classList.add("active");
-}
-
-function dismissEmergencySafeword() {
-  const modal = document.getElementById("safewordEmergencyModal");
-  if (modal) modal.classList.remove("active");
-  if (navigator.vibrate) navigator.vibrate(0);
-}
-
-// 全域變數用來儲存循環計時器
-let emergencyLoopTimer = null;
-
-// 1. 觸發急停警報
-function triggerEmergencySafeword() {
-  const modal = document.getElementById("safewordEmergencyModal");
-  if (!modal) return;
-
-  // 顯示彈窗
-  modal.style.display = "flex";
-  modal.classList.add("active");
-
-  const activePartner = getActivePartner ? getActivePartner() : null;
-  const word = (activePartner && activePartner.safeword) ? activePartner.safeword : "MAYDAY";
-  const d = document.getElementById("emergencySafewordDisplay");
-  if (d) d.textContent = word.toUpperCase();
-
-  // 清除可能殘留的舊迴圈
-  if (emergencyLoopTimer) clearInterval(emergencyLoopTimer);
-
-  // 立即執行第一次聲音與震動
-  playContinuousEmergencySignal();
-
-  // 啟動無限循環（每 800 毫秒重複一次警報聲與震動，直到手動解除）
-  emergencyLoopTimer = setInterval(() => {
-    playContinuousEmergencySignal();
-  }, 800);
-}
-
-// 2. 單次警報與震動發送單元
-function playContinuousEmergencySignal() {
-  // 手機震動脈衝（支援大部分 Android 與部分瀏覽器）
-  if (navigator.vibrate) {
-    navigator.vibrate([400, 100, 400, 100, 800]);
-  }
-
-  // Web Audio API 持續高頻警報音
-  try {
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    osc.type = "sawtooth"; // 鋸齒波，聲音較尖銳具警報感
-    osc.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 高音
-    osc.frequency.exponentialRampToValueAtTime(320, audioCtx.currentTime + 0.35); // 下滑音警报
-
-    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
-
-    osc.start();
-    osc.stop(audioCtx.currentTime + 0.35);
-  } catch (e) {
-    console.warn("音效解碼受限:", e);
-  }
-}
-
-// 3. 雙方恢復平靜 // 解除警報
-function dismissEmergencySafeword() {
-  const modal = document.getElementById("safewordEmergencyModal");
-  if (modal) {
-    modal.style.display = "none";
-    modal.classList.remove("active");
-  }
-
-  // 徹底清除無限循環計時器，讓聲音與震動停下來
-  if (emergencyLoopTimer) {
-    clearInterval(emergencyLoopTimer);
-    emergencyLoopTimer = null;
-  }
-
-  // 強制停止手機當下的震動
-  if (navigator.vibrate) {
-    navigator.vibrate(0);
-  }
 }
 
 // --------------------------------------------------------------------------
@@ -812,7 +728,7 @@ function exportDossierToImage() {
 }
 
 // --------------------------------------------------------------------------
-// 📷 終端原生相機 / 照片解析掃碼引擎（100% 解決手機瀏覽器黑屏或無法啟動鏡頭的問題）
+// 📷 終端原生相機 / 照片解析掃碼引擎
 // --------------------------------------------------------------------------
 function openQrScanner() {
   let fileInput = document.getElementById("nativeQrFileInput");
@@ -896,7 +812,6 @@ function handleScannedQrResult(text) {
   alert("❌ 未知的 QR 碼識別資料： " + text);
 }
 
-// ✦ 升級版：支援雲端雙向互加好友與實踐對象（Partners）聯動
 function addScannedFriendToSystem(data) {
   const existing = trackerState.friends.find(f => f.agentId === data.agentId);
   if (existing) {
@@ -941,7 +856,6 @@ function addScannedFriendToSystem(data) {
   renderFriendsList();
   if (typeof renderPartnerList === "function") renderPartnerList();
 
-  // 向雲端發送雙向互加請求
   if (memberProfile && (memberProfile.email || memberProfile.phone)) {
     fetch(CONFIG.API_URL, {
       method: "POST",
@@ -1146,7 +1060,6 @@ function addFriendByIdPrompt() {
   saveTrackerState();
   renderFriendsList();
 
-  // 同步向雲端發送雙向互加請求
   if (memberProfile && (memberProfile.email || memberProfile.phone)) {
     fetch(CONFIG.API_URL, {
       method: "POST",
