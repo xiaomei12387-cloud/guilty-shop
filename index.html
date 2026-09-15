@@ -884,7 +884,8 @@
           <div class="tactical-panel p-5 rounded-sm space-y-4" id="dossierExportTarget">
             <div class="flex justify-between items-center pb-3 border-b border-white/10">
               <h3 class="text-sm font-extrabold text-white">特工名片認證</h3>
-              <button class="text-xs font-mono text-zinc-300 border border-zinc-700 px-2.5 py-1 rounded cursor-pointer" onclick="openEditProfileModal()">編輯</button>
+              <!-- ✦ 這裡將「編輯」按鈕改為開啟偏好與「探索中」勾選面板 -->
+              <button class="text-xs font-mono text-zinc-300 border border-zinc-700 px-2.5 py-1 rounded cursor-pointer" onclick="openDossierTagsModal()">編輯</button>
             </div>
             <div class="flex items-center gap-3">
               <img id="dossierAvatarPreview" src="" class="w-14 h-14 rounded-sm border border-[#00ff88] object-cover">
@@ -1233,6 +1234,34 @@
   </div>
 
   <!-- ========================================================================== -->
+  <!-- 7. 特工名片偏好與雷點快速勾選編輯器 (Dossier Tags Editor Modal) -->
+  <!-- ========================================================================== -->
+  <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" id="dossierTagsModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.8); z-index:9999;">
+    <div class="bg-[#13151b] border border-[#00ff88]/30 max-w-lg w-full p-6 rounded-xl space-y-4 font-mono text-xs relative max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-2 border-b border-white/10">
+        <h4 class="text-sm font-bold text-[#00ff88]">// 快速調整特工偏好與「探索中」狀態</h4>
+        <button class="text-zinc-400 hover:text-white cursor-pointer" onclick="closeDossierTagsModal()">✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <div class="text-xs font-bold text-[#00ff88] mb-2">✦ 勾選偏好項目（含探索中選項）</div>
+          <div id="modalPrefCheckboxContainer" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="pt-3 border-t border-white/10">
+          <div class="text-xs font-bold text-[#ff3366] mb-2">🛑 勾選絕對雷點</div>
+          <div id="modalLimitCheckboxContainer" class="flex flex-wrap gap-2"></div>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 pt-3 border-t border-white/10">
+        <button class="px-5 py-2 bg-[#00ff88] text-black font-bold rounded cursor-pointer" onclick="closeDossierTagsModal()">完成並儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================== -->
   <!-- 5. 載入原本正常運作的 JavaScript 引擎與結帳控制 -->
   <!-- ========================================================================== -->
   <script src="./js/config.js?v=20260903"></script>
@@ -1314,7 +1343,78 @@
       history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
-    // ✦ 點擊編輯特工檔案：開啟專屬編輯彈窗並載入當前資料
+    // ✦ 確保預設清單中包含「🔍 探索中」
+    if (typeof DEFAULT_PRESET_TAGS !== 'undefined') {
+      if (!DEFAULT_PRESET_TAGS.preferences.includes("🔍 探索中")) {
+        DEFAULT_PRESET_TAGS.preferences.unshift("🔍 探索中");
+      }
+    }
+
+    // ✦ 點擊側邊欄名片「編輯」按鈕：開啟偏好與探索中勾選面板
+    function openDossierTagsModal() {
+      const modal = document.getElementById("dossierTagsModal");
+      if (!modal) return;
+
+      const prof = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : { selectedTags: [], limits: [], allPreferences: [], allLimits: [] };
+      
+      const allPrefs = prof.allPreferences || (typeof DEFAULT_PRESET_TAGS !== 'undefined' ? DEFAULT_PRESET_TAGS.preferences : []);
+      const allLimits = prof.allLimits || (typeof DEFAULT_PRESET_TAGS !== 'undefined' ? DEFAULT_PRESET_TAGS.hardLimits : []);
+      const selPrefs = prof.selectedTags || [];
+      const selLimits = prof.limits || [];
+
+      const prefContainer = document.getElementById("modalPrefCheckboxContainer");
+      if (prefContainer) {
+        prefContainer.innerHTML = allPrefs.map(t => `
+          <label class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-black border ${selPrefs.includes(t) ? 'border-[#00ff88] text-[#00ff88]' : 'border-zinc-800 text-zinc-400'} cursor-pointer text-xs">
+            <input type="checkbox" value="${t}" ${selPrefs.includes(t) ? 'checked' : ''} onchange="toggleModalTag('pref', '${t}', this.checked)" style="accent-color:#00ff88;">
+            <span>${t}</span>
+          </label>
+        `).join('');
+      }
+
+      const limitContainer = document.getElementById("modalLimitCheckboxContainer");
+      if (limitContainer) {
+        limitContainer.innerHTML = allLimits.map(l => `
+          <label class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-black border ${selLimits.includes(l) ? 'border-[#ff3366] text-[#ff3366]' : 'border-zinc-800 text-zinc-400'} cursor-pointer text-xs">
+            <input type="checkbox" value="${l}" ${selLimits.includes(l) ? 'checked' : ''} onchange="toggleModalTag('limit', '${l}', this.checked)" style="accent-color:#ff3366;">
+            <span>${l}</span>
+          </label>
+        `).join('');
+      }
+
+      modal.style.display = "flex";
+    }
+
+    function closeDossierTagsModal() {
+      const modal = document.getElementById("dossierTagsModal");
+      if (modal) modal.style.display = "none";
+      if (typeof renderProfileDossier === 'function') renderProfileDossier();
+    }
+
+    function toggleModalTag(type, tag, isChecked) {
+      if (typeof trackerState === 'undefined' || !trackerState.profile) return;
+      const prof = trackerState.profile;
+
+      if (type === 'pref') {
+        if (!prof.selectedTags) prof.selectedTags = [];
+        if (isChecked && !prof.selectedTags.includes(tag)) {
+          prof.selectedTags.push(tag);
+        } else if (!isChecked) {
+          prof.selectedTags = prof.selectedTags.filter(t => t !== tag);
+        }
+      } else {
+        if (!prof.limits) prof.limits = [];
+        if (isChecked && !prof.limits.includes(tag)) {
+          prof.limits.push(tag);
+        } else if (!isChecked) {
+          prof.limits = prof.limits.filter(l => l !== tag);
+        }
+      }
+
+      if (typeof saveTrackerState === 'function') saveTrackerState();
+    }
+
+    // ✦ 點擊頂部「編輯特工檔案」：開啟詳細資料編輯彈窗
     function openEditProfileModal() {
       const modal = document.getElementById("editProfileModal");
       if (!modal) return;
@@ -1339,15 +1439,12 @@
       modal.style.display = "flex";
     }
 
-    // ✦ 關閉編輯彈窗
     function closeEditProfileModal() {
       const modal = document.getElementById("editProfileModal");
-      if (modal) {
-        modal.style.display = "none";
-      }
+      if (modal) modal.style.display = "none";
     }
 
-    // ✦ 儲存特工檔案並與帳號及畫面即時同步
+    // ✦ 儲存詳細特工檔案
     function handleCustomProfileUpdate(e) {
       e.preventDefault();
 
@@ -1358,7 +1455,6 @@
       const newTwitter = document.getElementById("profEditTwitter").value.trim();
       const newBio = document.getElementById("profEditBio").value.trim();
 
-      // 1. 更新 trackerState 內的 profile
       if (typeof trackerState !== 'undefined') {
         if (!trackerState.profile) trackerState.profile = {};
         trackerState.profile.name = newName;
@@ -1370,7 +1466,6 @@
         if (typeof saveTrackerState === 'function') saveTrackerState();
       }
 
-      // 2. 更新全域 memberProfile
       if (typeof memberProfile !== 'undefined' && memberProfile) {
         memberProfile.name = newName;
         memberProfile.agentId = newAgentId;
@@ -1379,7 +1474,6 @@
         if (typeof updateMemberUI === 'function') updateMemberUI();
       }
 
-      // 3. 強制即時覆蓋頁面上所有的名片顯示元素
       const nameElems = document.querySelectorAll("#dossierNameDisplay");
       nameElems.forEach(el => el.textContent = `${newName} (${newAgentId})`);
 
