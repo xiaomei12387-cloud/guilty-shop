@@ -156,34 +156,34 @@
       border: 1px solid rgba(167, 139, 250, 0.3);
     }
     /* ✦ 商城規格選項卡片樣式 */
-  .radio-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    gap: 8px;
-    margin-top: 6px;
-  }
-  .radio-card {
-    background: rgba(19, 21, 27, 0.9);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 10px 12px;
-    border-radius: 6px;
-    font-size: 0.8rem;
-    color: #9ba1b0;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-  .radio-card:hover {
-    border-color: rgba(0, 255, 136, 0.4);
-    color: #fff;
-  }
-  .radio-card.active {
-    background: rgba(0, 255, 136, 0.12);
-    border-color: #00ff88;
-    color: #00ff88;
-    font-weight: bold;
-    box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
-  }
+    .radio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .radio-card {
+      background: rgba(19, 21, 27, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #9ba1b0;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .radio-card:hover {
+      border-color: rgba(0, 255, 136, 0.4);
+      color: #fff;
+    }
+    .radio-card.active {
+      background: rgba(0, 255, 136, 0.12);
+      border-color: #00ff88;
+      color: #00ff88;
+      font-weight: bold;
+      box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
+    }
   </style>
 
   <!-- 原有工具庫 (html2canvas, QR, Chart.js) -->
@@ -474,7 +474,14 @@
                 <span>外包裝品名一律標示為「高精度五金零件」，寄件人無品牌字樣，守護特工極限隱私。</span>
               </div>
 
-              <!-- 💳 VIEW: 結帳調用終端 (view-checkout) -->
+            </div>
+          </aside>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- 💳 VIEW: 結帳調用終端 (view-checkout) -->
     <div id="view-checkout" class="view-section hidden w-full">
       <main class="max-w-lg mx-auto px-4 pt-4 pb-36 space-y-4 font-sans text-neutral-200">
         
@@ -724,14 +731,7 @@
       </aside>
     </div>
 
-            </div>
-          </aside>
-
-        </div>
-      </main>
-    </div>
-
-   <!-- 🔍 VIEW: 商品詳細規格檢視視圖 (view-product-detail) -->
+    <!-- 🔍 VIEW: 商品詳細規格檢視視圖 (view-product-detail) -->
     <div id="view-product-detail" class="view-section hidden w-full">
       <main class="flex flex-col relative w-full pt-4 bg-surface min-h-screen pb-28">
         <div class="flex flex-col w-full relative max-w-4xl mx-auto px-4">
@@ -795,7 +795,7 @@
                 <p class="text-xs text-zinc-300 pt-2 leading-relaxed" id="detailProductDesc">載入中...</p>
               </div>
 
-              <!-- 4. ✦ 關鍵修復：長度、色彩材質與項圈尺寸的動態注入容器 -->
+              <!-- 4. 動態規格選項區 (長度 / 顏色 / 尺寸) -->
               <div class="flex flex-col gap-4 bg-black/40 p-4 rounded-xl border border-white/5" id="detailDynamicOptions">
                 <!-- shop.js 會自動把選項生成在這裡 -->
               </div>
@@ -1068,7 +1068,7 @@
         <span class="text-white/60">裝備小計：</span>
         <span id="cartDrawerSubtotal" class="text-[#00ff88] font-bold">NT$ 0</span>
       </div>
-      <button class="w-full py-3 bg-[#00ff88] text-black font-bold text-xs uppercase tracking-widest rounded" onclick="proceedToCheckoutFromCart()" style="cursor:pointer;">進入終端簽署協議 (CHECKOUT)</button>
+      <button class="w-full py-3 bg-[#00ff88] text-black font-bold text-xs uppercase tracking-widest rounded cursor-pointer" onclick="proceedToCheckoutFromCart()">進入終端簽署協議 (CHECKOUT)</button>
     </div>
   </div>
 
@@ -1178,7 +1178,7 @@
     </div>
   </div>
 
-<!-- ========================================================================== -->
+  <!-- ========================================================================== -->
   <!-- 5. 載入原本正常運作的 JavaScript 引擎與結帳控制 -->
   <!-- ========================================================================== -->
   <script src="./js/config.js?v=20260903"></script>
