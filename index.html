@@ -842,7 +842,7 @@
             <div>
               <div class="text-[9px] font-mono text-[#00ff88] tracking-widest">// FULLSCREEN_TERMINAL・全画面実働</div>
               <h2 class="text-base font-extrabold text-white mt-0.5">全螢幕連線實踐端 (session.html)</h2>
-              <p class="text-xs text-zinc-400 mt-1">極大化高反差碼錶、盲按防誤觸巨型主控,實時雙軌防護</p>
+              <p class="text-xs text-zinc-400 mt-1">極大化高反差碼錶、盲按防誤觸巨型主控、實時雙軌防護</p>
             </div>
             <button class="px-5 py-2.5 bg-[#00ff88] text-black font-extrabold text-xs uppercase rounded cursor-pointer" onclick="startSession()">▶ 啟動連線終端</button>
           </div>
@@ -1240,7 +1240,7 @@
   <script src="./js/shop.js?v=20260903"></script>
   <script src="./js/tracker.js?v=20260903"></script>
 
-<script>
+  <script>
     // 頁面開場動畫
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
@@ -1252,7 +1252,7 @@
       }
     }
 
-    // ✦ 升級版 SPA 視圖切換與導覽列同步高亮
+    // SPA 視圖切換核心與導覽列同步高亮
     function setActiveView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => {
         el.classList.remove('active', 'block');
@@ -1314,12 +1314,11 @@
       history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
-    // ✦ 點擊編輯特工檔案：雙向對齊 memberProfile 與 trackerState.profile
+    // ✦ 點擊編輯特工檔案：開啟專屬編輯彈窗並載入當前資料
     function openEditProfileModal() {
       const modal = document.getElementById("editProfileModal");
       if (!modal) return;
 
-      // 同步抓取目前登入的會員資料或 tracker 內的名片資料
       const tProf = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : {};
       const mProf = (typeof memberProfile !== 'undefined' && memberProfile) ? memberProfile : {};
       
@@ -1333,7 +1332,7 @@
       if (nameInp) nameInp.value = tProf.name || mProf.name || "特工";
       if (agentIdInp) agentIdInp.value = tProf.agentId || mProf.agentId || "AGENT-001";
       if (roleInp) roleInp.value = tProf.role || mProf.role || "支配者 (Dom)";
-      if (safewordInp) safewordInp.value = tProf.safeword || mProf.safeword || "MAYDAY";
+      if (safewordInp) safewordInp.value = tProf.safeword || "MAYDAY";
       if (twitterInp) twitterInp.value = tProf.twitter || "";
       if (bioInp) bioInp.value = tProf.bio || "";
 
@@ -1348,7 +1347,7 @@
       }
     }
 
-    // ✦ 儲存特工檔案：同時寫入 trackerState 與 memberProfile 確保兩邊完全一致
+    // ✦ 儲存特工檔案並與帳號及畫面即時同步
     function handleCustomProfileUpdate(e) {
       e.preventDefault();
 
@@ -1371,24 +1370,37 @@
         if (typeof saveTrackerState === 'function') saveTrackerState();
       }
 
-      // 2. 更新全域 memberProfile 並存入 localStorage
+      // 2. 更新全域 memberProfile
       if (typeof memberProfile !== 'undefined' && memberProfile) {
         memberProfile.name = newName;
         memberProfile.agentId = newAgentId;
         memberProfile.role = newRole;
         localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
-      } else {
-        // 若訪客狀態下直接編輯，也建立一個基礎 memberProfile
-        window.memberProfile = { name: newName, agentId: newAgentId, role: newRole };
-        localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(window.memberProfile));
+        if (typeof updateMemberUI === 'function') updateMemberUI();
       }
 
-      // 3. 即時刷新頂部按鈕與特工名片顯示
-      if (typeof updateMemberUI === 'function') updateMemberUI();
-      if (typeof renderProfileDossier === 'function') renderProfileDossier();
+      // 3. 強制即時覆蓋頁面上所有的名片顯示元素
+      const nameElems = document.querySelectorAll("#dossierNameDisplay");
+      nameElems.forEach(el => el.textContent = `${newName} (${newAgentId})`);
+
+      const idElems = document.querySelectorAll("#dossierAgentIdDisplay");
+      idElems.forEach(el => el.textContent = `ID: ${newAgentId}`);
+
+      const roleElems = document.querySelectorAll("#dossierRoleBadge");
+      roleElems.forEach(el => el.textContent = newRole);
+
+      const safewordElems = document.querySelectorAll("#dossierSafewordDisplay");
+      safewordElems.forEach(el => el.textContent = newSafeword);
+
+      const bioElem = document.getElementById("dossierBioDisplay");
+      if (bioElem) bioElem.textContent = newBio || "尚未填寫特工宣言與簡介。";
+
+      if (typeof renderProfileDossier === 'function') {
+        renderProfileDossier();
+      }
 
       closeEditProfileModal();
-      alert("✔ 特工機密檔案與名片數據已全面同步同調！");
+      alert("✔ 特工機密檔案與名片數據已同步完成！");
     }
 
     // ✦ 從購物車抽屜或商城點擊進入結帳終端
