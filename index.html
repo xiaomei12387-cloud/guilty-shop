@@ -865,6 +865,7 @@
     <div id="view-dossier" class="view-section hidden w-full">
       <div class="max-w-[1600px] mx-auto px-4 py-8 flex flex-col gap-8">
         
+        <!-- 頂部遙測標頭 -->
         <section class="flex flex-col gap-3">
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div class="flex items-center gap-3">
@@ -979,7 +980,6 @@
         </div>
       </div>
     </div>
-
   </main>
 
   <!-- ========================================================================== -->
@@ -1018,7 +1018,28 @@
     </div>
   </div>
 
-  <!-- 4. 詳細特工檔案與頭像編輯彈窗 -->
+  <!-- 4. 手機端專屬戰術導覽抽屜 (Mobile Nav Drawer) -->
+  <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden" id="mobileNavOverlay" onclick="toggleNav(false)"></div>
+  <div class="fixed left-0 top-0 bottom-0 w-64 bg-[#0b0d13] border-r border-white/10 p-6 flex flex-col justify-between z-50 transform -translate-x-full transition-transform duration-300 font-mono text-xs" id="mobileNavDrawer" style="position:fixed; z-index:9999;">
+    <div class="space-y-6">
+      <div class="flex justify-between items-center pb-3 border-b border-white/10">
+        <span class="text-[#00ff88] font-bold tracking-widest">// NAVIGATION</span>
+        <button onclick="toggleNav(false)" class="text-white/50 hover:text-white text-base">✕</button>
+      </div>
+      <nav class="flex flex-col gap-2">
+        <button class="w-full text-left px-3 py-2.5 rounded hover:bg-white/5 text-zinc-300 hover:text-[#00ff88]" onclick="showLandingView(); toggleNav(false);">首頁大廳 (LOBBY)</button>
+        <button class="w-full text-left px-3 py-2.5 rounded hover:bg-white/5 text-zinc-300 hover:text-[#00ff88]" onclick="openShopCatalogView(); toggleNav(false);">裝備商城 (ARSENAL)</button>
+        <button class="w-full text-left px-3 py-2.5 rounded hover:bg-white/5 text-zinc-300 hover:text-[#00ff88]" onclick="openTrackerAppView(); toggleNav(false);">實踐計數 (TRACKER)</button>
+        <button class="w-full text-left px-3 py-2.5 rounded hover:bg-white/5 text-zinc-300 hover:text-[#00ff88]" onclick="openFriendsDossierView(); toggleNav(false);">特工名冊 (FRIENDS)</button>
+        <button class="w-full text-left px-3 py-2.5 rounded bg-primary/10 border border-primary/30 text-[#00ff88]" onclick="openProfileDossierView(); toggleNav(false);">特工主頁 (DOSSIER)</button>
+      </nav>
+    </div>
+    <div class="pt-4 border-t border-white/10 text-[10px] text-zinc-500">
+      NODE_09 // TAIPEI_TERMINAL
+    </div>
+  </div>
+
+  <!-- 5. 詳細特工檔案與頭像編輯彈窗 -->
   <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" id="editProfileModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.8); z-index:9999;">
     <div class="bg-[#13151b] border border-white/15 max-w-md w-full p-6 rounded-xl space-y-4 font-mono text-xs relative max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center pb-2 border-b border-white/10">
@@ -1082,7 +1103,7 @@
     </div>
   </div>
 
-  <!-- 5. 檢視特工好友檔案情報彈窗 (抽離至全域彈窗層) -->
+  <!-- 6. 檢視特工好友檔案情報彈窗 (獨立於 main 之外) -->
   <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4 font-mono text-xs" id="friendProfileModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.8); z-index:9999;">
     <div class="bg-[#13151b] border border-[#00ff88]/35 max-w-md w-full p-6 rounded-xl space-y-4 relative max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center pb-2 border-b border-white/10">
@@ -1106,26 +1127,6 @@
         <div class="text-[11px] font-bold text-[#ff3366] mb-1">🛑 絕對雷點</div>
         <div id="fpLimits" class="flex flex-wrap gap-1"></div>
       </div>
-    </div>
-  </div>
-
-  <!-- 6. 購物車抽屜 (Cart Drawer) -->
-  <div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden" id="navOverlay" onclick="toggleCart(false)"></div>
-  <div class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#0b0d13] border-l border-white/10 p-6 flex flex-col justify-between z-50 transform translate-x-full transition-transform duration-300" id="cartDrawer" style="position:fixed; z-index:9999;">
-    <div>
-      <div class="flex justify-between items-center pb-4 border-b border-white/10">
-        <span class="font-mono font-bold text-[#00ff88]">[ ARSENAL CART ]</span>
-        <button onclick="toggleCart(false)" class="text-white/50 hover:text-white cursor-pointer" style="background:transparent; border:none; font-size:1.2rem;">✕</button>
-      </div>
-      <div id="cartFreeShippingBanner" class="py-2 text-xs font-mono" style="border-bottom:1px dashed rgba(255,255,255,0.1); margin-bottom:10px;"></div>
-      <div class="py-4 space-y-3 overflow-y-auto max-h-[60vh]" id="cartItemsContainer"></div>
-    </div>
-    <div class="border-t border-white/10 pt-4 space-y-3 font-mono">
-      <div class="flex justify-between text-sm">
-        <span class="text-white/60">裝備小計：</span>
-        <span id="cartDrawerSubtotal" class="text-[#00ff88] font-bold">NT$ 0</span>
-      </div>
-      <button class="w-full py-3 bg-[#00ff88] text-black font-bold text-xs uppercase tracking-widest rounded cursor-pointer" onclick="proceedToCheckoutFromCart()">進入終端簽署協議 (CHECKOUT)</button>
     </div>
   </div>
 
@@ -1596,6 +1597,20 @@
       storeSelect.disabled = false;
     }
 
+// ✦ 手機版導覽抽屜開關
+    function toggleNav(isOpen) {
+      const drawer = document.getElementById("mobileNavDrawer");
+      const overlay = document.getElementById("mobileNavOverlay");
+      if (!drawer) return;
+      if (isOpen) {
+        drawer.style.transform = "translateX(0)";
+        if (overlay) overlay.classList.remove("hidden");
+      } else {
+        drawer.style.transform = "translateX(-100%)";
+        if (overlay) overlay.classList.add("hidden");
+      }
+    }
+    
     function submitOrderToDatabase() {
       if (typeof cart !== 'undefined' && cart.length === 0) {
         alert("❌ 錯誤：調用清單目前為空！");
