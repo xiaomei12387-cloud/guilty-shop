@@ -160,12 +160,13 @@
     </div>
   </div>
 
+<!-- ========================================================================== -->
+  <!-- 1. 浮空頂部 HUD 導航列 (Tactical Header - 雙行日文微縮風格) -->
   <!-- ========================================================================== -->
-  <!-- 1. 浮空頂部 HUD 導航列 (Tactical Header) -->
-  <!-- ========================================================================== -->
-  <header class="sticky top-0 z-50 w-full px-4 md:px-8 py-3 bg-[#08090c]/85 backdrop-blur-xl border-b border-white/10">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
+  <header class="sticky top-0 z-50 w-full px-4 md:px-8 py-3 bg-[#08090c]/90 backdrop-blur-xl border-b border-white/10">
+    <div class="max-w-[1600px] mx-auto flex items-center justify-between">
       
+      <!-- 左側：品牌標誌與節點代號 -->
       <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
         <div class="w-9 h-9 rounded bg-surface-container-high border border-white/10 flex items-center justify-center relative overflow-hidden group">
           <svg class="cyber-cat-eye-svg w-7 h-7" viewBox="0 0 100 100">
@@ -175,64 +176,71 @@
           </svg>
           <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
         </div>
-        <div class="flex flex-col justify-center">
-          <div class="flex items-center gap-2">
-            <svg class="guilty-vector-logo h-5 w-auto" viewBox="0 0 650 160" style="max-width: 110px;">
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85"></path>
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M150 35 L110 85 L150 125 L190 85"></path>
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M190 85 L230 35 L270 85 L230 135 Z"></path>
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M230 35 L230 135"></path>
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M270 85 L310 35 L350 85 L390 125"></path>
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M390 85 L440 35 L490 85"></path>
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M440 35 L440 135"></path>
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M500 35 L545 90 L590 35"></path>
-              <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M545 90 L545 135"></path>
-            </svg>
-            <span class="text-[9px] font-code-hud px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-primary">SYS.ONLINE</span>
-          </div>
-          <p class="text-[9px] font-code-hud tracking-wider text-white/40 hidden sm:block">DEVILISH HARDWARE &amp; TACTICAL BONDAGE</p>
+        <div class="flex items-center gap-3">
+          <svg class="guilty-vector-logo h-6 w-auto" viewBox="0 0 650 160" style="max-width: 120px;">
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85"></path>
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M150 35 L110 85 L150 125 L190 85"></path>
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M190 85 L230 35 L270 85 L230 135 Z"></path>
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M230 35 L230 135"></path>
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M270 85 L310 35 L350 85 L390 125"></path>
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M390 85 L440 35 L490 85"></path>
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M440 35 L440 135"></path>
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M500 35 L545 90 L590 35"></path>
+            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M545 90 L545 135"></path>
+          </svg>
+          <span class="text-sm font-bold text-white tracking-wider hidden sm:inline">欲室｜共犯</span>
+          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 tracking-widest hidden xl:inline">NODE_09 // 戰術節點 • ENCRYPTED: L5</span>
         </div>
       </div>
 
-      <div class="hidden lg:flex items-center gap-6 text-[11px] font-code-hud border border-white/5 bg-white/[0.02] px-4 py-1.5 rounded-full">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-          <span class="text-white/60">PING: <span class="text-primary font-bold">18ms</span></span>
-        </div>
-        <span class="text-white/20">|</span>
-        <div class="text-white/60">SECTOR: <span class="text-white">TP-01</span></div>
-        <span class="text-white/20">|</span>
-        <div class="text-white/60">SAFEWORD: <span class="text-error font-bold tracking-wider">BLACK-FLIGHT</span></div>
-      </div>
+      <!-- 中間：5大核心雙行日文樣式導覽列 -->
+      <nav class="hidden xl:flex items-center gap-1 font-code-hud text-xs">
+        <button class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="showLandingView()">
+          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">首頁大廳</span>
+          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">ロビー</span>
+        </button>
+        <button class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openShopCatalogView()">
+          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">裝備商城</span>
+          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">アーセナル</span>
+        </button>
+        <button class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openTrackerAppView()">
+          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">實踐計數</span>
+          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">カウンター</span>
+        </button>
+        <button class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-white transition-colors rounded" onclick="openFriendsDossierView()">
+          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工名冊</span>
+          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">名簿</span>
+        </button>
+        <button class="px-4 py-1.5 flex flex-col items-center justify-center bg-primary/15 text-primary rounded transition-colors shadow-[0_0_12px_rgba(0,255,136,0.25)] border border-primary/30" onclick="openProfileDossierView()">
+          <span style="font-size:14px; font-weight:700; letter-spacing:0.025em;">特工主頁</span>
+          <span style="font-size:8px; opacity:0.75; line-height:1; margin-top:2px;">身分端末</span>
+        </button>
+      </nav>
 
-      <div class="flex items-center gap-2.5 sm:gap-3">
-        <nav class="hidden md:flex items-center gap-1 font-code-hud text-xs mr-2">
-          <button class="px-3 py-1.5 rounded text-white/70 hover:text-white hover:bg-white/5 transition-colors" onclick="openShopCatalogView()">裝備商城</button>
-          <button class="px-3 py-1.5 rounded text-white/70 hover:text-white hover:bg-white/5 transition-colors" onclick="openTrackerAppView()">計數終端</button>
-          <button class="px-3 py-1.5 rounded text-white/70 hover:text-white hover:bg-white/5 transition-colors" onclick="openProfileDossierView()">特工檔案</button>
-          <button class="px-3 py-1.5 rounded text-white/70 hover:text-white hover:bg-white/5 transition-colors" onclick="openFriendsDossierView()">網絡拓撲</button>
-          <button class="px-3 py-1.5 rounded text-white/70 hover:text-white hover:bg-white/5 transition-colors" onclick="openCreatorPortalView()">軍械設計局</button>
-        </nav>
-
-        <button class="flex items-center gap-2 px-3 py-1.5 rounded bg-surface-container border border-white/10 hover:border-primary/50 text-xs font-code-hud text-on-surface transition-all" id="memberBtn" onclick="toggleAuthModal(true)">
-          <span class="material-symbols-outlined text-sm text-primary">fingerprint</span>
-          <span class="hidden sm:inline" id="memberBtnText">[ 訪客 ]</span>
+      <!-- 右側：購物車快捷與特工狀態膠囊 -->
+      <div class="flex items-center gap-3">
+        
+        <!-- 購物車快捷按鈕 -->
+        <button class="flex items-center gap-2 px-3.5 py-1.5 rounded bg-surface-container border border-white/10 hover:border-primary/50 text-xs font-mono text-zinc-200 transition-all cursor-pointer" onclick="toggleCart(true)">
+          <span class="text-[#00ff88]">🛒</span> 裝備調用清單 
+          <span class="bg-[#00ff88]/15 text-[#00ff88] px-1.5 py-0.5 rounded font-bold text-[11px]" id="headerCartCountText">[01]</span>
         </button>
 
-        <button class="flex items-center gap-2 px-3 py-1.5 rounded bg-primary/10 border border-primary/30 hover:bg-primary hover:text-black text-primary font-code-hud text-xs transition-all relative group" onclick="toggleCart(true)">
-          <span class="material-symbols-outlined text-base">local_mall</span>
-          <span class="font-bold tracking-wider">CART</span>
-          <span class="w-4 h-4 rounded-full bg-primary text-black text-[10px] font-bold flex items-center justify-center group-hover:bg-black group-hover:text-primary transition-colors" id="headerCartCount">0</span>
+        <!-- 特工身分狀態徽章 -->
+        <button class="flex items-center gap-2.5 px-3 py-1.5 rounded bg-surface-container border border-white/10 text-xs font-mono text-white hover:border-primary/40 transition-all cursor-pointer" id="memberBtn" onclick="toggleAuthModal(true)">
+          <div class="w-2 h-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] animate-pulse"></div>
+          <span class="font-bold tracking-wide" id="memberBtnText">AGENT-9481 夜梟</span>
+          <span class="text-[9px] text-[#00ff88] bg-[#00ff88]/10 border border-[#00ff88]/30 px-1 py-0.5 rounded">L5 SECURE</span>
         </button>
 
-        <button class="md:hidden p-2 rounded bg-surface-container border border-white/10 text-white hover:text-primary" onclick="toggleNav(true)">
+        <!-- 手機版漢堡選單按鈕 -->
+        <button class="xl:hidden p-2 rounded bg-surface-container border border-white/10 text-white hover:text-primary cursor-pointer" onclick="toggleNav(true)">
           <span class="material-symbols-outlined text-lg">menu</span>
         </button>
       </div>
 
     </div>
   </header>
-
 <!-- ========================================================================== -->
   <!-- 2. 主視圖單頁切換容器 (SPA Views Container) -->
   <!-- ========================================================================== -->
