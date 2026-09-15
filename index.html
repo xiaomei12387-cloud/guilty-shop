@@ -1190,7 +1190,7 @@
     </div>
   </div>
 
-  <!-- ========================================================================== -->
+ <!-- ========================================================================== -->
   <!-- 5. 載入原本正常運作的 JavaScript 引擎與結帳控制 -->
   <!-- ========================================================================== -->
   <script src="./js/config.js?v=20260903"></script>
@@ -1210,8 +1210,7 @@
       }
     }
 
-    // SPA 視圖切換核心
-    f// ✦ 升級版 SPA 視圖切換與導覽列同步高亮
+    // ✦ 升級版 SPA 視圖切換與導覽列同步高亮
     function setActiveView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => {
         el.classList.remove('active', 'block');
@@ -1274,7 +1273,23 @@
       history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
-    // ✦ 關鍵補強：從購物車抽屜或商城點擊進入結帳終端
+    // ✦ 點擊編輯特工檔案：開啟會員管理彈窗並載入當前帳號資料
+    function openEditProfileModal() {
+      if (typeof toggleAuthModal === 'function') {
+        toggleAuthModal(true);
+        const guestView = document.getElementById("authGuestView");
+        const profView = document.getElementById("authProfileView");
+        if (guestView) guestView.style.display = "none";
+        if (profView) profView.style.display = "block";
+        if (typeof populateProfileView === 'function') {
+          populateProfileView();
+        }
+      } else {
+        alert("⚠️ 系統登入認證模組尚未就緒。");
+      }
+    }
+
+    // ✦ 從購物車抽屜或商城點擊進入結帳終端
     function proceedToCheckoutFromCart() {
       if (typeof cart !== 'undefined' && cart.length === 0) {
         alert("❌ 裝備庫目前為空！");
@@ -1301,7 +1316,7 @@
       }
     }
 
-    // ✦ 超商門市即時關鍵字過濾（縮小範圍）
+    // ✦ 超商門市即時關鍵字過濾
     function filterCvsStoresLocally(keyword) {
       const storeSelect = document.getElementById("cvsStoreSelect");
       if (!storeSelect || typeof cachedStoreLocations === 'undefined' || cachedStoreLocations.length === 0) return;
