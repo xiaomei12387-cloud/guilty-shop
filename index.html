@@ -799,7 +799,7 @@
           <div class="tactical-panel p-5 rounded-sm border-l-4 border-l-[#00ff88] bg-gradient-to-r from-black/90 via-[#101317]/90 to-black/90 flex items-center justify-between">
             <div>
               <div class="text-[9px] font-mono text-[#00ff88] tracking-widest">// FULLSCREEN_TERMINAL・全画面実働</div>
-              <h2 class="text-base font-extrabold text-white mt-0.5">全螢幕連線實踐端 (session.html)</h2>
+              <h2 class="text-base font-extrabold text-white mt-0.5">全螢幕連線實踐端</h2>
               <p class="text-xs text-zinc-400 mt-1">極大化高反差碼錶、盲按防誤觸巨型主控、實時雙軌防護</p>
             </div>
             <button class="px-5 py-2.5 bg-[#00ff88] text-black font-extrabold text-xs uppercase rounded cursor-pointer" onclick="startSession()">▶ 啟動連線終端</button>
@@ -959,19 +959,19 @@
             <div class="relative bg-black p-6 rounded-xl flex flex-col gap-4 border-2 border-red-600 shadow-[0_0_30px_rgba(255,51,75,0.25)] overflow-hidden">
               <div class="flex items-center justify-between">
                 <span class="text-sm font-bold text-red-500 flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span> 急停機制協定 (Kill Switch)
+                  <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span> 急停機制協定 (キルスイッチ)
                 </span>
                 <span class="px-2 py-0.5 bg-red-950 text-red-400 font-mono text-[9px]">EMERGENCY_LV1</span>
               </div>
               <p class="text-xs text-zinc-300 leading-relaxed">按下急停機制將立即抹除本機端所有暫存 Token、中斷所有安全連線並跳轉至一般偽裝公務日誌畫面。</p>
               <button onclick="triggerEmergencySafeword()" class="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-mono font-bold tracking-widest flex items-center justify-center gap-2 rounded transition-all shadow-[0_0_20px_rgba(255,51,75,0.5)] cursor-pointer">
                 <span class="material-symbols-outlined text-xl">dangerous</span>
-                <span>立即執行緊急急停協議 (KILL SWITCH)</span>
+                <span>立即執行緊急急停協議 (キルスイッチ)</span>
               </button>
             </div>
 
             <div class="bg-surface-container-low p-6 rounded-xl flex flex-col items-center text-center gap-3 border border-white/10">
-              <div class="text-xs font-mono text-[#00ff88] font-bold">[ NEURAL PASS // 掃碼連線 ]</div>
+              <div class="text-xs font-mono text-[#00ff88] font-bold">[ 掃碼連線 // QRコードで接続する ]</div>
               <div id="myQrCodeBox" class="p-2 bg-black border border-[#00ff88]/40 rounded"></div>
               <button onclick="exportDossierToImage()" class="w-full py-2.5 bg-[#00ff88] text-black font-mono font-bold text-xs rounded cursor-pointer hover:bg-[#60ff99] transition-all">📷 匯出高畫質戰術卡片</button>
             </div>
