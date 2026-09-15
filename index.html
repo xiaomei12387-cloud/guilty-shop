@@ -267,25 +267,126 @@
       </div>
     </div>
 
-    <!-- 🛒 VIEW: 獨立裝備商城 (view-shop) -->
-    <div id="view-shop" class="view-section hidden space-y-6">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <button onclick="showLandingView()" style="background:transparent; border:1px solid rgba(255,255,255,0.1); color:#9ba1b0; padding:6px 14px; cursor:pointer; font-size:0.8rem; border-radius:4px;">← 返回首頁大廳</button>
-      </div>
-      <div style="font-size:0.75rem; color:#00ff88; letter-spacing:2px; margin-bottom:8px;">[ 01 // ARSENAL CATALOG ]</div>
-      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
-        <h2 style="font-size:1.4rem; font-weight:bold; color:#fff;">全系列裝備目錄庫</h2>
-        <span style="font-size:0.8rem; color:#00ff88; border:1px dashed #00ff88; padding:2px 8px;">全館滿 NT$ 1,800 免運費</span>
-      </div>
-      <div class="filter-bar" style="display:flex; gap:8px; margin-bottom:16px;">
-        <button class="filter-btn active" onclick="filterBrand('all')" style="padding:6px 12px; background:#00ff88; color:#000; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">全部裝備 (ALL)</button>
-        <button class="filter-btn" onclick="filterBrand('guilty')" style="padding:6px 12px; background:#13151b; color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:4px; cursor:pointer;">欲室｜共犯 義體</button>
-        <button class="filter-btn" onclick="filterBrand('shushi')" style="padding:6px 12px; background:#13151b; color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:4px; cursor:pointer;">束室特選繩藝</button>
-      </div>
-      <!-- ✦ 核心商品渲染目標容器 -->
-      <div class="product-list-grid" id="productGrid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:16px;"></div>
-    </div>
+    <!-- 🛒 VIEW: 裝備調用商城 (view-shop) -->
+    <div id="view-shop" class="view-section hidden w-full">
+      <main class="flex-1 pt-12 pb-20 px-4 sm:px-6 lg:px-8 mx-auto w-full max-w-[1600px]">
+        
+        <!-- 頂部導覽與大標題 -->
+        <div class="mb-8">
+          <div class="flex justify-between items-center mb-4">
+            <button onclick="showLandingView()" class="px-3.5 py-1.5 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded">← 返回首頁大廳</button>
+          </div>
+          <div class="text-[9px] font-mono tracking-widest text-[#00ff88]/70 uppercase mb-1.5">// ARSENAL_CATALOG・装備調達拠点</div>
+          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
+            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
+              裝備調用商城
+              <span class="text-xs font-mono font-normal text-white/40 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">STAGE: ACTIVE v2.5</span>
+            </h1>
+            <p class="text-xs font-mono text-white/50 tracking-wide">極限感官與拘束器材庫・全台超商無痕隱密發送</p>
+          </div>
 
+          <!-- 分類篩選按鈕 -->
+          <div class="flex flex-wrap items-center gap-2 mt-6 pb-2 border-b border-white/[0.06]">
+            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-[#00ff88] text-black font-bold active" onclick="filterBrand('all')">全部裝備 (ALL)</button>
+            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-surface-container text-zinc-300 hover:text-white border border-white/10" onclick="filterBrand('guilty')">欲室｜共犯 義體</button>
+            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-surface-container text-zinc-300 hover:text-white border border-white/10" onclick="filterBrand('shushi')">束室特選繩藝</button>
+          </div>
+        </div>
+
+        <!-- 主區塊：8 欄商品清單 + 4 欄結帳抽屜 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- 左側商品網格 (8 欄) -->
+          <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6" id="productGrid">
+            <!-- 動態由 shop.js 渲染商品卡片 -->
+          </div>
+
+          <!-- 右側即時調用清單與結帳 HUD 抽屜 (4 欄) -->
+          <aside class="lg:col-span-4 sticky top-24 space-y-4">
+            <div class="bg-surface-container-low rounded-xl p-5 border border-white/10 shadow-2xl relative overflow-hidden font-mono">
+              
+              <div class="flex items-center justify-between pb-3 border-b border-white/10">
+                <div>
+                  <span class="text-[8px] text-[#00ff88] tracking-widest uppercase">HUD_CART // 調用抽屜</span>
+                  <h3 class="text-base font-bold text-white">調用裝備清單</h3>
+                </div>
+                <span class="text-xs px-2 py-0.5 rounded bg-white/5 text-[#00ff88] border border-[#00ff88]/30" id="cart-item-count">0 項目</span>
+              </div>
+
+              <!-- 免運進度條 -->
+              <div class="my-4 p-3 rounded-lg bg-black/40 border border-white/5">
+                <div class="flex justify-between items-center text-[11px] mb-1.5">
+                  <span class="text-zinc-400 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[14px] text-[#00ff88]">local_shipping</span> 滿額免運特工協議
+                  </span>
+                  <span class="text-[#00ff88] font-bold" id="shipping-progress-text">計算中...</span>
+                </div>
+                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div class="h-full bg-[#00ff88] transition-all duration-300" id="shipping-progress-bar" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <!-- 購物車列表容器 -->
+              <div class="space-y-3 max-h-64 overflow-y-auto pr-1 my-3" id="cart-list">
+                <div class="py-6 text-center text-xs text-zinc-500">調用抽屜目前無裝備</div>
+              </div>
+
+              <!-- 配送方式 -->
+              <div class="pt-3 border-t border-white/10 space-y-2 text-xs">
+                <span class="text-[10px] text-zinc-400 uppercase tracking-wider block">配送方式選配 // LOGISTICS</span>
+                <div class="grid grid-cols-3 gap-1.5" id="shipping-options">
+                  <button class="shipping-btn active p-2 rounded text-left border bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/40 cursor-pointer" data-fee="60" onclick="selectShipping('711', this)" type="button">
+                    <div class="text-[11px] font-bold">7-11 超商</div>
+                    <div class="text-[9px] opacity-60">無痕取貨</div>
+                  </button>
+                  <button class="shipping-btn p-2 rounded text-left border bg-black text-zinc-400 border-white/10 hover:text-white cursor-pointer" data-fee="60" onclick="selectShipping('family', this)" type="button">
+                    <div class="text-[11px] font-bold">全家便利</div>
+                    <div class="text-[9px] opacity-60">超商取貨</div>
+                  </button>
+                  <button class="shipping-btn p-2 rounded text-left border bg-black text-zinc-400 border-white/10 hover:text-white cursor-pointer" data-fee="120" onclick="selectShipping('home', this)" type="button">
+                    <div class="text-[11px] font-bold">黑貓宅配</div>
+                    <div class="text-[9px] opacity-60">隱私直送</div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 密鑰輸入 -->
+              <div class="mt-3">
+                <div class="flex gap-2">
+                  <input class="w-full bg-black border border-white/15 rounded px-2.5 py-1.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#00ff88]" id="coupon-input" placeholder="密鑰 (例: IAMSUB)" type="text">
+                  <button class="px-3 py-1.5 rounded bg-surface-container-high text-xs text-white border border-white/15 cursor-pointer" id="apply-coupon-btn" onclick="applyPromoCode()" type="button">套用</button>
+                </div>
+                <p class="text-[10px] mt-1 text-[#00ff88]" id="promoStatusMsg"></p>
+              </div>
+
+              <!-- 金額結算 -->
+              <div class="pt-4 mt-3 border-t border-white/10 space-y-1.5 text-xs">
+                <div class="flex justify-between text-zinc-400"><span>裝備小計</span><span class="text-white" id="subtotal-val">NT$ 0</span></div>
+                <div class="flex justify-between text-[#a78bfa] hidden" id="discount-line"><span>密鑰折扣</span><span id="discount-val">- NT$ 0</span></div>
+                <div class="flex justify-between text-zinc-400"><span>物流運費</span><span class="text-[#00ff88]" id="shipping-val">NT$ 60</span></div>
+                <div class="flex justify-between items-baseline pt-2 border-t border-white/10 text-sm font-bold">
+                  <span class="text-white">總調用金額</span>
+                  <span class="text-xl text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.3)]" id="grand-total-val">NT$ 60</span>
+                </div>
+              </div>
+
+              <!-- 結帳按鈕 -->
+              <button class="w-full mt-4 py-3 rounded-lg bg-[#00ff88] hover:bg-[#60ff99] text-black text-xs font-bold uppercase transition-all shadow-[0_0_16px_rgba(0,255,136,0.25)] flex items-center justify-center gap-2 cursor-pointer" id="checkout-btn" onclick="proceedToCheckoutFromCart()" type="button">
+                <span class="material-symbols-outlined text-[18px]">verified_user</span>
+                <span>[ 簽署調用協議 // 前往加密結帳 ]</span>
+              </button>
+
+              <div class="mt-3 p-2 rounded bg-black/50 border border-white/5 text-[10px] text-zinc-400 flex items-start gap-1.5">
+                <span class="material-symbols-outlined text-[13px] text-zinc-400 shrink-0 mt-0.5">lock</span>
+                <span>外包裝品名一律標示為「高精度五金零件」，寄件人無品牌字樣，守護特工極限隱私。</span>
+              </div>
+
+            </div>
+          </aside>
+
+        </div>
+      </main>
+    </div>
    <!-- ⚡ VIEW: 實踐計數與特工儀表板 (view-tracker) -->
     <div id="view-tracker" class="view-section hidden w-full">
       <div class="max-w-[1600px] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-7">
