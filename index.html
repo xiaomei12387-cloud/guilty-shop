@@ -62,7 +62,7 @@
     }
   </script>
 
-  <style>
+ <style>
     body {
       background-color: #060709;
       color: #e3e5ec;
@@ -100,8 +100,62 @@
     ::-webkit-scrollbar-track { background: #060709; }
     ::-webkit-scrollbar-thumb { background: #1f242e; border-radius: 2px; }
     ::-webkit-scrollbar-thumb:hover { background: #00ff88; }
-  </style>
 
+    /* ✦ Stitch 版商城專用：統一卡片與預覽圖大小 */
+    #productGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      background: rgba(13, 15, 20, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.25s ease;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      border-color: rgba(0, 255, 136, 0.35);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
+      transform: translateY(-2px);
+    }
+    .product-card .card-thumb {
+      width: 100%;
+      height: 200px;
+      background: #000;
+      position: relative;
+      overflow: hidden;
+    }
+    .product-card .card-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+    .product-card:hover .card-thumb img {
+      transform: scale(1.05);
+    }
+    .product-card .card-body {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+    .badge-guilty {
+      background: rgba(0, 255, 136, 0.15);
+      color: #00ff88;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+    .badge-shushi {
+      background: rgba(167, 139, 250, 0.15);
+      color: #a78bfa;
+      border: 1px solid rgba(167, 139, 250, 0.3);
+    }
+  </style>
   <!-- 原有工具庫 (html2canvas, QR, Chart.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
@@ -279,61 +333,7 @@
     <div id="view-shop" class="view-section hidden w-full">
       <main class="flex-1 pt-12 pb-20 px-4 sm:px-6 lg:px-8 mx-auto w-full max-w-[1600px]">
 
-        /* ✦ Stitch 版商城專用：統一卡片與預覽圖大小 */
-  #productGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
-  .product-card {
-    background: rgba(13, 15, 20, 0.78);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: all 0.25s ease;
-    cursor: pointer;
-  }
-  .product-card:hover {
-    border-color: rgba(0, 255, 136, 0.35);
-    box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
-    transform: translateY(-2px);
-  }
-  .product-card .card-thumb {
-    width: 100%;
-    height: 200px; /* 統一圖片高度 */
-    background: #000;
-    position: relative;
-    overflow: hidden;
-  }
-  .product-card .card-thumb img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* 自動填滿不變形 */
-    transition: transform 0.4s ease;
-  }
-  .product-card:hover .card-thumb img {
-    transform: scale(1.05);
-  }
-  .product-card .card-body {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    justify-content: space-between;
-  }
-  .badge-guilty {
-    background: rgba(0, 255, 136, 0.15);
-    color: #00ff88;
-    border: 1px solid rgba(0, 255, 136, 0.3);
-  }
-  .badge-shushi {
-    background: rgba(167, 139, 250, 0.15);
-    color: #a78bfa;
-    border: 1px solid rgba(167, 139, 250, 0.3);
-  }
-        
+       
         <!-- 頂部導覽與大標題 -->
         <div class="mb-8">
           <div class="flex justify-between items-center mb-4">
