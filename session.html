@@ -1,19 +1,56 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>GUILTY // PROTOCOL ACTIVE SESSION</title>
+<!DOCTYPE html><html lang="zh-TW" class="dark" style=""><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>欲室｜共犯 GUILTY // 實踐連線終端 ACTIVE PROTOCOL</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;600;800&amp;family=Noto+Sans+TC:wght@400;600;700;900&amp;display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              cyber: '#00ff88',
+              cyanDim: 'rgba(0, 255, 136, 0.15)',
+              purple: '#d946ef',
+              purpleDim: 'rgba(217, 70, 239, 0.15)',
+              red: '#ff334b',
+              redGlow: 'rgba(255, 51, 75, 0.4)',
+              bg: '#07080a',
+              card: '#0e1015',
+              cardBorder: 'rgba(255, 255, 255, 0.08)'
+            }
+          },
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'monospace'],
+            sans: ['"Space Grotesk"', '"Noto Sans TC"', 'sans-serif']
+          },
+          animation: {
+            'pulse-fast': 'pulse 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'panic-pulse': 'panicFlash 0.8s ease-in-out infinite alternate',
+            'radar-spin': 'spin 8s linear infinite'
+          },
+          keyframes: {
+            panicFlash: {
+              '0%': { transform: 'scale(1)', boxShadow: '0 0 25px rgba(255, 51, 75, 0.5), inset 0 0 20px rgba(255, 51, 75, 0.4)' },
+              '100%': { transform: 'scale(1.02)', boxShadow: '0 0 65px rgba(255, 51, 75, 0.95), inset 0 0 35px rgba(255, 255, 255, 0.3)' }
+            }
+          }
+        }
+      }
+    };
+  </script>
   <style>
     :root {
       --accent-cyan: #00ff88;
-      --accent-purple: #b5179e;
+      --accent-purple: #d946ef;
       --danger-red: #ff334b;
     }
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
       user-select: none;
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
@@ -23,185 +60,187 @@
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
-      background-color: #050508;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Consolas', monospace;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      background-color: #060709;
+      color: #f3f4f6;
+      font-family: 'Space Grotesk', 'Noto Sans TC', sans-serif;
     }
 
-    header {
-      padding: 10px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      background: rgba(0,0,0,0.85);
+    /* 賽博網格與微細掃描線微背景 */
+    .cyber-grid-bg {
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 24px 24px;
     }
-    .info-partner { font-size: 0.95rem; font-weight: bold; }
-    .info-safeword { color: var(--accent-cyan); font-weight: bold; font-size: 0.95rem; }
-
-    /* 中央碼錶區 */
-    .timer-section {
-      text-align: center;
-      padding: 4px 0;
-    }
-    .timer-label {
-      font-size: 0.7rem;
-      letter-spacing: 3px;
-      color: var(--accent-cyan);
-    }
-    #timerDisplay {
-      font-size: clamp(3.2rem, 14vw, 5.8rem);
-      font-weight: 900;
-      color: var(--accent-cyan);
-      text-shadow: 0 0 25px rgba(0, 255, 136, 0.4);
-      line-height: 1;
+    .scanlines {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.35) 50%);
+      background-size: 100% 3px;
+      pointer-events: none;
     }
 
-    /* 多元動態計數網格 */
-    .counter-grid {
-      flex: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 8px;
-      padding: 0 12px;
-      overflow-y: auto;
-      max-height: 32vh;
+    /* 戰術金屬微角切角邊框效果 */
+    .tactical-notch {
+      clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
     }
-    .counter-card {
-      background: #0d0d12;
-      border: 2px solid var(--accent-cyan);
-      border-radius: 6px;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      box-shadow: inset 0 0 12px rgba(0, 255, 136, 0.05);
+    .tactical-border {
+      position: relative;
     }
-    .counter-card.purple-theme {
-      border-color: var(--accent-purple);
-      box-shadow: inset 0 0 12px rgba(181, 23, 158, 0.05);
-    }
-    .counter-top { display: flex; justify-content: space-between; align-items: center; }
-    .counter-name { font-size: 0.75rem; color: #8c8f96; font-weight: bold; }
-    .counter-num { font-size: 2.2rem; font-weight: 900; line-height: 1; margin: 4px 0; }
-    
-    .counter-ctrl-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-    .ctrl-btn {
-      background: #14141a;
-      border: 1px solid rgba(255,255,255,0.15);
-      color: #fff;
-      font-weight: bold;
-      padding: 7px 0;
-      font-size: 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .ctrl-btn:active { background: #fff; color: #000; }
-
-    /* 底部超巨型盲按急停板（極限放大至佔據半壁江山） */
-    .bottom-controls {
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      background: rgba(0,0,0,0.95);
-      border-top: 2px solid #ff334b;
-    }
-    .btn-panic-massive {
-      width: 100%;
-      height: clamp(120px, 22vh, 170px);
-      background: #ff334b;
-      border: 4px solid #fff;
-      color: #fff;
-      font-size: clamp(1.6rem, 6vw, 2.6rem);
-      font-weight: 900;
-      letter-spacing: 3px;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 0 60px rgba(255, 51, 75, 0.9);
-      animation: panicGlow 1s infinite alternate;
-    }
-    @keyframes panicGlow {
-      from { box-shadow: 0 0 25px rgba(255, 51, 75, 0.5); transform: scale(1); }
-      to { box-shadow: 0 0 70px rgba(255, 51, 75, 1); transform: scale(1.02); }
+    .tactical-border::after {
+      content: '';
+      position: absolute;
+      top: -1px; right: -1px; width: 6px; height: 6px;
+      border-top: 1.5px solid var(--accent-cyan);
+      border-right: 1.5px solid var(--accent-cyan);
+      pointer-events: none;
     }
 
-    .btn-finish {
-      width: 100%;
-      padding: 10px;
-      background: #141418;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: #a1a1aa;
-      font-size: 0.8rem;
-      font-weight: bold;
-      border-radius: 6px;
-      cursor: pointer;
+    /* 數字發光效果 */
+    .glow-cyan {
+      text-shadow: 0 0 20px rgba(0, 255, 136, 0.5), 0 0 45px rgba(0, 255, 136, 0.2);
+    }
+    .glow-purple {
+      text-shadow: 0 0 20px rgba(217, 70, 239, 0.5), 0 0 45px rgba(217, 70, 239, 0.2);
+    }
+    .glow-red {
+      text-shadow: 0 0 25px rgba(255, 51, 75, 0.7);
     }
 
-    #panicOverlay {
-      position: fixed;
-      inset: 0;
-      background: #000;
-      border: 12px solid #ff334b;
-      z-index: 99999;
+    /* 滾動條隱藏但支援滑動 */
+    .no-scrollbar::-webkit-scrollbar {
       display: none;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 24px;
     }
-    #panicOverlay.active { display: flex; }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
   </style>
 </head>
-<body>
+<body class="relative flex flex-col justify-between cyber-grid-bg no-scrollbar antialiased">
+  <!-- 螢幕微掃描線覆蓋層 -->
+  <div class="absolute inset-0 scanlines z-10 opacity-30 pointer-events-none"></div>
 
-  <header>
-    <div>
-      <div style="font-size:0.6rem; color:#8c8f96;">實踐對象</div>
-      <div class="info-partner" id="partnerNameDisplay">載入中...</div>
+  <!-- ================= 頂部狀態列 HUD HEADER ================= -->
+  <header class="relative z-20 px-4 py-2.5 bg-[#090b0e]/95 backdrop-blur-md border-b border-white/10 flex items-center justify-between shrink-0 shadow-lg shadow-black/40">
+    <!-- 左側：品牌微標誌與實踐對象 -->
+    <div class="flex items-center space-x-3">
+      <!-- 經典機械菱形貓眼 mini icon -->
+      <div class="relative w-7 h-7 flex items-center justify-center shrink-0">
+        <svg viewBox="0 0 100 100" class="w-full h-full text-brand-cyber drop-shadow-[0_0_8px_rgba(0,255,136,0.6)]">
+          <polygon points="50,10 90,50 50,90 10,50" fill="none" stroke="currentColor" stroke-width="3.5"></polygon>
+          <polygon points="50,22 78,50 50,78 22,50" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3,3" opacity="0.6"></polygon>
+          <path d="M50,26 Q57,50 50,74 Q43,50 50,26 Z" fill="currentColor"></path>
+          <circle cx="50" cy="50" r="3" fill="#060709"></circle>
+        </svg>
+      </div>
+
+      <div>
+        <div class="flex items-center space-x-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-cyber animate-pulse"></span>
+          <span class="text-[9px] font-mono tracking-wider text-white/50 uppercase">TARGET // 對象識別</span>
+        </div>
+        <div class="text-[0.95rem] font-bold tracking-tight text-white flex items-center gap-1.5" id="partnerNameDisplay">
+          特工載入中...
+        </div>
+      </div>
     </div>
-    <div style="text-align:right;">
-      <div style="font-size:0.6rem; color:#8c8f96;">安全詞</div>
-      <div class="info-safeword" id="safewordDisplay">MAYDAY</div>
+
+    <!-- 中間：遙測代碼 HUD 印記 -->
+    <div class="hidden sm:flex flex-col items-center">
+      <span class="text-[8px] font-mono px-2 py-0.5 rounded border border-brand-cyber/30 bg-brand-cyber/10 text-brand-cyber">
+        SESSION PROTOCOL // V2.678
+      </span>
+      <span class="text-[8px] font-mono text-white/40 mt-0.5">256-BIT NEURAL ENCRYPTED</span>
+    </div>
+
+    <!-- 右側：最高安全詞狀態框（高能警告色彩） -->
+    <div class="text-right">
+      <div class="flex items-center justify-end space-x-1">
+        <span class="text-[9px] font-mono tracking-wider text-white/50 uppercase">SAFEWORD // 終端安全詞</span>
+        <span class="text-[10px] text-brand-cyber font-mono">⚡</span>
+      </div>
+      <div class="inline-block mt-0.5 px-2.5 py-0.5 rounded bg-brand-cyber/15 border border-brand-cyber/40 text-brand-cyber font-mono font-extrabold text-[0.92rem] tracking-wider shadow-[0_0_12px_rgba(0,255,136,0.25)]" id="safewordDisplay">
+        MAYDAY
+      </div>
     </div>
   </header>
 
-  <div class="timer-section">
-    <div class="timer-label">● PROTOCOL RUNNING</div>
-    <div id="timerDisplay">00:00</div>
+  <!-- ================= 中央即時碼錶 HUD 核心 ================= -->
+  <section class="relative z-20 text-center py-2 shrink-0 flex flex-col items-center justify-center">
+    <!-- 脈衝進程標籤 -->
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-cyber/10 border border-brand-cyber/30 mb-0.5">
+      <span class="w-2 h-2 rounded-full bg-brand-cyber animate-ping"></span>
+      <span class="text-[10px] font-mono font-bold tracking-[0.2em] text-brand-cyber">
+        ● PROTOCOL ACTIVE // 實踐進行中
+      </span>
+    </div>
+
+    <!-- 巨型數字碼錶 -->
+    <div class="relative inline-block my-0.5">
+      <div id="timerDisplay" class="font-mono font-black text-brand-cyber glow-cyan leading-none tracking-tight text-[3.6rem] xs:text-[4.2rem] sm:text-[5.2rem]">
+        00:00
+      </div>
+      <div class="text-[9px] font-mono text-white/30 tracking-[0.3em] uppercase mt-0.5">
+        ELAPSED TIME // 即時時長
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 多元動態計數網格 COUNTER GRID ================= -->
+  <main class="relative z-20 shrink-0 px-3 sm:px-6 overflow-y-auto no-scrollbar max-h-[18vh] pb-1"><div class="grid grid-cols-2 sm:grid-cols-4 gap-2 max-w-4xl mx-auto" id="sessionCounterGrid"></div></main>
+
+  <!-- ================= 底部巨型盲按急停主控板 (極限人因工學防呆) ================= -->
+  <footer class="relative z-20 px-3 sm:px-6 pt-2 pb-3 bg-gradient-to-t from-black via-[#0a0608] to-transparent border-t border-brand-red/40 flex-1 flex flex-col justify-between gap-2 min-h-[62vh]"><div class="flex items-center justify-between text-[11px] font-mono text-brand-red/90 px-1 font-bold shrink-0"><span class="flex items-center gap-1.5"><span class="inline-block w-2.5 h-2.5 rounded-sm bg-brand-red animate-pulse"></span>FAILSAFE SAFEWORD PROTOCOL // 終端最高層級防線</span><span class="text-brand-red">BLIND TAP ACTIVE 盲按防護啟用</span></div><button class="group relative w-full flex-1 min-h-[460px] rounded-2xl overflow-hidden cursor-pointer border-4 border-white bg-gradient-to-r from-[#e11d48] via-[#ff334b] to-[#dc2626] animate-panic-pulse transition-transform active:scale-[0.98] shadow-[0_0_60px_rgba(255,51,75,0.95)] flex flex-col justify-center items-center p-6 sm:p-10" onclick="triggerPanic()" aria-label="觸發安全詞急停"><div class="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,#fff,#fff_16px,transparent_16px,transparent_32px)] pointer-events-none"></div><div class="relative z-10 flex flex-col items-center justify-center w-full text-white text-center gap-4 sm:gap-6 my-auto"><div class="inline-flex items-center gap-2 px-5 py-1.5 rounded-full bg-black/65 border border-white/50 text-xs sm:text-base font-mono tracking-[0.25em] uppercase text-white shadow-lg"><span class="w-3 h-3 rounded-full bg-white animate-ping"></span><span class="">PRIORITY KILL-SWITCH // 極限盲按急停</span></div><div class="flex items-center justify-center gap-4 sm:gap-6 my-2"><span class="text-6xl sm:text-8xl animate-bounce drop-shadow-[0_6px_20px_rgba(0,0,0,0.9)]">🛑</span><span class="text-4xl sm:text-6xl xs:text-5xl font-black font-sans tracking-[0.18em] text-white drop-shadow-[0_6px_24px_rgba(0,0,0,0.9)] uppercase">SAFEWORD 急停停止</span></div><div class="flex flex-wrap items-center justify-center gap-3 text-sm sm:text-base font-mono font-bold tracking-widest text-white/95 bg-black/60 px-6 py-2.5 rounded-full border border-white/40 shadow-xl"><span class="">全螢幕最高警報 ＆ 雙向強制中止</span><span class="">//</span><span class="">MAYDAY BREAK</span></div><div class="text-xs sm:text-sm font-mono tracking-[0.25em] text-white/80 uppercase font-semibold">TOUCH ANYWHERE ON THIS GIANT PANEL TO TERMINATE PROTOCOL</div></div></button><div class="grid grid-cols-2 gap-2 mt-1 shrink-0"><button class="py-2.5 px-3 rounded-lg bg-[#12141a] hover:bg-[#181b22] border border-white/10 hover:border-white/30 text-white/70 hover:text-white text-xs font-mono font-bold transition flex items-center justify-center gap-1.5 active:bg-white/10" onclick="window.location.href='index.html#tracker'"><span class="text-white/40">↩</span> 暫存返回看板</button><button class="py-2.5 px-3 rounded-lg bg-[#121a16] hover:bg-[#16241e] border border-brand-cyber/30 hover:border-brand-cyber text-brand-cyber text-xs font-mono font-bold transition flex items-center justify-center gap-1.5 shadow-[0_0_10px_rgba(0,255,136,0.1)] active:bg-brand-cyber/20" onclick="finishSession"><span class="">■</span> 正常結案並歸檔</button></div></footer>
+
+  <!-- ================= 全螢幕極限急停覆蓋層 PANIC OVERLAY ================= -->
+  <div id="panicOverlay" class="fixed inset-0 bg-[#070002]/98 backdrop-blur-2xl z-[99999] hidden flex-col justify-between items-center p-6 text-center border-[8px] sm:border-[16px] border-brand-red animate-pulse">
+    <!-- 警報頂部 -->
+    <div class="w-full flex justify-between items-center text-brand-red font-mono text-xs font-bold border-b border-brand-red/40 pb-3">
+      <span class="">ALERT LEVEL: RED-01</span>
+      <span class="">PROTOCOL DISRUPTED</span>
+      <span class="">EMERGENCY_HALT</span>
+    </div>
+
+    <!-- 警報核心中央資訊 -->
+    <div class="my-auto max-w-lg flex flex-col items-center">
+      <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-brand-red/20 border-2 border-brand-red flex items-center justify-center mb-4 text-3xl sm:text-4xl animate-bounce shadow-[0_0_30px_rgba(255,51,75,0.8)]">
+        ⚠️
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-black font-sans tracking-[0.2em] text-brand-red glow-red mb-2">
+        急停協議觸發
+      </h1>
+      <p class="text-xs font-mono uppercase tracking-widest text-white/50 mb-6">
+        ALL PHYSICAL ACTIONS HALTED IMMEDIATELY
+      </p>
+
+      <!-- 安全詞巨幅卡片 -->
+      <div class="w-full bg-[#160206] border-2 border-brand-red rounded-xl p-4 sm:p-6 mb-6 shadow-[0_0_40px_rgba(255,51,75,0.4)]">
+        <div class="text-xs font-mono text-white/60 mb-1">RECORDED SAFEWORD // 宣告安全詞</div>
+        <div id="panicWordText" class="text-4xl sm:text-6xl font-black font-mono tracking-wider text-white glow-red">
+          MAYDAY
+        </div>
+      </div>
+
+      <!-- 照護指引條例 -->
+      <div class="text-left bg-black/60 border border-white/15 rounded-lg p-3.5 text-xs text-white/80 space-y-1.5 leading-relaxed mb-6 font-mono">
+        <div class="text-brand-red font-bold flex items-center gap-1.5">
+          <span class="">●</span> 照護程序 (AFTERCARE DIRECTIVE):
+        </div>
+        <div class="">1. 立即停止所有動作與器械施力。</div>
+        <div class="">2. 解開束縛器具、呼吸阻礙物與眼罩。</div>
+        <div class="">3. 給予溫水、保暖毯，檢查皮膚血色與意識狀態。</div>
+      </div>
+    </div>
+
+    <!-- 退出警報按鈕 -->
+    <div class="w-full max-w-md pt-3 border-t border-brand-red/40">
+      <button onclick="dismissAndReturn()" class="w-full py-4 rounded-xl bg-white hover:bg-neutral-200 text-black font-mono font-black text-sm sm:text-base tracking-widest uppercase transition shadow-[0_0_30px_rgba(255,255,255,0.8)] active:scale-95">
+        [ 確認雙方安全 // 解除警報並退出 ]
+      </button>
+    </div>
   </div>
 
-  <div class="counter-grid" id="sessionCounterGrid"></div>
-
-  <!-- 底部極限加大急停板 -->
-  <div class="bottom-controls">
-    <button class="btn-panic-massive" onclick="triggerPanic()">
-      🛑 SAFEWORD 急停停止
-    </button>
-    <button class="btn-finish" onclick="finishSession()">
-      ■ 正常完成並結案返回
-    </button>
-  </div>
-
-  <div id="panicOverlay">
-    <div style="font-size:clamp(2rem, 7vw, 3rem); color:#ff334b; font-weight:900; letter-spacing:4px; margin-bottom:12px;">
-      ⚠️ 急停協議觸發 ⚠️
-    </div>
-    <div style="font-size:1.1rem; color:#fff; margin-bottom:18px;">
-      安全詞：<span id="panicWordText" style="color:#ff334b; font-size:2rem; font-weight:bold;">MAYDAY</span>
-    </div>
-    <div style="max-width:420px; font-size:0.85rem; color:#a1a1aa; line-height:1.7; margin-bottom:24px;">
-      警報強烈發信中！所有動作即刻停止。解開束縛器具，給予溫水，進行 Aftercare 照護。
-    </div>
-    <button onclick="dismissAndReturn()" style="padding:16px 36px; background:#fff; color:#000; border:none; font-weight:bold; font-size:1rem; cursor:pointer; border-radius:4px;">
-      [ 確認雙方安全 // 解除警報並退出 ]
-    </button>
-  </div>
-
+  <!-- ================= 原生相容運作腳本 JAVASCRIPT ================= -->
   <script>
     let activeKey = null;
     let trackerState = null;
@@ -210,6 +249,7 @@
     let timer = null;
     let emergencyInterval = null;
 
+    // 尋找本機 LocalStorage 中的計數狀態
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
       if (k && k.startsWith("guilty_tracker_")) {
@@ -217,15 +257,14 @@
         break;
       }
     }
-
     if (activeKey) {
       try { trackerState = JSON.parse(localStorage.getItem(activeKey)); } catch(e){}
     }
-
     if (trackerState && trackerState.partners && trackerState.partners.length > 0) {
       activePartner = trackerState.partners.find(p => p.id === trackerState.activePartnerId) || trackerState.partners[0];
     }
 
+    // 預設或載入指標清單
     let sessionMetrics = (activePartner && activePartner.customMetrics) || [
       { id: "sp", name: "SP 掌/板", count: 0, color: "cyan" },
       { id: "whip", name: "長鞭/散鞭", count: 0, color: "purple" },
@@ -233,28 +272,64 @@
       { id: "wax", name: "低溫滴蠟", count: 0, color: "purple" }
     ];
 
-    document.getElementById("partnerNameDisplay").textContent = activePartner ? activePartner.name : "特工";
+    // 更新對象與安全詞
+    const partnerName = activePartner ? activePartner.name : "特工 / 訪客";
+    document.getElementById("partnerNameDisplay").textContent = partnerName;
     const sWord = (activePartner && activePartner.safeword) ? activePartner.safeword : "MAYDAY";
     document.getElementById("safewordDisplay").textContent = sWord;
     document.getElementById("panicWordText").textContent = sWord.toUpperCase();
 
+    // 渲染動態指標卡片（升級質感賽博切角與雙色量子外框）
     function renderSessionCounters() {
       const grid = document.getElementById("sessionCounterGrid");
-      grid.innerHTML = sessionMetrics.map((m, idx) => `
-        <div class="counter-card ${m.color === 'purple' ? 'purple-theme' : ''}">
-          <div class="counter-top">
-            <span class="counter-name">${m.name}</span>
+      grid.innerHTML = sessionMetrics.map((m, idx) => {
+        const isPurple = m.color === 'purple';
+        const borderColor = isPurple ? 'border-fuchsia-500/40 hover:border-fuchsia-400' : 'border-emerald-500/40 hover:border-emerald-400';
+        const numColor = isPurple ? 'text-fuchsia-400 glow-purple' : 'text-emerald-400 glow-cyan';
+        const badgeBg = isPurple ? 'bg-fuchsia-950/40 text-fuchsia-300 border-fuchsia-800/50' : 'bg-emerald-950/40 text-emerald-300 border-emerald-800/50';
+        const btnHover = isPurple ? 'hover:bg-fuchsia-500/20 active:bg-fuchsia-500/30' : 'hover:bg-emerald-500/20 active:bg-emerald-500/30';
+
+        return `
+          <div class="relative bg-[#0d0f15]/90 border ${borderColor} rounded-lg p-2.5 flex flex-col justify-between shadow-md shadow-black/60 transition-all">
+            <!-- 卡片頂部資訊 -->
+            <div class="flex items-center justify-between pb-1 border-b border-white/5">
+              <span class="text-[11px] font-sans font-bold text-white/90 truncate tracking-wide">${m.name}</span>
+              <span class="text-[8px] font-mono px-1.5 py-0.2 rounded border ${badgeBg}">
+                ${isPurple ? 'PURPLE' : 'CYAN'}
+              </span>
+            </div>
+
+            <!-- 計數核心數字 -->
+            <div class="py-1 text-center">
+              <div class="text-[2rem] sm:text-[2.4rem] font-black font-mono leading-none tracking-tight ${numColor}" id="metric_val_${idx}">
+                ${m.count}
+              </div>
+            </div>
+
+            <!-- 快捷調整按鈕列 (+1 / +5) -->
+            <div class="grid grid-cols-2 gap-1.5 pt-1">
+              <button 
+                class="py-1.5 bg-[#171a22] border border-white/15 rounded text-xs font-mono font-bold text-white ${btnHover} active:scale-95 transition"
+                onclick="adjustMetric(${idx}, 1)"
+                aria-label="${m.name} 增加 1"
+              >
+                +1
+              </button>
+              <button 
+                class="py-1.5 bg-[#171a22] border border-white/15 rounded text-xs font-mono font-bold text-white ${btnHover} active:scale-95 transition"
+                onclick="adjustMetric(${idx}, 5)"
+                aria-label="${m.name} 增加 5"
+              >
+                +5
+              </button>
+            </div>
           </div>
-          <div class="counter-num" id="metric_val_${idx}" style="color:${m.color==='purple'?'var(--accent-purple)':'var(--accent-cyan)'};">${m.count}</div>
-          <div class="counter-ctrl-row">
-            <button class="ctrl-btn" onclick="adjustMetric(${idx}, 1)">+1</button>
-            <button class="ctrl-btn" onclick="adjustMetric(${idx}, 5)">+5</button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
     renderSessionCounters();
 
+    // 啟動碼錶計時器
     timer = setInterval(() => {
       secondsElapsed++;
       const min = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
@@ -262,6 +337,7 @@
       document.getElementById("timerDisplay").textContent = `${min}:${sec}`;
     }, 1000);
 
+    // 音效處理 (使用 Web Audio API，不需外部檔案即可發聲)
     function playBeep(isEmergency = false) {
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -286,6 +362,7 @@
       } catch (e) {}
     }
 
+    // 調整計數值
     function adjustMetric(index, delta) {
       playBeep(false);
       if (navigator.vibrate) delta > 1 ? navigator.vibrate([30, 40, 30]) : navigator.vibrate(35);
@@ -294,14 +371,14 @@
       if (el) el.textContent = sessionMetrics[index].count;
     }
 
-    // 🛑 觸發持續警報音效與連續強震
+    // 觸發持續警報音效與連續強震
     function triggerPanic() {
       clearInterval(timer);
-      document.getElementById("panicOverlay").classList.add("active");
-
+      const overlay = document.getElementById("panicOverlay");
+      overlay.classList.remove("hidden");
+      overlay.classList.add("flex");
       playBeep(true);
       if (navigator.vibrate) navigator.vibrate([500, 150, 500, 150, 1000]);
-
       clearInterval(emergencyInterval);
       emergencyInterval = setInterval(() => {
         playBeep(true);
@@ -309,13 +386,13 @@
       }, 1500);
     }
 
+    // 儲存實踐數據到本機
     function saveSessionRecord(noteText) {
       if (!trackerState || !activePartner) return;
       const mins = Math.floor(secondsElapsed / 60);
       const secs = secondsElapsed % 60;
       const durationStr = `${mins} 分 ${secs} 秒`;
       const summaryText = sessionMetrics.map(m => `${m.name}: ${m.count}`).join(" ｜ ");
-
       if (!activePartner.sessions) activePartner.sessions = [];
       activePartner.sessions.unshift({
         sessionId: "SES-" + Date.now().toString().slice(-6),
@@ -325,11 +402,11 @@
         summary: summaryText,
         note: noteText
       });
-
       activePartner.customMetrics = sessionMetrics;
       localStorage.setItem(activeKey, JSON.stringify(trackerState));
     }
 
+    // 正常結案
     function finishSession() {
       clearInterval(timer);
       const note = prompt("請輸入本次實踐結案筆記：", "實踐順利完成，雙方意識清醒。");
@@ -337,6 +414,7 @@
       window.location.href = "index.html#tracker";
     }
 
+    // 解除警報並退出
     function dismissAndReturn() {
       clearInterval(emergencyInterval);
       if (navigator.vibrate) navigator.vibrate(0);
@@ -344,5 +422,10 @@
       window.location.href = "index.html#tracker";
     }
   </script>
-</body>
-</html>
+
+
+
+
+
+
+</body></html>
