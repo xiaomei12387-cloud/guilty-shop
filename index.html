@@ -279,24 +279,24 @@
 
       <!-- 中間：5大核心雙行日文樣式導覽列 -->
       <nav class="hidden xl:flex items-center gap-1 font-code-hud text-xs">
-        <button class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="showLandingView()">
+        <button id="nav-landing" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="showLandingView()">
           <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">首頁大廳</span>
           <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">ロビー</span>
         </button>
-        <button class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openShopCatalogView()">
+        <button id="nav-shop" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openShopCatalogView()">
           <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">裝備商城</span>
           <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">アーセナル</span>
         </button>
-        <button class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openTrackerAppView()">
+        <button id="nav-tracker" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openTrackerAppView()">
           <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">實踐計數</span>
           <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">カウンター</span>
         </button>
-        <button class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-white transition-colors rounded" onclick="openFriendsDossierView()">
+        <button id="nav-friends" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-white transition-colors rounded" onclick="openFriendsDossierView()">
           <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工名冊</span>
           <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">名簿</span>
         </button>
-        <button class="px-4 py-1.5 flex flex-col items-center justify-center bg-primary/15 text-primary rounded transition-colors shadow-[0_0_12px_rgba(0,255,136,0.25)] border border-primary/30" onclick="openProfileDossierView()">
-          <span style="font-size:14px; font-weight:700; letter-spacing:0.025em;">特工主頁</span>
+        <button id="nav-dossier" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openProfileDossierView()">
+          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工主頁</span>
           <span style="font-size:8px; opacity:0.75; line-height:1; margin-top:2px;">身分端末</span>
         </button>
       </nav>
@@ -920,8 +920,17 @@
     </div>
 
     <!-- ★ VIEW: 特工名片檔案 (view-dossier) -->
-    <div id="view-dossier" class="view-section hidden w-full">
-      <div class="max-w-[1600px] mx-auto px-4 py-8 flex flex-col gap-8">
+    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+            <div>
+              <h1 class="text-3xl font-bold text-[#00ff88] tracking-tight">特工機密主頁與神經中樞</h1>
+              <p class="text-xs text-zinc-400 mt-1">個人作戰調書、微型生物特徵認證鎖及高強度量子急停矩陣。所有改動即刻透過端對端加密同調。</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <!-- ✦ 補回個人名片編輯按鈕 -->
+              <button onclick="openEditProfileModal()" class="px-4 py-2 bg-surface-container border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs hover:bg-[#00ff88]/10 transition-all rounded cursor-pointer">✏️ 編輯特工檔案</button>
+              <button onclick="showLandingView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回首頁大廳</button>
+            </div>
+          </div>
         
         <!-- 頂部遙測導覽與身分標頭 -->
         <section class="flex flex-col gap-3">
@@ -1202,6 +1211,7 @@
     }
 
     // SPA 視圖切換核心
+    f// ✦ 升級版 SPA 視圖切換與導覽列同步高亮
     function setActiveView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => {
         el.classList.remove('active', 'block');
@@ -1212,6 +1222,32 @@
         target.classList.remove('hidden');
         target.classList.add('active', 'block');
       }
+
+      // 移除所有導覽按鈕的亮起樣式
+      const navButtons = {
+        'view-landing': 'nav-landing',
+        'view-shop': 'nav-shop',
+        'view-tracker': 'nav-tracker',
+        'view-dossier': 'nav-dossier',
+        'view-checkout': 'nav-shop' // 結帳時點亮商城
+      };
+
+      Object.values(navButtons).forEach(navId => {
+        const btn = document.getElementById(navId);
+        if (btn) {
+          btn.className = "px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded";
+        }
+      });
+
+      // 點亮當前分頁按鈕
+      const activeNavId = navButtons[viewId];
+      if (activeNavId) {
+        const activeBtn = document.getElementById(activeNavId);
+        if (activeBtn) {
+          activeBtn.className = "px-4 py-1.5 flex flex-col items-center justify-center bg-primary/15 text-primary rounded transition-colors shadow-[0_0_12px_rgba(0,255,136,0.25)] border border-primary/30";
+        }
+      }
+
       window.scrollTo(0, 0);
     }
 
