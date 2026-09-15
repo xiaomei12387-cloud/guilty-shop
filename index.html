@@ -62,7 +62,7 @@
     }
   </script>
 
- <style>
+  <style>
     body {
       background-color: #060709;
       color: #e3e5ec;
@@ -156,6 +156,7 @@
       border: 1px solid rgba(167, 139, 250, 0.3);
     }
   </style>
+
   <!-- 原有工具庫 (html2canvas, QR, Chart.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://unpkg.com/html5-qrcode"></script>
@@ -214,7 +215,7 @@
     </div>
   </div>
 
-<!-- ========================================================================== -->
+  <!-- ========================================================================== -->
   <!-- 1. 浮空頂部 HUD 導航列 (Tactical Header - 雙行日文微縮風格) -->
   <!-- ========================================================================== -->
   <header class="sticky top-0 z-50 w-full px-4 md:px-8 py-3 bg-[#08090c]/90 backdrop-blur-xl border-b border-white/10">
@@ -295,7 +296,8 @@
 
     </div>
   </header>
-<!-- ========================================================================== -->
+
+  <!-- ========================================================================== -->
   <!-- 2. 主視圖單頁切換容器 (SPA Views Container) -->
   <!-- ========================================================================== -->
   <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-6 relative">
@@ -332,8 +334,7 @@
     <!-- 🛒 VIEW: 裝備調用商城 (view-shop) -->
     <div id="view-shop" class="view-section hidden w-full">
       <main class="flex-1 pt-12 pb-20 px-4 sm:px-6 lg:px-8 mx-auto w-full max-w-[1600px]">
-
-       
+        
         <!-- 頂部導覽與大標題 -->
         <div class="mb-8">
           <div class="flex justify-between items-center mb-4">
@@ -450,7 +451,104 @@
         </div>
       </main>
     </div>
-   <!-- ⚡ VIEW: 實踐計數與特工儀表板 (view-tracker) -->
+
+    <!-- 🔍 VIEW: 商品詳細規格檢視視圖 (view-product-detail) -->
+    <div id="view-product-detail" class="view-section hidden w-full">
+      <main class="flex flex-col relative w-full pt-4 bg-surface min-h-screen pb-28">
+        <div class="flex flex-col w-full relative max-w-4xl mx-auto px-4">
+          
+          <!-- 返回商城按鈕 -->
+          <div class="mb-4">
+            <button onclick="openShopCatalogView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回裝備商城</button>
+          </div>
+
+          <!-- 主卡片容器 -->
+          <div class="relative z-20 flex flex-col w-full bg-surface-container-low rounded-xl shadow-2xl overflow-hidden pb-12 border border-white/10">
+            
+            <!-- 頂部面板標題 -->
+            <div class="w-full flex flex-col items-center pt-2 pb-1 bg-surface-container-lowest relative border-b border-white/5">
+              <div class="w-12 h-1 rounded-full bg-surface-variant"></div>
+              <div class="w-full flex justify-between px-6 pt-1.5 items-center">
+                <span class="font-mono text-[9px] text-[#00ff88] tracking-widest uppercase flex items-center gap-1">
+                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse"></span>
+                  SYS.ARMORY // MOD_PRODUCT_SPEC_VIEW
+                </span>
+                <span class="font-mono text-[9px] text-zinc-500 tracking-wider">TACTICAL REACTION TACTILE</span>
+              </div>
+            </div>
+
+            <!-- 內容堆疊 -->
+            <div class="flex flex-col w-full px-6 pt-6 gap-6">
+              
+              <!-- 1. Hero 預覽圖區 -->
+              <div class="relative w-full aspect-square bg-black rounded-xl overflow-hidden shadow-xl flex items-center justify-center p-2 border border-white/10" id="detailHeroImgArea">
+                <!-- 動態主圖渲染目標 -->
+              </div>
+
+              <!-- 2. 多角度縮圖列 -->
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between px-1">
+                  <span class="font-mono text-[9px] text-zinc-400 uppercase tracking-wider">多角度檢視 // DETAIL PERSPECTIVES</span>
+                </div>
+                <div class="flex items-center gap-3 overflow-x-auto pb-2" id="detailThumbsRow" style="display:none;">
+                  <!-- 動態縮圖渲染目標 -->
+                </div>
+              </div>
+
+              <!-- 3. 名稱與價格區 -->
+              <div class="flex flex-col gap-2 bg-surface-container p-5 rounded-xl border border-white/5">
+                <div class="flex items-center gap-2">
+                  <span class="px-2 py-0.5 rounded bg-[#00ff88]/15 text-[#00ff88] font-mono text-[9px] uppercase tracking-wider border border-[#00ff88]/30">PRECISION GEAR</span>
+                  <span class="font-mono text-[9px] text-zinc-500">[ID // GUILTY-GEAR]</span>
+                </div>
+                <h1 class="text-2xl font-bold text-white tracking-tight mt-1" id="detailProductTitle">載入中...</h1>
+                
+                <div class="flex items-baseline justify-between pt-3 border-t border-white/5">
+                  <div class="flex items-baseline gap-2">
+                    <span class="font-mono text-xs text-zinc-400 uppercase">即時試算額</span>
+                    <div class="flex items-baseline text-[#00ff88]">
+                      <span class="font-mono text-sm">NT$</span>
+                      <span class="text-3xl font-bold tracking-tighter drop-shadow-[0_0_12px_rgba(0,255,136,0.3)] ml-1" id="detailPriceDisplay">1,500</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="text-xs text-zinc-300 pt-2 leading-relaxed" id="detailProductDesc">載入中...</p>
+              </div>
+
+              <!-- 4. 動態規格選項區 (長度 / 顏色 / 尺寸) -->
+              <div class="flex flex-col gap-4" id="detailDynamicOptions">
+                <!-- 動態注入選項 -->
+              </div>
+              
+              <div id="detailChokerSpecificArea"></div>
+
+            </div>
+
+            <!-- 5. 底部固定結案操作列 -->
+            <div class="sticky bottom-0 mt-8 w-full bg-black/90 backdrop-blur-xl p-4 shadow-2xl z-30 flex items-center gap-3 border-t border-white/10">
+              <button class="flex flex-col items-center justify-center shrink-0 w-14 h-12 rounded bg-surface-container hover:bg-surface-container-high text-white transition-all cursor-pointer" onclick="addCurrentProductToCart()" type="button">
+                <span class="material-symbols-outlined text-[20px] text-[#00ff88]">add_shopping_cart</span>
+                <span class="font-mono text-[8px] text-zinc-400 tracking-tighter">加入調用</span>
+              </button>
+              
+              <button class="flex-1 h-12 rounded bg-[#00ff88] hover:bg-[#60ff99] text-black flex items-center justify-between px-6 font-mono font-bold shadow-[0_0_20px_rgba(0,255,136,0.4)] transition-all cursor-pointer" onclick="buyNowFromDetail()" type="button">
+                <div class="flex items-center gap-2">
+                  <span class="material-symbols-outlined text-[20px]">bolt</span>
+                  <span class="tracking-wider">立即調用結案</span>
+                </div>
+                <div class="flex items-center gap-1 text-xs">
+                  <span>→</span>
+                </div>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- ⚡ VIEW: 實踐計數與特工儀表板 (view-tracker) -->
     <div id="view-tracker" class="view-section hidden w-full">
       <div class="max-w-[1600px] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-7">
         
@@ -540,7 +638,6 @@
     </div>
 
     <!-- ★ VIEW: 特工名片檔案 (view-dossier) -->
-   <!-- 👤 VIEW: 特工機密主頁與神經中樞 (view-dossier) -->
     <div id="view-dossier" class="view-section hidden w-full">
       <div class="max-w-[1600px] mx-auto px-4 py-8 flex flex-col gap-8">
         
@@ -674,96 +771,6 @@
 
   </main>
 
-<!-- 🔐 VIEW: 特工身分認證與神經接入終端 (view-auth-gateway) -->
-    <div id="view-auth-gateway" class="view-section hidden w-full">
-      <main class="w-full bg-surface min-h-screen">
-        <div class="flex flex-col w-full">
-          
-          <div class="relative w-full max-w-7xl mx-auto px-4 md:px-8 pb-12 flex flex-col items-center">
-            
-            <!-- 返回大廳按鈕 -->
-            <div class="w-full max-w-2xl text-left mb-4">
-              <button onclick="showLandingView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all">← 返回首頁大廳</button>
-            </div>
-
-            <!-- 1. TOP HEADER & HUD TELEMETRY RAIL -->
-            <header class="relative z-10 w-full max-w-3xl flex flex-col items-center text-center mt-2 mb-8">
-              <div class="inline-flex items-center gap-2 px-3 py-1 bg-surface-container-low rounded-full shadow-sm mb-4">
-                <span class="inline-block w-2 h-2 rounded-full bg-primary-container shadow-[0_0_8px_#00ff88] animate-pulse"></span>
-                <span class="font-mono text-[9px] text-[#00ff88] tracking-widest uppercase">// AUTH_TERMINAL・認証ゲートウェイ // NODE_09</span>
-                <span class="text-zinc-600 font-mono text-[9px]">|</span>
-                <span class="font-mono text-[9px] text-zinc-400 uppercase">NET_STATUS: ARMED</span>
-              </div>
-              <h1 class="text-3xl font-bold text-[#00ff88] tracking-tight">特工身分認證與神經接入終端</h1>
-              
-              <div class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 mt-3 text-zinc-400 font-mono text-xs">
-                <span class="text-white">暗號化通信プロトコル v4.81 <span class="text-[#00ff88]">(SHA-256)</span></span>
-                <span class="text-zinc-600">/</span>
-                <span class="flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[14px] text-[#00ff88]">verified_user</span>
-                  終端保護層狀態：<strong class="text-[#00ff88] font-medium tracking-wide">等待接入驗證</strong>
-                </span>
-              </div>
-            </header>
-
-            <!-- 2. CENTRAL TACTICAL GATEWAY CARD -->
-            <div class="relative z-10 w-full max-w-2xl bg-surface-container-low/90 backdrop-blur-xl rounded-xl shadow-xl overflow-hidden p-6 md:p-10 border border-white/10">
-              
-              <div class="flex items-center justify-between pb-4 mb-6 bg-surface-container-high/40 -mx-6 md:-mx-10 -mt-6 md:-mt-10 px-6 md:px-10 py-3 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[#00ff88] text-base">terminal</span>
-                  <span class="font-mono text-[9px] tracking-widest text-zinc-400 uppercase">SEC_CHANNEL // 0x99A-TERMINAL-LINK</span>
-                </div>
-                <div class="flex items-center gap-3">
-                  <span class="font-mono text-[9px] text-zinc-500 uppercase tracking-wider">LATENCY: 1.2ms</span>
-                  <div class="w-1.5 h-1.5 bg-[#00ff88] rounded-full"></div>
-                </div>
-              </div>
-
-              <!-- Form Section -->
-              <form class="space-y-6" id="auth-gateway-form" onsubmit="event.preventDefault(); triggerAuth();">
-                <div class="space-y-2">
-                  <label class="font-mono text-xs tracking-wider text-white flex items-center gap-1.5 uppercase">
-                    <span class="material-symbols-outlined text-[15px] text-[#00ff88]">badge</span> 特工安全信箱 / 通訊代號
-                  </label>
-                  <input class="w-full px-4 py-3 bg-black text-[#00ff88] font-mono text-xs rounded border border-white/15 focus:outline-none focus:border-[#00ff88]" id="agent-id" placeholder="nightowl@guilty.net" required type="text" />
-                </div>
-
-                <div class="space-y-2">
-                  <label class="font-mono text-xs tracking-wider text-white flex items-center gap-1.5 uppercase">
-                    <span class="material-symbols-outlined text-[15px] text-[#00ff88]">key</span> 通行密鑰 (Passphrase)
-                  </label>
-                  <input class="w-full px-4 py-3 bg-black text-[#00ff88] font-mono text-xs rounded border border-white/15 focus:outline-none focus:border-[#00ff88]" id="passphrase" placeholder="••••••••••••••••" required type="password" />
-                </div>
-
-                <button class="w-full py-4 px-6 bg-[#00ff88] text-black font-mono font-bold rounded flex items-center justify-between shadow-[0_0_24px_rgba(0,255,136,0.25)] cursor-pointer hover:bg-[#60ff99] transition-all" type="submit">
-                  <span>驗證密鑰並接入終端</span>
-                  <span class="font-mono text-[10px] opacity-80">[ENTER / ACC]</span>
-                </button>
-              </form>
-
-              <!-- Terminal Output Window -->
-              <div class="mt-8 p-4 bg-black rounded-lg shadow-inner border border-white/10">
-                <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/5 text-zinc-400">
-                  <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-[#00ff88] animate-pulse"></span>
-                    <span class="font-mono text-[9px] uppercase tracking-wider">DIAGNOSTIC CONSOLE // LOGS</span>
-                  </div>
-                  <span class="font-mono text-[9px]">SEC-LEVEL: 0</span>
-                </div>
-                <p class="font-mono text-xs text-[#00ff88] leading-relaxed" id="terminal-feed">
-                  <span class="text-zinc-500 mr-1">[PORT: SECURE-09]</span> 接続待機中 // 2026.09.15 UTC // 暗号化プロトコル整合性チェック完了 // 等待特工輸入安全密鑰進行身分認證...
-                </p>
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-      </main>
-    </div>
-
   <!-- ========================================================================== -->
   <!-- 3. 購物車抽屜 (Cart Drawer) -->
   <!-- ========================================================================== -->
@@ -786,7 +793,7 @@
     </div>
   </div>
 
- <!-- ========================================================================== -->
+  <!-- ========================================================================== -->
   <!-- 4. 特工身分認證與會員彈窗 (Auth Modal - 完全相容 auth.js) -->
   <!-- ========================================================================== -->
   <div class="fixed inset-0 z-[90] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md" id="authModal" style="display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; background:rgba(0,0,0,0.8);">
