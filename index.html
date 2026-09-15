@@ -155,6 +155,35 @@
       color: #a78bfa;
       border: 1px solid rgba(167, 139, 250, 0.3);
     }
+    /* ✦ 商城規格選項卡片樣式 */
+  .radio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .radio-card {
+    background: rgba(19, 21, 27, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: #9ba1b0;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .radio-card:hover {
+    border-color: rgba(0, 255, 136, 0.4);
+    color: #fff;
+  }
+  .radio-card.active {
+    background: rgba(0, 255, 136, 0.12);
+    border-color: #00ff88;
+    color: #00ff88;
+    font-weight: bold;
+    box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
+  }
   </style>
 
   <!-- 原有工具庫 (html2canvas, QR, Chart.js) -->
@@ -452,7 +481,7 @@
       </main>
     </div>
 
-    <!-- 🔍 VIEW: 商品詳細規格檢視視圖 (view-product-detail) -->
+   <!-- 🔍 VIEW: 商品詳細規格檢視視圖 (view-product-detail) -->
     <div id="view-product-detail" class="view-section hidden w-full">
       <main class="flex flex-col relative w-full pt-4 bg-surface min-h-screen pb-28">
         <div class="flex flex-col w-full relative max-w-4xl mx-auto px-4">
@@ -463,17 +492,17 @@
           </div>
 
           <!-- 主卡片容器 -->
-          <div class="relative z-20 flex flex-col w-full bg-surface-container-low rounded-xl shadow-2xl overflow-hidden pb-12 border border-white/10">
+          <div class="relative z-20 flex flex-col w-full bg-surface-container-low rounded-xl shadow-2xl overflow-hidden pb-12 border border-white/10 font-mono">
             
             <!-- 頂部面板標題 -->
             <div class="w-full flex flex-col items-center pt-2 pb-1 bg-surface-container-lowest relative border-b border-white/5">
               <div class="w-12 h-1 rounded-full bg-surface-variant"></div>
               <div class="w-full flex justify-between px-6 pt-1.5 items-center">
-                <span class="font-mono text-[9px] text-[#00ff88] tracking-widest uppercase flex items-center gap-1">
+                <span class="text-[9px] text-[#00ff88] tracking-widest uppercase flex items-center gap-1">
                   <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse"></span>
                   SYS.ARMORY // MOD_PRODUCT_SPEC_VIEW
                 </span>
-                <span class="font-mono text-[9px] text-zinc-500 tracking-wider">TACTICAL REACTION TACTILE</span>
+                <span class="text-[9px] text-zinc-500 tracking-wider">TACTICAL REACTION TACTILE</span>
               </div>
             </div>
 
@@ -488,7 +517,7 @@
               <!-- 2. 多角度縮圖列 -->
               <div class="flex flex-col gap-1.5">
                 <div class="flex items-center justify-between px-1">
-                  <span class="font-mono text-[9px] text-zinc-400 uppercase tracking-wider">多角度檢視 // DETAIL PERSPECTIVES</span>
+                  <span class="text-[9px] text-zinc-400 uppercase tracking-wider">多角度檢視 // DETAIL PERSPECTIVES</span>
                 </div>
                 <div class="flex items-center gap-3 overflow-x-auto pb-2" id="detailThumbsRow" style="display:none;">
                   <!-- 動態縮圖渲染目標 -->
@@ -496,7 +525,7 @@
               </div>
 
               <!-- 3. 名稱與價格區 -->
-              <div class="flex flex-col gap-2 bg-surface-container p-5 rounded-xl border border-white/5">
+              <div class="flex flex-col gap-2 bg-surface-container p-5 rounded-xl border border-white/5 font-sans">
                 <div class="flex items-center gap-2">
                   <span class="px-2 py-0.5 rounded bg-[#00ff88]/15 text-[#00ff88] font-mono text-[9px] uppercase tracking-wider border border-[#00ff88]/30">PRECISION GEAR</span>
                   <span class="font-mono text-[9px] text-zinc-500">[ID // GUILTY-GEAR]</span>
@@ -516,9 +545,9 @@
                 <p class="text-xs text-zinc-300 pt-2 leading-relaxed" id="detailProductDesc">載入中...</p>
               </div>
 
-              <!-- 4. 動態規格選項區 (長度 / 顏色 / 尺寸) -->
-              <div class="flex flex-col gap-4" id="detailDynamicOptions">
-                <!-- 動態注入選項 -->
+              <!-- 4. ✦ 關鍵修復：長度、色彩材質與項圈尺寸的動態注入容器 -->
+              <div class="flex flex-col gap-4 bg-black/40 p-4 rounded-xl border border-white/5" id="detailDynamicOptions">
+                <!-- shop.js 會自動把選項生成在這裡 -->
               </div>
               
               <div id="detailChokerSpecificArea"></div>
@@ -529,10 +558,10 @@
             <div class="sticky bottom-0 mt-8 w-full bg-black/90 backdrop-blur-xl p-4 shadow-2xl z-30 flex items-center gap-3 border-t border-white/10">
               <button class="flex flex-col items-center justify-center shrink-0 w-14 h-12 rounded bg-surface-container hover:bg-surface-container-high text-white transition-all cursor-pointer" onclick="addCurrentProductToCart()" type="button">
                 <span class="material-symbols-outlined text-[20px] text-[#00ff88]">add_shopping_cart</span>
-                <span class="font-mono text-[8px] text-zinc-400 tracking-tighter">加入調用</span>
+                <span class="text-[8px] text-zinc-400 tracking-tighter">加入調用</span>
               </button>
               
-              <button class="flex-1 h-12 rounded bg-[#00ff88] hover:bg-[#60ff99] text-black flex items-center justify-between px-6 font-mono font-bold shadow-[0_0_20px_rgba(0,255,136,0.4)] transition-all cursor-pointer" onclick="buyNowFromDetail()" type="button">
+              <button class="flex-1 h-12 rounded bg-[#00ff88] hover:bg-[#60ff99] text-black flex items-center justify-between px-6 font-bold shadow-[0_0_20px_rgba(0,255,136,0.4)] transition-all cursor-pointer" onclick="buyNowFromDetail()" type="button">
                 <div class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-[20px]">bolt</span>
                   <span class="tracking-wider">立即調用結案</span>
