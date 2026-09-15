@@ -542,7 +542,7 @@
           <div id="promoStatusMsg" class="text-xs"></div>
         </section>
 
-        <!-- 3. 配送路徑選擇 (Shipping Matrix) -->
+        <!-- 3. 配送路徑選擇 (Shipping Matrix - 修復點擊高亮) -->
         <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -551,46 +551,41 @@
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2.5">
-            <div class="relative" onclick="selectShipping('711', this)">
-              <label class="block p-3 rounded-lg border border-[#00ff88] bg-[#00ff88]/5 cursor-pointer text-left transition-all radio-card active">
-                <div class="flex justify-between items-start mb-1">
-                  <span class="text-xs font-bold text-white">7-ELEVEN</span>
-                  <span class="text-[10px] text-[#00ff88] font-bold">超商取貨</span>
-                </div>
-                <p class="text-[11px] text-neutral-300">無痕隱密取件</p>
-              </label>
+            <div class="ship-option-card p-3 rounded-lg border border-[#00ff88] bg-[#00ff88]/5 cursor-pointer text-left transition-all active" onclick="selectShippingCard('711', this)">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-xs font-bold text-white">7-ELEVEN</span>
+                <span class="text-[10px] text-[#00ff88] font-bold">超商取貨</span>
+              </div>
+              <p class="text-[11px] text-neutral-300">無痕隱密取件</p>
             </div>
-            <div class="relative" onclick="selectShipping('family', this)">
-              <label class="block p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all radio-card">
-                <div class="flex justify-between items-start mb-1">
-                  <span class="text-xs font-bold text-white">全家便利商店</span>
-                  <span class="text-[10px] text-[#00ff88] font-bold">超商取貨</span>
-                </div>
-                <p class="text-[11px] text-neutral-400">暗鎖取件專用</p>
-              </label>
+            
+            <div class="ship-option-card p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all" onclick="selectShippingCard('family', this)">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-xs font-bold text-white">全家便利商店</span>
+                <span class="text-[10px] text-[#00ff88] font-bold">超商取貨</span>
+              </div>
+              <p class="text-[11px] text-neutral-400">暗鎖取件專用</p>
             </div>
-            <div class="relative" onclick="selectShipping('home', this)">
-              <label class="block p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all radio-card">
-                <div class="flex justify-between items-start mb-1">
-                  <span class="text-xs font-bold text-white">黑貓無名包裹</span>
-                  <span class="text-[10px] text-neutral-300">+NT$120</span>
-                </div>
-                <p class="text-[11px] text-neutral-400">特工無痕專送</p>
-              </label>
+
+            <div class="ship-option-card p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all" onclick="selectShippingCard('home', this)">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-xs font-bold text-white">黑貓無名包裹</span>
+                <span class="text-[10px] text-neutral-300">+NT$120</span>
+              </div>
+              <p class="text-[11px] text-neutral-400">特工無痕專送</p>
             </div>
-            <div class="relative" onclick="selectShipping('meetup', this)">
-              <label class="block p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all radio-card">
-                <div class="flex justify-between items-start mb-1">
-                  <span class="text-xs font-bold text-white">暗樁節點面交</span>
-                  <span class="text-[10px] text-[#00ff88] font-bold">免運</span>
-                </div>
-                <p class="text-[11px] text-neutral-400">台中/台北秘密樁</p>
-              </label>
+
+            <div class="ship-option-card p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all" onclick="selectShippingCard('meetup', this)">
+              <div class="flex justify-between items-start mb-1">
+                <span class="text-xs font-bold text-white">暗樁節點面交</span>
+                <span class="text-[10px] text-[#00ff88] font-bold">免運</span>
+              </div>
+              <p class="text-[11px] text-neutral-400">台中/台北秘密樁</p>
             </div>
           </div>
         </section>
 
-        <!-- 4. 門市節點鎖定 (StoreDB CVS Picker) -->
+        <!-- 4. 門市節點鎖定 (StoreDB CVS Picker + 支援即時關鍵字搜尋) -->
         <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono" id="cvsDropdownContainer">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -615,10 +610,18 @@
             </div>
           </div>
 
+          <!-- ✦ 超商關鍵字即時搜尋列（縮小檢索範圍） -->
+          <div>
+            <label class="block text-[10px] text-neutral-400 mb-1">門市關鍵字過濾 (SEARCH KEYWORD)</label>
+            <div class="flex gap-2">
+              <input type="text" id="cvsSearchKeywordInput" oninput="filterCvsStoresLocally(this.value)" placeholder="輸入路名、店名或代號（例：忠孝、信義）" class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-3 py-2 outline-none focus:border-[#00ff88]" />
+            </div>
+          </div>
+
           <div>
             <label class="block text-[10px] text-neutral-400 mb-1">精確門市選擇 (STORE)</label>
             <select id="cvsStoreSelect" onchange="onStorePicked(this.value)" disabled class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-2.5 py-2 outline-none focus:border-[#00ff88]">
-              <option value="">-- 請先選擇縣市與行政區 --</option>
+              <option value="">-- 請先選擇縣市或輸入關鍵字 --</option>
             </select>
           </div>
 
@@ -1246,6 +1249,54 @@
       if (typeof renderCheckoutSummary === 'function') renderCheckoutSummary();
       if (typeof loadCvsCities === 'function') loadCvsCities('711');
       history.pushState({ view: 'checkout' }, '', '#checkout');
+    }
+
+    // ✦ 配送方式卡片點擊高亮切換
+    function selectShippingCard(method, el) {
+      document.querySelectorAll('.ship-option-card').forEach(card => {
+        card.classList.remove('border-[#00ff88]', 'bg-[#00ff88]/5');
+        card.classList.add('border-white/10', 'bg-[#16181d]/60');
+      });
+      el.classList.remove('border-white/10', 'bg-[#16181d]/60');
+      el.classList.add('border-[#00ff88]', 'bg-[#00ff88]/5');
+
+      if (typeof selectShipping === 'function') {
+        selectShipping(method, el);
+      }
+    }
+
+    // ✦ 超商門市即時關鍵字過濾（縮小範圍）
+    function filterCvsStoresLocally(keyword) {
+      const storeSelect = document.getElementById("cvsStoreSelect");
+      if (!storeSelect || typeof cachedStoreLocations === 'undefined' || cachedStoreLocations.length === 0) return;
+      
+      const query = keyword.trim().toLowerCase();
+      let filtered = cachedStoreLocations;
+
+      const cityVal = document.getElementById("cvsCitySelect").value;
+      const distVal = document.getElementById("cvsDistSelect").value;
+
+      if (cityVal) filtered = filtered.filter(s => s.city === cityVal);
+      if (distVal) filtered = filtered.filter(s => s.dist === distVal);
+      
+      if (query) {
+        filtered = filtered.filter(s => 
+          (s.name && s.name.toLowerCase().includes(query)) ||
+          (s.addr && s.addr.toLowerCase().includes(query)) ||
+          (s.id && s.id.toLowerCase().includes(query))
+        );
+      }
+
+      if (filtered.length === 0) {
+        storeSelect.innerHTML = `<option value="">❌ 無符合條件的門市</option>`;
+        storeSelect.disabled = true;
+        return;
+      }
+
+      storeSelect.innerHTML = `<option value="">-- 找到 ${filtered.length} 家符合門市，請點選 --</option>` + filtered.map(s => `
+        <option value="${s.id}" data-name="${s.name}" data-addr="${s.addr}">${s.name} (${s.id}) - ${s.addr}</option>
+      `).join('');
+      storeSelect.disabled = false;
     }
 
     // ✦ 訂單寫入 Google Sheets 後台引擎
