@@ -842,7 +842,7 @@
             <div>
               <div class="text-[9px] font-mono text-[#00ff88] tracking-widest">// FULLSCREEN_TERMINAL・全画面実働</div>
               <h2 class="text-base font-extrabold text-white mt-0.5">全螢幕連線實踐端 (session.html)</h2>
-              <p class="text-xs text-zinc-400 mt-1">極大化高反差碼錶、盲按防誤觸巨型主控、實時雙軌防護</p>
+              <p class="text-xs text-zinc-400 mt-1">極大化高反差碼錶、盲按防誤觸巨型主控,實時雙軌防護</p>
             </div>
             <button class="px-5 py-2.5 bg-[#00ff88] text-black font-extrabold text-xs uppercase rounded cursor-pointer" onclick="startSession()">▶ 啟動連線終端</button>
           </div>
@@ -920,17 +920,8 @@
     </div>
 
     <!-- ★ VIEW: 特工名片檔案 (view-dossier) -->
-    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-            <div>
-              <h1 class="text-3xl font-bold text-[#00ff88] tracking-tight">特工機密主頁與神經中樞</h1>
-              <p class="text-xs text-zinc-400 mt-1">個人作戰調書、微型生物特徵認證鎖及高強度量子急停矩陣。所有改動即刻透過端對端加密同調。</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <!-- ✦ 補回個人名片編輯按鈕 -->
-              <button onclick="openEditProfileModal()" class="px-4 py-2 bg-surface-container border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs hover:bg-[#00ff88]/10 transition-all rounded cursor-pointer">✏️ 編輯特工檔案</button>
-              <button onclick="showLandingView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回首頁大廳</button>
-            </div>
-          </div>
+    <div id="view-dossier" class="view-section hidden w-full">
+      <div class="max-w-[1600px] mx-auto px-4 py-8 flex flex-col gap-8">
         
         <!-- 頂部遙測導覽與身分標頭 -->
         <section class="flex flex-col gap-3">
@@ -954,7 +945,10 @@
               <h1 class="text-3xl font-bold text-[#00ff88] tracking-tight">特工機密主頁與神經中樞</h1>
               <p class="text-xs text-zinc-400 mt-1">個人作戰調書、微型生物特徵認證鎖及高強度量子急停矩陣。所有改動即刻透過端對端加密同調。</p>
             </div>
-            <button onclick="showLandingView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all self-start">← 返回首頁大廳</button>
+            <div class="flex items-center gap-2">
+              <button onclick="openEditProfileModal()" class="px-4 py-2 bg-surface-container border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs hover:bg-[#00ff88]/10 transition-all rounded cursor-pointer">✏️ 編輯特工檔案</button>
+              <button onclick="showLandingView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回首頁大廳</button>
+            </div>
           </div>
         </section>
 
@@ -1190,7 +1184,55 @@
     </div>
   </div>
 
- <!-- ========================================================================== -->
+  <!-- ========================================================================== -->
+  <!-- 6. 特工名片與檔案編輯專屬彈窗 (Edit Profile Modal) -->
+  <!-- ========================================================================== -->
+  <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" id="editProfileModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.8); z-index:9999;">
+    <div class="bg-[#13151b] border border-white/15 max-w-md w-full p-6 rounded-xl space-y-4 font-mono text-xs relative max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center pb-2 border-b border-white/10">
+        <h4 class="text-sm font-bold text-white">// 編輯特工檔案與名片</h4>
+        <button class="text-zinc-400 hover:text-white cursor-pointer" onclick="closeEditProfileModal()">✕</button>
+      </div>
+      <form class="space-y-3" onsubmit="handleCustomProfileUpdate(event)">
+        <div>
+          <label class="block text-zinc-400 mb-1">特工代號 (Name)</label>
+          <input class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#00ff88] rounded" id="profEditName" required type="text">
+        </div>
+        <div>
+          <label class="block text-zinc-400 mb-1">特工 ID (Agent ID)</label>
+          <input class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#00ff88] rounded uppercase" id="profEditAgentId" required type="text">
+        </div>
+        <div>
+          <label class="block text-zinc-400 mb-1">陣營屬性 (Role)</label>
+          <select class="w-full bg-black border border-zinc-700 p-2 text-white outline-none rounded" id="profEditRole">
+            <option value="支配者 (Dom)">支配者 (Dom)</option>
+            <option value="服從者 (Sub)">服從者 (Sub)</option>
+            <option value="雙向切換 (Switch)">雙向切換 (Switch)</option>
+            <option value="繩手 (Rigger)">繩手 (Rigger)</option>
+            <option value="繩模 (Model)">繩模 (Model)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-zinc-400 mb-1">最高緊急安全詞 (Safeword)</label>
+          <input class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#ff3366] rounded uppercase" id="profEditSafeword" required type="text">
+        </div>
+        <div>
+          <label class="block text-zinc-400 mb-1">𝕏 / Twitter 連結 (選填)</label>
+          <input class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#00ff88] rounded" id="profEditTwitter" type="text" placeholder="https://x.com/username">
+        </div>
+        <div>
+          <label class="block text-zinc-400 mb-1">特工宣言 / 簡介 (Bio)</label>
+          <textarea class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#00ff88] rounded" id="profEditBio" rows="3"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-3 border-t border-white/10">
+          <button class="px-4 py-2 text-zinc-400 hover:text-white cursor-pointer" onclick="closeEditProfileModal()" type="button">取消</button>
+          <button class="px-5 py-2 bg-[#00ff88] text-black font-bold rounded cursor-pointer" type="submit">儲存並同步</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================== -->
   <!-- 5. 載入原本正常運作的 JavaScript 引擎與結帳控制 -->
   <!-- ========================================================================== -->
   <script src="./js/config.js?v=20260903"></script>
@@ -1210,7 +1252,7 @@
       }
     }
 
-    // ✦ 升級版 SPA 視圖切換與導覽列同步高亮
+    // SPA 視圖切換核心與導覽列高亮聯動
     function setActiveView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => {
         el.classList.remove('active', 'block');
@@ -1222,13 +1264,13 @@
         target.classList.add('active', 'block');
       }
 
-      // 移除所有導覽按鈕的亮起樣式
+      // 導覽按鈕對應
       const navButtons = {
         'view-landing': 'nav-landing',
         'view-shop': 'nav-shop',
         'view-tracker': 'nav-tracker',
         'view-dossier': 'nav-dossier',
-        'view-checkout': 'nav-shop' // 結帳時點亮商城
+        'view-checkout': 'nav-shop'
       };
 
       Object.values(navButtons).forEach(navId => {
@@ -1238,7 +1280,6 @@
         }
       });
 
-      // 點亮當前分頁按鈕
       const activeNavId = navButtons[viewId];
       if (activeNavId) {
         const activeBtn = document.getElementById(activeNavId);
@@ -1273,20 +1314,69 @@
       history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
-    // ✦ 點擊編輯特工檔案：開啟會員管理彈窗並載入當前帳號資料
+    // ✦ 點擊編輯特工檔案：開啟專屬編輯彈窗並載入當前資料
     function openEditProfileModal() {
-      if (typeof toggleAuthModal === 'function') {
-        toggleAuthModal(true);
-        const guestView = document.getElementById("authGuestView");
-        const profView = document.getElementById("authProfileView");
-        if (guestView) guestView.style.display = "none";
-        if (profView) profView.style.display = "block";
-        if (typeof populateProfileView === 'function') {
-          populateProfileView();
-        }
-      } else {
-        alert("⚠️ 系統登入認證模組尚未就緒。");
+      const modal = document.getElementById("editProfileModal");
+      if (!modal) return;
+
+      const prof = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : {};
+      
+      const nameInp = document.getElementById("profEditName");
+      const agentIdInp = document.getElementById("profEditAgentId");
+      const roleInp = document.getElementById("profEditRole");
+      const safewordInp = document.getElementById("profEditSafeword");
+      const twitterInp = document.getElementById("profEditTwitter");
+      const bioInp = document.getElementById("profEditBio");
+
+      if (nameInp) nameInp.value = prof.name || (typeof memberProfile !== 'undefined' && memberProfile && memberProfile.name) || "特工";
+      if (agentIdInp) agentIdInp.value = prof.agentId || (typeof memberProfile !== 'undefined' && memberProfile && memberProfile.agentId) || "AGENT-001";
+      if (roleInp) roleInp.value = prof.role || (typeof memberProfile !== 'undefined' && memberProfile && memberProfile.role) || "支配者 (Dom)";
+      if (safewordInp) safewordInp.value = prof.safeword || "MAYDAY";
+      if (twitterInp) twitterInp.value = prof.twitter || "";
+      if (bioInp) bioInp.value = prof.bio || "";
+
+      modal.style.display = "flex";
+    }
+
+    // ✦ 關閉編輯彈窗
+    function closeEditProfileModal() {
+      const modal = document.getElementById("editProfileModal");
+      if (modal) {
+        modal.style.display = "none";
       }
+    }
+
+    // ✦ 儲存特工檔案並與帳號及雲端同步
+    function handleCustomProfileUpdate(e) {
+      e.preventDefault();
+      if (typeof trackerState === 'undefined' || !trackerState.profile) return;
+
+      const prof = trackerState.profile;
+      prof.name = document.getElementById("profEditName").value.trim();
+      prof.agentId = document.getElementById("profEditAgentId").value.trim().toUpperCase();
+      prof.role = document.getElementById("profEditRole").value;
+      prof.safeword = document.getElementById("profEditSafeword").value.trim().toUpperCase();
+      prof.twitter = document.getElementById("profEditTwitter").value.trim();
+      prof.bio = document.getElementById("profEditBio").value.trim();
+
+      if (typeof memberProfile !== 'undefined' && memberProfile) {
+        memberProfile.name = prof.name;
+        memberProfile.agentId = prof.agentId;
+        memberProfile.role = prof.role;
+        localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
+        if (typeof updateMemberUI === 'function') updateMemberUI();
+      }
+
+      if (typeof saveTrackerState === 'function') {
+        saveTrackerState();
+      }
+
+      if (typeof renderProfileDossier === 'function') {
+        renderProfileDossier();
+      }
+
+      closeEditProfileModal();
+      alert("✔ 特工機密檔案與權限認證已成功更新並同調！");
     }
 
     // ✦ 從購物車抽屜或商城點擊進入結帳終端
