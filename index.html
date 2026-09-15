@@ -622,26 +622,109 @@
     </div>
   </div>
 
-  <!-- ========================================================================== -->
-  <!-- 4. 登入 / 認證彈窗 (Auth Modal) -->
+ <!-- ========================================================================== -->
+  <!-- 4. 特工身分認證與會員彈窗 (Auth Modal - 完全相容 auth.js) -->
   <!-- ========================================================================== -->
   <div class="fixed inset-0 z-[90] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md" id="authModal" style="display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; background:rgba(0,0,0,0.8);">
-    <div class="max-w-sm w-full bg-[#13151b] border border-white/15 p-6 rounded-xl space-y-4 font-mono text-xs relative">
-      <button class="absolute top-4 right-4 text-white/40 hover:text-white" onclick="toggleAuthModal(false)" style="background:transparent; border:none; color:#fff; cursor:pointer;">✕</button>
-      <div class="text-[#00ff88] tracking-widest uppercase">// BIOMETRIC CLEARANCE</div>
-      <h3 class="text-lg font-bold text-white">特工神經密鑰登入</h3>
+    <div class="max-w-md w-full bg-[#13151b] border border-white/15 p-6 rounded-xl space-y-4 font-mono text-xs relative max-h-[90vh] overflow-y-auto">
+      <button class="absolute top-4 right-4 text-white/40 hover:text-white" onclick="toggleAuthModal(false)" style="background:transparent; border:none; color:#fff; cursor:pointer; font-size:1.2rem;">✕</button>
       
-      <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-3">
-        <div>
-          <label class="block text-white/50 mb-1">帳號（Email 或 手機）*</label>
-          <input type="text" id="loginAccountInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" />
+      <!-- 訪客視圖 (未登入) -->
+      <div id="authGuestView">
+        <div class="text-[#00ff88] tracking-widest uppercase mb-1">// BIOMETRIC CLEARANCE</div>
+        <h3 class="text-lg font-bold text-white mb-3">特工神經認證通道</h3>
+        
+        <!-- 分頁切換按鈕 -->
+        <div class="grid grid-cols-2 gap-1 p-1 bg-black rounded mb-4">
+          <button class="py-2 text-center rounded bg-[#00ff88] text-black font-bold cursor-pointer" id="tabBtnLogin" onclick="switchAuthTab('login')">登入 (LOGIN)</button>
+          <button class="py-2 text-center rounded text-zinc-400 hover:text-white cursor-pointer" id="tabBtnRegister" onclick="switchAuthTab('register')">新註冊 (REGISTER)</button>
         </div>
-        <div>
-          <label class="block text-white/50 mb-1">密碼 *</label>
-          <input type="password" id="loginPasswordInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" />
-        </div>
-        <button type="submit" class="w-full py-3 bg-[#00ff88] text-black font-bold uppercase rounded cursor-pointer">驗證登入 (ACCESS)</button>
-      </form>
+
+        <!-- 登入表單 -->
+        <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-3">
+          <div>
+            <label class="block text-white/50 mb-1">帳號（Email 或 手機）*</label>
+            <input type="text" id="loginAccountInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="agent@guilty.net" />
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">密碼 *</label>
+            <input type="password" id="loginPasswordInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="••••••••" />
+          </div>
+          <div class="p-3 bg-black/40 rounded border border-white/10">
+            <label class="flex items-center gap-2 cursor-pointer text-zinc-300">
+              <input type="checkbox" id="loginNdaCheckbox" required style="accent-color:#00ff88; width:14px; height:14px;" />
+              <span>我自願遵守 SSC 原則並簽署保密協議*</span>
+            </label>
+          </div>
+          <button type="submit" class="w-full py-3 bg-[#00ff88] text-black font-bold uppercase rounded cursor-pointer hover:bg-[#60ff99] transition-all" id="btnLoginSubmit">驗證登入 (ACCESS)</button>
+        </form>
+
+        <!-- 註冊表單 -->
+        <form id="registerForm" onsubmit="handleRegisterSubmit(event)" class="space-y-3" style="display:none;">
+          <div>
+            <label class="block text-white/50 mb-1">特工代號 *</label>
+            <input type="text" id="regNameInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="例：夜梟" />
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">自訂個人 ID (例如：AGENT-007) *</label>
+            <input type="text" id="regAgentIdInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white uppercase" placeholder="AGENT-9481" />
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">安全信箱 (Email) *</label>
+            <div class="flex gap-2">
+              <input type="email" id="regEmailInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="agent@guilty.net" />
+              <button type="button" id="btnSendRegOtp" onclick="sendRegisterOtp()" class="px-3 bg-[#00ff88] text-black font-bold rounded cursor-pointer whitespace-nowrap text-[11px]">發送驗證碼</button>
+            </div>
+            <div id="regOtpNotice" class="text-[10px] mt-1"></div>
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">6 位數驗證碼 *</label>
+            <input type="text" id="regOtpInput" required maxlength="6" class="w-full bg-black border border-white/20 p-2.5 rounded text-white tracking-[0.3em] text-center font-bold" placeholder="123456" />
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">手機號碼 *</label>
+            <input type="tel" id="regPhoneInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="0912345678" />
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">設定通行密碼 *</label>
+            <input type="password" id="regPasswordInput" required minlength="6" class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="至少 6 位數" />
+          </div>
+          <button type="submit" class="w-full py-3 bg-[#00ff88] text-black font-bold uppercase rounded cursor-pointer hover:bg-[#60ff99] transition-all" id="btnRegSubmit">驗證信箱並建立檔案 (REGISTER)</button>
+        </form>
+      </div>
+
+      <!-- 已登入視圖 (Profile 狀態) -->
+      <div id="authProfileView" style="display:none;">
+        <div class="text-[#00ff88] tracking-widest uppercase mb-1">// AGENT PROTOCOL DOSSIER</div>
+        <h3 class="text-lg font-bold text-white mb-2">特工系統檔案</h3>
+        <div id="profileAccountBadge" class="text-[10px] text-[#60ff99] mb-4 font-mono">[ VERIFIED AGENT ]</div>
+        
+        <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)" class="space-y-3">
+          <div>
+            <label class="block text-white/50 mb-1">主權屬性 *</label>
+            <div class="grid grid-cols-3 gap-1 bg-black p-1 rounded">
+              <button type="button" class="py-1.5 text-center rounded text-zinc-400 hover:text-white cursor-pointer text-[11px]" id="roleDom" onclick="setProfileRole('支配者 (Dom)')">支配 [Dom]</button>
+              <button type="button" class="py-1.5 text-center rounded text-zinc-400 hover:text-white cursor-pointer text-[11px]" id="roleSwitch" onclick="setProfileRole('切換者 (Switch)')">切換 [Switch]</button>
+              <button type="button" class="py-1.5 text-center rounded text-zinc-400 hover:text-white cursor-pointer text-[11px]" id="roleSub" onclick="setProfileRole('服從者 (Sub)')">服從 [Sub]</button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">特工代號 *</label>
+            <input type="text" id="profNameInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" />
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">特工 ID *</label>
+            <input type="text" id="profAgentIdInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white uppercase" />
+          </div>
+          <div>
+            <label class="block text-white/50 mb-1">常用取件超商</label>
+            <input type="text" id="profLocationInput" class="w-full bg-black border border-white/20 p-2.5 rounded text-white" />
+          </div>
+          <button type="submit" class="w-full py-3 bg-[#00ff88] text-black font-bold uppercase rounded cursor-pointer">更新檔案 (SAVE)</button>
+          <button type="button" onclick="logoutMember()" class="w-full py-2 bg-transparent text-red-400 font-bold text-xs mt-2 cursor-pointer hover:underline">[ 斷開連結 / 登出 ]</button>
+        </form>
+      </div>
+
     </div>
   </div>
 
