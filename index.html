@@ -317,10 +317,10 @@
           <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工名冊</span>
           <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">名簿</span>
         </button>
-        <button id="nav-dossier" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openProfileDossierView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工主頁</span>
-          <span style="font-size:8px; opacity:0.75; line-height:1; margin-top:2px;">身分端末</span>
-        </button>
+       <button class="flex items-center gap-2 px-3.5 py-1.5 rounded bg-surface-container border border-white/10 hover:border-primary/50 text-xs font-mono text-zinc-200 transition-all cursor-pointer" onclick="handleHeaderCartClick()">
+  <span class="text-[#00ff88]">🛒</span> 裝備調用清單 
+  <span class="bg-[#00ff88]/15 text-[#00ff88] px-1.5 py-0.5 rounded font-bold text-[11px]" id="headerCartCountText">[01]</span>
+</button>
       </nav>
 
       <!-- 右側：購物車快捷與特工狀態膠囊 -->
@@ -1501,6 +1501,16 @@
       const newBio = document.getElementById("profEditBio").value.trim();
       const avatarSrc = document.getElementById("profEditAvatarPreview").src;
 
+      // ✦ 聯防機制：檢查是否與已知的互動對象或本地網絡 ID 重複
+      if (typeof trackerState !== 'undefined' && trackerState.partners) {
+        const isConflict = trackerState.partners.some(p => p.agentId === newAgentId && p.agentId !== (trackerState.profile ? trackerState.profile.agentId : ''));
+        if (isConflict) {
+          alert(`❌【量子衝突警告】\n\n特工代號 ID [${newAgentId}] 已經存在於你的神經名冊網絡中！\n請更換一組專屬的特工 ID，以防量子信號干擾。`);
+          return; // 阻止重複儲存
+        }
+      }
+
+      // 通過檢查，執行正常寫入與持久化
       if (typeof trackerState !== 'undefined') {
         if (!trackerState.profile) trackerState.profile = {};
         trackerState.profile.name = newName;
@@ -1522,6 +1532,7 @@
         if (typeof updateMemberUI === 'function') updateMemberUI();
       }
 
+      // 即時同步 UI 畫面
       document.querySelectorAll("#dossierNameDisplay").forEach(el => el.textContent = `${newName} (${newAgentId})`);
       document.querySelectorAll("#dossierAgentIdDisplay").forEach(el => el.textContent = `ID: ${newAgentId}`);
       document.querySelectorAll("#dossierRoleBadge").forEach(el => el.textContent = newRole);
@@ -1533,12 +1544,13 @@
       const bioElem = document.getElementById("dossierBioDisplay");
       if (bioElem) bioElem.textContent = newBio || "尚未填寫特工宣言與簡介。";
 
-      if (typeof renderProfileDossier === 'function') renderProfileDossier();
+      if (typeof renderProfileDossier === 'function') {
+        renderProfileDossier();
+      }
 
       closeEditProfileModal();
-      alert("✔ 特工檔案與名片數據已同步完成！");
+      alert(`✔ 專屬 ID [${newAgentId}] 驗證通過！機密檔案已永久同調完畢。`);
     }
-
     function proceedToCheckoutFromCart() {
       if (typeof cart !== 'undefined' && cart.length === 0) {
         alert("❌ 裝備庫目前為空！");
@@ -1561,6 +1573,17 @@
 
       if (typeof selectShipping === 'function') {
         selectShipping(method, el);
+      }
+    }
+
+    function handleHeaderCartClick() {
+      // 如果當前不在商城，先切過去再開抽屜；如果在商城就直接開抽屜
+      const shopView = document.getElementById("view-shop");
+      if (shopView && shopView.classList.contains("hidden")) {
+        openShopCatalogView();
+      }
+      if (typeof toggleCart === 'function') {
+        toggleCart(true);
       }
     }
 
