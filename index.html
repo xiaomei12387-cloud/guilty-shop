@@ -1240,7 +1240,7 @@
   <script src="./js/shop.js?v=20260903"></script>
   <script src="./js/tracker.js?v=20260903"></script>
 
-  <script>
+<script>
     // 頁面開場動畫
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
@@ -1252,7 +1252,7 @@
       }
     }
 
-    // SPA 視圖切換核心與導覽列高亮聯動
+    // ✦ 升級版 SPA 視圖切換與導覽列同步高亮
     function setActiveView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => {
         el.classList.remove('active', 'block');
@@ -1314,12 +1314,14 @@
       history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
-    // ✦ 點擊編輯特工檔案：開啟專屬編輯彈窗並載入當前資料
+    // ✦ 點擊編輯特工檔案：雙向對齊 memberProfile 與 trackerState.profile
     function openEditProfileModal() {
       const modal = document.getElementById("editProfileModal");
       if (!modal) return;
 
-      const prof = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : {};
+      // 同步抓取目前登入的會員資料或 tracker 內的名片資料
+      const tProf = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : {};
+      const mProf = (typeof memberProfile !== 'undefined' && memberProfile) ? memberProfile : {};
       
       const nameInp = document.getElementById("profEditName");
       const agentIdInp = document.getElementById("profEditAgentId");
@@ -1328,12 +1330,12 @@
       const twitterInp = document.getElementById("profEditTwitter");
       const bioInp = document.getElementById("profEditBio");
 
-      if (nameInp) nameInp.value = prof.name || (typeof memberProfile !== 'undefined' && memberProfile && memberProfile.name) || "特工";
-      if (agentIdInp) agentIdInp.value = prof.agentId || (typeof memberProfile !== 'undefined' && memberProfile && memberProfile.agentId) || "AGENT-001";
-      if (roleInp) roleInp.value = prof.role || (typeof memberProfile !== 'undefined' && memberProfile && memberProfile.role) || "支配者 (Dom)";
-      if (safewordInp) safewordInp.value = prof.safeword || "MAYDAY";
-      if (twitterInp) twitterInp.value = prof.twitter || "";
-      if (bioInp) bioInp.value = prof.bio || "";
+      if (nameInp) nameInp.value = tProf.name || mProf.name || "特工";
+      if (agentIdInp) agentIdInp.value = tProf.agentId || mProf.agentId || "AGENT-001";
+      if (roleInp) roleInp.value = tProf.role || mProf.role || "支配者 (Dom)";
+      if (safewordInp) safewordInp.value = tProf.safeword || mProf.safeword || "MAYDAY";
+      if (twitterInp) twitterInp.value = tProf.twitter || "";
+      if (bioInp) bioInp.value = tProf.bio || "";
 
       modal.style.display = "flex";
     }
@@ -1346,37 +1348,47 @@
       }
     }
 
-    // ✦ 儲存特工檔案並與帳號及雲端同步
+    // ✦ 儲存特工檔案：同時寫入 trackerState 與 memberProfile 確保兩邊完全一致
     function handleCustomProfileUpdate(e) {
       e.preventDefault();
-      if (typeof trackerState === 'undefined' || !trackerState.profile) return;
 
-      const prof = trackerState.profile;
-      prof.name = document.getElementById("profEditName").value.trim();
-      prof.agentId = document.getElementById("profEditAgentId").value.trim().toUpperCase();
-      prof.role = document.getElementById("profEditRole").value;
-      prof.safeword = document.getElementById("profEditSafeword").value.trim().toUpperCase();
-      prof.twitter = document.getElementById("profEditTwitter").value.trim();
-      prof.bio = document.getElementById("profEditBio").value.trim();
+      const newName = document.getElementById("profEditName").value.trim();
+      const newAgentId = document.getElementById("profEditAgentId").value.trim().toUpperCase();
+      const newRole = document.getElementById("profEditRole").value;
+      const newSafeword = document.getElementById("profEditSafeword").value.trim().toUpperCase();
+      const newTwitter = document.getElementById("profEditTwitter").value.trim();
+      const newBio = document.getElementById("profEditBio").value.trim();
 
+      // 1. 更新 trackerState 內的 profile
+      if (typeof trackerState !== 'undefined') {
+        if (!trackerState.profile) trackerState.profile = {};
+        trackerState.profile.name = newName;
+        trackerState.profile.agentId = newAgentId;
+        trackerState.profile.role = newRole;
+        trackerState.profile.safeword = newSafeword;
+        trackerState.profile.twitter = newTwitter;
+        trackerState.profile.bio = newBio;
+        if (typeof saveTrackerState === 'function') saveTrackerState();
+      }
+
+      // 2. 更新全域 memberProfile 並存入 localStorage
       if (typeof memberProfile !== 'undefined' && memberProfile) {
-        memberProfile.name = prof.name;
-        memberProfile.agentId = prof.agentId;
-        memberProfile.role = prof.role;
+        memberProfile.name = newName;
+        memberProfile.agentId = newAgentId;
+        memberProfile.role = newRole;
         localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
-        if (typeof updateMemberUI === 'function') updateMemberUI();
+      } else {
+        // 若訪客狀態下直接編輯，也建立一個基礎 memberProfile
+        window.memberProfile = { name: newName, agentId: newAgentId, role: newRole };
+        localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(window.memberProfile));
       }
 
-      if (typeof saveTrackerState === 'function') {
-        saveTrackerState();
-      }
-
-      if (typeof renderProfileDossier === 'function') {
-        renderProfileDossier();
-      }
+      // 3. 即時刷新頂部按鈕與特工名片顯示
+      if (typeof updateMemberUI === 'function') updateMemberUI();
+      if (typeof renderProfileDossier === 'function') renderProfileDossier();
 
       closeEditProfileModal();
-      alert("✔ 特工機密檔案與權限認證已成功更新並同調！");
+      alert("✔ 特工機密檔案與名片數據已全面同步同調！");
     }
 
     // ✦ 從購物車抽屜或商城點擊進入結帳終端
