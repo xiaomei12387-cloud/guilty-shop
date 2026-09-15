@@ -27,7 +27,7 @@ const PRODUCTS = [
     note: "提供 1.2米 / 1.5米 規格定制，選擇「其他顏色洽客服」將額外加收 NT$ 100 客製費用。",
     img: "./images/whip_01.png", 
     images: ["./images/whip_01.png","./images/whip_02.png","./images/whip_03.png"], 
-    specs: ["黑", "白", "藍", "紫黑", "黑紅", "其他顏色洽客服"],
+    specs: ["黑", "白", "藍", "紫黑", "白灰", "其他顏色洽客服"],
     whipLengths: [
       { name: "1.2米", price: 1500 },
       { name: "1.5米", price: 1700 }
