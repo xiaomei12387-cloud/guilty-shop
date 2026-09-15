@@ -101,6 +101,26 @@
     ::-webkit-scrollbar-thumb { background: #1f242e; border-radius: 2px; }
     ::-webkit-scrollbar-thumb:hover { background: #00ff88; }
 
+    /* ✦ 小字卡標題與標籤樣式 (Tag Pill Cards) */
+    .tag-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background: rgba(0, 255, 136, 0.08);
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      color: #00ff88;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      margin: 3px;
+      transition: all 0.2s ease;
+    }
+    .tag-pill.active-limit {
+      background: rgba(255, 51, 102, 0.08);
+      border-color: rgba(255, 51, 102, 0.3);
+      color: #ff3366;
+    }
+
     /* ✦ Stitch 版商城專用：統一卡片與預覽圖大小 */
     #productGrid {
       display: grid;
@@ -145,45 +165,6 @@
       flex-grow: 1;
       justify-content: space-between;
     }
-    .badge-guilty {
-      background: rgba(0, 255, 136, 0.15);
-      color: #00ff88;
-      border: 1px solid rgba(0, 255, 136, 0.3);
-    }
-    .badge-shushi {
-      background: rgba(167, 139, 250, 0.15);
-      color: #a78bfa;
-      border: 1px solid rgba(167, 139, 250, 0.3);
-    }
-    /* ✦ 商城規格選項卡片樣式 */
-    .radio-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .radio-card {
-      background: rgba(19, 21, 27, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      color: #9ba1b0;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .radio-card:hover {
-      border-color: rgba(0, 255, 136, 0.4);
-      color: #fff;
-    }
-    .radio-card.active {
-      background: rgba(0, 255, 136, 0.12);
-      border-color: #00ff88;
-      color: #00ff88;
-      font-weight: bold;
-      box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
-    }
   </style>
 
   <!-- 原有工具庫 (html2canvas, QR, Chart.js) -->
@@ -224,668 +205,77 @@
       </div>
       <p class="font-code-hud text-xs tracking-widest text-on-surface-variant uppercase mb-8">Tactical Cybernetics &amp; Bondage Lab</p>
       
-      <div class="w-full bg-surface-container-low/90 border border-white/10 rounded p-3 mb-6 font-code-hud text-left text-xs text-on-surface-variant">
-        <div class="flex items-center justify-between pb-2 border-b border-white/5 mb-2 text-[10px]">
-          <span class="text-primary flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span>BOOT_SEQ: VER_2678.03</span>
-          <span class="text-white/40">NODE_TAIPEI_01</span>
-        </div>
-        <div class="space-y-1 text-[11px] text-gray-400" id="introTermLog">
-          <p class="text-primary">&gt; 加載核心特工認證模組... [OK]</p>
-          <p class="">&gt; 建立 256-bit 量子神經加密通道... [OK]</p>
-          <p class="">&gt; 同步欲室/束室戰術物資數據庫... [99.8%]</p>
-        </div>
-      </div>
-
       <button class="w-full py-3.5 px-6 rounded font-code-hud font-bold text-xs tracking-[0.25em] uppercase text-black bg-primary hover:bg-primary-fixed transition-all duration-300 shadow-hud-glow flex items-center justify-center gap-2 group" id="introEnterBtn" onclick="dismissIntro()">
         <span class="">解除終端鎖定 ENTER INTERFACE</span>
         <span class="material-symbols-outlined text-sm transition-transform group-hover:translate-x-1">arrow_forward</span>
       </button>
-      <span class="text-[10px] font-code-hud text-white/30 mt-3 tracking-widest">ENCRYPTED CONNECTION // PROTOCOL SECURED</span>
     </div>
   </div>
 
   <!-- ========================================================================== -->
-  <!-- 1. 浮空頂部 HUD 導航列 (Tactical Header - 雙行日文微縮風格) -->
+  <!-- 1. 浮空頂部 HUD 導航列 -->
   <!-- ========================================================================== -->
   <header class="sticky top-0 z-50 w-full px-4 md:px-8 py-3 bg-[#08090c]/90 backdrop-blur-xl border-b border-white/10">
     <div class="max-w-[1600px] mx-auto flex items-center justify-between">
-      
-      <!-- 左側：品牌標誌與節點代號 -->
       <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
-        <div class="w-9 h-9 rounded bg-surface-container-high border border-white/10 flex items-center justify-center relative overflow-hidden group">
-          <svg class="cyber-cat-eye-svg w-7 h-7" viewBox="0 0 100 100">
-            <polygon fill="none" stroke="#00ff88" stroke-width="2" points="50,10 90,50 50,90 10,50"></polygon>
-            <polygon fill="none" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="3 3" points="50,22 78,50 50,78 22,50"></polygon>
-            <path d="M50,26 Q57,50 50,74 Q43,50 50,26 Z" fill="#00ff88"></path>
-          </svg>
-          <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        </div>
-        <div class="flex items-center gap-3">
-          <svg class="guilty-vector-logo h-6 w-auto" viewBox="0 0 650 160" style="max-width: 120px;">
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M150 35 L110 85 L150 125 L190 85"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M190 85 L230 35 L270 85 L230 135 Z"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M230 35 L230 135"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M270 85 L310 35 L350 85 L390 125"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M390 85 L440 35 L490 85"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M440 35 L440 135"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M500 35 L545 90 L590 35"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M545 90 L545 135"></path>
-          </svg>
-          <span class="text-sm font-bold text-white tracking-wider hidden sm:inline">欲室｜共犯</span>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 tracking-widest hidden xl:inline">NODE_09 // 戰術節點 • ENCRYPTED: L5</span>
-        </div>
+        <span class="text-sm font-bold text-white tracking-wider">欲室｜共犯</span>
       </div>
-
-      <!-- 中間：5大核心雙行日文樣式導覽列 -->
       <nav class="hidden xl:flex items-center gap-1 font-code-hud text-xs">
-        <button id="nav-landing" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="showLandingView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">首頁大廳</span>
-          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">ロビー</span>
-        </button>
-        <button id="nav-shop" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openShopCatalogView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">裝備商城</span>
-          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">アーセナル</span>
-        </button>
-        <button id="nav-tracker" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openTrackerAppView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">實踐計數</span>
-          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">カウンター</span>
-        </button>
-        <button id="nav-friends" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-white transition-colors rounded" onclick="openFriendsDossierView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工名冊</span>
-          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">名簿</span>
-        </button>
-        <button id="nav-dossier" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openProfileDossierView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工主頁</span>
-          <span style="font-size:8px; opacity:0.75; line-height:1; margin-top:2px;">身分端末</span>
-        </button>
+        <button id="nav-landing" class="px-4 py-1.5 text-zinc-400 hover:text-primary transition-colors rounded" onclick="showLandingView()">首頁大廳</button>
+        <button id="nav-shop" class="px-4 py-1.5 text-zinc-400 hover:text-primary transition-colors rounded" onclick="openShopCatalogView()">裝備商城</button>
+        <button id="nav-tracker" class="px-4 py-1.5 text-zinc-400 hover:text-primary transition-colors rounded" onclick="openTrackerAppView()">實踐計數</button>
+        <button id="nav-dossier" class="px-4 py-1.5 text-zinc-400 hover:text-primary transition-colors rounded" onclick="openProfileDossierView()">特工主頁</button>
       </nav>
-
-      <!-- 右側：購物車快捷與特工狀態膠囊 -->
       <div class="flex items-center gap-3">
-        
-        <!-- 購物車快捷按鈕 -->
-        <button class="flex items-center gap-2 px-3.5 py-1.5 rounded bg-surface-container border border-white/10 hover:border-primary/50 text-xs font-mono text-zinc-200 transition-all cursor-pointer" onclick="toggleCart(true)">
-          <span class="text-[#00ff88]">🛒</span> 裝備調用清單 
-          <span class="bg-[#00ff88]/15 text-[#00ff88] px-1.5 py-0.5 rounded font-bold text-[11px]" id="headerCartCountText">[01]</span>
-        </button>
-
-        <!-- 特工身分狀態徽章 -->
-        <button class="flex items-center gap-2.5 px-3 py-1.5 rounded bg-surface-container border border-white/10 text-xs font-mono text-white hover:border-primary/40 transition-all cursor-pointer" id="memberBtn" onclick="toggleAuthModal(true)">
-          <div class="w-2 h-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] animate-pulse"></div>
-          <span class="font-bold tracking-wide" id="memberBtnText">AGENT-9481 夜梟</span>
-          <span class="text-[9px] text-[#00ff88] bg-[#00ff88]/10 border border-[#00ff88]/30 px-1 py-0.5 rounded">L5 SECURE</span>
-        </button>
-
-        <!-- 手機版漢堡選單按鈕 -->
-        <button class="xl:hidden p-2 rounded bg-surface-container border border-white/10 text-white hover:text-primary cursor-pointer" onclick="toggleNav(true)">
-          <span class="material-symbols-outlined text-lg">menu</span>
+        <button class="flex items-center gap-2 px-3.5 py-1.5 rounded bg-surface-container border border-white/10 text-xs font-mono text-zinc-200 cursor-pointer" onclick="toggleCart(true)">
+          🛒 裝備清單 <span class="text-[#00ff88]" id="headerCartCountText">[0]</span>
         </button>
       </div>
-
     </div>
   </header>
 
   <!-- ========================================================================== -->
-  <!-- 2. 主視圖單頁切換容器 (SPA Views Container) -->
+  <!-- 2. 主視圖單頁切換容器 -->
   <!-- ========================================================================== -->
   <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-6 relative">
 
-    <!-- 🌐 VIEW: 首頁大廳 (view-landing) -->
-    <div id="view-landing" class="view-section active space-y-12">
-      <div class="landing-container" style="display:flex; flex-direction:column; justify-content:center; align-items:center; min-height:85vh; text-align:center; padding: 20px 0;">
-        <div style="width: 100%; max-width: 620px; background: rgba(13, 15, 20, 0.85); border: 1px solid rgba(0, 255, 136, 0.3); box-shadow: 0 0 35px rgba(0, 255, 136, 0.08); border-radius: 6px; padding: 38px 24px; position: relative;">
-          
-          <div style="display:inline-block; font-size:0.7rem; font-family:monospace; color:var(--primary, #00ff88); letter-spacing:3px; background:rgba(0, 255, 136, 0.08); border:1px solid rgba(0, 255, 136, 0.2); padding:4px 12px; margin-bottom:20px;">
-            PROTOCOL // A.D. 2678 HARDWARE ARSENAL
-          </div>
-
-          <h1 style="font-size: clamp(1.6rem, 5vw, 2.2rem); font-weight: 900; letter-spacing: 2px; line-height: 1.35; margin-bottom: 12px; color: #fff;">
-            我們不製造傷害，<br><span style="color: #00ff88; text-shadow: 0 0 16px rgba(0,255,136,0.6);">我們定義支配。</span>
-          </h1>
-
-          <p style="font-size: 0.8rem; color: #9ba1b0; line-height: 1.7; margin-bottom: 24px; letter-spacing: 0.5px;">
-            工業級義體外骨骼 × 精煉繩藝美學 × 戰術防護裝備。<br>重塑冷冽硬派的次文化拘束哲學。
-          </p>
-
-          <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
-            <button class="btn-submit" onclick="openShopCatalogView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; background: #00ff88; color: #000; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 0 20px rgba(0, 255, 136, 0.25);">
-              🛒 進入裝備調用商城 (ARSENAL)
-            </button>
-            <button class="btn-submit" onclick="openTrackerAppView()" style="padding: 16px; font-size: 0.95rem; font-weight: bold; letter-spacing: 1.5px; background: #13151b; color: #00ff88; border: 1px solid #00ff88; border-radius: 4px; cursor: pointer;">
-              ⚡ 開啟實踐管理終端 (TRACKER)
-            </button>
-          </div>
-        </div>
+    <!-- 🌐 VIEW: 首頁大廳 -->
+    <div id="view-landing" class="view-section active space-y-12 text-center py-20">
+      <h1 class="text-3xl font-bold text-white">我們不製造傷害，<span class="text-[#00ff88]">我們定義支配。</span></h1>
+      <div class="flex justify-center gap-4">
+        <button class="px-6 py-3 bg-[#00ff88] text-black font-bold rounded cursor-pointer" onclick="openShopCatalogView()">進入裝備商城</button>
+        <button class="px-6 py-3 bg-surface-container text-[#00ff88] border border-[#00ff88] font-bold rounded cursor-pointer" onclick="openTrackerAppView()">開啟實踐終端</button>
       </div>
     </div>
 
-    <!-- 🛒 VIEW: 裝備調用商城 (view-shop) -->
+    <!-- 🛒 VIEW: 裝備調用商城 -->
     <div id="view-shop" class="view-section hidden w-full">
-      <main class="flex-1 pt-12 pb-20 px-4 sm:px-6 lg:px-8 mx-auto w-full max-w-[1600px]">
-        
-        <!-- 頂部導覽與大標題 -->
-        <div class="mb-8">
-          <div class="flex justify-between items-center mb-4">
-            <button onclick="showLandingView()" class="px-3.5 py-1.5 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded">← 返回首頁大廳</button>
-          </div>
-          <div class="text-[9px] font-mono tracking-widest text-[#00ff88]/70 uppercase mb-1.5">// ARSENAL_CATALOG・装備調達拠点</div>
-          <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
-            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-              裝備調用商城
-              <span class="text-xs font-mono font-normal text-white/40 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">STAGE: ACTIVE v2.5</span>
-            </h1>
-            <p class="text-xs font-mono text-white/50 tracking-wide">極限感官與拘束器材庫・全台超商無痕隱密發送</p>
-          </div>
-
-          <!-- 分類篩選按鈕 -->
-          <div class="flex flex-wrap items-center gap-2 mt-6 pb-2 border-b border-white/[0.06]">
-            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-[#00ff88] text-black font-bold active" onclick="filterBrand('all')">全部裝備 (ALL)</button>
-            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-surface-container text-zinc-300 hover:text-white border border-white/10" onclick="filterBrand('guilty')">欲室｜共犯 義體</button>
-            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-surface-container text-zinc-300 hover:text-white border border-white/10" onclick="filterBrand('shushi')">束室特選繩藝</button>
-          </div>
-        </div>
-
-        <!-- 主區塊：8 欄商品清單 + 4 欄結帳抽屜 -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          
-          <!-- 左側商品網格 (8 欄) -->
-          <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6" id="productGrid">
-            <!-- 動態由 shop.js 渲染商品卡片 -->
-          </div>
-
-          <!-- 右側即時調用清單與結帳 HUD 抽屜 (4 欄) -->
-          <aside class="lg:col-span-4 sticky top-24 space-y-4">
-            <div class="bg-surface-container-low rounded-xl p-5 border border-white/10 shadow-2xl relative overflow-hidden font-mono">
-              
-              <div class="flex items-center justify-between pb-3 border-b border-white/10">
-                <div>
-                  <span class="text-[8px] text-[#00ff88] tracking-widest uppercase">HUD_CART // 調用抽屜</span>
-                  <h3 class="text-base font-bold text-white">調用裝備清單</h3>
-                </div>
-                <span class="text-xs px-2 py-0.5 rounded bg-white/5 text-[#00ff88] border border-[#00ff88]/30" id="cart-item-count">0 項目</span>
-              </div>
-
-              <!-- 免運進度條 -->
-              <div class="my-4 p-3 rounded-lg bg-black/40 border border-white/5">
-                <div class="flex justify-between items-center text-[11px] mb-1.5">
-                  <span class="text-zinc-400 flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[14px] text-[#00ff88]">local_shipping</span> 滿額免運特工協議
-                  </span>
-                  <span class="text-[#00ff88] font-bold" id="shipping-progress-text">計算中...</span>
-                </div>
-                <div class="w-full h-1 bg-white/10 rounded-full overflow-hidden">
-                  <div class="h-full bg-[#00ff88] transition-all duration-300" id="shipping-progress-bar" style="width: 0%;"></div>
-                </div>
-              </div>
-
-              <!-- 購物車列表容器 -->
-              <div class="space-y-3 max-h-64 overflow-y-auto pr-1 my-3" id="cart-list">
-                <div class="py-6 text-center text-xs text-zinc-500">調用抽屜目前無裝備</div>
-              </div>
-
-              <!-- 配送方式 -->
-              <div class="pt-3 border-t border-white/10 space-y-2 text-xs">
-                <span class="text-[10px] text-zinc-400 uppercase tracking-wider block">配送方式選配 // LOGISTICS</span>
-                <div class="grid grid-cols-3 gap-1.5" id="shipping-options">
-                  <button class="shipping-btn active p-2 rounded text-left border bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/40 cursor-pointer" data-fee="60" onclick="selectShipping('711', this)" type="button">
-                    <div class="text-[11px] font-bold">7-11 超商</div>
-                    <div class="text-[9px] opacity-60">無痕取貨</div>
-                  </button>
-                  <button class="shipping-btn p-2 rounded text-left border bg-black text-zinc-400 border-white/10 hover:text-white cursor-pointer" data-fee="60" onclick="selectShipping('family', this)" type="button">
-                    <div class="text-[11px] font-bold">全家便利</div>
-                    <div class="text-[9px] opacity-60">超商取貨</div>
-                  </button>
-                  <button class="shipping-btn p-2 rounded text-left border bg-black text-zinc-400 border-white/10 hover:text-white cursor-pointer" data-fee="120" onclick="selectShipping('home', this)" type="button">
-                    <div class="text-[11px] font-bold">黑貓宅配</div>
-                    <div class="text-[9px] opacity-60">隱私直送</div>
-                  </button>
-                </div>
-              </div>
-
-              <!-- 密鑰輸入 -->
-              <div class="mt-3">
-                <div class="flex gap-2">
-                  <input class="w-full bg-black border border-white/15 rounded px-2.5 py-1.5 text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-[#00ff88]" id="coupon-input" placeholder="密鑰 (例: IAMSUB)" type="text">
-                  <button class="px-3 py-1.5 rounded bg-surface-container-high text-xs text-white border border-white/15 cursor-pointer" id="apply-coupon-btn" onclick="applyPromoCode()" type="button">套用</button>
-                </div>
-                <p class="text-[10px] mt-1 text-[#00ff88]" id="promoStatusMsg"></p>
-              </div>
-
-              <!-- 金額結算 -->
-              <div class="pt-4 mt-3 border-t border-white/10 space-y-1.5 text-xs">
-                <div class="flex justify-between text-zinc-400"><span>裝備小計</span><span class="text-white" id="subtotal-val">NT$ 0</span></div>
-                <div class="flex justify-between text-[#a78bfa] hidden" id="discount-line"><span>密鑰折扣</span><span id="discount-val">- NT$ 0</span></div>
-                <div class="flex justify-between text-zinc-400"><span>物流運費</span><span class="text-[#00ff88]" id="shipping-val">NT$ 60</span></div>
-                <div class="flex justify-between items-baseline pt-2 border-t border-white/10 text-sm font-bold">
-                  <span class="text-white">總調用金額</span>
-                  <span class="text-xl text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.3)]" id="grand-total-val">NT$ 60</span>
-                </div>
-              </div>
-
-              <!-- 結帳按鈕 -->
-              <button class="w-full mt-4 py-3 rounded-lg bg-[#00ff88] hover:bg-[#60ff99] text-black text-xs font-bold uppercase transition-all shadow-[0_0_16px_rgba(0,255,136,0.25)] flex items-center justify-center gap-2 cursor-pointer" id="checkout-btn" onclick="proceedToCheckoutFromCart()" type="button">
-                <span class="material-symbols-outlined text-[18px]">verified_user</span>
-                <span>[ 簽署調用協議 // 前往加密結帳 ]</span>
-              </button>
-
-              <div class="mt-3 p-2 rounded bg-black/50 border border-white/5 text-[10px] text-zinc-400 flex items-start gap-1.5">
-                <span class="material-symbols-outlined text-[13px] text-zinc-400 shrink-0 mt-0.5">lock</span>
-                <span>外包裝品名一律標示為「高精度五金零件」，寄件人無品牌字樣，守護特工極限隱私。</span>
-              </div>
-
-            </div>
-          </aside>
-
-        </div>
-      </main>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-6" id="productGrid"></div>
+        <aside class="lg:col-span-4 sticky top-24 bg-surface-container-low rounded-xl p-5 border border-white/10">
+          <h3 class="text-base font-bold text-white mb-3">調用裝備清單</h3>
+          <div id="cart-list" class="space-y-2 mb-4 text-xs text-zinc-400">目前無裝備</div>
+          <button class="w-full py-3 bg-[#00ff88] text-black font-bold text-xs uppercase rounded cursor-pointer" onclick="proceedToCheckoutFromCart()">前往加密結帳</button>
+        </aside>
+      </div>
     </div>
 
-    <!-- 💳 VIEW: 結帳調用終端 (view-checkout) -->
-    <div id="view-checkout" class="view-section hidden w-full">
-      <main class="max-w-lg mx-auto px-4 pt-4 pb-36 space-y-4 font-sans text-neutral-200">
-        
-        <!-- 返回商城導覽列 -->
-        <div class="flex items-center justify-between mb-2">
-          <button onclick="openShopCatalogView()" class="px-3 py-1.5 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回裝備商城</button>
-          <div class="flex items-center gap-1 text-[10px] font-mono text-neutral-400 bg-[#121316] px-2 py-1 rounded border border-cyberBorder">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse"></span>
-            <span>TLS 1.3 SECURED</span>
-          </div>
-        </div>
-
-        <!-- 狀態 Banner -->
-        <div class="bg-[#121316]/80 border border-white/10 rounded-lg p-3 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <span class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ff88] opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-[#00ff88]"></span>
-            </span>
-            <span class="text-xs font-mono tracking-wider text-neutral-300">PROTO_DISPATCH_SESSION // ACTIVE</span>
-          </div>
-          <span class="text-[10px] font-mono text-[#00e5ff] bg-[#00e5ff]/10 px-2 py-0.5 rounded border border-[#00e5ff]/30">加密通道中</span>
-        </div>
-
-        <!-- 1. 調用裝備清單明細 (動態由 shop.js 渲染) -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3">
-          <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs font-mono tracking-wider text-neutral-200 uppercase font-semibold">調用清單明細 / MANIFEST</h2>
-            </div>
-          </div>
-          <!-- 動態注入容器 -->
-          <div class="space-y-2.5" id="checkoutOrderItemsList">
-            <!-- 購物車商品將由 JS 動態載入 -->
-          </div>
-        </section>
-
-        <!-- 2. 特工密鑰協議 (Promo Protocol) -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs font-mono tracking-wider text-neutral-200 uppercase font-semibold">特工密鑰協議 / PROMO PROTOCOL</h2>
-            </div>
-          </div>
-          <div class="flex gap-2">
-            <div class="relative flex-1">
-              <input class="w-full bg-[#0d0e11] border border-[#00ff88]/50 text-[#00ff88] text-xs tracking-wider rounded-lg px-3 py-2.5 focus:outline-none uppercase" id="promoCodeInput" placeholder="輸入特工密鑰 (例: IAMSUB)" type="text"/>
-            </div>
-            <button class="bg-[#16181d] text-neutral-300 hover:text-white px-3.5 py-2.5 rounded-lg border border-white/10 text-xs tracking-wider cursor-pointer active:scale-95 transition-all" onclick="applyPromoCode()" type="button">
-              套用密鑰
-            </button>
-            <button class="bg-red-950/40 text-red-400 px-3 py-2.5 rounded-lg border border-red-500/30 text-xs tracking-wider cursor-pointer" id="removePromoBtn" onclick="removePromoCode()" style="display:none;" type="button">
-              清除
-            </button>
-          </div>
-          <div id="promoStatusMsg" class="text-xs"></div>
-        </section>
-
-        <!-- 3. 配送路徑選擇 (Shipping Matrix - 修復點擊高亮) -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">配送路徑選擇 / DISPATCH ROUTE</h2>
-            </div>
-          </div>
-          <div class="grid grid-cols-2 gap-2.5">
-            <div class="ship-option-card p-3 rounded-lg border border-[#00ff88] bg-[#00ff88]/5 cursor-pointer text-left transition-all active" onclick="selectShippingCard('711', this)">
-              <div class="flex justify-between items-start mb-1">
-                <span class="text-xs font-bold text-white">7-ELEVEN</span>
-                <span class="text-[10px] text-[#00ff88] font-bold">超商取貨</span>
-              </div>
-              <p class="text-[11px] text-neutral-300">無痕隱密取件</p>
-            </div>
-            
-            <div class="ship-option-card p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all" onclick="selectShippingCard('family', this)">
-              <div class="flex justify-between items-start mb-1">
-                <span class="text-xs font-bold text-white">全家便利商店</span>
-                <span class="text-[10px] text-[#00ff88] font-bold">超商取貨</span>
-              </div>
-              <p class="text-[11px] text-neutral-400">暗鎖取件專用</p>
-            </div>
-
-            <div class="ship-option-card p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all" onclick="selectShippingCard('home', this)">
-              <div class="flex justify-between items-start mb-1">
-                <span class="text-xs font-bold text-white">黑貓無名包裹</span>
-                <span class="text-[10px] text-neutral-300">+NT$120</span>
-              </div>
-              <p class="text-[11px] text-neutral-400">特工無痕專送</p>
-            </div>
-
-            <div class="ship-option-card p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all" onclick="selectShippingCard('meetup', this)">
-              <div class="flex justify-between items-start mb-1">
-                <span class="text-xs font-bold text-white">暗樁節點面交</span>
-                <span class="text-[10px] text-[#00ff88] font-bold">免運</span>
-              </div>
-              <p class="text-[11px] text-neutral-400">台中/台北秘密樁</p>
-            </div>
-          </div>
-        </section>
-
-        <!-- 4. 門市節點鎖定 (StoreDB CVS Picker + 支援即時關鍵字搜尋) -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono" id="cvsDropdownContainer">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">門市節點鎖定 / CVS NODE PICKER</h2>
-            </div>
-            <span class="text-[10px] text-neutral-400">StoreDB 聯動</span>
-          </div>
-          
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <label class="block text-[10px] text-neutral-400 mb-1">目標縣市 (REGION)</label>
-              <select id="cvsCitySelect" onchange="onCityChanged(this.value)" class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-2.5 py-2 outline-none focus:border-[#00ff88]">
-                <option value="">-- 載入縣市中 --</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-[10px] text-neutral-400 mb-1">作戰分區 (ZONE)</label>
-              <select id="cvsDistSelect" onchange="onDistChanged(this.value)" disabled class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-2.5 py-2 outline-none focus:border-[#00ff88]">
-                <option value="">-- 行政區 --</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- ✦ 超商關鍵字即時搜尋列（縮小檢索範圍） -->
-          <div>
-            <label class="block text-[10px] text-neutral-400 mb-1">門市關鍵字過濾 (SEARCH KEYWORD)</label>
-            <div class="flex gap-2">
-              <input type="text" id="cvsSearchKeywordInput" oninput="filterCvsStoresLocally(this.value)" placeholder="輸入路名、店名或代號（例：忠孝、信義）" class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-3 py-2 outline-none focus:border-[#00ff88]" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-[10px] text-neutral-400 mb-1">精確門市選擇 (STORE)</label>
-            <select id="cvsStoreSelect" onchange="onStorePicked(this.value)" disabled class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-2.5 py-2 outline-none focus:border-[#00ff88]">
-              <option value="">-- 請先選擇縣市或輸入關鍵字 --</option>
-            </select>
-          </div>
-
-          <!-- 已鎖定門市回饋卡 -->
-          <div id="storeConfirmedCard" style="display:none;" class="border border-[#00ff88]/40 bg-[#00ff88]/5 rounded-lg p-3 space-y-1">
-            <div class="text-xs font-bold text-white flex items-center justify-between">
-              <span id="confirmedStoreNameText">門市名稱</span>
-              <span class="text-[10px] text-[#00ff88] bg-[#00ff88]/20 px-1 rounded">✔ 已鎖定</span>
-            </div>
-            <p class="text-[11px] text-neutral-300" id="confirmedStoreAddrText">地址</p>
-          </div>
-          <input type="hidden" id="finalShippingLocation" />
-        </section>
-
-        <!-- 手動地址輸入區 (若選宅配或面交時顯示) -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono" id="manualLocationGroup" style="display:none;">
-          <div class="text-xs font-bold text-[#00ff88]">填寫收件地址或面交備註</div>
-          <input type="text" id="manualLocationInput" class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-3 py-2" placeholder="請輸入收件完整地址..." />
-        </section>
-
-        <!-- 5. 特工收件安全憑證 (Recipient Intel) -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">特工收件安全憑證 / RECIPIENT INTEL</h2>
-            </div>
-          </div>
-          <div class="space-y-3 text-xs">
-            <div>
-              <label class="block text-[10px] text-neutral-300 mb-1">特工真實收件姓名 * <span class="text-[#00ff88]">(需與超商證件核對)</span></label>
-              <input type="text" id="checkoutNameInput" required class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="請輸入證件全名" />
-            </div>
-            <div>
-              <label class="block text-[10px] text-neutral-300 mb-1">行動終端電話 * <span class="text-[#00ff88]">(取件簡訊密鑰通知)</span></label>
-              <input type="tel" id="checkoutPhoneInput" required class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="0912345678" />
-            </div>
-            <div>
-              <label class="block text-[10px] text-neutral-300 mb-1">安全加密電子信箱 <span class="text-neutral-500">(選填)</span></label>
-              <input type="email" id="checkoutEmailInput" class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="agent@guilty.net" />
-            </div>
-            <div>
-              <label class="block text-[10px] text-neutral-300 mb-1">戰術雷雕銘文 / 調用特殊備註 <span class="text-neutral-500">(選填)</span></label>
-              <input type="text" id="checkoutNoteInput" class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="例：無痕黑紙箱包裝" />
-            </div>
-          </div>
-        </section>
-
-        <!-- 6. 結算途徑選擇 (Payment Protocol) -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">結算途徑 / SETTLEMENT PROTOCOL</h2>
-            </div>
-          </div>
-          <div class="space-y-2 text-xs">
-            <label class="flex items-center justify-between p-3 rounded-lg border border-[#00ff88] bg-[#00ff88]/5 cursor-pointer radio-card active" id="payMethodCod" onclick="selectPayment('cod', this)">
-              <div>
-                <div class="font-bold text-white">超商門市取貨付款 (Cash on Delivery)</div>
-                <div class="text-[10px] text-neutral-400">至指定門市驗收外包裝無誤後再付款</div>
-              </div>
-              <span class="text-[10px] text-[#00ff88] border border-[#00ff88]/40 px-1.5 py-0.5 rounded">免手續費</span>
-            </label>
-            <label class="flex items-center justify-between p-3 rounded-lg border border-white/10 bg-[#16181d]/60 cursor-pointer radio-card" id="payMethodBank" onclick="selectPayment('bank', this)">
-              <div>
-                <div class="font-bold text-neutral-300">虛擬 ATM 加密專屬帳號 / 銀行轉帳</div>
-                <div class="text-[10px] text-neutral-400" id="paymentNote">完成轉帳後回報後台對帳</div>
-              </div>
-              <span class="text-[10px] text-neutral-400">專用通道</span>
-            </label>
-          </div>
-        </section>
-
-        <!-- 7. 費用總結結算 (Financial Summary) -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-2.5 font-mono">
-          <div class="flex items-center justify-between border-b border-white/10 pb-2">
-            <div class="flex items-center gap-2">
-              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">費用總結結算 / SETTLEMENT</h2>
-            </div>
-          </div>
-          <!-- 動態金融計算明細容器 -->
-          <div id="checkoutFinancialSummary"></div>
-        </section>
-
-      </main>
-
-      <!-- 8. 底部固定送出結帳條 (Sticky Dispatch Bar) -->
-      <aside class="fixed bottom-0 left-0 right-0 z-50 bg-[#08080a]/95 backdrop-blur-lg border-t border-white/15 px-4 pt-3 pb-6 font-sans">
-        <div class="max-w-lg mx-auto space-y-2">
-          <div class="flex items-center justify-between text-[10px] text-neutral-400 px-1 font-mono">
-            <span class="flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#00ff88]"></span>
-              點擊確認即簽署共犯匿名保密協議
-            </span>
-            <span class="text-[#00e5ff]">ORDER_DISPATCH_AUTH</span>
-          </div>
-          <!-- 送出訂單按鈕 (點擊觸發 shop.js 中的結帳提交機制) -->
-          <button onclick="submitOrderToDatabase()" class="w-full bg-[#00ff88] hover:bg-[#60ff99] text-black font-extrabold text-sm tracking-wider py-4 px-4 rounded-xl flex items-center justify-between shadow-[0_0_20px_rgba(0,255,136,0.3)] active:scale-[0.98] transition-all cursor-pointer" type="button">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-lg">bolt</span>
-              <span>確認簽署並送出訂單</span>
-            </div>
-            <span class="font-mono text-sm tracking-tight flex items-center">
-              立即派遣 →
-            </span>
-          </button>
-        </div>
-      </aside>
-    </div>
-
-    <!-- 🔍 VIEW: 商品詳細規格檢視視圖 (view-product-detail) -->
-    <div id="view-product-detail" class="view-section hidden w-full">
-      <main class="flex flex-col relative w-full pt-4 bg-surface min-h-screen pb-28">
-        <div class="flex flex-col w-full relative max-w-4xl mx-auto px-4">
-          
-          <!-- 返回商城按鈕 -->
-          <div class="mb-4">
-            <button onclick="openShopCatalogView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回裝備商城</button>
-          </div>
-
-          <!-- 主卡片容器 -->
-          <div class="relative z-20 flex flex-col w-full bg-surface-container-low rounded-xl shadow-2xl overflow-hidden pb-12 border border-white/10 font-mono">
-            
-            <!-- 頂部面板標題 -->
-            <div class="w-full flex flex-col items-center pt-2 pb-1 bg-surface-container-lowest relative border-b border-white/5">
-              <div class="w-12 h-1 rounded-full bg-surface-variant"></div>
-              <div class="w-full flex justify-between px-6 pt-1.5 items-center">
-                <span class="text-[9px] text-[#00ff88] tracking-widest uppercase flex items-center gap-1">
-                  <span class="inline-block w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse"></span>
-                  SYS.ARMORY // MOD_PRODUCT_SPEC_VIEW
-                </span>
-                <span class="text-[9px] text-zinc-500 tracking-wider">TACTICAL REACTION TACTILE</span>
-              </div>
-            </div>
-
-            <!-- 內容堆疊 -->
-            <div class="flex flex-col w-full px-6 pt-6 gap-6">
-              
-              <!-- 1. Hero 預覽圖區 -->
-              <div class="relative w-full aspect-square bg-black rounded-xl overflow-hidden shadow-xl flex items-center justify-center p-2 border border-white/10" id="detailHeroImgArea">
-                <!-- 動態主圖渲染目標 -->
-              </div>
-
-              <!-- 2. 多角度縮圖列 -->
-              <div class="flex flex-col gap-1.5">
-                <div class="flex items-center justify-between px-1">
-                  <span class="text-[9px] text-zinc-400 uppercase tracking-wider">多角度檢視 // DETAIL PERSPECTIVES</span>
-                </div>
-                <div class="flex items-center gap-3 overflow-x-auto pb-2" id="detailThumbsRow" style="display:none;">
-                  <!-- 動態縮圖渲染目標 -->
-                </div>
-              </div>
-
-              <!-- 3. 名稱與價格區 -->
-              <div class="flex flex-col gap-2 bg-surface-container p-5 rounded-xl border border-white/5 font-sans">
-                <div class="flex items-center gap-2">
-                  <span class="px-2 py-0.5 rounded bg-[#00ff88]/15 text-[#00ff88] font-mono text-[9px] uppercase tracking-wider border border-[#00ff88]/30">PRECISION GEAR</span>
-                  <span class="font-mono text-[9px] text-zinc-500">[ID // GUILTY-GEAR]</span>
-                </div>
-                <h1 class="text-2xl font-bold text-white tracking-tight mt-1" id="detailProductTitle">載入中...</h1>
-                
-                <div class="flex items-baseline justify-between pt-3 border-t border-white/5">
-                  <div class="flex items-baseline gap-2">
-                    <span class="font-mono text-xs text-zinc-400 uppercase">即時試算額</span>
-                    <div class="flex items-baseline text-[#00ff88]">
-                      <span class="font-mono text-sm">NT$</span>
-                      <span class="text-3xl font-bold tracking-tighter drop-shadow-[0_0_12px_rgba(0,255,136,0.3)] ml-1" id="detailPriceDisplay">1,500</span>
-                    </div>
-                  </div>
-                </div>
-
-                <p class="text-xs text-zinc-300 pt-2 leading-relaxed" id="detailProductDesc">載入中...</p>
-              </div>
-
-              <!-- 4. 動態規格選項區 (長度 / 顏色 / 尺寸) -->
-              <div class="flex flex-col gap-4 bg-black/40 p-4 rounded-xl border border-white/5" id="detailDynamicOptions">
-                <!-- shop.js 會自動把選項生成在這裡 -->
-              </div>
-              
-              <div id="detailChokerSpecificArea"></div>
-
-            </div>
-
-            <!-- 5. 底部固定結案操作列 -->
-            <div class="sticky bottom-0 mt-8 w-full bg-black/90 backdrop-blur-xl p-4 shadow-2xl z-30 flex items-center gap-3 border-t border-white/10">
-              <button class="flex flex-col items-center justify-center shrink-0 w-14 h-12 rounded bg-surface-container hover:bg-surface-container-high text-white transition-all cursor-pointer" onclick="addCurrentProductToCart()" type="button">
-                <span class="material-symbols-outlined text-[20px] text-[#00ff88]">add_shopping_cart</span>
-                <span class="text-[8px] text-zinc-400 tracking-tighter">加入調用</span>
-              </button>
-              
-              <button class="flex-1 h-12 rounded bg-[#00ff88] hover:bg-[#60ff99] text-black flex items-center justify-between px-6 font-bold shadow-[0_0_20px_rgba(0,255,136,0.4)] transition-all cursor-pointer" onclick="buyNowFromDetail()" type="button">
-                <div class="flex items-center gap-2">
-                  <span class="material-symbols-outlined text-[20px]">bolt</span>
-                  <span class="tracking-wider">立即調用結案</span>
-                </div>
-                <div class="flex items-center gap-1 text-xs">
-                  <span>→</span>
-                </div>
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </main>
-    </div>
-
-    <!-- ⚡ VIEW: 實踐計數與特工儀表板 (view-tracker) -->
+    <!-- ⚡ VIEW: 實踐計數與側邊欄名片 -->
     <div id="view-tracker" class="view-section hidden w-full">
       <div class="max-w-[1600px] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-7">
-        
-        <!-- 左側：計數與趨勢 (7 欄) -->
         <div class="lg:col-span-7 space-y-6">
-          
-          <!-- 啟動全螢幕連線端 -->
-          <div class="tactical-panel p-5 rounded-sm border-l-4 border-l-[#00ff88] bg-gradient-to-r from-black/90 via-[#101317]/90 to-black/90 flex items-center justify-between">
-            <div>
-              <div class="text-[9px] font-mono text-[#00ff88] tracking-widest">// FULLSCREEN_TERMINAL・全画面実働</div>
-              <h2 class="text-base font-extrabold text-white mt-0.5">全螢幕連線實踐端 (session.html)</h2>
-              <p class="text-xs text-zinc-400 mt-1">極大化高反差碼錶、盲按防誤觸巨型主控、實時雙軌防護</p>
-            </div>
-            <button class="px-5 py-2.5 bg-[#00ff88] text-black font-extrabold text-xs uppercase rounded cursor-pointer" onclick="startSession()">▶ 啟動連線終端</button>
+          <div class="tactical-panel p-6 rounded-sm bg-black border border-white/10">
+            <h3 class="text-sm font-extrabold text-white mb-3">實踐數據動態板</h3>
+            <div class="grid grid-cols-2 gap-4" id="mainMetricsBoardGrid"></div>
           </div>
-
-          <!-- 實踐數據動態板 -->
-          <div class="tactical-panel p-6 rounded-sm space-y-4">
-            <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-              <h3 class="text-sm font-extrabold text-white">實踐數據動態板</h3>
-              <button class="text-xs font-mono text-[#00ff88] border border-dashed border-[#00ff88]/50 px-2.5 py-1 rounded cursor-pointer" onclick="addCustomMetricPrompt()">＋ 新增自訂項目</button>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="mainMetricsBoardGrid"></div>
-          </div>
-
-          <!-- 歷程圖表 -->
-          <div class="tactical-panel p-6 rounded-sm space-y-4">
-            <h3 class="text-sm font-extrabold text-white">神經歷程與時長趨勢</h3>
-            <div class="h-44 w-full relative">
-              <canvas id="sessionAnalyticsChart"></canvas>
-            </div>
-          </div>
-
         </div>
 
-        <!-- 右側：緊急急停與名片 (5 欄) -->
+        <!-- 側邊欄名片認證 (這裡的「編輯」按鈕會開啟小字卡即時編輯器) -->
         <div class="lg:col-span-5 space-y-6">
-          
-          <!-- 🛑 紅色警戒急停按鈕 -->
-          <div class="tactical-panel p-5 rounded-sm border-2 border-[#ff3366] bg-gradient-to-b from-[#ff3366]/15 via-black/85 to-black/90 shadow-[0_0_24px_rgba(255,51,102,0.25)]">
-            <button class="w-full py-4 px-4 bg-[#ff3366] text-white font-black rounded-sm flex flex-col items-center justify-center gap-1 cursor-pointer" onclick="triggerEmergencySafeword()">
-              <span class="text-lg">🛑 SAFEWORD 急停協議觸發</span>
-            </button>
-            <div class="mt-3 flex items-center justify-between text-xs bg-black/60 p-2.5 border border-[#ff3366]/30 rounded-sm">
-              <span class="text-zinc-400">當前最高安全詞：</span>
-              <span class="text-sm font-black font-mono text-[#ff3366]" id="sidebarSafewordDisplay">RED_EMBER</span>
-            </div>
-          </div>
-
-          <!-- 特工名片認證 -->
-          <div class="tactical-panel p-5 rounded-sm space-y-4" id="dossierExportTarget">
+          <div class="tactical-panel p-5 rounded-sm space-y-4 bg-surface-container-low border border-white/10">
             <div class="flex justify-between items-center pb-3 border-b border-white/10">
               <h3 class="text-sm font-extrabold text-white">特工名片認證</h3>
-              <!-- ✦ 這裡將「編輯」按鈕改為開啟偏好與「探索中」勾選面板 -->
-              <button class="text-xs font-mono text-zinc-300 border border-zinc-700 px-2.5 py-1 rounded cursor-pointer" onclick="openDossierTagsModal()">編輯</button>
+              <button class="text-xs font-mono text-[#00ff88] border border-[#00ff88]/40 px-2.5 py-1 rounded cursor-pointer hover:bg-[#00ff88]/10" onclick="openDossierTagsModal()">✏️ 編輯偏好與狀態</button>
             </div>
             <div class="flex items-center gap-3">
               <img id="dossierAvatarPreview" src="" class="w-14 h-14 rounded-sm border border-[#00ff88] object-cover">
@@ -894,375 +284,73 @@
                 <div class="text-xs font-mono text-zinc-400" id="dossierAgentIdDisplay">ID: AGENT-001</div>
               </div>
             </div>
-            <p class="text-xs text-zinc-300 bg-black/40 p-2.5 rounded" id="dossierBioDisplay"></p>
-            
             <div>
-              <div class="text-xs font-bold text-[#00ff88] mb-1">✦ 偏好項目</div>
-              <div id="myPrefTagsBox" class="flex flex-wrap gap-1.5"></div>
+              <div class="text-xs font-bold text-[#00ff88] mb-1">✦ 偏好項目（含探索中）</div>
+              <div id="myPrefTagsBox" class="flex flex-wrap gap-1"></div>
             </div>
             <div>
               <div class="text-xs font-bold text-[#ff3366] mb-1">🛑 絕對雷點</div>
-              <div id="myLimitTagsBox" class="flex flex-wrap gap-1.5"></div>
+              <div id="myLimitTagsBox" class="flex flex-wrap gap-1"></div>
             </div>
           </div>
-
-          <!-- 互動對象名冊 -->
-          <div class="tactical-panel p-5 rounded-sm space-y-3">
-            <div class="flex justify-between items-center pb-2 border-b border-white/10">
-              <h3 class="text-sm font-extrabold text-white">互動對象名冊</h3>
-              <button class="text-xs font-mono text-zinc-300 bg-white/5 border border-white/15 px-2 py-1 rounded cursor-pointer" onclick="addNewPartnerPrompt()">＋ 新增對象</button>
-            </div>
-            <div class="space-y-2 max-h-52 overflow-y-auto" id="trackerPartnerList"></div>
-          </div>
-
         </div>
-
       </div>
     </div>
 
-    <!-- ★ VIEW: 特工名片檔案 (view-dossier) -->
-    <div id="view-dossier" class="view-section hidden w-full">
-      <div class="max-w-[1600px] mx-auto px-4 py-8 flex flex-col gap-8">
-        
-        <!-- 頂部遙測導覽與身分標頭 -->
-        <section class="flex flex-col gap-3">
-          <div class="flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <span class="px-2 py-0.5 bg-surface-container-high text-[#00ff88] font-mono text-[9px] font-bold tracking-widest">// AGENT_DOSSIER・プロファイル本部</span>
-              <span class="px-2 py-0.5 bg-red-950 text-red-400 font-mono text-[9px] font-bold">LEVEL_05 ACCESS</span>
-              <span class="text-zinc-500 font-mono text-[11px] hidden sm:inline">SYS_UID: 0x9481_BETA_PRIME</span>
-            </div>
-            <div class="flex items-center gap-2 px-3 py-1 bg-surface-container-low rounded">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ff88] opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-[#00ff88]"></span>
-              </span>
-              <span class="font-mono text-[11px] text-[#60ff99]">已確認特工身分 // 認證濟エージェント（連線安全 E2EE 作用中）</span>
-            </div>
-          </div>
-          
-          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-            <div>
-              <h1 class="text-3xl font-bold text-[#00ff88] tracking-tight">特工機密主頁與神經中樞</h1>
-              <p class="text-xs text-zinc-400 mt-1">個人作戰調書、微型生物特徵認證鎖及高強度量子急停矩陣。所有改動即刻透過端對端加密同調。</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="openEditProfileModal()" class="px-4 py-2 bg-surface-container border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs hover:bg-[#00ff88]/10 transition-all rounded cursor-pointer">✏️ 編輯特工檔案</button>
-              <button onclick="showLandingView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回首頁大廳</button>
-            </div>
-          </div>
-        </section>
-
-        <!-- 雙欄戰術核心模組 -->
-        <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
-          
-          <!-- 左側：特工身分檔案與參數設定 (7 欄) -->
-          <div class="xl:col-span-7 flex flex-col gap-6">
-            
-            <!-- 身分規格卡 -->
-            <div class="relative bg-surface-container-low p-6 rounded-xl flex flex-col gap-4 shadow-xl overflow-hidden border border-white/10">
-              <div class="absolute -right-6 -bottom-10 pointer-events-none select-none text-white/5 font-bold text-[120px] leading-none">調書</div>
-              
-              <div class="relative z-10 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-12 h-12 bg-surface-container-high flex items-center justify-center text-[#00ff88] rounded">
-                    <span class="material-symbols-outlined text-[28px]">shield_with_heart</span>
-                  </div>
-                  <div>
-                    <div class="flex items-center gap-2">
-                      <span class="text-lg font-bold text-[#00ff88]" id="dossierNameDisplay">特工-9481 夜梟</span>
-                      <span class="px-2 py-0.5 bg-[#00ff88]/20 text-[#00ff88] font-mono text-[10px] rounded">ACTIVE</span>
-                    </div>
-                    <span class="text-xs font-mono text-zinc-400" id="dossierAgentIdDisplay">ID: AGENT-9481</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 頭像與數據微縮方陣 -->
-              <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-4 mt-2">
-                <div class="md:col-span-5 relative h-48 bg-black rounded overflow-hidden border border-white/10">
-                  <img id="dossierAvatarPreview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Agent9481" class="w-full h-full object-cover">
-                  <div class="absolute bottom-0 inset-x-0 bg-black/80 p-2 text-[10px] font-mono text-[#00ff88] flex justify-between">
-                    <span>NEURAL_ID: 9481-X</span>
-                    <span>RSA-4096</span>
-                  </div>
-                </div>
-                <div class="md:col-span-7 grid grid-cols-2 gap-3 bg-surface-container p-4 rounded text-xs font-mono">
-                  <div>
-                    <span class="text-zinc-500 text-[10px] block">// 權限等級</span>
-                    <span class="text-[#00ff88] font-bold text-sm" id="dossierRoleBadge">支配者 (Dom)</span>
-                  </div>
-                  <div>
-                    <span class="text-zinc-500 text-[10px] block">// 安全詞</span>
-                    <span class="text-red-400 font-bold text-sm" id="dossierSafewordDisplay">RED_EMBER</span>
-                  </div>
-                  <div class="col-span-2 pt-2 border-t border-white/5">
-                    <span class="text-zinc-500 text-[10px] block">// 偏好與雷點總覽</span>
-                    <div id="myPrefTagsBox" class="flex flex-wrap gap-1 mt-1"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- 常用超商戰術取貨門市設定 -->
-            <div class="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4 border border-white/10">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-bold text-[#00ff88] flex items-center gap-2">
-                  <span class="material-symbols-outlined text-secondary">local_shipping</span> 常用超商戰術取貨門市設定
-                </span>
-                <span class="px-2 py-0.5 bg-purple-950 text-purple-300 font-mono text-[9px] rounded">ANONYMOUS</span>
-              </div>
-              <p class="text-xs text-zinc-400">裝備商城軍火配送一律採最高規格雙層抗透光氣泡、無品名標示。請綁定匿名死信箱門市。</p>
-              <div class="flex gap-2">
-                <select class="w-full bg-black text-[#00ff88] font-mono text-xs p-3 rounded border border-white/15 outline-none">
-                  <option>7-ELEVEN 新德門市（信義戰術斷點 #89123）- 匿名隱蔽包裝</option>
-                  <option>全家敦南戰術店（大安掩體節點 #44910）- 暗鎖取件專用</option>
-                </select>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- 右側：急停協議與安全遙測 (5 欄) -->
-          <div class="xl:col-span-5 flex flex-col gap-6">
-            
-            <!-- 紅色警戒急停按鈕 (Kill Switch) -->
-            <div class="relative bg-black p-6 rounded-xl flex flex-col gap-4 border-2 border-red-600 shadow-[0_0_30px_rgba(255,51,75,0.25)] overflow-hidden">
-              <div class="flex items-center justify-between">
-                <span class="text-sm font-bold text-red-500 flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span> 急停機制協定 (Kill Switch)
-                </span>
-                <span class="px-2 py-0.5 bg-red-950 text-red-400 font-mono text-[9px]">EMERGENCY_LV1</span>
-              </div>
-              <p class="text-xs text-zinc-300 leading-relaxed">若遭遇突發隱私風險或身分曝險，按下急停機制將立即抹除本機端所有暫存 Token、中斷所有安全連線並瞬間跳轉至一般偽裝公務日誌畫面。</p>
-              
-              <button onclick="triggerEmergencySafeword()" class="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-mono font-bold tracking-widest flex items-center justify-center gap-2 rounded transition-all shadow-[0_0_20px_rgba(255,51,75,0.5)] cursor-pointer">
-                <span class="material-symbols-outlined text-xl">dangerous</span>
-                <span>立即執行緊急急停協議 (KILL SWITCH)</span>
-              </button>
-            </div>
-
-            <!-- 二維碼快速掃描與分享 -->
-            <div class="bg-surface-container-low p-6 rounded-xl flex flex-col items-center text-center gap-3 border border-white/10">
-              <div class="text-xs font-mono text-[#00ff88] font-bold">[ NEURAL PASS // 掃碼連線 ]</div>
-              <div id="myQrCodeBox" class="p-2 bg-black border border-[#00ff88]/40 rounded"></div>
-              <button onclick="exportDossierToImage()" class="w-full py-2.5 bg-[#00ff88] text-black font-mono font-bold text-xs rounded cursor-pointer">📷 匯出高畫質戰術卡片</button>
-            </div>
-
-          </div>
-
-        </div>
+    <!-- 👤 VIEW: 特工主頁 (view-dossier) -->
+    <div id="view-section-dossier" id="view-dossier" class="view-section hidden w-full">
+      <div class="max-w-4xl mx-auto py-8">
+        <h1 class="text-2xl font-bold text-[#00ff88] mb-4">特工機密主頁</h1>
+        <button onclick="openEditProfileModal()" class="px-4 py-2 bg-surface-container border border-[#00ff88]/40 text-[#00ff88] text-xs rounded cursor-pointer">✏️ 編輯詳細身分檔案</button>
       </div>
     </div>
 
   </main>
 
   <!-- ========================================================================== -->
-  <!-- 3. 購物車抽屜 (Cart Drawer) -->
-  <!-- ========================================================================== -->
-  <div class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden" id="navOverlay" onclick="toggleCart(false)"></div>
-  <div class="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#0b0d13] border-l border-white/10 p-6 flex flex-col justify-between z-50 transform translate-x-full transition-transform duration-300" id="cartDrawer" style="position:fixed; z-index:9999;">
-    <div>
-      <div class="flex justify-between items-center pb-4 border-b border-white/10">
-        <span class="font-mono font-bold text-[#00ff88]">[ ARSENAL CART ]</span>
-        <button onclick="toggleCart(false)" class="text-white/50 hover:text-white" style="background:transparent; border:none; cursor:pointer; font-size:1.2rem;">✕</button>
-      </div>
-      <div id="cartFreeShippingBanner" class="py-2 text-xs font-mono" style="border-bottom:1px dashed rgba(255,255,255,0.1); margin-bottom:10px;"></div>
-      <div class="py-4 space-y-3 overflow-y-auto max-h-[60vh]" id="cartItemsContainer"></div>
-    </div>
-    <div class="border-t border-white/10 pt-4 space-y-3 font-mono">
-      <div class="flex justify-between text-sm">
-        <span class="text-white/60">裝備小計：</span>
-        <span id="cartDrawerSubtotal" class="text-[#00ff88] font-bold">NT$ 0</span>
-      </div>
-      <button class="w-full py-3 bg-[#00ff88] text-black font-bold text-xs uppercase tracking-widest rounded cursor-pointer" onclick="proceedToCheckoutFromCart()">進入終端簽署協議 (CHECKOUT)</button>
-    </div>
-  </div>
-
-  <!-- ========================================================================== -->
-  <!-- 4. 特工身分認證與會員彈窗 (Auth Modal - 完全相容 auth.js) -->
-  <!-- ========================================================================== -->
-  <div class="fixed inset-0 z-[90] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md" id="authModal" style="display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; background:rgba(0,0,0,0.8);">
-    <div class="max-w-md w-full bg-[#13151b] border border-white/15 p-6 rounded-xl space-y-4 font-mono text-xs relative max-h-[90vh] overflow-y-auto">
-      <button class="absolute top-4 right-4 text-white/40 hover:text-white" onclick="toggleAuthModal(false)" style="background:transparent; border:none; color:#fff; cursor:pointer; font-size:1.2rem;">✕</button>
-      
-      <!-- 訪客視圖 (未登入) -->
-      <div id="authGuestView">
-        <div class="text-[#00ff88] tracking-widest uppercase mb-1">// BIOMETRIC CLEARANCE</div>
-        <h3 class="text-lg font-bold text-white mb-3">特工神經認證通道</h3>
-        
-        <!-- 分頁切換按鈕 -->
-        <div class="grid grid-cols-2 gap-1 p-1 bg-black rounded mb-4">
-          <button class="py-2 text-center rounded bg-[#00ff88] text-black font-bold cursor-pointer" id="tabBtnLogin" onclick="switchAuthTab('login')">登入 (LOGIN)</button>
-          <button class="py-2 text-center rounded text-zinc-400 hover:text-white cursor-pointer" id="tabBtnRegister" onclick="switchAuthTab('register')">新註冊 (REGISTER)</button>
-        </div>
-
-        <!-- 登入表單 -->
-        <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="space-y-3">
-          <div>
-            <label class="block text-white/50 mb-1">帳號（Email 或 手機）*</label>
-            <input type="text" id="loginAccountInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="agent@guilty.net" />
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">密碼 *</label>
-            <input type="password" id="loginPasswordInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="••••••••" />
-          </div>
-          <div class="p-3 bg-black/40 rounded border border-white/10">
-            <label class="flex items-center gap-2 cursor-pointer text-zinc-300">
-              <input type="checkbox" id="loginNdaCheckbox" required style="accent-color:#00ff88; width:14px; height:14px;" />
-              <span>我自願遵守 SSC 原則並簽署保密協議*</span>
-            </label>
-          </div>
-          <button type="submit" class="w-full py-3 bg-[#00ff88] text-black font-bold uppercase rounded cursor-pointer hover:bg-[#60ff99] transition-all" id="btnLoginSubmit">驗證登入 (ACCESS)</button>
-        </form>
-
-        <!-- 註冊表單 -->
-        <form id="registerForm" onsubmit="handleRegisterSubmit(event)" class="space-y-3" style="display:none;">
-          <div>
-            <label class="block text-white/50 mb-1">特工代號 *</label>
-            <input type="text" id="regNameInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="例：夜梟" />
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">自訂個人 ID (例如：AGENT-007) *</label>
-            <input type="text" id="regAgentIdInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white uppercase" placeholder="AGENT-9481" />
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">安全信箱 (Email) *</label>
-            <div class="flex gap-2">
-              <input type="email" id="regEmailInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="agent@guilty.net" />
-              <button type="button" id="btnSendRegOtp" onclick="sendRegisterOtp()" class="px-3 bg-[#00ff88] text-black font-bold rounded cursor-pointer whitespace-nowrap text-[11px]">發送驗證碼</button>
-            </div>
-            <div id="regOtpNotice" class="text-[10px] mt-1"></div>
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">6 位數驗證碼 *</label>
-            <input type="text" id="regOtpInput" required maxlength="6" class="w-full bg-black border border-white/20 p-2.5 rounded text-white tracking-[0.3em] text-center font-bold" placeholder="123456" />
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">手機號碼 *</label>
-            <input type="tel" id="regPhoneInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="0912345678" />
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">設定通行密碼 *</label>
-            <input type="password" id="regPasswordInput" required minlength="6" class="w-full bg-black border border-white/20 p-2.5 rounded text-white" placeholder="至少 6 位數" />
-          </div>
-          <button type="submit" class="w-full py-3 bg-[#00ff88] text-black font-bold uppercase rounded cursor-pointer hover:bg-[#60ff99] transition-all" id="btnRegSubmit">驗證信箱並建立檔案 (REGISTER)</button>
-        </form>
-      </div>
-
-      <!-- 已登入視圖 (Profile 狀態) -->
-      <div id="authProfileView" style="display:none;">
-        <div class="text-[#00ff88] tracking-widest uppercase mb-1">// AGENT PROTOCOL DOSSIER</div>
-        <h3 class="text-lg font-bold text-white mb-2">特工系統檔案</h3>
-        <div id="profileAccountBadge" class="text-[10px] text-[#60ff99] mb-4 font-mono">[ VERIFIED AGENT ]</div>
-        
-        <form id="profileUpdateForm" onsubmit="handleProfileUpdate(event)" class="space-y-3">
-          <div>
-            <label class="block text-white/50 mb-1">主權屬性 *</label>
-            <div class="grid grid-cols-3 gap-1 bg-black p-1 rounded">
-              <button type="button" class="py-1.5 text-center rounded text-zinc-400 hover:text-white cursor-pointer text-[11px]" id="roleDom" onclick="setProfileRole('支配者 (Dom)')">支配 [Dom]</button>
-              <button type="button" class="py-1.5 text-center rounded text-zinc-400 hover:text-white cursor-pointer text-[11px]" id="roleSwitch" onclick="setProfileRole('切換者 (Switch)')">切換 [Switch]</button>
-              <button type="button" class="py-1.5 text-center rounded text-zinc-400 hover:text-white cursor-pointer text-[11px]" id="roleSub" onclick="setProfileRole('服從者 (Sub)')">服從 [Sub]</button>
-            </div>
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">特工代號 *</label>
-            <input type="text" id="profNameInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white" />
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">特工 ID *</label>
-            <input type="text" id="profAgentIdInput" required class="w-full bg-black border border-white/20 p-2.5 rounded text-white uppercase" />
-          </div>
-          <div>
-            <label class="block text-white/50 mb-1">常用取件超商</label>
-            <input type="text" id="profLocationInput" class="w-full bg-black border border-white/20 p-2.5 rounded text-white" />
-          </div>
-          <button type="submit" class="w-full py-3 bg-[#00ff88] text-black font-bold uppercase rounded cursor-pointer">更新檔案 (SAVE)</button>
-          <button type="button" onclick="logoutMember()" class="w-full py-2 bg-transparent text-red-400 font-bold text-xs mt-2 cursor-pointer hover:underline">[ 斷開連結 / 登出 ]</button>
-        </form>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- ========================================================================== -->
-  <!-- 6. 特工名片與檔案編輯專屬彈窗 (Edit Profile Modal) -->
-  <!-- ========================================================================== -->
-  <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" id="editProfileModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.8); z-index:9999;">
-    <div class="bg-[#13151b] border border-white/15 max-w-md w-full p-6 rounded-xl space-y-4 font-mono text-xs relative max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center pb-2 border-b border-white/10">
-        <h4 class="text-sm font-bold text-white">// 編輯特工檔案與名片</h4>
-        <button class="text-zinc-400 hover:text-white cursor-pointer" onclick="closeEditProfileModal()">✕</button>
-      </div>
-      <form class="space-y-3" onsubmit="handleCustomProfileUpdate(event)">
-        <div>
-          <label class="block text-zinc-400 mb-1">特工代號 (Name)</label>
-          <input class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#00ff88] rounded" id="profEditName" required type="text">
-        </div>
-        <div>
-          <label class="block text-zinc-400 mb-1">特工 ID (Agent ID)</label>
-          <input class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#00ff88] rounded uppercase" id="profEditAgentId" required type="text">
-        </div>
-        <div>
-          <label class="block text-zinc-400 mb-1">陣營屬性 (Role)</label>
-          <select class="w-full bg-black border border-zinc-700 p-2 text-white outline-none rounded" id="profEditRole">
-            <option value="支配者 (Dom)">支配者 (Dom)</option>
-            <option value="服從者 (Sub)">服從者 (Sub)</option>
-            <option value="雙向切換 (Switch)">雙向切換 (Switch)</option>
-            <option value="繩手 (Rigger)">繩手 (Rigger)</option>
-            <option value="繩模 (Model)">繩模 (Model)</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-zinc-400 mb-1">最高緊急安全詞 (Safeword)</label>
-          <input class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#ff3366] rounded uppercase" id="profEditSafeword" required type="text">
-        </div>
-        <div>
-          <label class="block text-zinc-400 mb-1">𝕏 / Twitter 連結 (選填)</label>
-          <input class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#00ff88] rounded" id="profEditTwitter" type="text" placeholder="https://x.com/username">
-        </div>
-        <div>
-          <label class="block text-zinc-400 mb-1">特工宣言 / 簡介 (Bio)</label>
-          <textarea class="w-full bg-black border border-zinc-700 p-2 text-white outline-none focus:border-[#00ff88] rounded" id="profEditBio" rows="3"></textarea>
-        </div>
-        <div class="flex justify-end gap-2 pt-3 border-t border-white/10">
-          <button class="px-4 py-2 text-zinc-400 hover:text-white cursor-pointer" onclick="closeEditProfileModal()" type="button">取消</button>
-          <button class="px-5 py-2 bg-[#00ff88] text-black font-bold rounded cursor-pointer" type="submit">儲存並同步</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- ========================================================================== -->
-  <!-- 7. 特工名片偏好與雷點快速勾選編輯器 (Dossier Tags Editor Modal) -->
+  <!-- 3. 專屬彈窗：特工名片偏好與「探索中」即時勾選 & 自訂編輯器 -->
   <!-- ========================================================================== -->
   <div class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-md hidden items-center justify-center p-4" id="dossierTagsModal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; background:rgba(0,0,0,0.8); z-index:9999;">
-    <div class="bg-[#13151b] border border-[#00ff88]/30 max-w-lg w-full p-6 rounded-xl space-y-4 font-mono text-xs relative max-h-[90vh] overflow-y-auto">
+    <div class="bg-[#13151b] border border-[#00ff88]/35 max-w-lg w-full p-6 rounded-xl space-y-4 font-mono text-xs relative max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center pb-2 border-b border-white/10">
-        <h4 class="text-sm font-bold text-[#00ff88]">// 快速調整特工偏好與「探索中」狀態</h4>
+        <h4 class="text-sm font-bold text-[#00ff88]">// 特工標籤小字卡與狀態編輯器</h4>
         <button class="text-zinc-400 hover:text-white cursor-pointer" onclick="closeDossierTagsModal()">✕</button>
       </div>
 
       <div class="space-y-4">
+        <!-- 偏好與探索中 -->
         <div>
-          <div class="text-xs font-bold text-[#00ff88] mb-2">✦ 勾選偏好項目（含探索中選項）</div>
-          <div id="modalPrefCheckboxContainer" class="flex flex-wrap gap-2"></div>
+          <div class="text-xs font-bold text-[#00ff88] mb-2 flex justify-between items-center">
+            <span>✦ 偏好項目（含 🔍 探索中 狀態）</span>
+          </div>
+          <div id="modalPrefCheckboxContainer" class="flex flex-wrap gap-2 mb-2"></div>
+          <!-- 自訂新增偏好輸入框 -->
+          <div class="flex gap-2 mt-2">
+            <input type="text" id="customPrefInput" placeholder="輸入自訂偏好項目..." class="flex-1 bg-black border border-zinc-700 p-2 text-white rounded text-xs outline-none focus:border-[#00ff88]">
+            <button onclick="addCustomTagFromModal('pref')" class="px-3 bg-[#00ff88]/20 text-[#00ff88] border border-[#00ff88]/40 rounded cursor-pointer">＋ 新增</button>
+          </div>
         </div>
 
+        <!-- 雷點 -->
         <div class="pt-3 border-t border-white/10">
-          <div class="text-xs font-bold text-[#ff3366] mb-2">🛑 勾選絕對雷點</div>
-          <div id="modalLimitCheckboxContainer" class="flex flex-wrap gap-2"></div>
+          <div class="text-xs font-bold text-[#ff3366] mb-2">🛑 絕對雷點</div>
+          <div id="modalLimitCheckboxContainer" class="flex flex-wrap gap-2 mb-2"></div>
+          <!-- 自訂新增雷點輸入框 -->
+          <div class="flex gap-2 mt-2">
+            <input type="text" id="customLimitInput" placeholder="輸入自訂雷點項目..." class="flex-1 bg-black border border-zinc-700 p-2 text-white rounded text-xs outline-none focus:border-[#ff3366]">
+            <button onclick="addCustomTagFromModal('limit')" class="px-3 bg-red-950/40 text-red-400 border border-red-500/30 rounded cursor-pointer">＋ 新增</button>
+          </div>
         </div>
       </div>
 
       <div class="flex justify-end gap-2 pt-3 border-t border-white/10">
-        <button class="px-5 py-2 bg-[#00ff88] text-black font-bold rounded cursor-pointer" onclick="closeDossierTagsModal()">完成並儲存</button>
+        <button class="px-5 py-2 bg-[#00ff88] text-black font-bold rounded cursor-pointer" onclick="closeDossierTagsModal()">儲存並更新名片字卡</button>
       </div>
     </div>
   </div>
 
   <!-- ========================================================================== -->
-  <!-- 5. 載入原本正常運作的 JavaScript 引擎與結帳控制 -->
+  <!-- 4. 載入 JavaScript 引擎 -->
   <!-- ========================================================================== -->
   <script src="./js/config.js?v=20260903"></script>
   <script src="./js/auth.js?v=20260903"></script>
@@ -1281,7 +369,6 @@
       }
     }
 
-    // SPA 視圖切換核心與導覽列同步高亮
     function setActiveView(viewId) {
       document.querySelectorAll('.view-section').forEach(el => {
         el.classList.remove('active', 'block');
@@ -1292,31 +379,6 @@
         target.classList.remove('hidden');
         target.classList.add('active', 'block');
       }
-
-      // 導覽按鈕對應
-      const navButtons = {
-        'view-landing': 'nav-landing',
-        'view-shop': 'nav-shop',
-        'view-tracker': 'nav-tracker',
-        'view-dossier': 'nav-dossier',
-        'view-checkout': 'nav-shop'
-      };
-
-      Object.values(navButtons).forEach(navId => {
-        const btn = document.getElementById(navId);
-        if (btn) {
-          btn.className = "px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded";
-        }
-      });
-
-      const activeNavId = navButtons[viewId];
-      if (activeNavId) {
-        const activeBtn = document.getElementById(activeNavId);
-        if (activeBtn) {
-          activeBtn.className = "px-4 py-1.5 flex flex-col items-center justify-center bg-primary/15 text-primary rounded transition-colors shadow-[0_0_12px_rgba(0,255,136,0.25)] border border-primary/30";
-        }
-      }
-
       window.scrollTo(0, 0);
     }
 
@@ -1343,39 +405,41 @@
       history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
-    // ✦ 確保預設清單中包含「🔍 探索中」
+    // ✦ 確保預設清單最前方擁有「🔍 探索中」
     if (typeof DEFAULT_PRESET_TAGS !== 'undefined') {
       if (!DEFAULT_PRESET_TAGS.preferences.includes("🔍 探索中")) {
         DEFAULT_PRESET_TAGS.preferences.unshift("🔍 探索中");
       }
     }
 
-    // ✦ 點擊側邊欄名片「編輯」按鈕：開啟偏好與探索中勾選面板
+    // ✦ 點擊「編輯偏好與狀態」開啟名片小字卡編輯面板
     function openDossierTagsModal() {
       const modal = document.getElementById("dossierTagsModal");
       if (!modal) return;
 
       const prof = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : { selectedTags: [], limits: [], allPreferences: [], allLimits: [] };
       
-      const allPrefs = prof.allPreferences || (typeof DEFAULT_PRESET_TAGS !== 'undefined' ? DEFAULT_PRESET_TAGS.preferences : []);
+      const allPrefs = prof.allPreferences || (typeof DEFAULT_PRESET_TAGS !== 'undefined' ? DEFAULT_PRESET_TAGS.preferences : ["🔍 探索中", "重度SP"]);
       const allLimits = prof.allLimits || (typeof DEFAULT_PRESET_TAGS !== 'undefined' ? DEFAULT_PRESET_TAGS.hardLimits : []);
       const selPrefs = prof.selectedTags || [];
       const selLimits = prof.limits || [];
 
+      // 渲染偏好勾選小字卡
       const prefContainer = document.getElementById("modalPrefCheckboxContainer");
       if (prefContainer) {
         prefContainer.innerHTML = allPrefs.map(t => `
-          <label class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-black border ${selPrefs.includes(t) ? 'border-[#00ff88] text-[#00ff88]' : 'border-zinc-800 text-zinc-400'} cursor-pointer text-xs">
+          <label class="flex items-center gap-1 px-2.5 py-1 rounded bg-black border ${selPrefs.includes(t) ? 'border-[#00ff88] text-[#00ff88]' : 'border-zinc-800 text-zinc-400'} cursor-pointer text-xs">
             <input type="checkbox" value="${t}" ${selPrefs.includes(t) ? 'checked' : ''} onchange="toggleModalTag('pref', '${t}', this.checked)" style="accent-color:#00ff88;">
             <span>${t}</span>
           </label>
         `).join('');
       }
 
+      // 渲染雷點勾選小字卡
       const limitContainer = document.getElementById("modalLimitCheckboxContainer");
       if (limitContainer) {
         limitContainer.innerHTML = allLimits.map(l => `
-          <label class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-black border ${selLimits.includes(l) ? 'border-[#ff3366] text-[#ff3366]' : 'border-zinc-800 text-zinc-400'} cursor-pointer text-xs">
+          <label class="flex items-center gap-1 px-2.5 py-1 rounded bg-black border ${selLimits.includes(l) ? 'border-[#ff3366] text-[#ff3366]' : 'border-zinc-800 text-zinc-400'} cursor-pointer text-xs">
             <input type="checkbox" value="${l}" ${selLimits.includes(l) ? 'checked' : ''} onchange="toggleModalTag('limit', '${l}', this.checked)" style="accent-color:#ff3366;">
             <span>${l}</span>
           </label>
@@ -1414,242 +478,58 @@
       if (typeof saveTrackerState === 'function') saveTrackerState();
     }
 
-    // ✦ 點擊頂部「編輯特工檔案」：開啟詳細資料編輯彈窗
-    function openEditProfileModal() {
-      const modal = document.getElementById("editProfileModal");
-      if (!modal) return;
+    // ✦ 在編輯彈窗內直接自訂新增標籤
+    function addCustomTagFromModal(type) {
+      if (typeof trackerState === 'undefined' || !trackerState.profile) return;
+      const prof = trackerState.profile;
 
-      const tProf = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : {};
-      const mProf = (typeof memberProfile !== 'undefined' && memberProfile) ? memberProfile : {};
-      
-      const nameInp = document.getElementById("profEditName");
-      const agentIdInp = document.getElementById("profEditAgentId");
-      const roleInp = document.getElementById("profEditRole");
-      const safewordInp = document.getElementById("profEditSafeword");
-      const twitterInp = document.getElementById("profEditTwitter");
-      const bioInp = document.getElementById("profEditBio");
-
-      if (nameInp) nameInp.value = tProf.name || mProf.name || "特工";
-      if (agentIdInp) agentIdInp.value = tProf.agentId || mProf.agentId || "AGENT-001";
-      if (roleInp) roleInp.value = tProf.role || mProf.role || "支配者 (Dom)";
-      if (safewordInp) safewordInp.value = tProf.safeword || "MAYDAY";
-      if (twitterInp) twitterInp.value = tProf.twitter || "";
-      if (bioInp) bioInp.value = tProf.bio || "";
-
-      modal.style.display = "flex";
-    }
-
-    function closeEditProfileModal() {
-      const modal = document.getElementById("editProfileModal");
-      if (modal) modal.style.display = "none";
-    }
-
-    // ✦ 儲存詳細特工檔案
-    function handleCustomProfileUpdate(e) {
-      e.preventDefault();
-
-      const newName = document.getElementById("profEditName").value.trim();
-      const newAgentId = document.getElementById("profEditAgentId").value.trim().toUpperCase();
-      const newRole = document.getElementById("profEditRole").value;
-      const newSafeword = document.getElementById("profEditSafeword").value.trim().toUpperCase();
-      const newTwitter = document.getElementById("profEditTwitter").value.trim();
-      const newBio = document.getElementById("profEditBio").value.trim();
-
-      if (typeof trackerState !== 'undefined') {
-        if (!trackerState.profile) trackerState.profile = {};
-        trackerState.profile.name = newName;
-        trackerState.profile.agentId = newAgentId;
-        trackerState.profile.role = newRole;
-        trackerState.profile.safeword = newSafeword;
-        trackerState.profile.twitter = newTwitter;
-        trackerState.profile.bio = newBio;
-        if (typeof saveTrackerState === 'function') saveTrackerState();
-      }
-
-      if (typeof memberProfile !== 'undefined' && memberProfile) {
-        memberProfile.name = newName;
-        memberProfile.agentId = newAgentId;
-        memberProfile.role = newRole;
-        localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
-        if (typeof updateMemberUI === 'function') updateMemberUI();
-      }
-
-      const nameElems = document.querySelectorAll("#dossierNameDisplay");
-      nameElems.forEach(el => el.textContent = `${newName} (${newAgentId})`);
-
-      const idElems = document.querySelectorAll("#dossierAgentIdDisplay");
-      idElems.forEach(el => el.textContent = `ID: ${newAgentId}`);
-
-      const roleElems = document.querySelectorAll("#dossierRoleBadge");
-      roleElems.forEach(el => el.textContent = newRole);
-
-      const safewordElems = document.querySelectorAll("#dossierSafewordDisplay");
-      safewordElems.forEach(el => el.textContent = newSafeword);
-
-      const bioElem = document.getElementById("dossierBioDisplay");
-      if (bioElem) bioElem.textContent = newBio || "尚未填寫特工宣言與簡介。";
-
-      if (typeof renderProfileDossier === 'function') {
-        renderProfileDossier();
-      }
-
-      closeEditProfileModal();
-      alert("✔ 特工機密檔案與名片數據已同步完成！");
-    }
-
-    // ✦ 從購物車抽屜或商城點擊進入結帳終端
-    function proceedToCheckoutFromCart() {
-      if (typeof cart !== 'undefined' && cart.length === 0) {
-        alert("❌ 裝備庫目前為空！");
-        return;
-      }
-      toggleCart(false);
-      setActiveView('view-checkout');
-      if (typeof renderCheckoutSummary === 'function') renderCheckoutSummary();
-      if (typeof loadCvsCities === 'function') loadCvsCities('711');
-      history.pushState({ view: 'checkout' }, '', '#checkout');
-    }
-
-    // ✦ 配送方式卡片點擊高亮切換
-    function selectShippingCard(method, el) {
-      document.querySelectorAll('.ship-option-card').forEach(card => {
-        card.classList.remove('border-[#00ff88]', 'bg-[#00ff88]/5');
-        card.classList.add('border-white/10', 'bg-[#16181d]/60');
-      });
-      el.classList.remove('border-white/10', 'bg-[#16181d]/60');
-      el.classList.add('border-[#00ff88]', 'bg-[#00ff88]/5');
-
-      if (typeof selectShipping === 'function') {
-        selectShipping(method, el);
-      }
-    }
-
-    // ✦ 超商門市即時關鍵字過濾
-    function filterCvsStoresLocally(keyword) {
-      const storeSelect = document.getElementById("cvsStoreSelect");
-      if (!storeSelect || typeof cachedStoreLocations === 'undefined' || cachedStoreLocations.length === 0) return;
-      
-      const query = keyword.trim().toLowerCase();
-      let filtered = cachedStoreLocations;
-
-      const cityVal = document.getElementById("cvsCitySelect").value;
-      const distVal = document.getElementById("cvsDistSelect").value;
-
-      if (cityVal) filtered = filtered.filter(s => s.city === cityVal);
-      if (distVal) filtered = filtered.filter(s => s.dist === distVal);
-      
-      if (query) {
-        filtered = filtered.filter(s => 
-          (s.name && s.name.toLowerCase().includes(query)) ||
-          (s.addr && s.addr.toLowerCase().includes(query)) ||
-          (s.id && s.id.toLowerCase().includes(query))
-        );
-      }
-
-      if (filtered.length === 0) {
-        storeSelect.innerHTML = `<option value="">❌ 無符合條件的門市</option>`;
-        storeSelect.disabled = true;
-        return;
-      }
-
-      storeSelect.innerHTML = `<option value="">-- 找到 ${filtered.length} 家符合門市，請點選 --</option>` + filtered.map(s => `
-        <option value="${s.id}" data-name="${s.name}" data-addr="${s.addr}">${s.name} (${s.id}) - ${s.addr}</option>
-      `).join('');
-      storeSelect.disabled = false;
-    }
-
-    // ✦ 訂單寫入 Google Sheets 後台引擎
-    function submitOrderToDatabase() {
-      if (typeof cart !== 'undefined' && cart.length === 0) {
-        alert("❌ 錯誤：調用清單目前為空！");
-        return;
-      }
-
-      const name = document.getElementById("checkoutNameInput").value.trim();
-      const phone = document.getElementById("checkoutPhoneInput").value.trim();
-      const email = document.getElementById("checkoutEmailInput").value.trim();
-      const note = document.getElementById("checkoutNoteInput").value.trim();
-
-      if (!name || !phone) {
-        alert("⚠️ 請完整填寫特工真實姓名與行動終端電話！");
-        return;
-      }
-
-      let finalLocation = "";
-      if (typeof selectedShippingMethod !== 'undefined' && (selectedShippingMethod === 'home' || selectedShippingMethod === 'meetup')) {
-        finalLocation = document.getElementById("manualLocationInput").value.trim();
-        if (!finalLocation) {
-          alert("⚠️ 請填寫詳細收件地址或面交地點！");
-          return;
-        }
+      if (type === 'pref') {
+        const input = document.getElementById("customPrefInput");
+        const val = input.value.trim();
+        if (!val) return;
+        if (!prof.allPreferences) prof.allPreferences = [...(DEFAULT_PRESET_TAGS.preferences)];
+        if (!prof.allPreferences.includes(val)) prof.allPreferences.push(val);
+        if (!prof.selectedTags) prof.selectedTags = [];
+        if (!prof.selectedTags.includes(val)) prof.selectedTags.push(val);
+        input.value = "";
       } else {
-        finalLocation = document.getElementById("finalShippingLocation").value;
-        if (!finalLocation) {
-          alert("⚠️ 請透過上方選單鎖定目標 7-11 / 全家超商門市！");
-          return;
-        }
+        const input = document.getElementById("customLimitInput");
+        const val = input.value.trim();
+        if (!val) return;
+        if (!prof.allLimits) prof.allLimits = [...(DEFAULT_PRESET_TAGS.hardLimits)];
+        if (!prof.allLimits.includes(val)) prof.allLimits.push(val);
+        if (!prof.limits) prof.limits = [];
+        if (!prof.limits.includes(val)) prof.limits.push(val);
+        input.value = "";
       }
 
-      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      let discountedSubtotal = Math.round(subtotal * (typeof activeDiscountRate !== 'undefined' ? activeDiscountRate : 1.0));
-      let finalSubtotal = Math.max(0, discountedSubtotal - (typeof activePromoDiscount !== 'undefined' ? activePromoDiscount : 0));
-      let totalPayable = finalSubtotal + (typeof activeShippingFee !== 'undefined' ? activeShippingFee : 60);
+      if (typeof saveTrackerState === 'function') saveTrackerState();
+      openDossierTagsModal(); // 重新整理彈窗內的勾選清單
+    }
 
-      const orderId = "GUILTY-" + Date.now().toString().slice(-6);
-      const orderPayload = {
-        action: "createOrder",
-        orderId: orderId,
-        product: cart.map(i => `${i.title} (${i.spec}) x${i.qty}`).join(" ｜ "),
-        price: totalPayable,
-        name: name,
-        phone: phone,
-        email: email,
-        shipping: typeof selectedShippingMethod !== 'undefined' ? selectedShippingMethod : '711',
-        location: finalLocation,
-        payment: (typeof selectedPaymentMethod !== 'undefined' && selectedPaymentMethod === 'cod') ? '超商取貨付款' : '虛擬ATM轉帳',
-        engraving: note,
-        items: cart
-      };
+    // ✦ 覆寫 tracker.js 中的名片字卡渲染，讓主畫面完美以「小字卡」呈現
+    function renderDossierTags() {
+      const prof = trackerState.profile;
+      const prefBox = document.getElementById("myPrefTagsBox");
+      const limitBox = document.getElementById("myLimitTagsBox");
 
-      const btn = event.target.closest("button");
-      if (btn) { btn.disabled = true; btn.textContent = "量子加密傳輸中..."; }
+      if (prefBox) {
+        const selPrefs = prof.selectedTags || ["🔍 探索中", "重度SP"];
+        prefBox.innerHTML = selPrefs.map(t => `<div class="tag-pill">${t}</div>`).join('');
+      }
 
-      fetch(CONFIG.API_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(orderPayload)
-      }).then(() => {
-        localStorage.removeItem("guilty_cart");
-        if (typeof cart !== 'undefined') cart = [];
-        if (typeof updateCartUI === 'function') updateCartUI();
-        
-        alert(`✔【訂單派遣成功】\n\n案件編號：${orderId}\n應付總額：NT$ ${totalPayable.toLocaleString()}\n\n已成功將協議同步至總部後台！`);
-        showLandingView();
-      }).catch(() => {
-        if (btn) { btn.disabled = false; btn.innerHTML = '<div class="flex items-center gap-2"><span class="material-symbols-outlined text-lg">bolt</span><span>確認簽署並送出訂單</span></div>'; }
-        alert("❌ 訂單傳送逾時，請檢查連線狀態後重試。");
-      });
+      if (limitBox) {
+        const selLimits = prof.limits || [];
+        limitBox.innerHTML = selLimits.map(l => `<div class="tag-pill active-limit">${l}</div>`).join('');
+      }
     }
 
     function toggleCart(isOpen) {
       const drawer = document.getElementById("cartDrawer");
       const overlay = document.getElementById("navOverlay");
       if (!drawer) return;
-      if (isOpen) {
-        drawer.style.transform = "translateX(0)";
-        if (overlay) overlay.classList.remove("hidden");
-        if (typeof updateCartUI === 'function') updateCartUI();
-      } else {
-        drawer.style.transform = "translateX(100%)";
-        if (overlay) overlay.classList.add("hidden");
-      }
-    }
-
-    function toggleAuthModal(isOpen) {
-      const modal = document.getElementById("authModal");
-      if (!modal) return;
-      modal.style.display = isOpen ? "flex" : "none";
+      drawer.style.transform = isOpen ? "translateX(0)" : "translateX(100%)";
+      if (overlay) overlay.classList.toggle("hidden", !isOpen);
     }
 
     // 初始化狀態
