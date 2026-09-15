@@ -609,17 +609,17 @@ function renderDossierTags() {
   const limitBox = document.getElementById("myLimitTagsBox");
 
   if (prefBox) {
-    const prefs = prof.allPreferences || DEFAULT_PRESET_TAGS.preferences;
+    const prefs = prof.selectedTags && prof.selectedTags.length > 0 ? prof.selectedTags : ["🔍 探索中", "重度SP"];
     prefBox.innerHTML = prefs.map(t => `
-      <div class="tag-pill ${(prof.selectedTags||[]).includes(t)?'active':''}" onclick="toggleTagSelection('pref','${t}')">${t}</div>
-    `).join('') + `<div class="tag-pill" style="border:1px dashed var(--accent-cyan); color:var(--accent-cyan);" onclick="addNewCustomTagPrompt('pref')">＋ 自訂喜歡</div>`;
+      <div style="display:inline-flex; align-items:center; padding:4px 10px; background:rgba(0,255,136,0.08); border:1px solid rgba(0,255,136,0.3); color:#00ff88; border-radius:4px; font-size:11px; font-family:'JetBrains Mono', monospace; margin:3px; box-shadow:0 0 8px rgba(0,255,136,0.15);">${t}</div>
+    `).join('') + `<div style="display:inline-flex; align-items:center; padding:4px 8px; background:transparent; border:1px dashed var(--accent-cyan); color:var(--accent-cyan); border-radius:4px; font-size:11px; cursor:pointer; margin:3px;" onclick="addNewCustomTagPrompt('pref')">＋ 自訂</div>`;
   }
 
   if (limitBox) {
-    const limits = prof.allLimits || DEFAULT_PRESET_TAGS.hardLimits;
+    const limits = prof.limits || [];
     limitBox.innerHTML = limits.map(l => `
-      <div class="tag-pill ${(prof.limits||[]).includes(l)?'active-limit':''}" onclick="toggleTagSelection('limit','${l}')">${l}</div>
-    `).join('') + `<div class="tag-pill" style="border:1px dashed var(--danger-red); color:var(--danger-red);" onclick="addNewCustomTagPrompt('limit')">＋ 自訂雷點</div>`;
+      <div style="display:inline-flex; align-items:center; padding:4px 10px; background:rgba(255,51,102,0.08); border:1px solid rgba(255,51,102,0.35); color:#ff3366; border-radius:4px; font-size:11px; font-family:'JetBrains Mono', monospace; margin:3px; box-shadow:0 0 8px rgba(255,51,102,0.15);">${l}</div>
+    `).join('') + `<div style="display:inline-flex; align-items:center; padding:4px 8px; background:transparent; border:1px dashed var(--danger-red); color:var(--danger-red); border-radius:4px; font-size:11px; cursor:pointer; margin:3px;" onclick="addNewCustomTagPrompt('limit')">＋ 自訂</div>`;
   }
 }
 
