@@ -474,6 +474,256 @@
                 <span>外包裝品名一律標示為「高精度五金零件」，寄件人無品牌字樣，守護特工極限隱私。</span>
               </div>
 
+              <!-- 💳 VIEW: 結帳調用終端 (view-checkout) -->
+    <div id="view-checkout" class="view-section hidden w-full">
+      <main class="max-w-lg mx-auto px-4 pt-4 pb-36 space-y-4 font-sans text-neutral-200">
+        
+        <!-- 返回商城導覽列 -->
+        <div class="flex items-center justify-between mb-2">
+          <button onclick="openShopCatalogView()" class="px-3 py-1.5 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回裝備商城</button>
+          <div class="flex items-center gap-1 text-[10px] font-mono text-neutral-400 bg-[#121316] px-2 py-1 rounded border border-cyberBorder">
+            <span class="w-1.5 h-1.5 rounded-full bg-[#00ff88] animate-pulse"></span>
+            <span>TLS 1.3 SECURED</span>
+          </div>
+        </div>
+
+        <!-- 狀態 Banner -->
+        <div class="bg-[#121316]/80 border border-white/10 rounded-lg p-3 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00ff88] opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-[#00ff88]"></span>
+            </span>
+            <span class="text-xs font-mono tracking-wider text-neutral-300">PROTO_DISPATCH_SESSION // ACTIVE</span>
+          </div>
+          <span class="text-[10px] font-mono text-[#00e5ff] bg-[#00e5ff]/10 px-2 py-0.5 rounded border border-[#00e5ff]/30">加密通道中</span>
+        </div>
+
+        <!-- 1. 調用裝備清單明細 (動態由 shop.js 渲染) -->
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
+              <h2 class="text-xs font-mono tracking-wider text-neutral-200 uppercase font-semibold">調用清單明細 / MANIFEST</h2>
+            </div>
+          </div>
+          <!-- 動態注入容器 -->
+          <div class="space-y-2.5" id="checkoutOrderItemsList">
+            <!-- 購物車商品將由 JS 動態載入 -->
+          </div>
+        </section>
+
+        <!-- 2. 特工密鑰協議 (Promo Protocol) -->
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
+              <h2 class="text-xs font-mono tracking-wider text-neutral-200 uppercase font-semibold">特工密鑰協議 / PROMO PROTOCOL</h2>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <div class="relative flex-1">
+              <input class="w-full bg-[#0d0e11] border border-[#00ff88]/50 text-[#00ff88] text-xs tracking-wider rounded-lg px-3 py-2.5 focus:outline-none uppercase" id="promoCodeInput" placeholder="輸入特工密鑰 (例: IAMSUB)" type="text"/>
+            </div>
+            <button class="bg-[#16181d] text-neutral-300 hover:text-white px-3.5 py-2.5 rounded-lg border border-white/10 text-xs tracking-wider cursor-pointer active:scale-95 transition-all" onclick="applyPromoCode()" type="button">
+              套用密鑰
+            </button>
+            <button class="bg-red-950/40 text-red-400 px-3 py-2.5 rounded-lg border border-red-500/30 text-xs tracking-wider cursor-pointer" id="removePromoBtn" onclick="removePromoCode()" style="display:none;" type="button">
+              清除
+            </button>
+          </div>
+          <div id="promoStatusMsg" class="text-xs"></div>
+        </section>
+
+        <!-- 3. 配送路徑選擇 (Shipping Matrix) -->
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">配送路徑選擇 / DISPATCH ROUTE</h2>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="relative" onclick="selectShipping('711', this)">
+              <label class="block p-3 rounded-lg border border-[#00ff88] bg-[#00ff88]/5 cursor-pointer text-left transition-all radio-card active">
+                <div class="flex justify-between items-start mb-1">
+                  <span class="text-xs font-bold text-white">7-ELEVEN</span>
+                  <span class="text-[10px] text-[#00ff88] font-bold">超商取貨</span>
+                </div>
+                <p class="text-[11px] text-neutral-300">無痕隱密取件</p>
+              </label>
+            </div>
+            <div class="relative" onclick="selectShipping('family', this)">
+              <label class="block p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all radio-card">
+                <div class="flex justify-between items-start mb-1">
+                  <span class="text-xs font-bold text-white">全家便利商店</span>
+                  <span class="text-[10px] text-[#00ff88] font-bold">超商取貨</span>
+                </div>
+                <p class="text-[11px] text-neutral-400">暗鎖取件專用</p>
+              </label>
+            </div>
+            <div class="relative" onclick="selectShipping('home', this)">
+              <label class="block p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all radio-card">
+                <div class="flex justify-between items-start mb-1">
+                  <span class="text-xs font-bold text-white">黑貓無名包裹</span>
+                  <span class="text-[10px] text-neutral-300">+NT$120</span>
+                </div>
+                <p class="text-[11px] text-neutral-400">特工無痕專送</p>
+              </label>
+            </div>
+            <div class="relative" onclick="selectShipping('meetup', this)">
+              <label class="block p-3 rounded-lg border border-white/10 bg-[#16181d]/60 hover:border-white/30 cursor-pointer text-left transition-all radio-card">
+                <div class="flex justify-between items-start mb-1">
+                  <span class="text-xs font-bold text-white">暗樁節點面交</span>
+                  <span class="text-[10px] text-[#00ff88] font-bold">免運</span>
+                </div>
+                <p class="text-[11px] text-neutral-400">台中/台北秘密樁</p>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. 門市節點鎖定 (StoreDB CVS Picker) -->
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono" id="cvsDropdownContainer">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">門市節點鎖定 / CVS NODE PICKER</h2>
+            </div>
+            <span class="text-[10px] text-neutral-400">StoreDB 聯動</span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-[10px] text-neutral-400 mb-1">目標縣市 (REGION)</label>
+              <select id="cvsCitySelect" onchange="onCityChanged(this.value)" class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-2.5 py-2 outline-none focus:border-[#00ff88]">
+                <option value="">-- 載入縣市中 --</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] text-neutral-400 mb-1">作戰分區 (ZONE)</label>
+              <select id="cvsDistSelect" onchange="onDistChanged(this.value)" disabled class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-2.5 py-2 outline-none focus:border-[#00ff88]">
+                <option value="">-- 行政區 --</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] text-neutral-400 mb-1">精確門市選擇 (STORE)</label>
+            <select id="cvsStoreSelect" onchange="onStorePicked(this.value)" disabled class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-2.5 py-2 outline-none focus:border-[#00ff88]">
+              <option value="">-- 請先選擇縣市與行政區 --</option>
+            </select>
+          </div>
+
+          <!-- 已鎖定門市回饋卡 -->
+          <div id="storeConfirmedCard" style="display:none;" class="border border-[#00ff88]/40 bg-[#00ff88]/5 rounded-lg p-3 space-y-1">
+            <div class="text-xs font-bold text-white flex items-center justify-between">
+              <span id="confirmedStoreNameText">門市名稱</span>
+              <span class="text-[10px] text-[#00ff88] bg-[#00ff88]/20 px-1 rounded">✔ 已鎖定</span>
+            </div>
+            <p class="text-[11px] text-neutral-300" id="confirmedStoreAddrText">地址</p>
+          </div>
+          <input type="hidden" id="finalShippingLocation" />
+        </section>
+
+        <!-- 手動地址輸入區 (若選宅配或面交時顯示) -->
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono" id="manualLocationGroup" style="display:none;">
+          <div class="text-xs font-bold text-[#00ff88]">填寫收件地址或面交備註</div>
+          <input type="text" id="manualLocationInput" class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-3 py-2" placeholder="請輸入收件完整地址..." />
+        </section>
+
+        <!-- 5. 特工收件安全憑證 (Recipient Intel) -->
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">特工收件安全憑證 / RECIPIENT INTEL</h2>
+            </div>
+          </div>
+          <div class="space-y-3 text-xs">
+            <div>
+              <label class="block text-[10px] text-neutral-300 mb-1">特工真實收件姓名 * <span class="text-[#00ff88]">(需與超商證件核對)</span></label>
+              <input type="text" id="checkoutNameInput" required class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="請輸入證件全名" />
+            </div>
+            <div>
+              <label class="block text-[10px] text-neutral-300 mb-1">行動終端電話 * <span class="text-[#00ff88]">(取件簡訊密鑰通知)</span></label>
+              <input type="tel" id="checkoutPhoneInput" required class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="0912345678" />
+            </div>
+            <div>
+              <label class="block text-[10px] text-neutral-300 mb-1">安全加密電子信箱 <span class="text-neutral-500">(選填)</span></label>
+              <input type="email" id="checkoutEmailInput" class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="agent@guilty.net" />
+            </div>
+            <div>
+              <label class="block text-[10px] text-neutral-300 mb-1">戰術雷雕銘文 / 調用特殊備註 <span class="text-neutral-500">(選填)</span></label>
+              <input type="text" id="checkoutNoteInput" class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="例：無痕黑紙箱包裝" />
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. 結算途徑選擇 (Payment Protocol) -->
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">結算途徑 / SETTLEMENT PROTOCOL</h2>
+            </div>
+          </div>
+          <div class="space-y-2 text-xs">
+            <label class="flex items-center justify-between p-3 rounded-lg border border-[#00ff88] bg-[#00ff88]/5 cursor-pointer radio-card active" id="payMethodCod" onclick="selectPayment('cod', this)">
+              <div>
+                <div class="font-bold text-white">超商門市取貨付款 (Cash on Delivery)</div>
+                <div class="text-[10px] text-neutral-400">至指定門市驗收外包裝無誤後再付款</div>
+              </div>
+              <span class="text-[10px] text-[#00ff88] border border-[#00ff88]/40 px-1.5 py-0.5 rounded">免手續費</span>
+            </label>
+            <label class="flex items-center justify-between p-3 rounded-lg border border-white/10 bg-[#16181d]/60 cursor-pointer radio-card" id="payMethodBank" onclick="selectPayment('bank', this)">
+              <div>
+                <div class="font-bold text-neutral-300">虛擬 ATM 加密專屬帳號 / 銀行轉帳</div>
+                <div class="text-[10px] text-neutral-400" id="paymentNote">完成轉帳後回報後台對帳</div>
+              </div>
+              <span class="text-[10px] text-neutral-400">專用通道</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- 7. 費用總結結算 (Financial Summary) -->
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-2.5 font-mono">
+          <div class="flex items-center justify-between border-b border-white/10 pb-2">
+            <div class="flex items-center gap-2">
+              <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">費用總結結算 / SETTLEMENT</h2>
+            </div>
+          </div>
+          <!-- 動態金融計算明細容器 -->
+          <div id="checkoutFinancialSummary"></div>
+        </section>
+
+      </main>
+
+      <!-- 8. 底部固定送出結帳條 (Sticky Dispatch Bar) -->
+      <aside class="fixed bottom-0 left-0 right-0 z-50 bg-[#08080a]/95 backdrop-blur-lg border-t border-white/15 px-4 pt-3 pb-6 font-sans">
+        <div class="max-w-lg mx-auto space-y-2">
+          <div class="flex items-center justify-between text-[10px] text-neutral-400 px-1 font-mono">
+            <span class="flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#00ff88]"></span>
+              點擊確認即簽署共犯匿名保密協議
+            </span>
+            <span class="text-[#00e5ff]">ORDER_DISPATCH_AUTH</span>
+          </div>
+          <!-- 送出訂單按鈕 (點擊觸發 shop.js 中的結帳提交機制) -->
+          <button onclick="submitOrderToDatabase()" class="w-full bg-[#00ff88] hover:bg-[#60ff99] text-black font-extrabold text-sm tracking-wider py-4 px-4 rounded-xl flex items-center justify-between shadow-[0_0_20px_rgba(0,255,136,0.3)] active:scale-[0.98] transition-all cursor-pointer" type="button">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-lg">bolt</span>
+              <span>確認簽署並送出訂單</span>
+            </div>
+            <span class="font-mono text-sm tracking-tight flex items-center">
+              立即派遣 →
+            </span>
+          </button>
+        </div>
+      </aside>
+    </div>
+
             </div>
           </aside>
 
@@ -928,8 +1178,8 @@
     </div>
   </div>
 
-  <!-- ========================================================================== -->
-  <!-- 5. 載入原本正常運作的 JavaScript 引擎 -->
+<!-- ========================================================================== -->
+  <!-- 5. 載入原本正常運作的 JavaScript 引擎與結帳控制 -->
   <!-- ========================================================================== -->
   <script src="./js/config.js?v=20260903"></script>
   <script src="./js/auth.js?v=20260903"></script>
@@ -983,6 +1233,93 @@
       setActiveView('view-dossier');
       if (typeof renderProfileDossier === 'function') renderProfileDossier();
       history.pushState({ view: 'dossier' }, '', '#dossier');
+    }
+
+    // ✦ 關鍵補強：從購物車抽屜或商城點擊進入結帳終端
+    function proceedToCheckoutFromCart() {
+      if (typeof cart !== 'undefined' && cart.length === 0) {
+        alert("❌ 裝備庫目前為空！");
+        return;
+      }
+      toggleCart(false);
+      setActiveView('view-checkout');
+      if (typeof renderCheckoutSummary === 'function') renderCheckoutSummary();
+      if (typeof loadCvsCities === 'function') loadCvsCities('711');
+      history.pushState({ view: 'checkout' }, '', '#checkout');
+    }
+
+    // ✦ 訂單寫入 Google Sheets 後台引擎
+    function submitOrderToDatabase() {
+      if (typeof cart !== 'undefined' && cart.length === 0) {
+        alert("❌ 錯誤：調用清單目前為空！");
+        return;
+      }
+
+      const name = document.getElementById("checkoutNameInput").value.trim();
+      const phone = document.getElementById("checkoutPhoneInput").value.trim();
+      const email = document.getElementById("checkoutEmailInput").value.trim();
+      const note = document.getElementById("checkoutNoteInput").value.trim();
+
+      if (!name || !phone) {
+        alert("⚠️ 請完整填寫特工真實姓名與行動終端電話！");
+        return;
+      }
+
+      let finalLocation = "";
+      if (typeof selectedShippingMethod !== 'undefined' && (selectedShippingMethod === 'home' || selectedShippingMethod === 'meetup')) {
+        finalLocation = document.getElementById("manualLocationInput").value.trim();
+        if (!finalLocation) {
+          alert("⚠️ 請填寫詳細收件地址或面交地點！");
+          return;
+        }
+      } else {
+        finalLocation = document.getElementById("finalShippingLocation").value;
+        if (!finalLocation) {
+          alert("⚠️ 請透過上方選單鎖定目標 7-11 / 全家超商門市！");
+          return;
+        }
+      }
+
+      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      let discountedSubtotal = Math.round(subtotal * (typeof activeDiscountRate !== 'undefined' ? activeDiscountRate : 1.0));
+      let finalSubtotal = Math.max(0, discountedSubtotal - (typeof activePromoDiscount !== 'undefined' ? activePromoDiscount : 0));
+      let totalPayable = finalSubtotal + (typeof activeShippingFee !== 'undefined' ? activeShippingFee : 60);
+
+      const orderId = "GUILTY-" + Date.now().toString().slice(-6);
+      const orderPayload = {
+        action: "createOrder",
+        orderId: orderId,
+        product: cart.map(i => `${i.title} (${i.spec}) x${i.qty}`).join(" ｜ "),
+        price: totalPayable,
+        name: name,
+        phone: phone,
+        email: email,
+        shipping: typeof selectedShippingMethod !== 'undefined' ? selectedShippingMethod : '711',
+        location: finalLocation,
+        payment: (typeof selectedPaymentMethod !== 'undefined' && selectedPaymentMethod === 'cod') ? '超商取貨付款' : '虛擬ATM轉帳',
+        engraving: note,
+        items: cart
+      };
+
+      const btn = event.target.closest("button");
+      if (btn) { btn.disabled = true; btn.textContent = "量子加密傳輸中..."; }
+
+      fetch(CONFIG.API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(orderPayload)
+      }).then(() => {
+        localStorage.removeItem("guilty_cart");
+        if (typeof cart !== 'undefined') cart = [];
+        if (typeof updateCartUI === 'function') updateCartUI();
+        
+        alert(`✔【訂單派遣成功】\n\n案件編號：${orderId}\n應付總額：NT$ ${totalPayable.toLocaleString()}\n\n已成功將協議同步至總部後台！`);
+        showLandingView();
+      }).catch(() => {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<div class="flex items-center gap-2"><span class="material-symbols-outlined text-lg">bolt</span><span>確認簽署並送出訂單</span></div>'; }
+        alert("❌ 訂單傳送逾時，請檢查連線狀態後重試。");
+      });
     }
 
     function toggleCart(isOpen) {
