@@ -866,9 +866,81 @@
       </div>
     </div>
 
-    <!-- ★ VIEW: 特工機密主頁與身分終端 (view-dossier) 獨立視圖 -->
+   <!-- ★ VIEW: 特工機密主頁與身分終端 (view-dossier) -->
     <div id="view-dossier" class="view-section hidden w-full">
-      <div class="max-w-[1600px] mx-auto px-4 py-8 flex flex-col gap-8">
+      <main class="max-w-4xl mx-auto px-4 py-8 flex flex-col gap-6">
+        
+        <!-- 頂部導覽與標題 -->
+        <div class="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <h1 class="text-3xl font-bold text-[#00ff88] tracking-tight">特工機密主頁與身分終端</h1>
+            <p class="text-xs text-zinc-400 mt-1">個人作戰調書、微型生物特徵認證鎖及高強度偏好設定。</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="openDossierTagsModal()" class="px-4 py-2 bg-surface-container border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs hover:bg-[#00ff88]/10 transition-all rounded cursor-pointer">✏️ 編輯偏好與狀態</button>
+            <button onclick="openEditProfileModal()" class="px-4 py-2 bg-surface-container border border-zinc-700 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">⚙️ 編輯特工檔案</button>
+            <button onclick="showLandingView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回首頁</button>
+          </div>
+        </div>
+
+        <!-- ✦ 這裡加上了 id="dossierExportTarget"，並用 CSS Grid 與固定頭像比例修復拉伸與跑版 -->
+        <div class="tactical-panel p-6 rounded-xl space-y-5 bg-surface-container-low border border-white/15 shadow-2xl font-mono relative overflow-hidden" id="dossierExportTarget">
+          <div class="absolute -right-6 -bottom-10 pointer-events-none select-none text-white/5 font-bold text-[120px] leading-none">調書</div>
+
+          <div class="flex justify-between items-center pb-3 border-b border-white/10 relative z-10">
+            <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-[#00ff88] animate-pulse"></span>
+              特工名片認證 (AGENT DOSSIER)
+            </h3>
+          </div>
+
+          <!-- 頭像與基本資訊 (強制固定正方形，絕不壓扁) -->
+          <div class="flex items-center gap-4 relative z-10">
+            <div class="w-16 h-16 rounded border border-[#00ff88] overflow-hidden bg-black shrink-0 relative group cursor-pointer" onclick="openEditProfileModal()" title="點擊更換頭像">
+              <img id="dossierAvatarPreview" src="" class="w-full h-full object-cover aspect-square">
+            </div>
+            <div class="flex-1 min-w-0">
+              <h4 class="text-lg font-black text-white truncate" id="dossierNameDisplay">特工</h4>
+              <div class="text-xs font-mono text-[#00ff88]" id="dossierAgentIdDisplay">ID: AGENT-001</div>
+              <div class="text-[10px] text-zinc-400 mt-0.5 truncate">主權屬性：<span id="dossierRoleBadge" class="text-white font-bold">支配者 (Dom)</span> ｜ 安全詞：<span id="dossierSafewordDisplay" class="text-red-400 font-bold">MAYDAY</span></div>
+            </div>
+          </div>
+
+          <!-- 宣言 -->
+          <p class="text-xs text-zinc-300 bg-black/40 p-3 rounded border border-white/5 relative z-10 break-words" id="dossierBioDisplay">尚未填寫特工宣言與簡介。</p>
+          
+          <!-- 小字卡區塊 -->
+          <div class="space-y-3 relative z-10">
+            <div>
+              <div class="text-xs font-bold text-[#00ff88] mb-1.5 flex items-center gap-1">
+                <span>✦ 偏好項目（含 🔍 探索中 狀態）</span>
+              </div>
+              <div id="myPrefTagsBox" class="flex flex-wrap gap-1.5"></div>
+            </div>
+            
+            <div class="pt-2 border-t border-white/5">
+              <div class="text-xs font-bold text-[#ff3366] mb-1.5 flex items-center gap-1">
+                <span>🛑 絕對雷點</span>
+              </div>
+              <div id="myLimitTagsBox" class="flex flex-wrap gap-1.5"></div>
+            </div>
+          </div>
+
+          <!-- 底部 QR Code 與匯出操作列 -->
+          <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-10">
+            <div class="flex items-center gap-3">
+              <div id="myQrCodeBox" class="p-1 bg-black border border-[#00ff88]/40 rounded shrink-0 flex items-center justify-center" style="width: 64px; height: 64px;"></div>
+              <div class="text-[10px] text-zinc-400">
+                <span class="text-[#00ff88] font-bold block">NEURAL PASS 認證碼</span>
+                支援掃描快速建立神經結盟
+              </div>
+            </div>
+            <button onclick="exportDossierToImage()" class="w-full sm:w-auto px-4 py-2.5 bg-[#00ff88] text-black font-mono font-bold text-xs rounded cursor-pointer hover:bg-[#60ff99] transition-all">📷 匯出高畫質戰術卡片</button>
+          </div>
+        </div>
+
+      </main>
+    </div>
         
         <!-- 頂部遙測標頭 -->
         <section class="flex flex-col gap-3">
