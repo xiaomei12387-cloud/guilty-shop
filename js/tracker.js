@@ -751,7 +751,7 @@ function exportDossierToImage() {
     scale: 2,
     useCORS: true,
     allowTaint: true,
-    logging: false
+    logging: false,
     scrollX: 0,
     scrollY: 0
   }).then(canvas => {
