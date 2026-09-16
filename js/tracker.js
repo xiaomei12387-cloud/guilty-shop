@@ -752,6 +752,8 @@ function exportDossierToImage() {
     useCORS: true,
     allowTaint: true,
     logging: false
+    scrollX: 0,
+    scrollY: 0
   }).then(canvas => {
     if (exportBtn) {
       exportBtn.disabled = false;
