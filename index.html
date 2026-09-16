@@ -898,83 +898,88 @@
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
           <div class="xl:col-span-7 flex flex-col gap-6">
             
-            <!-- ✦ 專為 html2canvas 匯出重構的名片卡（正方頭貼、排版防跑偏、內嵌 QR Code） -->
-            <div class="relative bg-[#0d0e13] p-6 rounded-xl flex flex-col gap-4 shadow-xl overflow-hidden border border-white/15 font-mono text-zinc-200" id="dossierExportTarget" style="background-color: #0d0e13 !important;">
-              <div class="absolute -right-4 -bottom-8 pointer-events-none select-none text-white/5 font-bold text-[110px] leading-none">調書</div>
+           <!-- ✦ 專為 html2canvas 匯出重構的名片卡（文字對齊防跑偏、精準防重疊） -->
+            <div class="relative bg-[#0d0e13] p-7 rounded-xl flex flex-col gap-5 shadow-2xl overflow-hidden border border-white/15 font-mono text-zinc-200" id="dossierExportTarget" style="background-color: #0d0e13 !important; width: 680px; max-width: 100%; box-sizing: border-box;">
+              <div class="absolute -right-4 -bottom-8 pointer-events-none select-none text-white/5 font-bold text-[120px] leading-none" style="font-family: sans-serif;">調書</div>
               
-              <!-- 頂部身分條 -->
-              <div class="relative z-10 flex items-center justify-between pb-3 border-b border-white/10">
+              <!-- 頂部身分條：解決名字與 ACTIVE 標籤重疊 -->
+              <div class="relative z-10 flex items-center justify-between pb-4 border-b border-white/10">
                 <div class="flex items-center gap-3">
-                  <div class="w-10 h-10 bg-surface-container-high flex items-center justify-center text-[#00ff88] rounded border border-white/10">
-                    <span class="material-symbols-outlined text-[24px]">shield_with_heart</span>
+                  <div class="w-11 h-11 bg-surface-container-high flex items-center justify-center text-[#00ff88] rounded border border-white/10 flex-shrink-0">
+                    <span class="material-symbols-outlined text-[26px]">shield_with_heart</span>
                   </div>
                   <div>
-                    <div class="flex items-center gap-2">
-                      <span class="text-base font-bold text-[#00ff88]" id="dossierNameDisplay">特工-9481 夜梟</span>
-                      <span class="px-1.5 py-0.2 bg-[#00ff88]/20 text-[#00ff88] font-mono text-[9px] rounded border border-[#00ff88]/40">ACTIVE</span>
+                    <div class="flex items-center gap-3" style="line-height: 1.2;">
+                      <span class="text-xl font-black text-[#00ff88] tracking-wide" id="dossierNameDisplay">特工-9481 夜梟</span>
+                      <span class="px-2 py-0.5 bg-[#00ff88]/15 text-[#00ff88] font-mono text-[10px] font-bold rounded border border-[#00ff88]/40 leading-none inline-block">ACTIVE</span>
                     </div>
-                    <span class="text-[11px] font-mono text-zinc-400" id="dossierAgentIdDisplay">ID: AGENT-9481</span>
+                    <div class="text-[11px] font-mono text-zinc-400 mt-1" id="dossierAgentIdDisplay">ID: AGENT-9481</div>
                   </div>
                 </div>
-                <span class="text-[9px] text-[#00ff88]/60 uppercase tracking-widest">GUILTY_DOSSIER</span>
+                <span class="text-[10px] text-[#00ff88]/60 uppercase tracking-widest font-bold">GUILTY_DOSSIER</span>
               </div>
 
-              <!-- 中間：頭像與資訊欄（鎖死 100x100 正方形，絕不被壓扁） -->
-              <div class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-4">
-                <div class="w-[100px] h-[100px] rounded-lg overflow-hidden border border-[#00ff88]/50 bg-black flex-shrink-0 relative shadow-[0_0_12px_rgba(0,255,136,0.2)]">
-                  <img id="dossierAvatarPreview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Agent9481" class="w-full h-full object-cover" style="width: 100px !important; height: 100px !important; object-fit: cover !important;">
-                  <div class="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] text-[#00ff88] text-center font-mono py-0.5">RSA-4096</div>
+              <!-- 中間：頭像與資訊欄（鎖死 110x110 正方形與基準線水平對齊） -->
+              <div class="relative z-10 flex items-stretch gap-5">
+                <div class="w-[110px] h-[110px] rounded-lg overflow-hidden border border-[#00ff88]/50 bg-black flex-shrink-0 relative shadow-[0_0_15px_rgba(0,255,136,0.15)]">
+                  <img id="dossierAvatarPreview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Agent9481" crossorigin="anonymous" class="w-full h-full object-cover" style="width: 110px !important; height: 110px !important; object-fit: cover !important; display: block;">
+                  <div class="absolute bottom-0 inset-x-0 bg-black/85 text-[9px] text-[#00ff88] text-center font-mono py-0.5">RSA-4096</div>
                 </div>
 
-                <!-- 屬性狀態 -->
-                <div class="flex-1 w-full bg-surface-container p-3 rounded-lg border border-white/5 text-xs space-y-2">
-                  <div class="flex justify-between items-center">
+                <!-- 屬性狀態面板：鎖定 grid 兩欄，保證標題與數值同行齊平 -->
+                <div class="flex-1 bg-surface-container p-3.5 rounded-lg border border-white/5 flex flex-col justify-between">
+                  <div class="grid grid-cols-2 gap-4">
                     <div>
-                      <span class="text-zinc-500 text-[9px] block">// 權限等級</span>
-                      <span class="text-[#00ff88] font-bold text-xs" id="dossierRoleBadge">支配者 (Dom)</span>
+                      <div class="text-zinc-500 text-[10px] font-mono mb-1 leading-tight">// 權限等級</div>
+                      <div class="text-[#00ff88] font-black text-sm leading-tight" id="dossierRoleBadge">支配者 (Dom)</div>
                     </div>
-                    <div class="text-right">
-                      <span class="text-zinc-500 text-[9px] block">// 安全詞</span>
-                      <span class="text-[#ff4d6d] font-bold text-xs" id="dossierSafewordDisplay">RED_EMBER</span>
+                    <div>
+                      <div class="text-zinc-500 text-[10px] font-mono mb-1 leading-tight">// 安全詞</div>
+                      <div class="text-[#ff4d6d] font-black text-sm leading-tight" id="dossierSafewordDisplay">RED_EMBER</div>
                     </div>
                   </div>
-                  <div>
-                    <span class="text-zinc-500 text-[9px] block mb-1">// 特工宣言</span>
-                    <p class="text-[11px] text-zinc-300 leading-snug bg-black/30 p-1.5 rounded border border-white/5" id="dossierBioDisplay">尚未填寫特工宣言與簡介。</p>
+
+                  <div class="mt-2.5 pt-2 border-t border-white/5">
+                    <div class="text-zinc-500 text-[10px] font-mono mb-1 leading-tight">// 特工宣言</div>
+                    <p class="text-[11px] text-zinc-300 leading-relaxed bg-black/40 p-2 rounded border border-white/5 m-0" id="dossierBioDisplay">尚未填寫特工宣言與簡介。</p>
                   </div>
                 </div>
               </div>
 
               <!-- 標籤區塊 -->
-              <div class="relative z-10 space-y-2 pt-2 border-t border-white/5">
+              <div class="relative z-10 space-y-3 pt-1 border-t border-white/5">
                 <div>
-                  <span class="text-zinc-400 text-[10px] block mb-1">✦ 偏好與「探索中」小字卡</span>
-                  <div id="myPrefTagsBox" class="flex flex-wrap gap-1"></div>
+                  <div class="text-zinc-400 text-[11px] font-bold mb-1.5 flex items-center gap-1.5">
+                    <span>✦ 偏好與「探索中」小字卡</span>
+                  </div>
+                  <div id="myPrefTagsBox" class="flex flex-wrap gap-1.5 items-center"></div>
                 </div>
                 <div>
-                  <span class="text-zinc-400 text-[10px] block mb-1">🛑 絕對雷點</span>
-                  <div id="myLimitTagsBox" class="flex flex-wrap gap-1"></div>
+                  <div class="text-zinc-400 text-[11px] font-bold mb-1.5 flex items-center gap-1.5">
+                    <span>🛑 絕對雷點</span>
+                  </div>
+                  <div id="myLimitTagsBox" class="flex flex-wrap gap-1.5 items-center"></div>
                 </div>
               </div>
 
-              <!-- 底部：內建專屬 QR Code（截圖時直接入鏡，不再空白） -->
-              <div class="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between">
-                <div class="flex items-center gap-3">
+              <!-- 底部：內建專屬 QR Code -->
+              <div class="relative z-10 pt-4 border-t border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
                   <div id="cardEmbeddedQr" class="w-14 h-14 bg-black p-1 rounded border border-[#00ff88]/40 flex items-center justify-center flex-shrink-0">
                     <div class="text-[8px] text-[#00ff88] text-center leading-tight">NEURAL<br>PASS<br>VERIFIED</div>
                   </div>
-                  <div class="text-[10px] font-mono leading-tight text-zinc-400">
-                    <span class="text-[#00ff88] font-bold block">NEURAL PASS PROTOCOL</span>
+                  <div class="text-[11px] font-mono leading-tight text-zinc-400">
+                    <span class="text-[#00ff88] font-bold block mb-0.5">NEURAL PASS PROTOCOL</span>
                     <span>密鑰接入 • 掃描同調結盟</span>
                   </div>
                 </div>
-                <div class="text-[9px] text-zinc-500 font-mono text-right">
+                <div class="text-[10px] text-zinc-500 font-mono text-right leading-tight">
                   NODE_09 // AUTH<br>
                   MK-IV SECURED
                 </div>
               </div>
             </div>
-
+            
             <!-- 取貨超商設定 -->
             <div class="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4 border border-white/10">
               <span class="text-sm font-bold text-[#00ff88] flex items-center gap-2">
