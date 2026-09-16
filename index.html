@@ -62,13 +62,25 @@
     }
   </script>
 
-  <style>
-    body {
-      background-color: #060709;
-      color: #e3e5ec;
-      overflow-x: hidden;
-      font-family: 'Inter', sans-serif;
-    }
+ <style>
+    html {
+      background-color: #060709 !important;
+      color-scheme: dark;
+    }
+    body {
+      background-color: #060709 !important;
+      color: #e3e5ec;
+      overflow-x: hidden;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      margin: 0;
+    }
+    
+    /* 確保所有主視圖容器在切換時背景一致且撐滿高度 */
+    .view-section {
+      background-color: #060709;
+      min-height: 85vh;
+    }
     .cyber-bg {
       background-image: 
         linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
