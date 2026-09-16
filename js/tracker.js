@@ -126,6 +126,35 @@ function loadAgentTrackerState() {
   }
 }
 
+// ✦ 安全生成名片 QR Code 確保匯出不空白
+    function renderCardQrCode() {
+      const qrBox = document.getElementById("myQrCodeBox");
+      if (!qrBox) return;
+      qrBox.innerHTML = ""; // 清空舊的
+      
+      const agentId = (trackerState && trackerState.profile && trackerState.profile.agentId) ? trackerState.profile.agentId : "GUILTY-AGENT";
+      const qrText = `https://guilty.net/agent/${agentId}`;
+
+      // 若有引入 QRCode 套件則直接生成，若無則用純文字或簡單 SVG 替代以防報錯
+      if (typeof QRCode !== 'undefined') {
+        new QRCode(qrBox, {
+          text: qrText,
+          width: 56,
+          height: 56,
+          colorDark: "#00ff88",
+          colorLight: "#000000",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } else {
+        qrBox.innerHTML = `<div class="text-[9px] text-[#00ff88] text-center font-mono leading-tight">QR_PASS<br>${agentId}</div>`;
+      }
+    }
+
+    // 在初始化時呼叫
+    setTimeout(() => {
+      renderCardQrCode();
+    }, 500);
+
 function saveTrackerState(skipCloud = false) {
   const key = getAgentStorageKey();
   if (key && trackerState) {
