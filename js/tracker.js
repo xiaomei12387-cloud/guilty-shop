@@ -126,34 +126,28 @@ function loadAgentTrackerState() {
   }
 }
 
-// ✦ 安全生成名片 QR Code 確保匯出不空白
-    function renderCardQrCode() {
-      const qrBox = document.getElementById("myQrCodeBox");
-      if (!qrBox) return;
-      qrBox.innerHTML = ""; // 清空舊的
-      
-      const agentId = (trackerState && trackerState.profile && trackerState.profile.agentId) ? trackerState.profile.agentId : "GUILTY-AGENT";
-      const qrText = `https://guilty.net/agent/${agentId}`;
+// ✦ 安全生成名片專屬內嵌 QR Code 與展示板
+function renderCardQrCode() {
+  const agentId = (trackerState && trackerState.profile && trackerState.profile.agentId) ? trackerState.profile.agentId : "GUILTY-AGENT";
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=GUILTY-AGENT:${encodeURIComponent(agentId)}&color=00ff88&bgcolor=000000&margin=2`;
 
-      // 若有引入 QRCode 套件則直接生成，若無則用純文字或簡單 SVG 替代以防報錯
-      if (typeof QRCode !== 'undefined') {
-        new QRCode(qrBox, {
-          text: qrText,
-          width: 56,
-          height: 56,
-          colorDark: "#00ff88",
-          colorLight: "#000000",
-          correctLevel: QRCode.CorrectLevel.H
-        });
-      } else {
-        qrBox.innerHTML = `<div class="text-[9px] text-[#00ff88] text-center font-mono leading-tight">QR_PASS<br>${agentId}</div>`;
-      }
-    }
+  // 1. 名片內建專屬 QR Code 容器 (確保截圖必出)
+  const cardQr = document.getElementById("cardEmbeddedQr");
+  if (cardQr) {
+    cardQr.innerHTML = `<img src="${qrUrl}" class="w-full h-full object-contain" alt="QR" crossorigin="anonymous" />`;
+  }
 
-    // 在初始化時呼叫
-    setTimeout(() => {
-      renderCardQrCode();
-    }, 500);
+  // 2. 右側獨立展示板容器 (若存在)
+  const myQrBox = document.getElementById("myQrCodeBox");
+  if (myQrBox) {
+    myQrBox.innerHTML = `
+      <img src="${qrUrl}" class="w-full h-full object-contain" alt="QR" crossorigin="anonymous" />
+    `;
+  }
+}
+
+// 確保載入與同調後即刻觸發繪製
+setTimeout(renderCardQrCode, 400);
 
 function saveTrackerState(skipCloud = false) {
   const key = getAgentStorageKey();
@@ -628,8 +622,8 @@ function renderProfileDossier() {
   const totalSessions = activePartner && activePartner.sessions ? activePartner.sessions.length : 0;
   if (statSessions) statSessions.textContent = totalSessions;
 
-  renderDossierTags();
-  renderMyQrCode();
+ renderDossierTags();
+  renderCardQrCode();
 }
 
 function renderDossierTags() {
@@ -736,23 +730,45 @@ function handleProfileUpdate(e) {
 
 function exportDossierToImage() {
   const target = document.getElementById("dossierExportTarget");
-  const btn = document.getElementById("btnExportCard");
-  if (!target || typeof html2canvas === "undefined") return;
+  if (!target || typeof html2canvas === "undefined") {
+    alert("❌ 找不到名片畫布或截圖引擎未載入！");
+    return;
+  }
 
-  if (btn) { btn.disabled = true; btn.textContent = "繪製中..."; }
-  target.classList.add("exporting-mode");
+  // 先確保名片內部 QR Code 已經渲染
+  renderCardQrCode();
 
-  html2canvas(target, { backgroundColor: "#08080a", scale: 2, useCORS: true }).then(canvas => {
-    target.classList.remove("exporting-mode");
-    if (btn) { btn.disabled = false; btn.textContent = "📷 匯出名片圖"; }
+  const exportBtn = event ? event.target.closest("button") : document.getElementById("btnExportCard");
+  const originalText = exportBtn ? exportBtn.innerHTML : "";
+  if (exportBtn) {
+    exportBtn.disabled = true;
+    exportBtn.innerHTML = "<span>量子成像中...</span>";
+  }
+
+  // 匯出時鎖定背景色、高解析度防糊防變形
+  html2canvas(target, {
+    backgroundColor: "#0d0e13",
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    logging: false
+  }).then(canvas => {
+    if (exportBtn) {
+      exportBtn.disabled = false;
+      exportBtn.innerHTML = originalText;
+    }
     const link = document.createElement("a");
-    link.download = `GUILTY_${trackerState.profile.agentId || 'AGENT'}.png`;
+    const agentId = (trackerState && trackerState.profile && trackerState.profile.agentId) ? trackerState.profile.agentId : "AGENT";
+    link.download = `GUILTY_DOSSIER_${agentId}.png`;
     link.href = canvas.toDataURL("image/png");
     link.click();
-  }).catch(() => {
-    target.classList.remove("exporting-mode");
-    if (btn) { btn.disabled = false; btn.textContent = "📷 匯出名片圖"; }
-    alert("長圖生成失敗！");
+  }).catch(err => {
+    console.error("名片導出異常:", err);
+    if (exportBtn) {
+      exportBtn.disabled = false;
+      exportBtn.innerHTML = originalText;
+    }
+    alert("❌ 戰術名片導出逾時，請重試！");
   });
 }
 
