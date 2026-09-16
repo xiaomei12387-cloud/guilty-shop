@@ -735,17 +735,18 @@ function exportDossierToImage() {
     return;
   }
 
-  // 先確保名片內部 QR Code 已經渲染
+  // 1. 確保名片內部 QR Code 實時渲染
   renderCardQrCode();
 
-  const exportBtn = event ? event.target.closest("button") : document.getElementById("btnExportCard");
+  // 2. 安全取得按鈕實體，避免 event 未定義報錯
+  const exportBtn = (typeof event !== 'undefined' && event && event.target) ? event.target.closest("button") : document.getElementById("btnExportCard");
   const originalText = exportBtn ? exportBtn.innerHTML : "";
   if (exportBtn) {
     exportBtn.disabled = true;
     exportBtn.innerHTML = "<span>量子成像中...</span>";
   }
 
-  // 匯出時鎖定背景色、高解析度防糊防變形
+  // 3. 執行 html2canvas 高解析度截圖
   html2canvas(target, {
     backgroundColor: "#0d0e13",
     scale: 2,
@@ -773,7 +774,6 @@ function exportDossierToImage() {
     alert("❌ 戰術名片導出逾時，請重試！");
   });
 }
-
 // --------------------------------------------------------------------------
 // 📷 終端原生相機 / 照片解析掃碼引擎
 // --------------------------------------------------------------------------
