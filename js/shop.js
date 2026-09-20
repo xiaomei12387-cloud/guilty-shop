@@ -43,7 +43,7 @@ const PRODUCTS = [
     note: "單條裝（長度 7.5 公尺，直徑 6mm）",
     img: "./images/image_rope.jpg",
     images: ["./images/image_rope.jpg", "./icons/icon-512.png"],
-    specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"]
+    specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"],  // <--- 這裡補上逗號！
     ropeLengths: [
       { name: "8米", price: 600 },
       { name: "10米", price: 700 }
