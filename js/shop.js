@@ -23,7 +23,7 @@ const PRODUCTS = [
     brandName: "欲室｜共犯 義體",
     title: "神經校準戰術長鞭",
     price: 1500,
-    desc: "重磅手工編織戰術長鞭與加厚皮革防護。精確平衡配重，具備俐落破空手感與精準神經打擊反饋。",
+    desc: "重磅手工編織戰術長鞭。精確平衡配重，具備俐落破空手感與精準神經打擊反饋。",
     note: "提供 1.2米 / 1.5米 規格定制，選擇「其他顏色洽客服」將額外加收 NT$ 100 客製費用。",
     img: "./images/whip_01.png", 
     images: ["./images/whip_01.png","./images/whip_02.png","./images/whip_03.png"], 
@@ -38,12 +38,16 @@ const PRODUCTS = [
     brand: "shushi",
     brandName: "束室特選繩藝",
     title: "束室特選・職人手工精煉麻繩【單條裝】",
-    price: 350,
+    price: 600,
     desc: "13 道古法脫漿、深層天然植物油浸潤與蜂蠟烘烤。手感細膩溫潤，極度親膚且抗拉緊實。",
     note: "單條裝（長度 7.5 公尺，直徑 6mm）",
     img: "./images/image_rope.jpg",
     images: ["./images/image_rope.jpg", "./icons/icon-512.png"],
     specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"]
+    ropeLengths: [
+      { name: "8米", price: 600 },
+      { name: "10米", price: 700 }
+    ]
   }
 ];
 
