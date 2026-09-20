@@ -108,14 +108,15 @@ function openProductDetail(productId) {
   const optArea = document.getElementById("detailDynamicOptions");
   if (optArea) {
     let html = "";
-    // ✦ 鞭子長度規格按鈕 (1.2米 / 1.5米)
-    if (p.whipLengths && p.whipLengths.length > 0) {
+    // ✦ 鞭子或麻繩長度規格按鈕
+    const lengths = p.whipLengths || p.ropeLengths;
+    if (lengths && lengths.length > 0) {
       html += `
         <div class="form-group" style="margin-bottom:12px;">
           <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 選擇長度規格 (Length)*</label>
           <div class="radio-grid">
-            ${p.whipLengths.map((l, idx) => `
-              <div class="radio-card ${idx === 0 ? 'active' : ''}" onclick="selectWhipLength('${l.name}', ${l.price}, this)">
+            ${lengths.map((l, idx) => `
+              <div class="radio-card ${idx === 0 ? 'active' : ''}" onclick="selectWhipLength('${l.name}',${l.price}, this)">
                 ${l.name} (NT$ ${l.price.toLocaleString()})
               </div>
             `).join('')}
