@@ -128,7 +128,7 @@ function openProductDetail(productId) {
     if (p.specs && p.specs.length > 0) {
       html += `
         <div class="form-group" style="margin-bottom:12px;">
-          <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 色彩 / 材質配置* (選其他顏色 +NT$100)</label>
+          <label style="font-size:0.75rem; color:var(--accent-cyan); font-weight:bold;">✦ 色彩 / 材質配置* (選其他顏色請洽客服)</label>
           <div class="radio-grid" style="grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));">
             ${p.specs.map(s => `
               <div class="radio-card ${s === selectedProductSpec ? 'active' : ''}" onclick="selectSpec('${s}', this)" ${s === '其他顏色洽客服' ? 'style="border-style:dashed; color:var(--accent-purple);"' : ''}>
