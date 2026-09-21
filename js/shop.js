@@ -48,6 +48,42 @@ const PRODUCTS = [
       { name: "8米", price: 600 },
       { name: "10米", price: 700 }
     ]
+  },
+  {
+    id: "product-鞭-long9",
+    brand: "guilty",
+    brandName: "欲室｜共犯 義體",
+    title: "NEURO-9 脈衝九股教鞭",
+    price: 2700,
+    desc: "高密度編織工藝，長版九股設計。具備沉穩的揮擊重量與精準的破空反饋，提供強烈而清晰的感官刺激。",
+    note: "專業戰術級長九股編織款式。",
+    img: "./images/whipbar_03.png",
+    images: ["./images/whipbar_03.png"],
+    specs: ["標準配置"]
+  },
+  {
+    id: "product-鞭-short3",
+    brand: "guilty",
+    brandName: "欲室｜共犯 義體",
+    title: "FRACTURE-3 斷點三股教鞭",
+    price: 800,
+    desc: "精巧俐落的三股短鞭配置。適合近距離、高靈活度的精準點控與節奏訓誡。",
+    note: "入門與進階皆宜的靈活短三股款式。",
+    img: "./images/whipbar_02.png",
+    images: ["./images/whipbar_02.png"],
+    specs: ["標準配置"]
+  },
+  {
+    id: "product-鞭-full",
+    brand: "guilty",
+    brandName: "欲室｜共犯 義體",
+    title: "SHIELD-BAR 戰術全包教鞭",
+    price: 1500,
+    desc: "全面包覆防護設計的扎實教鞭。手感溫潤且兼具適度的打擊重量，兼顧安全與深刻的回饋感。",
+    note: "全包覆防護戰術款式。",
+    img: "./images/whipbar_01.png",
+    images: ["./images/whipbar_01.png"],
+    specs: ["標準配置"]
   }
 ];
 
