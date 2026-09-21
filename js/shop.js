@@ -252,19 +252,29 @@ function selectSpec(spec, el) {
 }
 
 function updateCartUI() {
-  const badge = document.getElementById("headerCartCount");
+  const countBadge = document.getElementById("headerCartCountText");
   const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-  if (badge) badge.textContent = totalQty;
+  if (countBadge) countBadge.textContent = `[${String(totalQty).padStart(2, '0')}]`;
 
-  const container = document.getElementById("cartItemsContainer");
-  const subtotalEl = document.getElementById("cartDrawerSubtotal");
-  const banner = document.getElementById("cartFreeShippingBanner");
+  const countHeader = document.getElementById("cart-item-count");
+  if (countHeader) countHeader.textContent = `${totalQty} 項目`;
+
+  const container = document.getElementById("cart-list");
+  const subtotalEl = document.getElementById("subtotal-val");
+  const grandTotalEl = document.getElementById("grand-total-val");
+  const shippingValEl = document.getElementById("shipping-val");
+  const progressBar = document.getElementById("shipping-progress-bar");
+  const progressText = document.getElementById("shipping-progress-text");
+
   if (!container || !subtotalEl) return;
 
   if (cart.length === 0) {
-    container.innerHTML = `<div style="text-align:center; color:var(--text-muted); font-size:0.8rem; padding:30px 0;">[ 裝備庫目前無暫存檔案 ]</div>`;
+    container.innerHTML = `<div class="py-6 text-center text-xs text-zinc-500">調用抽屜目前無裝備</div>`;
     subtotalEl.textContent = "NT$ 0";
-    if (banner) banner.innerHTML = "";
+    if (grandTotalEl) grandTotalEl.textContent = "NT$ 60";
+    if (shippingValEl) shippingValEl.textContent = "NT$ 60";
+    if (progressBar) progressBar.style.width = "0%";
+    if (progressText) progressText.textContent = "還差 NT$ 1,800";
     return;
   }
 
@@ -274,33 +284,59 @@ function updateCartUI() {
     const safeId = String(item.productId || "");
 
     return `
-      <div class="cart-item-card">
-        <img src="${item.img}" class="cart-item-thumb" onclick="openProductDetail('${safeId}')" />
-        <div class="cart-item-info">
-          <div class="cart-item-title" onclick="openProductDetail('${safeId}')">${item.title}</div>
-          <div class="cart-item-spec">規格：${item.spec}</div>
-          <div class="cart-item-price">NT$ ${item.price.toLocaleString()}</div>
-          <div class="cart-qty-ctrl">
-            <button class="qty-btn" onclick="changeCartIndexQty(${index}, -1)">-</button>
-            <span class="qty-num">${item.qty}</span>
-            <button class="qty-btn" onclick="changeCartIndexQty(${index}, 1)">+</button>
-          </div>
+      <div class="flex items-center justify-between bg-black/50 p-2.5 rounded border border-white/5 gap-3">
+        <img src="${item.img}" class="w-12 h-12 object-cover rounded border border-white/10 shrink-0 cursor-pointer" onclick="openProductDetail('${safeId}')" />
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-bold text-white truncate cursor-pointer hover:text-[#00ff88]" onclick="openProductDetail('${safeId}')">${item.title}</div>
+          <div class="text-[10px] text-zinc-400 truncate">規格：${item.spec}</div>
+          <div class="text-xs text-[#00ff88] font-mono mt-0.5">NT$ ${item.price.toLocaleString()} x ${item.qty}</div>
         </div>
-        <button class="cart-item-del" onclick="removeCartIndexItem(${index})">✕</button>
+        <div class="flex items-center gap-1.5 shrink-0 font-mono">
+          <button class="w-6 h-6 bg-surface-container border border-white/10 text-white rounded text-xs cursor-pointer hover:border-[#00ff88]" onclick="changeCartIndexQty(${index}, -1)">-</button>
+          <span class="text-xs w-5 text-center text-white">${item.qty}</span>
+          <button class="w-6 h-6 bg-surface-container border border-white/10 text-white rounded text-xs cursor-pointer hover:border-[#00ff88]" onclick="changeCartIndexQty(${index}, 1)">+</button>
+          <button class="ml-1 text-zinc-500 hover:text-red-400 text-xs px-1 cursor-pointer" onclick="removeCartIndexItem(${index})">✕</button>
+        </div>
       </div>
     `;
   }).join('');
 
   subtotalEl.textContent = `NT$ ${subtotal.toLocaleString()}`;
 
-  if (banner) {
+  // 計算運費與滿額進度
+  let shippingFee = 60;
+  if (subtotal >= 1800 || selectedShippingMethod === 'meetup') {
+    shippingFee = 0;
+  } else if (selectedShippingMethod === 'home') {
+    shippingFee = 120;
+  }
+
+  if (shippingValEl) shippingValEl.textContent = shippingFee === 0 ? "免運 (FREE)" : `NT$ ${shippingFee}`;
+  
+  let discountedSubtotal = Math.round(subtotal * activeDiscountRate);
+  let finalSubtotal = Math.max(0, discountedSubtotal - activePromoDiscount);
+  let grandTotal = finalSubtotal + shippingFee;
+  if (grandTotalEl) grandTotalEl.textContent = `NT$ ${grandTotal.toLocaleString()}`;
+
+  if (progressBar && progressText) {
     if (subtotal >= 1800) {
-      banner.innerHTML = `<span style="color:var(--accent-cyan);">✔ 已達成全館 NT$ 1,800 免運費標準！</span>`;
+      progressBar.style.width = "100%";
+      progressText.textContent = "已達成免運協議！";
     } else {
-      const diff = 1800 - subtotal;
-      banner.innerHTML = `<span style="color:var(--text-muted);">距離免運門檻還差 <strong>NT$ ${diff.toLocaleString()}</strong></span>`;
+      let percent = Math.min(100, Math.round((subtotal / 1800) * 100));
+      progressBar.style.width = `${percent}%`;
+      progressText.textContent = `還差 NT$ ${(1800 - subtotal).toLocaleString()}`;
     }
   }
+}
+
+function toggleCart(isOpen) {
+  // 由於商城頁面已經將購物車面板固定在右側欄，點擊加入時可以滾動到視窗頂部或高亮提示
+  const cartAside = document.querySelector("aside");
+  if (cartAside) {
+    cartAside.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  updateCartUI();
 }
 
 function changeCartIndexQty(index, delta) {
@@ -316,22 +352,6 @@ function removeCartIndexItem(index) {
   if (!cart[index]) return;
   cart.splice(index, 1);
   saveCart();
-}
-
-function toggleCart(isOpen) {
-  const drawer = document.getElementById("cartDrawer");
-  const overlay = document.getElementById("navOverlay");
-  if (!drawer || !overlay) return;
-  if (isOpen) {
-    drawer.classList.add("open");
-    overlay.classList.add("active");
-    updateCartUI();
-  } else {
-    drawer.classList.remove("open");
-    if (!document.getElementById("sideNav").classList.contains("open")) {
-      overlay.classList.remove("active");
-    }
-  }
 }
 
 function filterBrand(brand) {
