@@ -118,6 +118,20 @@ function openProductDetail(productId) {
   document.getElementById("detailProductTitle").textContent = p.title;
   document.getElementById("detailProductDesc").textContent = p.desc;
   document.getElementById("detailPriceDisplay").textContent = `NT$ ${currentDetailPrice.toLocaleString()}`;
+  // 動態渲染商品的專屬備註或客製說明提示
+  const noteContainer = document.getElementById("detailProductNoteContainer");
+  if (noteContainer) {
+    if (p.note) {
+      noteContainer.innerHTML = `
+        <div class="mt-3 p-2.5 rounded bg-black/40 border border-[#00ff88]/20 text-[11px] font-mono text-[#00ff88] flex items-start gap-2">
+          <span class="material-symbols-outlined text-[14px] shrink-0 mt-0.5">info</span>
+          <span>${p.note}</span>
+        </div>
+      `;
+    } else {
+      noteContainer.innerHTML = "";
+    }
+  }
 
   const heroArea = document.getElementById("detailHeroImgArea");
   if (heroArea) {
