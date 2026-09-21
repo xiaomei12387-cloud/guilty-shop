@@ -43,7 +43,7 @@ const PRODUCTS = [
     note: "單條裝（長度 7.5 公尺，直徑 6mm）",
     img: "./images/image_rope.jpg",
     images: ["./images/image_rope.jpg", "./icons/icon-512.png"],
-    specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"],  // <--- 這裡補上逗號！
+    specs: ["深褐色 (黑胡桃油淬)", "天然原麻色 (白蜂蠟輕潤)"], 
     ropeLengths: [
       { name: "8米", price: 600 },
       { name: "10米", price: 700 }
@@ -111,13 +111,14 @@ function openProductDetail(productId) {
   selectedProductSpec = (p.specs && p.specs.length > 0) ? p.specs[0] : "標準配置";
   selectedProductSize = (p.chokerSizes && p.chokerSizes.length > 0) ? p.chokerSizes[0] : "";
   
-  // 初始化鞭子預設長度與價格
-  selectedWhipLength = (p.whipLengths && p.whipLengths.length > 0) ? p.whipLengths[0].name : "";
-  currentDetailPrice = (p.whipLengths && p.whipLengths.length > 0) ? p.whipLengths[0].price : p.price;
+  // 初始化鞭子/麻繩預設長度與價格
+  selectedWhipLength = (p.whipLengths && p.whipLengths.length > 0) ? p.whipLengths[0].name : ((p.ropeLengths && p.ropeLengths.length > 0) ? p.ropeLengths[0].name : "");
+  currentDetailPrice = (p.whipLengths && p.whipLengths.length > 0) ? p.whipLengths[0].price : ((p.ropeLengths && p.ropeLengths.length > 0) ? p.ropeLengths[0].price : p.price);
 
   document.getElementById("detailProductTitle").textContent = p.title;
   document.getElementById("detailProductDesc").textContent = p.desc;
   document.getElementById("detailPriceDisplay").textContent = `NT$ ${currentDetailPrice.toLocaleString()}`;
+  
   // 動態渲染商品的專屬備註或客製說明提示
   const noteContainer = document.getElementById("detailProductNoteContainer");
   if (noteContainer) {
@@ -219,8 +220,9 @@ function updateWhipDetailPrice() {
   if (!p) return;
 
   let basePrice = p.price;
-  if (p.whipLengths) {
-    const foundLen = p.whipLengths.find(l => l.name === selectedWhipLength);
+  const lengths = p.whipLengths || p.ropeLengths;
+  if (lengths) {
+    const foundLen = lengths.find(l => l.name === selectedWhipLength);
     if (foundLen) basePrice = foundLen.price;
   }
 
@@ -331,7 +333,6 @@ function updateCartUI() {
 }
 
 function toggleCart(isOpen) {
-  // 由於商城頁面已經將購物車面板固定在右側欄，點擊加入時可以滾動到視窗頂部或高亮提示
   const cartAside = document.querySelector("aside");
   if (cartAside) {
     cartAside.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
