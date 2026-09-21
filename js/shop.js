@@ -340,6 +340,40 @@ function toggleCart(isOpen) {
   updateCartUI();
 }
 
+function toggleMobileCartDrawer(isOpen) {
+  const drawer = document.getElementById("mobileCartDrawer");
+  const overlay = document.getElementById("mobileCartOverlay");
+  if (!drawer) return;
+
+  if (isOpen) {
+    drawer.style.transform = "translateY(0)";
+    if (overlay) overlay.classList.remove("hidden");
+    // 同步渲染手機抽屜內的清單
+    const mobileList = document.getElementById("mobile-cart-list");
+    const desktopList = document.getElementById("cart-list");
+    if (mobileList && desktopList) {
+      mobileList.innerHTML = desktopList.innerHTML;
+    }
+  } else {
+    drawer.style.transform = "translateY(100%)";
+    if (overlay) overlay.classList.add("hidden");
+  }
+}
+
+// 同步在原本的 updateCartUI 底部加上手機列的數值更新
+// (把這幾行加到你現有的 updateCartUI 函式結尾即可)
+function updateMobileCartBarUI(totalQty, grandTotal) {
+  const badge = document.getElementById("mobileCartCountBadge");
+  const totalVal = document.getElementById("mobileGrandTotalVal");
+  const mobSubtotal = document.getElementById("mobile-subtotal-val");
+  const mobGrand = document.getElementById("mobile-grand-total-val");
+
+  if (badge) badge.textContent = totalQty;
+  if (totalVal) totalVal.textContent = `NT$ ${grandTotal.toLocaleString()}`;
+  if (mobSubtotal) mobSubtotal.textContent = document.getElementById("subtotal-val")?.textContent || "NT$ 0";
+  if (mobGrand) mobGrand.textContent = `NT$ ${grandTotal.toLocaleString()}`;
+}
+
 function changeCartIndexQty(index, delta) {
   if (!cart[index]) return;
   cart[index].qty += delta;
