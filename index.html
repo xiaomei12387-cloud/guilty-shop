@@ -472,10 +472,64 @@
                 <span>外包裝品名一律標示為「高精度五金零件」，寄件人無品牌字樣，守護特工極限隱私。</span>
               </div>
             </div>
+
+            <!-- 📱 手機端專屬底部浮動快捷結帳列（僅在行動裝置顯示） -->
+<div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#08090c]/95 backdrop-blur-xl border-t border-white/15 px-4 py-3 flex items-center justify-between font-mono shadow-[0_-10px_25px_rgba(0,0,0,0.8)]">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded bg-surface-container border border-white/10 flex items-center justify-center text-[#00ff88] relative">
+      <span class="material-symbols-outlined text-xl">shopping_cart</span>
+      <span class="absolute -top-1.5 -right-1.5 bg-[#00ff88] text-black text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow" id="mobileCartCountBadge">0</span>
+    </div>
+    <div>
+      <div class="text-[10px] text-zinc-400 uppercase tracking-widest">總調用金額 / TOTAL</div>
+      <div class="text-sm font-bold text-[#00ff88]" id="mobileGrandTotalVal">NT$ 0</div>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <button onclick="toggleMobileCartDrawer(true)" class="px-3.5 py-2.5 rounded bg-surface-container border border-white/15 text-xs text-white font-bold cursor-pointer hover:border-[#00ff88]">
+      檢視清單
+    </button>
+    <button onclick="proceedToCheckoutFromCart()" class="px-4 py-2.5 rounded bg-[#00ff88] hover:bg-[#60ff99] text-black text-xs font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-[0_0_15px_rgba(0,255,136,0.3)] cursor-pointer">
+      <span>結帳</span>
+      <span class="material-symbols-outlined text-sm">arrow_forward</span>
+    </button>
+  </div>
+</div>
           </aside>
         </div>
       </main>
     </div>
+
+    <!-- 📱 手機端彈出式調用清單抽屜 -->
+<div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden lg:hidden" id="mobileCartOverlay" onclick="toggleMobileCartDrawer(false)"></div>
+<div class="fixed bottom-0 left-0 right-0 z-50 bg-[#0d0e13] border-t border-[#00ff88]/40 rounded-t-2xl p-5 space-y-4 font-mono max-h-[80vh] overflow-y-auto transform translate-y-full transition-transform duration-300 lg:hidden" id="mobileCartDrawer">
+  <div class="flex items-center justify-between pb-3 border-b border-white/10">
+    <div class="flex items-center gap-2">
+      <span class="w-2 h-2 rounded-full bg-[#00ff88] animate-ping"></span>
+      <h3 class="text-sm font-bold text-white uppercase tracking-wider">行動調用抽屜 / MOBILE_CART</h3>
+    </div>
+    <button onclick="toggleMobileCartDrawer(false)" class="text-zinc-400 hover:text-white p-1 cursor-pointer">✕</button>
+  </div>
+
+  <!-- 複用原本的購物車清單容器或共用邏輯 -->
+  <div class="space-y-3 max-h-56 overflow-y-auto pr-1" id="mobile-cart-list">
+    <div class="py-6 text-center text-xs text-zinc-500">調用抽屜目前無裝備</div>
+  </div>
+
+  <div class="pt-3 border-t border-white/10 space-y-2 text-xs">
+    <div class="flex justify-between text-zinc-400"><span>裝備小計</span><span class="text-white" id="mobile-subtotal-val">NT$ 0</span></div>
+    <div class="flex justify-between text-zinc-400"><span>預估運費</span><span class="text-[#00ff88]" id="mobile-shipping-val">NT$ 60</span></div>
+    <div class="flex justify-between items-baseline pt-2 border-t border-white/10 text-sm font-bold">
+      <span class="text-white">總調用金額</span>
+      <span class="text-lg text-[#00ff88]" id="mobile-grand-total-val">NT$ 60</span>
+    </div>
+  </div>
+
+  <button class="w-full py-3.5 rounded-lg bg-[#00ff88] hover:bg-[#60ff99] text-black text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(0,255,136,0.25)]" onclick="toggleMobileCartDrawer(false); proceedToCheckoutFromCart();">
+    <span class="material-symbols-outlined text-[16px]">verified_user</span>
+    <span>[ 前往加密結帳 ]</span>
+  </button>
+</div>
 
     <!-- VIEW: 結帳調用終端 (view-checkout) -->
     <div id="view-checkout" class="view-section hidden w-full">
