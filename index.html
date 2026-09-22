@@ -1942,5 +1942,12 @@ function switchViewAndCloseNav(viewFunction) {
     if (typeof updateMemberUI === 'function') updateMemberUI();
     if (typeof updateCartUI === 'function') updateCartUI();
   </script>
+  <!-- ⚡ 賽博風動態提示橫幅 (Toast Notification) -->
+<div id="cyberToast" class="fixed top-20 right-4 z-[99999] transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-none font-mono text-xs">
+  <div class="bg-[#0d0e13]/95 border border-[#00ff88] text-[#00ff88] px-4 py-3 rounded-lg shadow-[0_0_20px_rgba(0,255,136,0.3)] flex items-center gap-3 backdrop-blur-md">
+    <span class="w-2 h-2 rounded-full bg-[#00ff88] animate-ping"></span>
+    <span id="cyberToastText">✔ 裝備已成功裝載進調用抽屜</span>
+  </div>
+</div>
 </body>
 </html>
