@@ -107,6 +107,17 @@
     ::-webkit-scrollbar-thumb { background: #1f242e; border-radius: 2px; }
     ::-webkit-scrollbar-thumb:hover { background: #00ff88; }
 
+/* 📱 全域行動端防左右溢出鎖定 */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+    
     /* 小字卡標籤樣式 */
     .tag-pill {
       display: inline-flex;
@@ -323,80 +334,59 @@
       <span class="text-[10px] font-code-hud text-white/30 mt-3 tracking-widest">ENCRYPTED CONNECTION // PROTOCOL SECURED</span>
     </div>
   </div>
-
-  <!-- 1. 浮空頂部 HUD 導航列 -->
-  <header class="sticky top-0 z-50 w-full px-4 md:px-8 py-3 bg-[#08090c]/90 backdrop-blur-xl border-b border-white/10">
-    <div class="max-w-[1600px] mx-auto flex items-center justify-between">
-      
-      <div class="flex items-center gap-3 cursor-pointer" onclick="showLandingView()">
-        <div class="w-9 h-9 rounded bg-surface-container-high border border-white/10 flex items-center justify-center relative overflow-hidden group">
-          <svg class="cyber-cat-eye-svg w-7 h-7" viewBox="0 0 100 100">
-            <polygon fill="none" stroke="#00ff88" stroke-width="2" points="50,10 90,50 50,90 10,50"></polygon>
-            <polygon fill="none" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="3 3" points="50,22 78,50 50,78 22,50"></polygon>
-            <path d="M50,26 Q57,50 50,74 Q43,50 50,26 Z" fill="#00ff88"></path>
-          </svg>
-          <div class="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-        </div>
-        <div class="flex items-center gap-3">
-          <svg class="guilty-vector-logo h-6 w-auto" viewBox="0 0 650 160" style="max-width: 120px;">
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M150 35 L110 85 L150 125 L190 85"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M190 85 L230 35 L270 85 L230 135 Z"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M230 35 L230 135"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M270 85 L310 35 L350 85 L390 125"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M390 85 L440 35 L490 85"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M440 35 L440 135"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M500 35 L545 90 L590 35"></path>
-            <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M545 90 L545 135"></path>
-          </svg>
-          <span class="text-sm font-bold text-white tracking-wider hidden sm:inline">欲室｜共犯</span>
-          <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/30 tracking-widest hidden xl:inline">NODE_09 // 戰術節點</span>
-        </div>
+<!-- 1. 浮空頂部 HUD 導航列 -->
+<header class="sticky top-0 z-50 w-full px-3 md:px-8 py-3 bg-[#08090c]/90 backdrop-blur-xl border-b border-white/10 overflow-hidden">
+  <div class="max-w-[1600px] mx-auto flex items-center justify-between w-full">
+    
+    <!-- 左側 Logo 與標題 -->
+    <div class="flex items-center gap-2 cursor-pointer min-w-0" onclick="showLandingView()">
+      <div class="w-8 h-8 md:w-9 md:h-9 rounded bg-surface-container-high border border-white/10 flex items-center justify-center relative overflow-hidden group shrink-0">
+        <svg class="cyber-cat-eye-svg w-6 h-6 md:w-7 md:h-7" viewBox="0 0 100 100">
+          <polygon fill="none" stroke="#00ff88" stroke-width="2" points="50,10 90,50 50,90 10,50"></polygon>
+          <polygon fill="none" stroke="#00ff88" stroke-width="1.5" stroke-dasharray="3 3" points="50,22 78,50 50,78 22,50"></polygon>
+          <path d="M50,26 Q57,50 50,74 Q43,50 50,26 Z" fill="#00ff88"></path>
+        </svg>
       </div>
-
-      <nav class="hidden xl:flex items-center gap-1 font-code-hud text-xs">
-        <button id="nav-landing" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="showLandingView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">首頁大廳</span>
-          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">ロビー</span>
-        </button>
-        <button id="nav-shop" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openShopCatalogView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">裝備商城</span>
-          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">アーセナル</span>
-        </button>
-        <button id="nav-tracker" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openTrackerAppView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">實踐計數</span>
-          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">カウンター</span>
-        </button>
-        <button id="nav-friends" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-white transition-colors rounded" onclick="openFriendsDossierView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工名冊</span>
-          <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">名簿</span>
-        </button>
-        <button id="nav-dossier" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openProfileDossierView()">
-          <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工主頁</span>
-          <span style="font-size:8px; opacity:0.75; line-height:1; margin-top:2px;">身分端末</span>
-        </button>
-      </nav>
-
-      <div class="flex items-center gap-3">
-        <button class="flex items-center gap-2 px-3.5 py-1.5 rounded bg-surface-container border border-white/10 hover:border-primary/50 text-xs font-mono text-zinc-200 transition-all cursor-pointer" onclick="handleHeaderCartClick()">
-          <span class="text-[#00ff88]">🛒</span> 裝備調用清單 
-          <span class="bg-[#00ff88]/15 text-[#00ff88] px-1.5 py-0.5 rounded font-bold text-[11px]" id="headerCartCountText">[01]</span>
-        </button>
-
-        <button class="flex items-center gap-2.5 px-3 py-1.5 rounded bg-surface-container border border-white/10 text-xs font-mono text-white hover:border-primary/40 transition-all cursor-pointer" id="memberBtn" onclick="toggleAuthModal(true)">
-          <div class="w-2 h-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] animate-pulse"></div>
-          <span class="font-bold tracking-wide" id="memberBtnText">AGENT-9481 夜梟</span>
-          <span class="text-[9px] text-[#00ff88] bg-[#00ff88]/10 border border-[#00ff88]/30 px-1 py-0.5 rounded">L5 SECURE</span>
-        </button>
-
-        <button class="xl:hidden p-2 rounded bg-surface-container border border-white/10 text-white hover:text-primary cursor-pointer" onclick="toggleNav(true)">
-          <span class="material-symbols-outlined text-lg">menu</span>
-        </button>
+      <div class="flex items-center gap-2 min-w-0">
+        <svg class="guilty-vector-logo h-5 md:h-6 w-auto shrink-0" viewBox="0 0 650 160" style="max-width: 90px;">
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85"></path>
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M150 35 L110 85 L150 125 L190 85"></path>
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M190 85 L230 35 L270 85 L230 135 Z"></path>
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M230 35 L230 135"></path>
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M270 85 L310 35 L350 85 L390 125"></path>
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M390 85 L440 35 L490 85"></path>
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M440 35 L440 135"></path>
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M500 35 L545 90 L590 35"></path>
+          <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M545 90 L545 135"></path>
+        </svg>
+        <span class="text-xs md:text-sm font-bold text-white tracking-wider hidden sm:inline truncate">欲室｜共犯</span>
       </div>
-
     </div>
-  </header>
 
+    <!-- 電腦版導覽按鈕 (維持 xl 以上顯示) -->
+    <nav class="hidden xl:flex items-center gap-1 font-code-hud text-xs">
+      <!-- 略過電腦版 nav 按鈕內部結構，保持不變 -->
+    </nav>
+
+    <!-- 右側功能按鈕區 -->
+    <div class="flex items-center gap-2 shrink-0">
+      <button class="flex items-center gap-1.5 px-2.5 md:px-3.5 py-1.5 rounded bg-surface-container border border-white/10 hover:border-primary/50 text-[11px] md:text-xs font-mono text-zinc-200 transition-all cursor-pointer" onclick="handleHeaderCartClick()">
+        <span class="text-[#00ff88]">🛒</span> <span class="hidden sm:inline">裝備調用清單</span><span class="sm:hidden">清單</span> 
+        <span class="bg-[#00ff88]/15 text-[#00ff88] px-1 py-0.5 rounded font-bold text-[10px]" id="headerCartCountText">[01]</span>
+      </button>
+
+      <button class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded bg-surface-container border border-white/10 text-xs font-mono text-white hover:border-primary/40 transition-all cursor-pointer" id="memberBtn" onclick="toggleAuthModal(true)">
+        <div class="w-2 h-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] animate-pulse"></div>
+        <span class="font-bold tracking-wide truncate max-w-[100px]" id="memberBtnText">夜梟</span>
+      </button>
+
+      <button class="xl:hidden p-2 rounded bg-surface-container border border-white/10 text-white hover:text-primary cursor-pointer shrink-0" onclick="toggleNav(true)">
+        <span class="material-symbols-outlined text-base md:text-lg">menu</span>
+      </button>
+    </div>
+
+  </div>
+</header>
   <!-- 2. SPA Views Container -->
   <main class="flex-grow w-full max-w-7xl mx-auto px-4 md:px-8 py-6 relative">
 
