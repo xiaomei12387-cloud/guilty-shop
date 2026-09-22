@@ -1176,22 +1176,43 @@ html, body {
 
  <!-- 4. 手機端專屬戰術導覽抽屜 (Mobile Nav Drawer) -->
   <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden" id="mobileNavOverlay" onclick="toggleNav(false)"></div>
-  <div class="fixed left-0 top-0 bottom-0 w-64 bg-[#0b0d13] border-r border-white/10 p-6 flex flex-col justify-between z-50 transform -translate-x-full transition-transform duration-300 font-mono text-xs" id="mobileNavDrawer" style="position:fixed; z-index:9999;">
+  <div class="fixed left-0 top-0 bottom-0 w-72 bg-[#0b0d13] border-r border-white/10 p-6 flex flex-col justify-between z-50 transform -translate-x-full transition-transform duration-300 font-mono text-xs shadow-2xl" id="mobileNavDrawer" style="position:fixed; z-index:9999;">
     <div class="space-y-6">
       <div class="flex justify-between items-center pb-3 border-b border-white/10">
-        <span class="text-[#00ff88] font-bold tracking-widest">// NAVIGATION</span>
-        <button onclick="toggleNav(false)" class="text-white/50 hover:text-white text-base">✕</button>
+        <span class="text-[#00ff88] font-bold tracking-widest">// MOBILE NAVIGATION</span>
+        <button onclick="toggleNav(false)" class="text-white/50 hover:text-white text-base p-1 cursor-pointer">✕</button>
       </div>
-      <nav class="flex flex-col gap-2">
-        <button class="w-full text-left px-3 py-2.5 rounded hover:bg-white/5 text-zinc-300 hover:text-[#00ff88]" onclick="switchViewAndCloseNav(showLandingView)">首頁大廳 (LOBBY)</button>
-        <button class="w-full text-left px-3 py-2.5 rounded hover:bg-white/5 text-zinc-300 hover:text-[#00ff88]" onclick="switchViewAndCloseNav(openShopCatalogView)">裝備商城 (ARSENAL)</button>
-        <button class="w-full text-left px-3 py-2.5 rounded hover:bg-white/5 text-zinc-300 hover:text-[#00ff88]" onclick="switchViewAndCloseNav(openTrackerAppView)">實踐計數 (TRACKER)</button>
-        <button class="w-full text-left px-3 py-2.5 rounded hover:bg-white/5 text-zinc-300 hover:text-[#00ff88]" onclick="switchViewAndCloseNav(openFriendsDossierView)">特工名冊 (FRIENDS)</button>
-        <button class="w-full text-left px-3 py-2.5 rounded bg-primary/10 border border-primary/30 text-[#00ff88]" onclick="switchViewAndCloseNav(openProfileDossierView)">特工主頁 (DOSSIER)</button>
+
+      <!-- 手機專屬快捷導覽清單 -->
+      <nav class="flex flex-col gap-2.5">
+        <button class="w-full text-left px-3.5 py-3 rounded bg-surface-container/50 hover:bg-white/5 text-zinc-300 hover:text-[#00ff88] flex items-center justify-between transition-colors cursor-pointer" onclick="switchViewAndCloseNav(showLandingView)">
+          <span>首頁大廳 (LOBBY)</span>
+          <span class="text-zinc-600">→</span>
+        </button>
+        <button class="w-full text-left px-3.5 py-3 rounded bg-surface-container/50 hover:bg-white/5 text-zinc-300 hover:text-[#00ff88] flex items-center justify-between transition-colors cursor-pointer" onclick="switchViewAndCloseNav(openShopCatalogView)">
+          <span>裝備商城 (ARSENAL)</span>
+          <span class="text-zinc-600">→</span>
+        </button>
+        <button class="w-full text-left px-3.5 py-3 rounded bg-surface-container/50 hover:bg-white/5 text-zinc-300 hover:text-[#00ff88] flex items-center justify-between transition-colors cursor-pointer" onclick="switchViewAndCloseNav(openTrackerAppView)">
+          <span>實踐計數 (TRACKER)</span>
+          <span class="text-zinc-600">→</span>
+        </button>
+        <button class="w-full text-left px-3.5 py-3 rounded bg-surface-container/50 hover:bg-white/5 text-zinc-300 hover:text-[#00ff88] flex items-center justify-between transition-colors cursor-pointer" onclick="switchViewAndCloseNav(openFriendsDossierView)">
+          <span>特工名冊 (FRIENDS)</span>
+          <span class="text-zinc-600">→</span>
+        </button>
+        
+        <!-- ⭐️ 重點：特別突顯的「特工主頁 (DOSSIER)」入口 -->
+        <button class="w-full text-left px-3.5 py-3 rounded bg-[#00ff88]/15 border border-[#00ff88]/40 text-[#00ff88] font-bold flex items-center justify-between transition-all cursor-pointer shadow-[0_0_12px_rgba(0,255,136,0.15)] mt-2" onclick="switchViewAndCloseNav(openProfileDossierView)">
+          <span>★ 特工主頁 (DOSSIER)</span>
+          <span>✦</span>
+        </button>
       </nav>
     </div>
-    <div class="pt-4 border-t border-white/10 text-[10px] text-zinc-500">
-      NODE_09 // TAIPEI_TERMINAL
+
+    <div class="pt-4 border-t border-white/10 flex items-center justify-between text-[10px] text-zinc-500">
+      <span>NODE_09 // TAIPEI</span>
+      <span class="text-[#00ff88]">SECURED</span>
     </div>
   </div>
 
