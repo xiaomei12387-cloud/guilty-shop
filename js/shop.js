@@ -538,7 +538,16 @@ function addCurrentProductToCart() {
   }
 
   saveCart();
-  toggleCart(true);
+
+  // ⚡ 觸發按鈕視覺回饋與頂部賽博提示
+  showCyberToast(`✔ 已成功將 [${activeCheckoutItem.title}] 裝載進調用清單！`);
+
+  // 手機版自動展開抽屜，電腦版則滾動顯示
+  if (window.innerWidth < 1024) {
+    toggleMobileCartDrawer(true);
+  } else {
+    toggleCart(true);
+  }
 }
 
 function buyNowFromDetail() {
