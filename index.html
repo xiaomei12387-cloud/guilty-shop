@@ -129,40 +129,44 @@
       box-shadow: 0 0 8px rgba(255, 51, 102, 0.15);
     }
 
-    /* 商城格線與卡片 */
-    #productGrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-    .product-card {
-      background: rgba(13, 15, 20, 0.78);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: all 0.25s ease;
-      cursor: pointer;
-    }
-    .product-card:hover {
-      border-color: rgba(0, 255, 136, 0.35);
-      box-shadow: 0 0 20px rgba(0, 255, 136, 0.1);
-      transform: translateY(-2px);
-    }
-    .product-card .card-thumb {
-      width: 100%;
-      height: 200px;
-      background: #000;
-      position: relative;
-      overflow: hidden;
-    }
-    .product-card .card-thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
+   /* 🛒 商城格線與響應式卡片優化 */
+#productGrid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr); /* 手機預設單欄，確保圖片與文字清晰 */
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  #productGrid {
+    grid-template-columns: repeat(2, 1fr); /* 平板以上顯示雙欄 */
+  }
+}
+
+@media (min-width: 1280px) {
+  #productGrid {
+    grid-template-columns: repeat(3, 1fr); /* 電腦版顯示三欄 */
+  }
+}
+
+.product-card {
+  background: rgba(13, 15, 20, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent; /* 消除手機點擊閃爍光暈 */
+}
+
+.product-card .card-thumb {
+  width: 100%;
+  height: 220px; /* 手機上稍微加高圖片區，提升視覺質感 */
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
     .product-card:hover .card-thumb img {
       transform: scale(1.05);
     }
@@ -183,34 +187,46 @@
       color: #a78bfa;
       border: 1px solid rgba(167, 139, 250, 0.3);
     }
-    .radio-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .radio-card {
-      background: rgba(19, 21, 27, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 10px 12px;
-      border-radius: 6px;
-      font-size: 0.8rem;
-      color: #9ba1b0;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .radio-card:hover {
-      border-color: rgba(0, 255, 136, 0.4);
-      color: #fff;
-    }
-    .radio-card.active {
-      background: rgba(0, 255, 136, 0.12);
-      border-color: #00ff88;
-      color: #00ff88;
-      font-weight: bold;
-      box-shadow: 0 0 12px rgba(0, 255, 136, 0.2);
-    }
+    /* 🔘 手機友善化規格選項按鈕 */
+.radio-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 手機上預設兩欄，避免過度擠壓 */
+  gap: 10px;
+  margin-top: 8px;
+}
+
+@media (min-width: 640px) {
+  .radio-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+}
+
+.radio-card {
+  background: rgba(19, 21, 27, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 12px 14px; /* 加大上下左右 padding，增加手指點擊範圍 */
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #9ba1b0;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.radio-card:hover {
+  border-color: rgba(0, 255, 136, 0.4);
+  color: #fff;
+}
+
+.radio-card.active {
+  background: rgba(0, 255, 136, 0.12);
+  border-color: #00ff88;
+  color: #00ff88;
+  font-weight: bold;
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.25);
+}
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -824,7 +840,7 @@
               <div id="detailChokerSpecificArea"></div>
             </div>
 
-            <div class="sticky bottom-0 mt-8 w-full bg-black/90 backdrop-blur-xl p-4 shadow-2xl z-30 flex items-center gap-3 border-t border-white/10">
+            <div class="sticky bottom-0 mt-8 w-full bg-black/95 backdrop-blur-xl p-4 pb-8 shadow-2xl z-30 flex items-center gap-3 border-t border-white/10">
               <button class="flex flex-col items-center justify-center shrink-0 w-14 h-12 rounded bg-surface-container hover:bg-surface-container-high text-white transition-all cursor-pointer" onclick="addCurrentProductToCart()" type="button">
                 <span class="material-symbols-outlined text-[20px] text-[#00ff88]">add_shopping_cart</span>
                 <span class="text-[8px] text-zinc-400 tracking-tighter">加入調用</span>
