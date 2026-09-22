@@ -226,6 +226,23 @@ function openProductDetail(productId) {
   history.pushState({ view: 'detail', id: p.id }, '', '#detail');
 }
 
+// ⚡ 賽博風動態提示觸發函式
+function showCyberToast(message) {
+  const toast = document.getElementById("cyberToast");
+  const text = document.getElementById("cyberToastText");
+  if (!toast || !text) return;
+
+  text.textContent = message;
+  toast.classList.remove("-translate-y-20", "opacity-0");
+  toast.classList.add("translate-y-0", "opacity-100");
+
+  // 2.5 秒後自動收回
+  setTimeout(() => {
+    toast.classList.remove("translate-y-0", "opacity-100");
+    toast.classList.add("-translate-y-20", "opacity-0");
+  }, 2500);
+}
+
 // 🔗 智慧分享商品函式（支援手機原生分享 ＋ 網址剪貼簿備用）
 function shareCurrentProduct() {
   if (!activeCheckoutItem) {
