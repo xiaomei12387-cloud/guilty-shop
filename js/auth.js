@@ -58,6 +58,11 @@ function updateMemberUI() {
     // 🟢 已登入狀態：點擊右上角直接進入個人主頁
     memberBtn.onclick = function() {
       openProfileDossierView();
+      // 在 updateMemberUI 內同步更新手機側邊欄的登入按鈕文字
+const mobileAuthText = document.getElementById("mobileAuthBtnText");
+if (mobileAuthText && typeof memberProfile !== 'undefined' && memberProfile && memberProfile.name) {
+  mobileAuthText.textContent = `${memberProfile.name} (${memberProfile.agentId || 'AGENT'})`;
+}
     };
 
     const roleBadge = memberProfile.role ? memberProfile.role.split(" ")[0] : "特工";
