@@ -334,12 +334,12 @@ html, body {
       <span class="text-[10px] font-code-hud text-white/30 mt-3 tracking-widest">ENCRYPTED CONNECTION // PROTOCOL SECURED</span>
     </div>
   </div>
-<!-- 1. 浮空頂部 HUD 導航列 -->
-<header class="sticky top-0 z-50 w-full px-3 md:px-8 py-3 bg-[#08090c]/90 backdrop-blur-xl border-b border-white/10 overflow-hidden">
+<!-- 1. 浮空頂部 HUD 導航列（支援 PC 與手機雙軌適配） -->
+<header class="sticky top-0 z-50 w-full px-3 md:px-8 py-3 bg-[#08090c]/95 backdrop-blur-xl border-b border-white/10 overflow-hidden">
   <div class="max-w-[1600px] mx-auto flex items-center justify-between w-full">
     
-    <!-- 左側 Logo 與標題 -->
-    <div class="flex items-center gap-2 cursor-pointer min-w-0" onclick="showLandingView()">
+    <!-- 左側 Logo 與品牌識別 -->
+    <div class="flex items-center gap-2.5 cursor-pointer min-w-0" onclick="showLandingView()">
       <div class="w-8 h-8 md:w-9 md:h-9 rounded bg-surface-container-high border border-white/10 flex items-center justify-center relative overflow-hidden group shrink-0">
         <svg class="cyber-cat-eye-svg w-6 h-6 md:w-7 md:h-7" viewBox="0 0 100 100">
           <polygon fill="none" stroke="#00ff88" stroke-width="2" points="50,10 90,50 50,90 10,50"></polygon>
@@ -348,7 +348,7 @@ html, body {
         </svg>
       </div>
       <div class="flex items-center gap-2 min-w-0">
-        <svg class="guilty-vector-logo h-5 md:h-6 w-auto shrink-0" viewBox="0 0 650 160" style="max-width: 90px;">
+        <svg class="guilty-vector-logo h-5 md:h-6 w-auto shrink-0" viewBox="0 0 650 160" style="max-width: 95px;">
           <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M110 35 L45 35 L10 80 L45 125 L110 125 L110 85 L70 85"></path>
           <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M150 35 L110 85 L150 125 L190 85"></path>
           <path fill="none" stroke="#00ff88" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" d="M190 85 L230 35 L270 85 L230 135 Z"></path>
@@ -363,24 +363,50 @@ html, body {
       </div>
     </div>
 
-    <!-- 電腦版導覽按鈕 (維持 xl 以上顯示) -->
+    <!-- 🖥️ PC 端專屬導覽按鈕列 (在 xl 螢幕以上才會顯示，手機平板自動隱藏) -->
     <nav class="hidden xl:flex items-center gap-1 font-code-hud text-xs">
-      <!-- 略過電腦版 nav 按鈕內部結構，保持不變 -->
+      <button id="nav-landing" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="showLandingView()">
+        <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">首頁大廳</span>
+        <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">ロビー</span>
+      </button>
+      <button id="nav-shop" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openShopCatalogView()">
+        <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">裝備商城</span>
+        <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">アーセナル</span>
+      </button>
+      <button id="nav-tracker" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openTrackerAppView()">
+        <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">實踐計數</span>
+        <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">カウンター</span>
+      </button>
+      <button id="nav-friends" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-white transition-colors rounded" onclick="openFriendsDossierView()">
+        <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工名冊</span>
+        <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">名簿</span>
+      </button>
+      <button id="nav-dossier" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openProfileDossierView()">
+        <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工主頁</span>
+        <span style="font-size:8px; opacity:0.75; line-height:1; margin-top:2px;">身分端末</span>
+      </button>
     </nav>
 
-    <!-- 右側功能按鈕區 -->
+    <!-- 右側功能按鈕 (PC端與手機端智慧適配) -->
     <div class="flex items-center gap-2 shrink-0">
+      
+      <!-- 購物車按鈕 -->
       <button class="flex items-center gap-1.5 px-2.5 md:px-3.5 py-1.5 rounded bg-surface-container border border-white/10 hover:border-primary/50 text-[11px] md:text-xs font-mono text-zinc-200 transition-all cursor-pointer" onclick="handleHeaderCartClick()">
-        <span class="text-[#00ff88]">🛒</span> <span class="hidden sm:inline">裝備調用清單</span><span class="sm:hidden">清單</span> 
-        <span class="bg-[#00ff88]/15 text-[#00ff88] px-1 py-0.5 rounded font-bold text-[10px]" id="headerCartCountText">[01]</span>
+        <span class="text-[#00ff88]">🛒</span> 
+        <span class="hidden sm:inline">裝備調用清單</span>
+        <span class="sm:hidden">清單</span> 
+        <span class="bg-[#00ff88]/15 text-[#00ff88] px-1.5 py-0.5 rounded font-bold text-[10px]" id="headerCartCountText">[01]</span>
       </button>
 
-      <button class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded bg-surface-container border border-white/10 text-xs font-mono text-white hover:border-primary/40 transition-all cursor-pointer" id="memberBtn" onclick="toggleAuthModal(true)">
+      <!-- 會員身分按鈕 (僅在平板以上顯示，手機版隱藏以防過寬) -->
+      <button class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded bg-surface-container border border-white/10 text-xs font-mono text-white hover:border-primary/40 transition-all cursor-pointer" id="memberBtn" onclick="toggleAuthModal(true)">
         <div class="w-2 h-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] animate-pulse"></div>
-        <span class="font-bold tracking-wide truncate max-w-[100px]" id="memberBtnText">夜梟</span>
+        <span class="font-bold tracking-wide truncate max-w-[90px]" id="memberBtnText">夜梟</span>
+        <span class="text-[9px] text-[#00ff88] bg-[#00ff88]/10 border border-[#00ff88]/30 px-1 py-0.5 rounded">L5</span>
       </button>
 
-      <button class="xl:hidden p-2 rounded bg-surface-container border border-white/10 text-white hover:text-primary cursor-pointer shrink-0" onclick="toggleNav(true)">
+      <!-- 📱 手機端專屬漢堡選單按鈕 (只要螢幕小於 xl 就顯示) -->
+      <button class="xl:hidden p-2 rounded bg-surface-container border border-white/10 text-white hover:text-primary cursor-pointer shrink-0" onclick="toggleNav(true)" aria-label="打開選單">
         <span class="material-symbols-outlined text-base md:text-lg">menu</span>
       </button>
     </div>
