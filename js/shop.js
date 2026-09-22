@@ -84,6 +84,18 @@ const PRODUCTS = [
     img: "./images/whipbar_01.png",
     images: ["./images/whipbar_01.png"],
     specs: ["標準配置"]
+  },
+  {
+    id: "guilty-lighter-white",
+    brand: "guilty",
+    brandName: "欲室｜共犯 義體",
+    title: "「可不可以不要幹我賴打」戰術防風打火機",
+    price: 75,
+    desc: "高質感純白霧面防風打火機。一面印有 GUILTY 賽博標誌與 CODE-001，另一面印有標誌性迷因語錄。火力強悍、防風穩定，極具收藏與惡趣味價值。",
+    note: "單入裝（純白防風款式）",
+    img: "./images/白底黑字.jpg", // 請對應你的實際圖片路徑
+    images: ["./images/白底黑字.jpg"],
+    specs: ["極簡純白 (標準配置)"]
   }
 ];
 
