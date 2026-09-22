@@ -1174,7 +1174,7 @@ html, body {
     </div>
   </div>
 
- <!-- 4. 手機端專屬戰術導覽抽屜 (Mobile Nav Drawer) -->
+<!-- 4. 手機端專屬戰術導覽抽屜 (Mobile Nav Drawer) -->
   <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden" id="mobileNavOverlay" onclick="toggleNav(false)"></div>
   <div class="fixed left-0 top-0 bottom-0 w-72 bg-[#0b0d13] border-r border-white/10 p-6 flex flex-col justify-between z-50 transform -translate-x-full transition-transform duration-300 font-mono text-xs shadow-2xl" id="mobileNavDrawer" style="position:fixed; z-index:9999;">
     <div class="space-y-6">
@@ -1185,6 +1185,16 @@ html, body {
 
       <!-- 手機專屬快捷導覽清單 -->
       <nav class="flex flex-col gap-2.5">
+        
+        <!-- 🔐 會員登入 / 狀態入口 -->
+        <button class="w-full text-left px-3.5 py-3 rounded bg-surface-container border border-white/15 text-white font-bold flex items-center justify-between transition-all cursor-pointer mb-1 shadow-sm" onclick="toggleNav(false); toggleAuthModal(true);">
+          <span class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#00ff88] shadow-[0_0_8px_#00ff88] animate-pulse"></span>
+            <span id="mobileAuthBtnText">特工身分登入 / 註冊</span>
+          </span>
+          <span class="text-[#00ff88] text-[10px] bg-[#00ff88]/10 px-2 py-0.5 rounded border border-[#00ff88]/30">AUTH</span>
+        </button>
+
         <button class="w-full text-left px-3.5 py-3 rounded bg-surface-container/50 hover:bg-white/5 text-zinc-300 hover:text-[#00ff88] flex items-center justify-between transition-colors cursor-pointer" onclick="switchViewAndCloseNav(showLandingView)">
           <span>首頁大廳 (LOBBY)</span>
           <span class="text-zinc-600">→</span>
@@ -1202,7 +1212,7 @@ html, body {
           <span class="text-zinc-600">→</span>
         </button>
         
-        <!-- ⭐️ 重點：特別突顯的「特工主頁 (DOSSIER)」入口 -->
+        <!-- 特工主頁入口 -->
         <button class="w-full text-left px-3.5 py-3 rounded bg-[#00ff88]/15 border border-[#00ff88]/40 text-[#00ff88] font-bold flex items-center justify-between transition-all cursor-pointer shadow-[0_0_12px_rgba(0,255,136,0.15)] mt-2" onclick="switchViewAndCloseNav(openProfileDossierView)">
           <span>★ 特工主頁 (DOSSIER)</span>
           <span>✦</span>
