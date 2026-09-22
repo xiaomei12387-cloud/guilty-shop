@@ -226,6 +226,40 @@ function openProductDetail(productId) {
   history.pushState({ view: 'detail', id: p.id }, '', '#detail');
 }
 
+// 🔗 智慧分享商品函式（支援手機原生分享 ＋ 網址剪貼簿備用）
+function shareCurrentProduct() {
+  if (!activeCheckoutItem) {
+    alert("❌ 目前沒有選中的裝備可供分享。");
+    return;
+  }
+
+  const p = activeCheckoutItem;
+  const shareTitle = `欲室｜共犯 ARSENAL // ${p.title}`;
+  const shareText = `正在調用高精度戰術裝備：${p.title}（NT$ ${p.price.toLocaleString()}）。\n${p.desc}\n\n立即透過 GUILTY PROTOCOL 進行加密解密調用：`;
+  
+  // 建立對應的錨點網址（例如 #shop 或帶有商品 ID 的 hash）
+  const shareUrl = window.location.origin + window.location.pathname + `#shop-${p.id}`;
+
+  // 1. 如果瀏覽器支援 Web Share API（手機或現代桌面瀏覽器）
+  if (navigator.share) {
+    navigator.share({
+      title: shareTitle,
+      text: shareText,
+      url: shareUrl,
+    }).catch((err) => {
+      console.log("分享取消或失敗:", err);
+    });
+  } else {
+    // 2. 備用方案：複製文字與連結到剪貼簿
+    const dummyText = `${shareTitle}\n${shareText}\n${shareUrl}`;
+    navigator.clipboard.writeText(dummyText).then(() => {
+      alert("📋 裝備情報與安全連結已複製到剪貼簿！可直接貼上分享給其他特工。");
+    }).catch(() => {
+      prompt("請複製以下特工裝備連結：", shareUrl);
+    });
+  }
+}
+
 // ✦ 智慧更新價格（長度基礎價 + 其他顏色加收 100 元）
 function updateWhipDetailPrice() {
   const p = activeCheckoutItem;
