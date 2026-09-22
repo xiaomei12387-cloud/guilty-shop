@@ -1934,34 +1934,38 @@ function switchViewAndCloseNav(viewFunction) {
       modal.style.display = isOpen ? "flex" : "none";
     }
 
-    // 初始化狀態
-    history.replaceState({ view: 'landing' }, '', '#landing');
+  // ----------------------------------------------------
+    // 初始化狀態與深度連結解析
+    // ----------------------------------------------------
     if (typeof loadAgentTrackerState === 'function') loadAgentTrackerState();
     if (typeof renderTrackerApp === 'function') renderTrackerApp();
     if (typeof renderProfileDossier === 'function') renderProfileDossier();
     if (typeof updateMemberUI === 'function') updateMemberUI();
     if (typeof updateCartUI === 'function') updateCartUI();
-    // 🔗 深度連結解析函式：自動跳轉至對應商品詳情
-  function handleDeepLinkHash() {
-    const hash = window.location.hash; // 取得類似 #shop-guilty-lighter-white 的雜湊
-    if (hash.startsWith("#shop-")) {
-      const productId = hash.replace("#shop-", "");
-      openShopCatalogView();
-      setTimeout(() => {
-        openProductDetail(productId);
-      }, 150);
+
+    // 🔗 統一的深度連結解析函式
+    function handleDeepLinkHash() {
+      const hash = window.location.hash; // 取得類似 #shop-guilty-lighter-white 的雜湊
+      if (hash && hash.startsWith("#shop-")) {
+        const productId = hash.replace("#shop-", "");
+        openShopCatalogView();
+        setTimeout(() => {
+          openProductDetail(productId);
+        }, 150);
+      }
     }
-  }
 
-  // 網頁初次載入時執行
-  if (document.readyState === "loading") {
-    window.addEventListener("DOMContentLoaded", handleDeepLinkHash);
-  } else {
-    handleDeepLinkHash();
-  }
+    // 檢查網址是否帶有商品深度連結，若無則預設回到首頁大廳
+    const currentHash = window.location.hash;
+    if (currentHash && currentHash.startsWith("#shop-")) {
+      handleDeepLinkHash();
+    } else {
+      history.replaceState({ view: 'landing' }, '', '#landing');
+      showLandingView(false);
+    }
 
-  // 監聽網址 Hash 變更（支援單頁應用即時導航）
-  window.addEventListener("hashchange", handleDeepLinkHash);
+    // 監聽網址 Hash 變更（支援單頁應用即時導航與分享連結點擊）
+    window.addEventListener("hashchange", handleDeepLinkHash);
   </script>
   <!-- ⚡ 賽博風動態提示橫幅 (Toast Notification) -->
 <div id="cyberToast" class="fixed top-20 right-4 z-[99999] transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-none font-mono text-xs">
