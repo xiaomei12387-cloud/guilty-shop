@@ -1941,6 +1941,19 @@ function switchViewAndCloseNav(viewFunction) {
     if (typeof renderProfileDossier === 'function') renderProfileDossier();
     if (typeof updateMemberUI === 'function') updateMemberUI();
     if (typeof updateCartUI === 'function') updateCartUI();
+    // 🔗 自動解析網址 Hash（例如 #shop-product-whip-01），實現商品深度連結
+window.addEventListener("DOMContentLoaded", () => {
+  const hash = window.location.hash; // 取得類似 #shop-guilty-lighter-white 的雜湊
+  
+  if (hash.startsWith("#shop-")) {
+    const productId = hash.replace("#shop-", "");
+    // 先開啟商城，再直接打開該商品的詳細頁
+    openShopCatalogView();
+    setTimeout(() => {
+      openProductDetail(productId);
+    }, 100); // 確保 DOM 與資料載入完成後再觸發
+  }
+});
   </script>
   <!-- ⚡ 賽博風動態提示橫幅 (Toast Notification) -->
 <div id="cyberToast" class="fixed top-20 right-4 z-[99999] transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-none font-mono text-xs">
