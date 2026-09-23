@@ -1551,6 +1551,28 @@ function switchViewAndCloseNav(viewFunction) {
       reader.readAsDataURL(file);
     }
 
+    // 📷 動態產生帶有特工 ID 的專屬 QR Code
+function updateDossierQRCode() {
+  const tProf = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : { agentId: "AGENT-9481" };
+  const agentId = tProf.agentId || "AGENT-9481";
+  
+  // 產生分享或查詢的專屬網址
+  const profileUrl = window.location.origin + window.location.pathname + `#dossier-${agentId}`;
+  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(profileUrl)}&color=00ff88&bgcolor=000000`;
+
+  // 1. 名片卡內嵌的 QR Code
+  const cardQr = document.getElementById("cardEmbeddedQr");
+  if (cardQr) {
+    cardQr.innerHTML = `<img src="${qrApiUrl}" alt="Neural Pass QR" class="w-full h-full object-contain">`;
+  }
+
+  // 2. 特工主頁大張的 QR Code 區塊
+  const myBox = document.getElementById("myQrCodeBox");
+  if (myBox) {
+    myBox.innerHTML = `<img src="${qrApiUrl}" alt="My QR Code" class="w-32 h-32 object-contain mx-auto border border-[#00ff88]/30 rounded p-1 bg-black">`;
+  }
+}
+
     function generateRandomDiceBearAvatar() {
       const seed = "Agent_" + Math.random().toString(36).substring(2, 8);
       const url = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}`;
@@ -1560,6 +1582,109 @@ function switchViewAndCloseNav(viewFunction) {
         trackerState.profile.avatar = url;
       }
     }
+
+    // 👥 檢查網址是否帶有特工檔案查詢 (例: #dossier-AGENT-9481)
+function checkDossierDeepLink() {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith("#dossier-")) {
+    const targetAgentId = hash.replace("#dossier-", "").toUpperCase();
+    
+    // 模擬從資料庫或 localStorage 尋找該特工的公開情報
+    // (此處可對應你的 friends 或全域特工資料庫)
+    lookupAndShowAgentProfile(targetAgentId);
+  }
+}
+
+// 放大顯示別人掃碼進來的特工公開情報與追蹤按鈕
+function lookupAndShowAgentProfile(agentId) {
+  // 尋找對象（先從已知的夥伴名冊或預設名單找，若找不到則顯示模擬公開檔案）
+  let target = null;
+  if (typeof trackerState !== 'undefined' && trackerState.partners) {
+    target = trackerState.partners.find(p => p.agentId.toUpperCase() === agentId);
+  }
+
+  if (!target) {
+    // 預設示範公開檔案
+    target = {
+      name: "未知特工",
+      agentId: agentId,
+      role: "雙向切換 (Switch)",
+      safeword: "REDACTED",
+      bio: "透過神經 QR Code 掃描接入的未知特工節點。",
+      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${agentId}`,
+      selectedTags: ["🔍 探索中", "暗號通訊"],
+      limits: ["過度越權"]
+    };
+  }
+
+  // 填入公開情報彈窗
+  document.getElementById("fpName").textContent = `${target.name} (${target.agentId})`;
+  document.getElementById("fpId").textContent = `ID: ${target.agentId}`;
+  document.getElementById("fpRole").textContent = target.role;
+  document.getElementById("fpBio").textContent = target.bio || "此特工尚未留下公開宣言。";
+  document.getElementById("fpAvatar").src = target.avatar;
+
+  // 渲染偏好標籤
+  const prefsBox = document.getElementById("fpPrefs");
+  prefsBox.innerHTML = (target.selectedTags || []).map(t => `<span class="tag-pill">${t}</span>`).join('');
+
+  // 渲染雷點
+  const limitsBox = document.getElementById("fpLimits");
+  limitsBox.innerHTML = (target.limits || []).map(l => `<span class="tag-pill active-limit">${l}</span>`).join('');
+
+  // 🌟 動態加入「⚡ 接入神經網絡 (追蹤/加好友)」按鈕到彈窗底部
+  const modalContent = document.querySelector("#friendProfileModal > div");
+  let actionArea = document.getElementById("friendModalActionArea");
+  if (!actionArea) {
+    actionArea = document.createElement("div");
+    actionArea.id = "friendModalActionArea";
+    actionArea.className = "pt-3 border-t border-white/10 mt-3";
+    modalContent.appendChild(actionArea);
+  }
+
+  // 檢查是否已經是好友
+  const isAlreadyFriend = (typeof trackerState !== 'undefined' && trackerState.partners) ? trackerState.partners.some(p => p.agentId.toUpperCase() === agentId) : false;
+
+  actionArea.innerHTML = isAlreadyFriend ? `
+    <div class="w-full py-2 bg-[#00ff88]/10 border border-[#00ff88]/40 text-[#00ff88] text-center font-bold rounded text-xs">
+      ✔ 已在您的特工名冊網絡中 (LINKED)
+    </div>
+  ` : `
+    <button onclick='addSearchedAgentToNetwork(${JSON.stringify(target)})' class="w-full py-2.5 bg-[#00ff88] hover:bg-[#60ff99] text-black font-bold uppercase rounded text-xs cursor-pointer shadow-[0_0_12px_rgba(0,255,136,0.3)]">
+      ⚡ 接入神經網絡 // 追蹤此特工 (ADD FRIEND)
+    </button>
+  `;
+
+  // 顯示彈窗
+  const modal = document.getElementById("friendProfileModal");
+  if (modal) modal.style.display = "flex";
+}
+
+// ⚡ 將掃描或查詢到的特工加入名冊
+function addSearchedAgentToNetwork(agentObj) {
+  if (typeof trackerState === 'undefined') return;
+  if (!trackerState.partners) trackerState.partners = [];
+
+  // 避免重複加入
+  const exists = trackerState.partners.some(p => p.agentId === agentObj.agentId);
+  if (!exists) {
+    trackerState.partners.push({
+      name: agentObj.name,
+      agentId: agentObj.agentId,
+      role: agentObj.role,
+      safeword: agentObj.safeword || "MAYDAY",
+      bio: agentObj.bio,
+      avatar: agentObj.avatar,
+      selectedTags: agentObj.selectedTags || [],
+      limits: agentObj.limits || []
+    });
+    if (typeof saveTrackerState === 'function') saveTrackerState();
+  }
+
+  alert(`✔ 成功與特工 [${agentObj.name} (${agentObj.agentId})] 建立量子神經連結！已納入您的特工名冊。`);
+  closeFriendProfileModal();
+  openFriendsDossierView(); // 自動跳轉至名冊頁面查看
+}
 
     function closeFriendProfileModal() {
       const modal = document.getElementById("friendProfileModal");
@@ -1956,16 +2081,39 @@ function switchViewAndCloseNav(viewFunction) {
     }
 
     // 檢查網址是否帶有商品深度連結，若無則預設回到首頁大廳
+// 🔗 統一的深度連結與路由解析函式
+    function handleGlobalDeepLink() {
+      const hash = window.location.hash;
+      if (!hash) return;
+
+      if (hash.startsWith("#shop-")) {
+        const productId = hash.replace("#shop-", "");
+        openShopCatalogView();
+        setTimeout(() => {
+          openProductDetail(productId);
+        }, 150);
+      } else if (hash.startsWith("#dossier-")) {
+        const targetAgentId = hash.replace("#dossier-", "").toUpperCase();
+        lookupAndShowAgentProfile(targetAgentId);
+      }
+    }
+
+    // 檢查網址是否帶有深度連結，若無則預設回到首頁大廳
     const currentHash = window.location.hash;
-    if (currentHash && currentHash.startsWith("#shop-")) {
-      handleDeepLinkHash();
+    if (currentHash && (currentHash.startsWith("#shop-") || currentHash.startsWith("#dossier-"))) {
+      handleGlobalDeepLink();
     } else {
       history.replaceState({ view: 'landing' }, '', '#landing');
       showLandingView(false);
     }
 
-    // 監聽網址 Hash 變更（支援單頁應用即時導航與分享連結點擊）
-    window.addEventListener("hashchange", handleDeepLinkHash);
+    // 畫面渲染後更新動態 QR Code
+    setTimeout(() => {
+      if (typeof updateDossierQRCode === 'function') updateDossierQRCode();
+    }, 200);
+
+    // 監聽網址 Hash 變更
+    window.addEventListener("hashchange", handleGlobalDeepLink);
   </script>
   <!-- ⚡ 賽博風動態提示橫幅 (Toast Notification) -->
 <div id="cyberToast" class="fixed top-20 right-4 z-[99999] transform -translate-y-20 opacity-0 transition-all duration-300 pointer-events-none font-mono text-xs">
