@@ -2081,36 +2081,34 @@ function addSearchedAgentToNetwork(agentObj) {
     }
 
     // 檢查網址是否帶有商品深度連結，若無則預設回到首頁大廳
-// 🔗 統一的深度連結與路由解析函式
+// 🔗 升級版全域深度連結與路由解析函式
     function handleGlobalDeepLink() {
       const hash = window.location.hash;
       if (!hash) return;
 
       if (hash.startsWith("#shop-")) {
         const productId = hash.replace("#shop-", "");
-        openShopCatalogView();
+        
+        // 1. 強制打開商城視圖
+        setActiveView('view-shop');
+        if (typeof renderProductCards === 'function') {
+          renderProductCards();
+        }
+
+        // 2. 延長至 300 毫秒，確保格線與 DOM 完全生成後再呼叫商品詳情
         setTimeout(() => {
-          openProductDetail(productId);
-        }, 150);
+          if (typeof openProductDetail === 'function') {
+            openProductDetail(productId);
+          }
+        }, 300);
+
       } else if (hash.startsWith("#dossier-")) {
         const targetAgentId = hash.replace("#dossier-", "").toUpperCase();
-        lookupAndShowAgentProfile(targetAgentId);
+        if (typeof lookupAndShowAgentProfile === 'function') {
+          lookupAndShowAgentProfile(targetAgentId);
+        }
       }
     }
-
-    // 檢查網址是否帶有深度連結，若無則預設回到首頁大廳
-    const currentHash = window.location.hash;
-    if (currentHash && (currentHash.startsWith("#shop-") || currentHash.startsWith("#dossier-"))) {
-      handleGlobalDeepLink();
-    } else {
-      history.replaceState({ view: 'landing' }, '', '#landing');
-      showLandingView(false);
-    }
-
-    // 畫面渲染後更新動態 QR Code
-    setTimeout(() => {
-      if (typeof updateDossierQRCode === 'function') updateDossierQRCode();
-    }, 200);
 
     // 監聽網址 Hash 變更
     window.addEventListener("hashchange", handleGlobalDeepLink);
