@@ -541,27 +541,28 @@ html, body {
       </div>
     </div>
     
-    <!-- VIEW: 裝備調用商城 (view-shop) -->
+<!-- VIEW: 裝備調用商城 (view-shop) -->
     <div id="view-shop" class="view-section hidden w-full">
       <main class="flex-1 pt-12 pb-20 px-4 sm:px-6 lg:px-8 mx-auto w-full max-w-[1600px]">
         
         <div class="mb-8">
           <div class="flex justify-between items-center mb-4">
-            <button onclick="showLandingView()" class="px-3.5 py-1.5 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded">← 返回首頁大廳</button>
+            <button onclick="showLandingView()" class="px-3.5 py-1.5 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回首頁大廳</button>
           </div>
           <div class="text-[9px] font-mono tracking-widest text-[#00ff88]/70 uppercase mb-1.5">// ARSENAL_CATALOG・装備調達拠点</div>
           <div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3">
-            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-              裝備調用商城
+            <h1 class="text-2xl sm:text-3xl font-bold text-white tracking-tight flex items-baseline gap-3">
+              <span>裝備調用商城</span>
+              <span class="text-xs font-mono text-zinc-400 font-normal">// 装備調達アーセナル</span>
               <span class="text-xs font-mono font-normal text-white/40 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">STAGE: ACTIVE v2.5</span>
             </h1>
             <p class="text-xs font-mono text-white/50 tracking-wide">極限感官與拘束器材庫・全台超商無痕隱密發送</p>
           </div>
 
           <div class="flex flex-wrap items-center gap-2 mt-6 pb-2 border-b border-white/[0.06]">
-            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-[#00ff88] text-black font-bold active" onclick="filterBrand('all')">全部裝備 (ALL)</button>
-            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-surface-container text-zinc-300 hover:text-white border border-white/10" onclick="filterBrand('guilty')">欲室｜共犯 義體</button>
-            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-surface-container text-zinc-300 hover:text-white border border-white/10" onclick="filterBrand('shushi')">束室特選繩藝</button>
+            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-[#00ff88] text-black font-bold active" onclick="filterBrand('all')">全部裝備 <span class="opacity-75 text-[10px]">// すべて</span></button>
+            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-surface-container text-zinc-300 hover:text-white border border-white/10" onclick="filterBrand('guilty')">欲室｜共犯 義體 <span class="opacity-50 text-[10px]">// 義体</span></button>
+            <button class="filter-btn px-4 py-2 rounded-full text-xs font-mono tracking-wider transition-all bg-surface-container text-zinc-300 hover:text-white border border-white/10" onclick="filterBrand('shushi')">束室特選繩藝 <span class="opacity-50 text-[10px]">// 縄芸</span></button>
           </div>
         </div>
 
@@ -573,7 +574,10 @@ html, body {
               <div class="flex items-center justify-between pb-3 border-b border-white/10">
                 <div>
                   <span class="text-[8px] text-[#00ff88] tracking-widest uppercase">HUD_CART // 調用抽屜</span>
-                  <h3 class="text-base font-bold text-white">調用裝備清單</h3>
+                  <h3 class="text-base font-bold text-white flex items-baseline gap-2">
+                    <span>調用裝備清單</span>
+                    <span class="text-[10px] text-zinc-500 font-normal">// カート一覧</span>
+                  </h3>
                 </div>
                 <span class="text-xs px-2 py-0.5 rounded bg-white/5 text-[#00ff88] border border-[#00ff88]/30" id="cart-item-count">0 項目</span>
               </div>
@@ -595,7 +599,7 @@ html, body {
               </div>
 
               <div class="pt-3 border-t border-white/10 space-y-2 text-xs">
-                <span class="text-[10px] text-zinc-400 uppercase tracking-wider block">配送方式選配 // LOGISTICS</span>
+                <span class="text-[10px] text-zinc-400 uppercase tracking-wider block">配送方式選配 <span class="text-zinc-600">// 配送オプション</span></span>
                 <div class="grid grid-cols-3 gap-1.5" id="shipping-options">
                   <button class="shipping-btn active p-2 rounded text-left border bg-[#00ff88]/10 text-[#00ff88] border-[#00ff88]/40 cursor-pointer" data-fee="60" onclick="selectShipping('711', this)" type="button">
                     <div class="text-[11px] font-bold">7-11 超商</div>
@@ -621,18 +625,18 @@ html, body {
               </div>
 
               <div class="pt-4 mt-3 border-t border-white/10 space-y-1.5 text-xs">
-                <div class="flex justify-between text-zinc-400"><span>裝備小計</span><span class="text-white" id="subtotal-val">NT$ 0</span></div>
-                <div class="flex justify-between text-[#a78bfa] hidden" id="discount-line"><span>密鑰折扣</span><span id="discount-val">- NT$ 0</span></div>
-                <div class="flex justify-between text-zinc-400"><span>物流運費</span><span class="text-[#00ff88]" id="shipping-val">NT$ 60</span></div>
+                <div class="flex justify-between text-zinc-400"><span>裝備小計 <span class="text-[10px] opacity-50">// 小計</span></span><span class="text-white" id="subtotal-val">NT$ 0</span></div>
+                <div class="flex justify-between text-[#a78bfa] hidden" id="discount-line"><span>密鑰折扣 <span class="text-[10px] opacity-50">// 割引</span></span><span id="discount-val">- NT$ 0</span></div>
+                <div class="flex justify-between text-zinc-400"><span>物流運費 <span class="text-[10px] opacity-50">// 送料</span></span><span class="text-[#00ff88]" id="shipping-val">NT$ 60</span></div>
                 <div class="flex justify-between items-baseline pt-2 border-t border-white/10 text-sm font-bold">
-                  <span class="text-white">總調用金額</span>
+                  <span class="text-white">總調用金額 <span class="text-[10px] text-zinc-500 font-normal">// 合計</span></span>
                   <span class="text-xl text-[#00ff88] drop-shadow-[0_0_8px_rgba(0,255,136,0.3)]" id="grand-total-val">NT$ 60</span>
                 </div>
               </div>
 
               <button class="w-full mt-4 py-3 rounded-lg bg-[#00ff88] hover:bg-[#60ff99] text-black text-xs font-bold uppercase transition-all shadow-[0_0_16px_rgba(0,255,136,0.25)] flex items-center justify-center gap-2 cursor-pointer" id="checkout-btn" onclick="proceedToCheckoutFromCart()" type="button">
                 <span class="material-symbols-outlined text-[18px]">verified_user</span>
-                <span>[ 簽署調用協議 // 前往加密結帳 ]</span>
+                <span>[ 簽署調用協議 // 暗号決済へ進む ]</span>
               </button>
 
               <div class="mt-3 p-2 rounded bg-black/50 border border-white/5 text-[10px] text-zinc-400 flex items-start gap-1.5">
@@ -641,28 +645,28 @@ html, body {
               </div>
             </div>
 
-            <!-- 📱 手機端專屬底部浮動快捷結帳列（僅在行動裝置顯示） -->
-<div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#08090c]/95 backdrop-blur-xl border-t border-white/15 px-4 py-3 flex items-center justify-between font-mono shadow-[0_-10px_25px_rgba(0,0,0,0.8)]">
-  <div class="flex items-center gap-3">
-    <div class="w-10 h-10 rounded bg-surface-container border border-white/10 flex items-center justify-center text-[#00ff88] relative">
-      <span class="material-symbols-outlined text-xl">shopping_cart</span>
-      <span class="absolute -top-1.5 -right-1.5 bg-[#00ff88] text-black text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow" id="mobileCartCountBadge">0</span>
-    </div>
-    <div>
-      <div class="text-[10px] text-zinc-400 uppercase tracking-widest">總調用金額 / TOTAL</div>
-      <div class="text-sm font-bold text-[#00ff88]" id="mobileGrandTotalVal">NT$ 0</div>
-    </div>
-  </div>
-  <div class="flex items-center gap-2">
-    <button onclick="toggleMobileCartDrawer(true)" class="px-3.5 py-2.5 rounded bg-surface-container border border-white/15 text-xs text-white font-bold cursor-pointer hover:border-[#00ff88]">
-      檢視清單
-    </button>
-    <button onclick="proceedToCheckoutFromCart()" class="px-4 py-2.5 rounded bg-[#00ff88] hover:bg-[#60ff99] text-black text-xs font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-[0_0_15px_rgba(0,255,136,0.3)] cursor-pointer">
-      <span>結帳</span>
-      <span class="material-symbols-outlined text-sm">arrow_forward</span>
-    </button>
-  </div>
-</div>
+            <!-- 📱 手機端專屬底部浮動快捷結帳列 -->
+            <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#08090c]/95 backdrop-blur-xl border-t border-white/15 px-4 py-3 flex items-center justify-between font-mono shadow-[0_-10px_25px_rgba(0,0,0,0.8)]">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded bg-surface-container border border-white/10 flex items-center justify-center text-[#00ff88] relative">
+                  <span class="material-symbols-outlined text-xl">shopping_cart</span>
+                  <span class="absolute -top-1.5 -right-1.5 bg-[#00ff88] text-black text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center shadow" id="mobileCartCountBadge">0</span>
+                </div>
+                <div>
+                  <div class="text-[10px] text-zinc-400 uppercase tracking-widest">總調用金額 <span class="text-[9px] opacity-60">// 合計</span></div>
+                  <div class="text-sm font-bold text-[#00ff88]" id="mobileGrandTotalVal">NT$ 0</div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="toggleMobileCartDrawer(true)" class="px-3.5 py-2.5 rounded bg-surface-container border border-white/15 text-xs text-white font-bold cursor-pointer hover:border-[#00ff88]">
+                  檢視清單
+                </button>
+                <button onclick="proceedToCheckoutFromCart()" class="px-4 py-2.5 rounded bg-[#00ff88] hover:bg-[#60ff99] text-black text-xs font-extrabold uppercase tracking-wider flex items-center gap-1 shadow-[0_0_15px_rgba(0,255,136,0.3)] cursor-pointer">
+                  <span>結帳</span>
+                  <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+              </div>
+            </div>
           </aside>
         </div>
       </main>
@@ -722,11 +726,14 @@ html, body {
         </div>
 
         <!-- 1. 調用清單明細 -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3">
+        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
           <div class="flex items-center justify-between border-b border-white/10 pb-2.5">
             <div class="flex items-center gap-2">
               <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs font-mono tracking-wider text-neutral-200 uppercase font-semibold">調用清單明細 / MANIFEST</h2>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold flex items-baseline gap-2">
+                <span>調用清單明細</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// マニフェスト・MANIFEST</span>
+              </h2>
             </div>
           </div>
           <div class="space-y-2.5" id="checkoutOrderItemsList"></div>
@@ -737,7 +744,10 @@ html, body {
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">特工密鑰協議 / PROMO PROTOCOL</h2>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold flex items-baseline gap-2">
+                <span>特工密鑰協議</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// プロモプロトコル</span>
+              </h2>
             </div>
           </div>
           <div class="flex gap-2">
@@ -759,7 +769,10 @@ html, body {
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">配送路徑選擇 / DISPATCH ROUTE</h2>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold flex items-baseline gap-2">
+                <span>配送路徑選擇</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// 配送ルート・DISPATCH ROUTE</span>
+              </h2>
             </div>
           </div>
           <div class="grid grid-cols-2 gap-2.5">
@@ -802,7 +815,10 @@ html, body {
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">門市節點鎖定 / CVS NODE PICKER</h2>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold flex items-baseline gap-2">
+                <span>門市節點鎖定</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// 店舗ロック・CVS NODE PICKER</span>
+              </h2>
             </div>
             <span class="text-[10px] text-neutral-400">StoreDB 聯動</span>
           </div>
@@ -846,18 +862,15 @@ html, body {
           <input type="hidden" id="finalShippingLocation">
         </section>
 
-        <!-- 手動地址 -->
-        <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono" id="manualLocationGroup" style="display:none;">
-          <div class="text-xs font-bold text-[#00ff88]">填寫收件地址或面交備註</div>
-          <input type="text" id="manualLocationInput" class="w-full bg-[#0d0e11] border border-white/15 text-xs text-neutral-200 rounded-lg px-3 py-2" placeholder="請輸入收件完整地址...">
-        </section>
-
         <!-- 5. 特工收件安全憑證 -->
         <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">特工收件安全憑證 / RECIPIENT INTEL</h2>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold flex items-baseline gap-2">
+                <span>特工收件安全憑證</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// 受取人証明・RECIPIENT INTEL</span>
+              </h2>
             </div>
           </div>
           <div class="space-y-3 text-xs">
@@ -885,7 +898,10 @@ html, body {
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">結算途徑 / SETTLEMENT PROTOCOL</h2>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold flex items-baseline gap-2">
+                <span>結算途徑</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// 決済プロトコル・SETTLEMENT</span>
+              </h2>
             </div>
           </div>
           <div class="space-y-2 text-xs">
@@ -911,7 +927,10 @@ html, body {
           <div class="flex items-center justify-between border-b border-white/10 pb-2">
             <div class="flex items-center gap-2">
               <span class="w-1.5 h-3.5 bg-[#00ff88] rounded-full"></span>
-              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold">費用總結結算 / SETTLEMENT</h2>
+              <h2 class="text-xs tracking-wider text-neutral-200 uppercase font-semibold flex items-baseline gap-2">
+                <span>費用總結結算</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// 決済総額・SETTLEMENT</span>
+              </h2>
             </div>
           </div>
           <div id="checkoutFinancialSummary"></div>
