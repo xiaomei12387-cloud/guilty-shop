@@ -1804,21 +1804,41 @@ html, body {
       }).join('');
     }
 
-    // 全域深度連結與路由解析
+    // 🔗 升級版全域深度連結與路由解析（支援原相機與 LINE 掃描器帶參數進入）
     function handleGlobalDeepLink() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const dossierParam = urlParams.get("dossier");
       const hash = window.location.hash;
+
+      // 1. 優先處理原相機或 LINE 掃描帶入的 ?dossier= 參數
+      if (dossierParam) {
+        const targetAgentId = dossierParam.toUpperCase();
+        // 清除網址上的 query 參數保持乾淨（選用）
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // 彈出該特工的雲端名片
+        if (typeof lookupAndShowAgentProfile === 'function') {
+          lookupAndShowAgentProfile(targetAgentId);
+        }
+        return;
+      }
+
+      // 2. 處理原本的 Hash 路由
       if (!hash) return;
 
       if (hash.startsWith("#shop-")) {
         const productId = hash.replace("#shop-", "");
         setActiveView('view-shop');
-        if (typeof renderProductCards === 'function') renderProductCards();
+        if (typeof renderProductCards === 'function') {
+          renderProductCards();
+        }
         setTimeout(() => {
-          if (typeof openProductDetail === 'function') openProductDetail(productId);
+          if (typeof openProductDetail === 'function') {
+            openProductDetail(productId);
+          }
         }, 300);
       } else if (hash.startsWith("#dossier-")) {
         const targetAgentId = hash.replace("#dossier-", "").toUpperCase();
-        // 自動彈出該特工的雲端名片與追蹤按鈕
         if (typeof lookupAndShowAgentProfile === 'function') {
           lookupAndShowAgentProfile(targetAgentId);
         }
@@ -1836,6 +1856,28 @@ html, body {
         toggleMobileCartDrawer(true);
       } else {
         toggleCart(true);
+      }
+    }
+
+  // 📷 動態產生帶有特工 ID 的專屬 QR Code (支援原相機與 LINE 掃描器)
+    function updateDossierQRCode() {
+      const tProf = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : { agentId: "AGENT-9481" };
+      const agentId = tProf.agentId || "AGENT-9481";
+      
+      // 產生成標準網址參數格式 (例如: https://your-site.com/?dossier=AGENT-9481)
+      const profileUrl = window.location.origin + window.location.pathname + `?dossier=${encodeURIComponent(agentId)}`;
+      const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(profileUrl)}&color=00ff88&bgcolor=000000`;
+
+      // 1. 名片卡內嵌的 QR Code
+      const cardQr = document.getElementById("cardEmbeddedQr");
+      if (cardQr) {
+        cardQr.innerHTML = `<img src="${qrApiUrl}" alt="Neural Pass QR" class="w-full h-full object-contain">`;
+      }
+
+      // 2. 特工主頁大張的 QR Code 區塊
+      const myBox = document.getElementById("myQrCodeBox");
+      if (myBox) {
+        myBox.innerHTML = `<img src="${qrApiUrl}" alt="My QR Code" class="w-32 h-32 object-contain mx-auto border border-[#00ff88]/30 rounded p-1 bg-black">`;
       }
     }
 
