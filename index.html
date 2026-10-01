@@ -1038,14 +1038,17 @@ html, body {
         </div>
       </main>
     </div>
-    <!-- ⚡ VIEW: 實踐計數端 (view-tracker) -->
+   <!-- ⚡ VIEW: 實踐計數端 (view-tracker) -->
     <div id="view-tracker" class="view-section hidden w-full">
       <div class="max-w-[1600px] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-12 gap-7">
         <div class="lg:col-span-7 space-y-6">
           <div class="tactical-panel p-5 rounded-sm border-l-4 border-l-[#00ff88] bg-gradient-to-r from-black/90 via-[#101317]/90 to-black/90 flex items-center justify-between">
             <div>
               <div class="text-[9px] font-mono text-[#00ff88] tracking-widest">// FULLSCREEN_TERMINAL・全画面実働</div>
-              <h2 class="text-base font-extrabold text-white mt-0.5">全螢幕連線實踐端</h2>
+              <h2 class="text-base font-extrabold text-white mt-0.5 flex items-baseline gap-2">
+                <span>全螢幕連線實踐端</span>
+                <span class="text-[10px] text-zinc-400 font-normal">// 全画面セッション端末</span>
+              </h2>
               <p class="text-xs text-zinc-400 mt-1">極大化高反差碼錶、盲按防誤觸巨型主控、實時雙軌防護</p>
             </div>
             <button class="px-5 py-2.5 bg-[#00ff88] text-black font-extrabold text-xs uppercase rounded cursor-pointer" onclick="startSession()">▶ 啟動連線終端</button>
@@ -1053,14 +1056,20 @@ html, body {
 
           <div class="tactical-panel p-6 rounded-sm space-y-4">
             <div class="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-              <h3 class="text-sm font-extrabold text-white">實踐數據動態板</h3>
+              <h3 class="text-sm font-extrabold text-white flex items-baseline gap-2">
+                <span>實踐數據動態板</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// 実践データダッシュボード・METRICS BOARD</span>
+              </h3>
               <button class="text-xs font-mono text-[#00ff88] border border-dashed border-[#00ff88]/50 px-2.5 py-1 rounded cursor-pointer" onclick="addCustomMetricPrompt()">＋ 新增自訂項目</button>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="mainMetricsBoardGrid"></div>
           </div>
 
           <div class="tactical-panel p-6 rounded-sm space-y-4">
-            <h3 class="text-sm font-extrabold text-white">神經歷程與時長趨勢</h3>
+            <h3 class="text-sm font-extrabold text-white flex items-baseline gap-2">
+              <span>神經歷程與時長趨勢</span>
+              <span class="text-[10px] text-zinc-500 font-normal">// 神経プロセスと時間トレンド・ANALYTICS</span>
+            </h3>
             <div class="h-44 w-full relative">
               <canvas id="sessionAnalyticsChart"></canvas>
             </div>
@@ -1071,6 +1080,7 @@ html, body {
           <div class="tactical-panel p-5 rounded-sm border-2 border-[#ff3366] bg-gradient-to-b from-[#ff3366]/15 via-black/85 to-black/90 shadow-[0_0_24px_rgba(255,51,102,0.25)]">
             <button class="w-full py-4 px-4 bg-[#ff3366] text-white font-black rounded-sm flex flex-col items-center justify-center gap-1 cursor-pointer" onclick="triggerEmergencySafeword()">
               <span class="text-lg">🛑 SAFEWORD 急停協議觸發</span>
+              <span class="text-[10px] opacity-80 tracking-widest">// セーフワード緊急停止プロトコル</span>
             </button>
             <div class="mt-3 flex items-center justify-between text-xs bg-black/60 p-2.5 border border-[#ff3366]/30 rounded-sm">
               <span class="text-zinc-400">當前最高安全詞：</span>
@@ -1080,7 +1090,10 @@ html, body {
 
           <div class="tactical-panel p-5 rounded-sm space-y-3">
             <div class="flex justify-between items-center pb-2 border-b border-white/10">
-              <h3 class="text-sm font-extrabold text-white">互動對象名冊</h3>
+              <h3 class="text-sm font-extrabold text-white flex items-baseline gap-2">
+                <span>互動對象名冊</span>
+                <span class="text-[10px] text-zinc-500 font-normal">// パートナー名簿・PARTNERS</span>
+              </h3>
               <button class="text-xs font-mono text-zinc-300 bg-white/5 border border-white/15 px-2 py-1 rounded cursor-pointer" onclick="addNewPartnerPrompt()">＋ 新增對象</button>
             </div>
             <div class="space-y-2 max-h-52 overflow-y-auto" id="trackerPartnerList"></div>
@@ -1089,18 +1102,21 @@ html, body {
       </div>
     </div>
 
-    <!-- 👥 VIEW: 特工名冊好友系統 (view-friends) 獨立視圖 -->
+   <!-- 👥 VIEW: 特工名冊好友系統 (view-friends) 獨立視圖 -->
     <div id="view-friends" class="view-section hidden w-full">
       <div class="max-w-4xl mx-auto py-8 font-mono space-y-6">
         <div class="flex justify-between items-center pb-3 border-b border-white/10">
           <div>
-            <h1 class="text-2xl font-bold text-[#00ff88]">// 特工名冊・神經結盟網絡</h1>
+            <h1 class="text-2xl font-bold text-[#00ff88] flex items-baseline gap-2">
+              <span>特工名冊・神經結盟網絡</span>
+              <span class="text-xs font-mono text-zinc-400 font-normal">// 神経ネットワーク名簿</span>
+            </h1>
             <p class="text-xs text-zinc-400 mt-1">管理互信特工、掃描 NEURAL PASS 二維碼或透過特工代號接入。</p>
           </div>
           <div class="flex gap-2">
             <button onclick="addFriendByIdPrompt()" class="px-3.5 py-2 bg-[#00ff88]/15 text-[#00ff88] border border-[#00ff88]/30 rounded text-xs cursor-pointer hover:bg-[#00ff88]/20">＋ 輸入 ID 接入</button>
             <button onclick="openQrScanner()" class="px-3.5 py-2 bg-surface-container border border-white/10 text-white rounded text-xs cursor-pointer hover:border-[#00ff88]">📷 掃碼接入</button>
-            <button onclick="showLandingView()" class="px-3.5 py-2 bg-surface-container border border-white/10 text-zinc-300 rounded text-xs hover:border-white">← 返回大廳</button>
+            <button onclick="showLandingView()" class="px-3.5 py-2 bg-surface-container border border-white/10 text-zinc-300 rounded text-xs hover:border-white cursor-pointer">← 返回大廳</button>
           </div>
         </div>
         <div class="space-y-3" id="friendsListContainer"></div>
@@ -1129,11 +1145,14 @@ html, body {
           
           <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
             <div>
-              <h1 class="text-3xl font-bold text-[#00ff88] tracking-tight">特工機密主頁與神經中樞</h1>
+              <h1 class="text-3xl font-bold text-[#00ff88] tracking-tight flex items-baseline gap-3">
+                <span>特工機密主頁與神經中樞</span>
+                <span class="text-sm font-mono text-zinc-400 font-normal">// 特工プロファイル・神経中枢</span>
+              </h1>
               <p class="text-xs text-zinc-400 mt-1">個人作戰調書、微型生物特徵認證鎖及高強度量子急停矩陣。所有改動即刻透過端對端加密同調。</p>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="openDossierTagsModal()" class="px-4 py-2 bg-surface-container border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs hover:bg-[#00ff88]/10 transition-all rounded cursor-pointer">✏️ 編輯偏好與狀態</button>
+              <button onclick="openDossierTagsModal()" class="px-4 py-2 bg-surface-container border border-[#00ff88]/40 text-[#00ff88] font-mono text-xs hover:bg-[#00ff88]/10 transition-all rounded cursor-pointer">✏️️ 編輯偏好與狀態</button>
               <button onclick="openEditProfileModal()" class="px-4 py-2 bg-surface-container border border-zinc-700 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">⚙️ 編輯特工檔案</button>
               <button onclick="showLandingView()" class="px-4 py-2 bg-surface-container border border-white/10 text-zinc-300 font-mono text-xs hover:border-[#00ff88] transition-all rounded cursor-pointer">← 返回首頁大廳</button>
             </div>
@@ -1144,11 +1163,11 @@ html, body {
         <div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
           <div class="xl:col-span-7 flex flex-col gap-6">
             
-           <!-- ✦ 完美黃金比例名片卡（修復頭像跨域死黑、左右等高對齊、緊湊戰術排版） -->
+           <!-- ✦ 完美黃金比例名片卡 -->
             <div class="relative bg-[#0d0e13] p-6 rounded-xl flex flex-col gap-4 shadow-2xl overflow-hidden border border-white/15 font-mono text-zinc-200" id="dossierExportTarget" style="background-color: #0d0e13 !important; width: 680px; max-width: 100%; box-sizing: border-box;">
               <div class="absolute -right-4 -bottom-8 pointer-events-none select-none text-white/5 font-bold text-[120px] leading-none" style="font-family: sans-serif;">調書</div>
               
-              <!-- 1. 頂部身分條：完美對齊 -->
+              <!-- 1. 頂部身分條 -->
               <div class="relative z-10 flex items-center justify-between pb-3.5 border-b border-white/10">
                 <div class="flex items-center gap-3">
                   <div class="w-10 h-10 bg-surface-container-high flex items-center justify-center text-[#00ff88] rounded border border-white/10 flex-shrink-0">
@@ -1165,47 +1184,44 @@ html, body {
                 <span class="text-[10px] text-[#00ff88]/60 uppercase tracking-widest font-bold">GUILTY_DOSSIER</span>
               </div>
 
-              <!-- 2. 中間：頭像與屬性統合區（採用絕對穩固的格線，解決頭像死黑與高低差） -->
+              <!-- 2. 中間：頭像與屬性統合區 -->
               <div class="relative z-10 grid grid-cols-12 gap-4 items-center">
-                
-                <!-- 左側：頭像（改用 Canvas / Base64 安全渲染或保證載入，避免死黑） -->
                 <div class="col-span-4 relative aspect-square rounded-lg overflow-hidden border border-[#00ff88]/50 bg-surface-container-highest flex items-center justify-center shadow-[0_0_12px_rgba(0,255,136,0.15)]">
                   <img id="dossierAvatarPreview" src="https://api.dicebear.com/7.x/bottts/svg?seed=Agent9481" crossorigin="anonymous" class="w-full h-full object-cover" style="width: 100% !important; height: 100% !important; object-fit: cover !important; display: block;">
                   <div class="absolute bottom-0 inset-x-0 bg-black/85 text-[8px] text-[#00ff88] text-center font-mono py-0.5">RSA-4096</div>
                 </div>
 
-                <!-- 右側：權限、安全詞與宣言 -->
                 <div class="col-span-8 bg-surface-container p-4 rounded-lg border border-white/5 space-y-3">
                   <div class="grid grid-cols-2 gap-3 pb-2.5 border-b border-white/5">
                     <div>
-                      <div class="text-zinc-500 text-[9px] font-mono mb-1">// 權限等級</div>
+                      <div class="text-zinc-500 text-[9px] font-mono mb-1">// 權限等級 <span class="text-zinc-600">// 権限</span></div>
                       <div class="text-[#00ff88] font-black text-xs" id="dossierRoleBadge">支配者 (Dom)</div>
                     </div>
                     <div>
-                      <div class="text-zinc-500 text-[9px] font-mono mb-1">// 安全詞</div>
+                      <div class="text-zinc-500 text-[9px] font-mono mb-1">// 安全詞 <span class="text-zinc-600">// セーフワード</span></div>
                       <div class="text-[#ff4d6d] font-black text-xs" id="dossierSafewordDisplay">RED_EMBER</div>
                     </div>
                   </div>
                   <div>
-                    <div class="text-zinc-500 text-[9px] font-mono mb-1">// 特工宣言</div>
+                    <div class="text-zinc-500 text-[9px] font-mono mb-1">// 特工宣言 <span class="text-zinc-600">// 宣言</span></div>
                     <p class="text-[11px] text-zinc-300 leading-snug bg-black/40 p-2 rounded border border-white/5 m-0" id="dossierBioDisplay">尚未填寫特工宣言與簡介。</p>
                   </div>
                 </div>
               </div>
 
-              <!-- 3. 標籤區塊：緊湊不鬆散 -->
+              <!-- 3. 標籤區塊 -->
               <div class="relative z-10 space-y-2 pt-1 border-t border-white/5">
                 <div>
-                  <div class="text-zinc-400 text-[10px] font-bold mb-1">✦ 偏好與「探索中」小字卡</div>
+                  <div class="text-zinc-400 text-[10px] font-bold mb-1">✦ 偏好與「探索中」小字卡 <span class="text-zinc-600 font-normal">// 好みと探索ステータス</span></div>
                   <div id="myPrefTagsBox" class="flex flex-wrap gap-1 items-center"></div>
                 </div>
                 <div>
-                  <div class="text-zinc-400 text-[10px] font-bold mb-1">🛑 絕對雷點</div>
+                  <div class="text-zinc-400 text-[10px] font-bold mb-1">🛑 絕對雷點 <span class="text-zinc-600 font-normal">// 絶対NGゾーン</span></div>
                   <div id="myLimitTagsBox" class="flex flex-wrap gap-1 items-center"></div>
                 </div>
               </div>
 
-              <!-- 4. 底部：內建專屬 QR Code -->
+              <!-- 4. 底部 QR Code -->
               <div class="relative z-10 pt-3 border-t border-white/10 flex items-center justify-between">
                 <div class="flex items-center gap-3">
                   <div id="cardEmbeddedQr" class="w-13 h-13 bg-black p-1 rounded border border-[#00ff88]/40 flex items-center justify-center flex-shrink-0" style="width: 52px; height: 52px;">
@@ -1226,7 +1242,7 @@ html, body {
             <!-- 取貨超商設定 -->
             <div class="bg-surface-container-low p-6 rounded-xl flex flex-col gap-4 border border-white/10">
               <span class="text-sm font-bold text-[#00ff88] flex items-center gap-2">
-                <span class="material-symbols-outlined text-secondary">local_shipping</span> 常用超商戰術取貨門市設定
+                <span class="material-symbols-outlined text-secondary">local_shipping</span> 常用超商戰術取貨門市設定 <span class="text-xs text-zinc-500 font-normal">// 取扱コンビニ設定</span>
               </span>
               <p class="text-xs text-zinc-400">商城發送一律採最高規格隱蔽氣泡包裝，請選配隱密門市節點。</p>
               <select class="w-full bg-black text-[#00ff88] font-mono text-xs p-3 rounded border border-white/15 outline-none">
@@ -1254,13 +1270,12 @@ html, body {
             <div class="bg-surface-container-low p-6 rounded-xl flex flex-col items-center text-center gap-3 border border-white/10">
               <div class="text-xs font-mono text-[#00ff88] font-bold">[ 掃碼連線 // QRコードで接続する ]</div>
               <div id="myQrCodeBox" class="p-2 bg-black border border-[#00ff88]/40 rounded"></div>
-              <button onclick="exportDossierToImage()" class="w-full py-2.5 bg-[#00ff88] text-black font-mono font-bold text-xs rounded cursor-pointer hover:bg-[#60ff99] transition-all">📷 匯出高畫質戰術卡片</button>
+              <button onclick="exportDossierToImage()" class="w-full py-2.5 bg-[#00ff88] text-black font-mono font-bold text-xs rounded cursor-pointer hover:bg-[#60ff99] transition-all">📷 匯出高畫質戰術卡片 <span class="text-[10px] font-normal">// カードエクスポート</span></button>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </main>
 
   <!-- ========================================================================== -->
   <!-- 3. 專屬彈窗：特工名片偏好與「探索中」即時勾選 & 自訂編輯器 -->
