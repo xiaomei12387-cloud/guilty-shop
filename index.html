@@ -1859,6 +1859,51 @@ html, body {
       }
     }
 
+  // 👥 渲染特工名冊好友清單（支援點擊開啟檔案）
+  function renderFriendsList() {
+    const container = document.getElementById("friendsListContainer");
+    if (!container) return;
+
+    const friends = (typeof trackerState !== 'undefined') ? (trackerState.friends || trackerState.partners || []) : [];
+
+    if (friends.length === 0) {
+      container.innerHTML = `
+        <div class="bg-surface-container-low p-8 rounded-xl border border-white/10 text-center space-y-3">
+          <div class="text-zinc-500 text-xs">目前名冊中尚無連線中的特工節點。</div>
+          <p class="text-[11px] text-zinc-400">您可以透過點擊右上角「掃碼接入」或「輸入 ID 接入」來擴展您的神經結盟網絡。</p>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = friends.map(f => `
+      <div class="bg-surface-container-low p-4 rounded-xl border border-white/10 hover:border-[#00ff88]/50 transition-all flex items-center justify-between cursor-pointer" onclick="openAgentProfileModal('${f.agentId}')">
+        <div class="flex items-center gap-3.5">
+          <img src="${f.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + f.agentId}" class="w-12 h-12 rounded-lg border border-[#00ff88]/40 object-cover bg-black">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-white">${f.name}</span>
+              <span class="text-[10px] font-mono text-[#00ff88] bg-[#00ff88]/10 px-2 py-0.5 rounded border border-[#00ff88]/30">${f.role || '特工'}</span>
+            </div>
+            <div class="text-xs font-mono text-zinc-400 mt-0.5">ID: ${f.agentId}</div>
+            <p class="text-[11px] text-zinc-300 mt-1 line-clamp-1">${f.bio || '此特工尚未留下公開宣言。'}</p>
+          </div>
+        </div>
+        <div class="text-xs font-mono text-[#00ff88] flex items-center gap-1">
+          <span>查看調書</span>
+          <span>→</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // 統一用來開啟任意特工情報彈窗的觸發函式
+  function openAgentProfileModal(agentId) {
+    if (typeof lookupAndShowAgentProfile === 'function') {
+      lookupAndShowAgentProfile(agentId);
+    }
+  }
+
   // 📷 動態產生帶有特工 ID 的專屬 QR Code (支援原相機與 LINE 掃描器)
     function updateDossierQRCode() {
       const tProf = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : { agentId: "AGENT-9481" };
