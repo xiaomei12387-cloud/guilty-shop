@@ -458,14 +458,26 @@ html, body {
         <div class="flex justify-between items-center pb-3 border-b border-white/10">
           <div>
             <h1 class="text-2xl font-bold text-[#00ff88]">// 戰術貨態追蹤・物流神經中樞</h1>
-            <p class="text-xs text-zinc-400 mt-1">輸入您的案件編號（Order ID）實時監控無痕包裹傳輸進度。</p>
+            <p class="text-xs text-zinc-400 mt-1">實時監控您的帳號綁定包裹，或手動輸入案件編號進行解密追蹤。</p>
           </div>
           <button onclick="showLandingView()" class="px-3.5 py-2 bg-surface-container border border-white/10 text-zinc-300 rounded text-xs hover:border-white cursor-pointer">← 返回大廳</button>
         </div>
 
-        <!-- 查詢輸入面板 -->
+        <!-- 🌟 新增：目前登入帳號底下的所有調用案件自動總覽 -->
         <div class="bg-surface-container-low p-6 rounded-xl border border-white/10 space-y-4">
-          <div class="text-xs font-bold text-[#00ff88] uppercase tracking-wider">✦ 案件情報調用 / ORDER QUERY</div>
+          <div class="flex justify-between items-center pb-2 border-b border-white/5">
+            <div class="text-xs font-bold text-[#00ff88] uppercase tracking-wider">✦ 我的帳號調用總覽 / MY ORDERS</div>
+            <button onclick="loadMyAccountOrders()" class="text-[10px] text-zinc-400 hover:text-[#00ff88] cursor-pointer">🔄 重新整理</button>
+          </div>
+          <div id="myAccountOrdersContainer" class="space-y-3">
+            <!-- 這裡會由 JS 自動填入該帳號的所有訂單與狀態 -->
+            <div class="text-xs text-zinc-500 py-4 text-center">正在讀取您的特工調用紀錄...</div>
+          </div>
+        </div>
+
+        <!-- 原有的手動查詢輸入面板 -->
+        <div class="bg-surface-container-low p-6 rounded-xl border border-white/10 space-y-4">
+          <div class="text-xs font-bold text-[#00ff88] uppercase tracking-wider">✦ 手動案件情報調用 / MANUAL QUERY</div>
           <div class="flex gap-2">
             <input type="text" id="trackingOrderIdInput" placeholder="輸入案件編號 (例: GUILTY-123456)" class="flex-1 bg-black border border-white/20 px-3.5 py-2.5 rounded text-xs text-white uppercase focus:outline-none focus:border-[#00ff88]">
             <button onclick="queryOrderLogistics()" class="px-5 py-2.5 bg-[#00ff88] hover:bg-[#60ff99] text-black font-bold text-xs rounded uppercase tracking-wider cursor-pointer shadow-[0_0_15px_rgba(0,255,136,0.25)]">
@@ -2156,11 +2168,71 @@ function addSearchedAgentToNetwork(agentObj) {
         }, 150);
       }
     }
-    // 開啟貨態追蹤視圖
+    // 1. 開啟貨態追蹤視圖
   function openTrackingAppView() {
     setActiveView('view-tracking');
+    // 🌟 切換過去時，自動載入當前登入帳號的訂單
+    loadMyAccountOrders();
     history.pushState({ view: 'tracking' }, '', '#tracking');
   }
+
+  // 2. 🌐 自動載入當前登入特工的所有調用案件 (你剛剛貼的這段)
+  async function loadMyAccountOrders() {
+    const member = JSON.parse(localStorage.getItem("guilty_member")) || {};
+    const accountKey = member.email || member.phone;
+
+    if (!accountKey) {
+      const container = document.getElementById("myAccountOrdersContainer");
+      if (container) {
+        container.innerHTML = `<div class="text-xs text-yellow-400 p-4 border border-yellow-500/30 rounded bg-yellow-950/20">
+          ⚠️ 您目前尚未進行神經認證登入。請先點擊右上角登入特工身分，以自動同步您的所有調用案件。
+        </div>`;
+      }
+      return;
+    }
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}?action=getOrdersByAccount&account=${encodeURIComponent(accountKey)}`);
+      const data = await res.json();
+
+      if (data && data.success && data.orders) {
+        renderMyOrdersList(data.orders);
+      }
+    } catch (err) {
+      console.error("載入個人訂單失敗:", err);
+    }
+  }
+
+  // 3. 渲染個人訂單清單 (你剛剛貼的這段)
+  function renderMyOrdersList(orders) {
+    const container = document.getElementById("myAccountOrdersContainer");
+    if (!container) return;
+
+    if (orders.length === 0) {
+      container.innerHTML = `<div class="text-xs text-zinc-500 py-6 text-center">您的調用紀錄中目前沒有任何案件。</div>`;
+      return;
+    }
+
+    container.innerHTML = orders.map(order => {
+      return `
+        <div class="bg-black/40 border border-white/10 rounded-xl p-4 space-y-3 font-mono">
+          <div class="flex justify-between items-center pb-2 border-b border-white/5">
+            <span class="text-xs font-bold text-[#00ff88]">${order.orderId}</span>
+            <span class="text-[10px] bg-[#00ff88]/10 text-[#00ff88] border border-[#00ff88]/30 px-2 py-0.5 rounded font-bold">${order.status}</span>
+          </div>
+          <div class="text-xs text-white">📦 ${order.product}</div>
+          <div class="text-[11px] text-zinc-400">📍 節點：${order.location}</div>
+          <div class="text-[10px] text-zinc-500">下單時間：${order.createdAt}</div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 4. 原本的手動查詢單筆訂單的函式
+  async function queryOrderLogistics() { ... }
+
+  // 5. 渲染 5 階段時間軸的函式
+  function renderLogisticsTimeline(currentStatus) { ... }
 
   // 🌐 連結後台實時查詢貨態
   async function queryOrderLogistics() {
