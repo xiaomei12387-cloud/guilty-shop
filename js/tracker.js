@@ -126,6 +126,107 @@ function loadAgentTrackerState() {
   }
 }
 
+// 🌐 從雲端抓取目標特工的公開情報並顯示彈窗
+  async function lookupAndShowAgentProfile(agentId) {
+    let target = null;
+
+    // 1. 嘗試從雲端後台抓取真實特工資料
+    try {
+      const res = await fetch(`${CONFIG.API_URL}?action=getProfile&agentId=${encodeURIComponent(agentId)}`);
+      const data = await res.json();
+      if (data && data.success && data.profile) {
+        target = data.profile;
+      }
+    } catch (e) {
+      console.log("從雲端載入特工檔案失敗，改用本地暫存", e);
+    }
+
+    // 2. 如果雲端找不到，從本機名冊找
+    if (!target && typeof trackerState !== 'undefined' && trackerState.partners) {
+      target = trackerState.partners.find(p => p.agentId.toUpperCase() === agentId.toUpperCase());
+    }
+
+    if (!target) {
+      target = {
+        name: "未知特工",
+        agentId: agentId,
+        role: "🔍 探索中",
+        safeword: "REDACTED",
+        bio: "透過神經 QR Code 掃描接入的遠端特工節點。",
+        avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${agentId}`,
+        selectedTags: ["🔍 探索中", "暗號通訊"],
+        limits: ["過度越權"]
+      };
+    }
+
+    // 填入彈窗
+    document.getElementById("fpName").textContent = `${target.name} (${target.agentId})`;
+    document.getElementById("fpId").textContent = `ID: ${target.agentId}`;
+    document.getElementById("fpRole").textContent = target.role;
+    document.getElementById("fpBio").textContent = target.bio || "此特工尚未留下公開宣言。";
+    document.getElementById("fpAvatar").src = target.avatar;
+
+    document.getElementById("fpPrefs").innerHTML = (target.selectedTags || []).map(t => `<span class="tag-pill">${t}</span>`).join('');
+    document.getElementById("fpLimits").innerHTML = (target.limits || []).map(l => `<span class="tag-pill active-limit">${l}</span>`).join('');
+
+    // 渲染仿 IG/X 的追蹤 / 互加好友按鈕區
+    const modalContent = document.querySelector("#friendProfileModal > div");
+    let actionArea = document.getElementById("friendModalActionArea");
+    if (!actionArea) {
+      actionArea = document.createElement("div");
+      actionArea.id = "friendModalActionArea";
+      actionArea.className = "pt-3 border-t border-white/10 mt-3";
+      modalContent.appendChild(actionArea);
+    }
+
+    const isAlreadyFriend = (typeof trackerState !== 'undefined' && trackerState.partners) ? trackerState.partners.some(p => p.agentId.toUpperCase() === agentId.toUpperCase()) : false;
+
+    actionArea.innerHTML = isAlreadyFriend ? `
+      <div class="w-full py-2 bg-[#00ff88]/10 border border-[#00ff88]/40 text-[#00ff88] text-center font-bold rounded text-xs font-mono">
+        ✔ 已建立量子神經追蹤 (FOLLOWING)
+      </div>
+    ` : `
+      <button onclick='followAgentCloud("${target.agentId}")' class="w-full py-2.5 bg-[#00ff88] hover:bg-[#60ff99] text-black font-extrabold uppercase rounded text-xs cursor-pointer shadow-[0_0_12px_rgba(0,255,136,0.3)] font-mono">
+        ⚡ 追蹤此特工 // 結盟 (FOLLOW)
+      </button>
+    `;
+
+    const modal = document.getElementById("friendProfileModal");
+    if (modal) modal.style.display = "flex";
+  }
+
+  // ⚡ 雲端追蹤 / 加好友動作
+  async function followAgentCloud(targetAgentId) {
+    const member = JSON.parse(localStorage.getItem("guilty_member")) || {};
+    const myAccount = member.email || member.phone;
+
+    if (!myAccount) {
+      alert("⚠️ 請先登入您的特工身分，才能在雲端建立追蹤與結盟！");
+      toggleAuthModal(true);
+      return;
+    }
+
+    try {
+      const res = await fetch(CONFIG.API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          action: "addMutualFriend",
+          myAccount: myAccount,
+          targetAgentId: targetAgentId
+        })
+      });
+
+      alert(`✔ 成功發起量子追蹤！已與特工 [${targetAgentId}] 建立雲端結盟。`);
+      closeFriendProfileModal();
+      openFriendsDossierView();
+    } catch (err) {
+      console.error("雲端追蹤失敗:", err);
+      alert("❌ 網路連線異常，追蹤失敗。");
+    }
+  }
+
 // ✦ 安全生成名片專屬內嵌 QR Code 與展示板
 function renderCardQrCode() {
   const agentId = (trackerState && trackerState.profile && trackerState.profile.agentId) ? trackerState.profile.agentId : "GUILTY-AGENT";
