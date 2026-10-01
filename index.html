@@ -457,27 +457,35 @@ html, body {
         <!-- 頂部標題區 -->
         <div class="flex justify-between items-center pb-3 border-b border-white/10">
           <div>
-            <h1 class="text-2xl font-bold text-[#00ff88]">// 戰術貨態追蹤・物流神經中樞</h1>
+            <h1 class="text-2xl font-bold text-[#00ff88] flex items-baseline gap-2">
+              <span>戰術貨態追蹤</span>
+              <span class="text-xs font-mono text-zinc-400 font-normal">// 神経物流追跡中</span>
+            </h1>
             <p class="text-xs text-zinc-400 mt-1">實時監控您的帳號綁定包裹，或手動輸入案件編號進行解密追蹤。</p>
           </div>
           <button onclick="showLandingView()" class="px-3.5 py-2 bg-surface-container border border-white/10 text-zinc-300 rounded text-xs hover:border-white cursor-pointer">← 返回大廳</button>
         </div>
 
-        <!-- 🌟 新增：目前登入帳號底下的所有調用案件自動總覽 -->
+        <!-- 🌟 目前登入帳號底下的所有調用案件自動總覽 -->
         <div class="bg-surface-container-low p-6 rounded-xl border border-white/10 space-y-4">
           <div class="flex justify-between items-center pb-2 border-b border-white/5">
-            <div class="text-xs font-bold text-[#00ff88] uppercase tracking-wider">✦ 我的帳號調用總覽 / MY ORDERS</div>
+            <div class="text-xs font-bold text-[#00ff88] uppercase tracking-wider flex items-baseline gap-2">
+              <span>我的帳號調用總覽</span>
+              <span class="text-[10px] text-zinc-500 font-normal">// アカウント調達一覧・MY ORDERS</span>
+            </div>
             <button onclick="loadMyAccountOrders()" class="text-[10px] text-zinc-400 hover:text-[#00ff88] cursor-pointer">🔄 重新整理</button>
           </div>
           <div id="myAccountOrdersContainer" class="space-y-3">
-            <!-- 這裡會由 JS 自動填入該帳號的所有訂單與狀態 -->
             <div class="text-xs text-zinc-500 py-4 text-center">正在讀取您的特工調用紀錄...</div>
           </div>
         </div>
 
-        <!-- 原有的手動查詢輸入面板 -->
+        <!-- 手動查詢輸入面板 -->
         <div class="bg-surface-container-low p-6 rounded-xl border border-white/10 space-y-4">
-          <div class="text-xs font-bold text-[#00ff88] uppercase tracking-wider">✦ 手動案件情報調用 / MANUAL QUERY</div>
+          <div class="text-xs font-bold text-[#00ff88] uppercase tracking-wider flex items-baseline gap-2">
+            <span>手動案件情報調用</span>
+            <span class="text-[10px] text-zinc-500 font-normal">// 手動クエリ・MANUAL QUERY</span>
+          </div>
           <div class="flex gap-2">
             <input type="text" id="trackingOrderIdInput" placeholder="輸入案件編號 (例: GUILTY-123456)" class="flex-1 bg-black border border-white/20 px-3.5 py-2.5 rounded text-xs text-white uppercase focus:outline-none focus:border-[#00ff88]">
             <button onclick="queryOrderLogistics()" class="px-5 py-2.5 bg-[#00ff88] hover:bg-[#60ff99] text-black font-bold text-xs rounded uppercase tracking-wider cursor-pointer shadow-[0_0_15px_rgba(0,255,136,0.25)]">
@@ -491,11 +499,11 @@ html, body {
         <div id="trackingResultContainer" style="display:none;" class="bg-surface-container-low p-6 rounded-xl border border-[#00ff88]/40 space-y-6 shadow-2xl">
           <div class="flex flex-wrap justify-between items-center pb-4 border-b border-white/10 gap-2">
             <div>
-              <div class="text-[10px] text-zinc-400 uppercase">案件代號 / TARGET ID</div>
+              <div class="text-[10px] text-zinc-400 uppercase">案件代號 <span class="text-zinc-600">// ターゲットID</span></div>
               <div class="text-base font-bold text-white mt-0.5" id="resOrderId">--</div>
             </div>
             <div class="text-right">
-              <div class="text-[10px] text-zinc-400 uppercase">當前物流狀態 / STATUS</div>
+              <div class="text-[10px] text-zinc-400 uppercase">當前物流狀態 <span class="text-zinc-600">// 現在ステータス</span></div>
               <div class="text-xs font-bold text-[#00ff88] bg-[#00ff88]/10 border border-[#00ff88]/30 px-2.5 py-1 rounded mt-0.5" id="resStatusBadge">--</div>
             </div>
           </div>
@@ -503,18 +511,21 @@ html, body {
           <!-- 訂單明細概要 -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-black/40 p-4 rounded-lg border border-white/5">
             <div>
-              <span class="text-zinc-500 block mb-1">調用裝備項目</span>
+              <span class="text-zinc-500 block mb-1">調用裝備項目 <span class="text-zinc-600 text-[10px]">// 装備品</span></span>
               <span class="text-white font-bold" id="resProductInfo">--</span>
             </div>
             <div>
-              <span class="text-zinc-500 block mb-1">目標取件節點</span>
+              <span class="text-zinc-500 block mb-1">目標取件節點 <span class="text-zinc-600 text-[10px]">// 受取拠点</span></span>
               <span class="text-zinc-300" id="resLocationInfo">--</span>
             </div>
           </div>
 
           <!-- 戰術時間軸 (Timeline) -->
           <div class="space-y-4 pt-2">
-            <div class="text-xs font-bold text-[#00ff88] uppercase">✦ 神經物流時間軸 / LOGISTICS TIMELINE</div>
+            <div class="text-xs font-bold text-[#00ff88] uppercase flex items-baseline gap-2">
+              <span>神經物流時間軸</span>
+              <span class="text-[10px] text-zinc-500 font-normal">// 物流タイムライン・LOGISTICS TIMELINE</span>
+            </div>
             
             <div class="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/15" id="trackingTimelineList">
               <!-- 動態生成 5 階段時間軸項目 -->
@@ -1519,7 +1530,7 @@ html, body {
   <script src="./js/shop.js?v=20260903"></script>
   <script src="./js/tracker.js?v=20260903"></script>
 
-  <script>
+<script>
     let introTimer = setTimeout(() => enterSite(), 2800);
     function enterSite() {
       clearTimeout(introTimer);
@@ -1565,31 +1576,30 @@ html, body {
     }
 
     // 📱 手機版側邊抽屜開關控制
-function toggleNav(isOpen) {
-  const drawer = document.getElementById("mobileNavDrawer");
-  const overlay = document.getElementById("mobileNavOverlay");
-  if (!drawer) return;
+    function toggleNav(isOpen) {
+      const drawer = document.getElementById("mobileNavDrawer");
+      const overlay = document.getElementById("mobileNavOverlay");
+      if (!drawer) return;
 
-  if (isOpen) {
-    drawer.classList.add("open");
-    if (overlay) overlay.classList.add("active");
-    document.body.style.overflow = "hidden"; // 鎖定背景滾動，避免穿透
-  } else {
-    drawer.classList.remove("open");
-    if (overlay) overlay.classList.remove("active");
-    document.body.style.overflow = ""; // 恢復背景滾動
-  }
-}
+      if (isOpen) {
+        drawer.classList.add("open");
+        if (overlay) overlay.classList.add("active");
+        document.body.style.overflow = "hidden";
+      } else {
+        drawer.classList.remove("open");
+        if (overlay) overlay.classList.remove("active");
+        document.body.style.overflow = "";
+      }
+    }
 
-// 🌐 升級版視圖切換：自動關閉手機選單並捲動至頂部
-function switchViewAndCloseNav(viewFunction) {
-  toggleNav(false); // 關閉手機側邊抽屜
-  if (typeof viewFunction === 'function') {
-    viewFunction();
-  }
-  // 平滑捲動至頂部
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
+    // 🌐 升級版視圖切換：自動關閉手機選單並捲動至頂部
+    function switchViewAndCloseNav(viewFunction) {
+      toggleNav(false);
+      if (typeof viewFunction === 'function') {
+        viewFunction();
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
     function showLandingView(push = true) {
       setActiveView('view-landing');
@@ -1620,726 +1630,162 @@ function switchViewAndCloseNav(viewFunction) {
       history.pushState({ view: 'dossier' }, '', '#dossier');
     }
 
-    if (typeof DEFAULT_PRESET_TAGS !== 'undefined') {
-      if (!DEFAULT_PRESET_TAGS.preferences.includes("🔍 探索中")) {
-        DEFAULT_PRESET_TAGS.preferences.unshift("🔍 探索中");
-      }
-    }
-
-    function handleAvatarUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const base64 = e.target.result;
-        const prev = document.getElementById("profEditAvatarPreview");
-        if (prev) prev.src = base64;
-        if (typeof trackerState !== 'undefined' && trackerState.profile) {
-          trackerState.profile.avatar = base64;
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-
-    // 📷 動態產生帶有特工 ID 的專屬 QR Code
-function updateDossierQRCode() {
-  const tProf = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : { agentId: "AGENT-9481" };
-  const agentId = tProf.agentId || "AGENT-9481";
-  
-  // 產生分享或查詢的專屬網址
-  const profileUrl = window.location.origin + window.location.pathname + `#dossier-${agentId}`;
-  const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(profileUrl)}&color=00ff88&bgcolor=000000`;
-
-  // 1. 名片卡內嵌的 QR Code
-  const cardQr = document.getElementById("cardEmbeddedQr");
-  if (cardQr) {
-    cardQr.innerHTML = `<img src="${qrApiUrl}" alt="Neural Pass QR" class="w-full h-full object-contain">`;
-  }
-
-  // 2. 特工主頁大張的 QR Code 區塊
-  const myBox = document.getElementById("myQrCodeBox");
-  if (myBox) {
-    myBox.innerHTML = `<img src="${qrApiUrl}" alt="My QR Code" class="w-32 h-32 object-contain mx-auto border border-[#00ff88]/30 rounded p-1 bg-black">`;
-  }
-}
-
-    function generateRandomDiceBearAvatar() {
-      const seed = "Agent_" + Math.random().toString(36).substring(2, 8);
-      const url = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(seed)}`;
-      const prev = document.getElementById("profEditAvatarPreview");
-      if (prev) prev.src = url;
-      if (typeof trackerState !== 'undefined' && trackerState.profile) {
-        trackerState.profile.avatar = url;
-      }
-    }
-
-    // 👥 檢查網址是否帶有特工檔案查詢 (例: #dossier-AGENT-9481)
-function checkDossierDeepLink() {
-  const hash = window.location.hash;
-  if (hash && hash.startsWith("#dossier-")) {
-    const targetAgentId = hash.replace("#dossier-", "").toUpperCase();
-    
-    // 模擬從資料庫或 localStorage 尋找該特工的公開情報
-    // (此處可對應你的 friends 或全域特工資料庫)
-    lookupAndShowAgentProfile(targetAgentId);
-  }
-}
-
-// 放大顯示別人掃碼進來的特工公開情報與追蹤按鈕
-function lookupAndShowAgentProfile(agentId) {
-  // 尋找對象（先從已知的夥伴名冊或預設名單找，若找不到則顯示模擬公開檔案）
-  let target = null;
-  if (typeof trackerState !== 'undefined' && trackerState.partners) {
-    target = trackerState.partners.find(p => p.agentId.toUpperCase() === agentId);
-  }
-
-  if (!target) {
-    // 預設示範公開檔案
-    target = {
-      name: "未知特工",
-      agentId: agentId,
-      role: "雙向切換 (Switch)",
-      safeword: "REDACTED",
-      bio: "透過神經 QR Code 掃描接入的未知特工節點。",
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${agentId}`,
-      selectedTags: ["🔍 探索中", "暗號通訊"],
-      limits: ["過度越權"]
-    };
-  }
-
-  // 填入公開情報彈窗
-  document.getElementById("fpName").textContent = `${target.name} (${target.agentId})`;
-  document.getElementById("fpId").textContent = `ID: ${target.agentId}`;
-  document.getElementById("fpRole").textContent = target.role;
-  document.getElementById("fpBio").textContent = target.bio || "此特工尚未留下公開宣言。";
-  document.getElementById("fpAvatar").src = target.avatar;
-
-  // 渲染偏好標籤
-  const prefsBox = document.getElementById("fpPrefs");
-  prefsBox.innerHTML = (target.selectedTags || []).map(t => `<span class="tag-pill">${t}</span>`).join('');
-
-  // 渲染雷點
-  const limitsBox = document.getElementById("fpLimits");
-  limitsBox.innerHTML = (target.limits || []).map(l => `<span class="tag-pill active-limit">${l}</span>`).join('');
-
-  // 🌟 動態加入「⚡ 接入神經網絡 (追蹤/加好友)」按鈕到彈窗底部
-  const modalContent = document.querySelector("#friendProfileModal > div");
-  let actionArea = document.getElementById("friendModalActionArea");
-  if (!actionArea) {
-    actionArea = document.createElement("div");
-    actionArea.id = "friendModalActionArea";
-    actionArea.className = "pt-3 border-t border-white/10 mt-3";
-    modalContent.appendChild(actionArea);
-  }
-
-  // 檢查是否已經是好友
-  const isAlreadyFriend = (typeof trackerState !== 'undefined' && trackerState.partners) ? trackerState.partners.some(p => p.agentId.toUpperCase() === agentId) : false;
-
-  actionArea.innerHTML = isAlreadyFriend ? `
-    <div class="w-full py-2 bg-[#00ff88]/10 border border-[#00ff88]/40 text-[#00ff88] text-center font-bold rounded text-xs">
-      ✔ 已在您的特工名冊網絡中 (LINKED)
-    </div>
-  ` : `
-    <button onclick='addSearchedAgentToNetwork(${JSON.stringify(target)})' class="w-full py-2.5 bg-[#00ff88] hover:bg-[#60ff99] text-black font-bold uppercase rounded text-xs cursor-pointer shadow-[0_0_12px_rgba(0,255,136,0.3)]">
-      ⚡ 接入神經網絡 // 追蹤此特工 (ADD FRIEND)
-    </button>
-  `;
-
-  // 顯示彈窗
-  const modal = document.getElementById("friendProfileModal");
-  if (modal) modal.style.display = "flex";
-}
-
-// ⚡ 將掃描或查詢到的特工加入名冊
-function addSearchedAgentToNetwork(agentObj) {
-  if (typeof trackerState === 'undefined') return;
-  if (!trackerState.partners) trackerState.partners = [];
-
-  // 避免重複加入
-  const exists = trackerState.partners.some(p => p.agentId === agentObj.agentId);
-  if (!exists) {
-    trackerState.partners.push({
-      name: agentObj.name,
-      agentId: agentObj.agentId,
-      role: agentObj.role,
-      safeword: agentObj.safeword || "MAYDAY",
-      bio: agentObj.bio,
-      avatar: agentObj.avatar,
-      selectedTags: agentObj.selectedTags || [],
-      limits: agentObj.limits || []
-    });
-    if (typeof saveTrackerState === 'function') saveTrackerState();
-  }
-
-  alert(`✔ 成功與特工 [${agentObj.name} (${agentObj.agentId})] 建立量子神經連結！已納入您的特工名冊。`);
-  closeFriendProfileModal();
-  openFriendsDossierView(); // 自動跳轉至名冊頁面查看
-}
-
-    function closeFriendProfileModal() {
-      const modal = document.getElementById("friendProfileModal");
-      if (modal) modal.style.display = "none";
-    }
-
-    function openDossierTagsModal() {
-      const modal = document.getElementById("dossierTagsModal");
-      if (!modal) return;
-
-      const prof = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : { selectedTags: ["🔍 探索中"], limits: [], allPreferences: ["🔍 探索中"], allLimits: [] };
-      const allPrefs = prof.allPreferences || (typeof DEFAULT_PRESET_TAGS !== 'undefined' ? DEFAULT_PRESET_TAGS.preferences : ["🔍 探索中"]);
-      const allLimits = prof.allLimits || (typeof DEFAULT_PRESET_TAGS !== 'undefined' ? DEFAULT_PRESET_TAGS.hardLimits : []);
-      const selPrefs = prof.selectedTags || ["🔍 探索中"];
-      const selLimits = prof.limits || [];
-
-      const prefContainer = document.getElementById("modalPrefCheckboxContainer");
-      if (prefContainer) {
-        prefContainer.innerHTML = allPrefs.map(t => `
-          <label class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-black border ${selPrefs.includes(t) ? 'border-[#00ff88] text-[#00ff88]' : 'border-zinc-800 text-zinc-400'} cursor-pointer text-xs">
-            <input type="checkbox" value="${t}" ${selPrefs.includes(t) ? 'checked' : ''} onchange="toggleModalTag('pref', '${t}', this.checked)" style="accent-color:#00ff88;">
-            <span>${t}</span>
-          </label>
-        `).join('');
-      }
-
-      const limitContainer = document.getElementById("modalLimitCheckboxContainer");
-      if (limitContainer) {
-        limitContainer.innerHTML = allLimits.map(l => `
-          <label class="flex items-center gap-1.5 px-3 py-1.5 rounded bg-black border ${selLimits.includes(l) ? 'border-[#ff3366] text-[#ff3366]' : 'border-zinc-800 text-zinc-400'} cursor-pointer text-xs">
-            <input type="checkbox" value="${l}" ${selLimits.includes(l) ? 'checked' : ''} onchange="toggleModalTag('limit', '${l}', this.checked)" style="accent-color:#ff3366;">
-            <span>${l}</span>
-          </label>
-        `).join('');
-      }
-
-      modal.style.display = "flex";
-    }
-
-    function closeDossierTagsModal() {
-      const modal = document.getElementById("dossierTagsModal");
-      if (modal) modal.style.display = "none";
-      if (typeof renderProfileDossier === 'function') renderProfileDossier();
-    }
-
-    function toggleModalTag(type, tag, isChecked) {
-      if (typeof trackerState === 'undefined' || !trackerState.profile) return;
-      const prof = trackerState.profile;
-
-      if (type === 'pref') {
-        if (!prof.selectedTags) prof.selectedTags = [];
-        if (isChecked && !prof.selectedTags.includes(tag)) {
-          prof.selectedTags.push(tag);
-        } else if (!isChecked) {
-          prof.selectedTags = prof.selectedTags.filter(t => t !== tag);
-        }
-      } else {
-        if (!prof.limits) prof.limits = [];
-        if (isChecked && !prof.limits.includes(tag)) {
-          prof.limits.push(tag);
-        } else if (!isChecked) {
-          prof.limits = prof.limits.filter(l => l !== tag);
-        }
-      }
-
-      if (typeof saveTrackerState === 'function') saveTrackerState();
-    }
-
-    function addCustomTagFromModal(type) {
-      if (typeof trackerState === 'undefined' || !trackerState.profile) return;
-      const prof = trackerState.profile;
-
-      if (type === 'pref') {
-        const input = document.getElementById("customPrefInput");
-        const val = input.value.trim();
-        if (!val) return;
-        if (!prof.allPreferences) prof.allPreferences = [...(DEFAULT_PRESET_TAGS.preferences || ["🔍 探索中"])];
-        if (!prof.allPreferences.includes(val)) prof.allPreferences.push(val);
-        if (!prof.selectedTags) prof.selectedTags = [];
-        if (!prof.selectedTags.includes(val)) prof.selectedTags.push(val);
-        input.value = "";
-      } else {
-        const input = document.getElementById("customLimitInput");
-        const val = input.value.trim();
-        if (!val) return;
-        if (!prof.allLimits) prof.allLimits = [...(DEFAULT_PRESET_TAGS.hardLimits || [])];
-        if (!prof.allLimits.includes(val)) prof.allLimits.push(val);
-        if (!prof.limits) prof.limits = [];
-        if (!prof.limits.includes(val)) prof.limits.push(val);
-        input.value = "";
-      }
-
-      if (typeof saveTrackerState === 'function') saveTrackerState();
-      openDossierTagsModal();
-    }
-
-    function renderDossierTags() {
-      if (typeof trackerState === 'undefined' || !trackerState.profile) return;
-      const prof = trackerState.profile;
-      const prefBox = document.getElementById("myPrefTagsBox");
-      const limitBox = document.getElementById("myLimitTagsBox");
-
-      if (prefBox) {
-        const selPrefs = prof.selectedTags && prof.selectedTags.length > 0 ? prof.selectedTags : ["🔍 探索中"];
-        prefBox.innerHTML = selPrefs.map(t => `<div class="tag-pill">${t}</div>`).join('');
-      }
-
-      if (limitBox) {
-        const selLimits = prof.limits || [];
-        limitBox.innerHTML = selLimits.map(l => `<div class="tag-pill active-limit">${l}</div>`).join('');
-      }
-    }
-
-    function openEditProfileModal() {
-      const modal = document.getElementById("editProfileModal");
-      if (!modal) return;
-
-      const tProf = (typeof trackerState !== 'undefined' && trackerState.profile) ? trackerState.profile : {};
-      const mProf = (typeof memberProfile !== 'undefined' && memberProfile) ? memberProfile : {};
-      
-      const nameInp = document.getElementById("profEditName");
-      const agentIdInp = document.getElementById("profEditAgentId");
-      const roleInp = document.getElementById("profEditRole");
-      const safewordInp = document.getElementById("profEditSafeword");
-      const twitterInp = document.getElementById("profEditTwitter");
-      const bioInp = document.getElementById("profEditBio");
-      const avatarPrev = document.getElementById("profEditAvatarPreview");
-
-      if (nameInp) nameInp.value = tProf.name || mProf.name || "特工";
-      if (agentIdInp) agentIdInp.value = tProf.agentId || mProf.agentId || "AGENT-001";
-      if (roleInp) roleInp.value = tProf.role || mProf.role || "支配者 (Dom)";
-      if (safewordInp) safewordInp.value = tProf.safeword || "MAYDAY";
-      if (twitterInp) twitterInp.value = tProf.twitter || "";
-      if (bioInp) bioInp.value = tProf.bio || "";
-      if (avatarPrev) avatarPrev.src = tProf.avatar || "https://api.dicebear.com/7.x/bottts/svg?seed=Agent9481";
-
-      modal.style.display = "flex";
-    }
-
-    function closeEditProfileModal() {
-      const modal = document.getElementById("editProfileModal");
-      if (modal) modal.style.display = "none";
-    }
-
-    function handleCustomProfileUpdate(e) {
-      e.preventDefault();
-
-      const newName = document.getElementById("profEditName").value.trim();
-      const newAgentId = document.getElementById("profEditAgentId").value.trim().toUpperCase();
-      const newRole = document.getElementById("profEditRole").value;
-      const newSafeword = document.getElementById("profEditSafeword").value.trim().toUpperCase();
-      const newTwitter = document.getElementById("profEditTwitter").value.trim();
-      const newBio = document.getElementById("profEditBio").value.trim();
-      const avatarSrc = document.getElementById("profEditAvatarPreview").src;
-
-      if (typeof trackerState !== 'undefined' && trackerState.partners) {
-        const isConflict = trackerState.partners.some(p => p.agentId === newAgentId && p.agentId !== (trackerState.profile ? trackerState.profile.agentId : ''));
-        if (isConflict) {
-          alert(`❌【量子衝突警告】\n\n特工代號 ID [${newAgentId}] 已經存在於你的神經名冊網絡中！\n請更換一組專屬的特工 ID，以防量子信號干擾。`);
-          return;
-        }
-      }
-
-      if (typeof trackerState !== 'undefined') {
-        if (!trackerState.profile) trackerState.profile = {};
-        trackerState.profile.name = newName;
-        trackerState.profile.agentId = newAgentId;
-        trackerState.profile.role = newRole;
-        trackerState.profile.safeword = newSafeword;
-        trackerState.profile.twitter = newTwitter;
-        trackerState.profile.bio = newBio;
-        trackerState.profile.avatar = avatarSrc;
-        if (typeof saveTrackerState === 'function') saveTrackerState();
-      }
-
-      if (typeof memberProfile !== 'undefined' && memberProfile) {
-        memberProfile.name = newName;
-        memberProfile.agentId = newAgentId;
-        memberProfile.role = newRole;
-        memberProfile.avatar = avatarSrc;
-        localStorage.setItem(CONFIG.STORAGE_KEYS.MEMBER, JSON.stringify(memberProfile));
-        if (typeof updateMemberUI === 'function') updateMemberUI();
-      }
-
-      document.querySelectorAll("#dossierNameDisplay").forEach(el => el.textContent = `${newName} (${newAgentId})`);
-      document.querySelectorAll("#dossierAgentIdDisplay").forEach(el => el.textContent = `ID: ${newAgentId}`);
-      document.querySelectorAll("#dossierRoleBadge").forEach(el => el.textContent = newRole);
-      document.querySelectorAll("#dossierSafewordDisplay").forEach(el => el.textContent = newSafeword);
-      
-      const avPrev = document.getElementById("dossierAvatarPreview");
-      if (avPrev) avPrev.src = avatarSrc;
-
-      const bioElem = document.getElementById("dossierBioDisplay");
-      if (bioElem) bioElem.textContent = newBio || "尚未填寫特工宣言與簡介。";
-
-      if (typeof renderProfileDossier === 'function') renderProfileDossier();
-      closeEditProfileModal();
-      alert(`✔ 專屬 ID [${newAgentId}] 驗證通過！機密檔案已永久同調完畢。`);
-    }
-
-    function proceedToCheckoutFromCart() {
-      if (typeof cart !== 'undefined' && cart.length === 0) {
-        alert("❌ 裝備庫目前為空！");
-        return;
-      }
-      toggleCart(false);
-      setActiveView('view-checkout');
-      if (typeof renderCheckoutSummary === 'function') renderCheckoutSummary();
-      if (typeof loadCvsCities === 'function') loadCvsCities('711');
-      history.pushState({ view: 'checkout' }, '', '#checkout');
-    }
-
-    function selectShippingCard(method, el) {
-      document.querySelectorAll('.ship-option-card').forEach(card => {
-        card.classList.remove('border-[#00ff88]', 'bg-[#00ff88]/5');
-        card.classList.add('border-white/10', 'bg-[#16181d]/60');
-      });
-      el.classList.remove('border-white/10', 'bg-[#16181d]/60');
-      el.classList.add('border-[#00ff88]', 'bg-[#00ff88]/5');
-
-      if (typeof selectShipping === 'function') {
-        selectShipping(method, el);
-      }
-    }
-
-    function handleHeaderCartClick() {
-      const shopView = document.getElementById("view-shop");
-      if (shopView && shopView.classList.contains("hidden")) {
-        openShopCatalogView();
-      }
-      if (typeof toggleCart === 'function') {
-        toggleCart(true);
-      }
-    }
-
-    function filterCvsStoresLocally(keyword) {
-      const storeSelect = document.getElementById("cvsStoreSelect");
-      if (!storeSelect || typeof cachedStoreLocations === 'undefined' || cachedStoreLocations.length === 0) return;
-      
-      const query = keyword.trim().toLowerCase();
-      let filtered = cachedStoreLocations;
-
-      const cityVal = document.getElementById("cvsCitySelect").value;
-      const distVal = document.getElementById("cvsDistSelect").value;
-
-      if (cityVal) filtered = filtered.filter(s => s.city === cityVal);
-      if (distVal) filtered = filtered.filter(s => s.dist === distVal);
-      
-      if (query) {
-        filtered = filtered.filter(s => 
-          (s.name && s.name.toLowerCase().includes(query)) ||
-          (s.addr && s.addr.toLowerCase().includes(query)) ||
-          (s.id && s.id.toLowerCase().includes(query))
-        );
-      }
-
-      if (filtered.length === 0) {
-        storeSelect.innerHTML = `<option value="">❌ 無符合條件的門市</option>`;
-        storeSelect.disabled = true;
-        return;
-      }
-
-      storeSelect.innerHTML = `<option value="">-- 找到 ${filtered.length} 家符合門市，請點選 --</option>` + filtered.map(s => `
-        <option value="${s.id}" data-name="${s.name}" data-addr="${s.addr}">${s.name} (${s.id}) - ${s.addr}</option>
-      `).join('');
-      storeSelect.disabled = false;
-    }
-
-    function toggleNav(isOpen) {
-      const drawer = document.getElementById("mobileNavDrawer");
-      const overlay = document.getElementById("mobileNavOverlay");
-      if (!drawer) return;
-      if (isOpen) {
-        drawer.style.transform = "translateX(0)";
-        if (overlay) overlay.classList.remove("hidden");
-      } else {
-        drawer.style.transform = "translateX(-100%)";
-        if (overlay) overlay.classList.add("hidden");
-      }
-    }
-    
-    function submitOrderToDatabase() {
-      if (typeof cart !== 'undefined' && cart.length === 0) {
-        alert("❌ 錯誤：調用清單目前為空！");
-        return;
-      }
-
-      const name = document.getElementById("checkoutNameInput").value.trim();
-      const phone = document.getElementById("checkoutPhoneInput").value.trim();
-      const email = document.getElementById("checkoutEmailInput").value.trim();
-      const note = document.getElementById("checkoutNoteInput").value.trim();
-
-      if (!name || !phone) {
-        alert("⚠️ 請完整填寫特工真實姓名與行動終端電話！");
-        return;
-      }
-
-      let finalLocation = "";
-      if (typeof selectedShippingMethod !== 'undefined' && (selectedShippingMethod === 'home' || selectedShippingMethod === 'meetup')) {
-        finalLocation = document.getElementById("manualLocationInput").value.trim();
-        if (!finalLocation) {
-          alert("⚠️ 請填寫詳細收件地址或面交地點！");
-          return;
-        }
-      } else {
-        finalLocation = document.getElementById("finalShippingLocation").value;
-        if (!finalLocation) {
-          alert("⚠️ 請透過上方選單鎖定目標 7-11 / 全家超商門市！");
-          return;
-        }
-      }
-
-      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-      let discountedSubtotal = Math.round(subtotal * (typeof activeDiscountRate !== 'undefined' ? activeDiscountRate : 1.0));
-      let finalSubtotal = Math.max(0, discountedSubtotal - (typeof activePromoDiscount !== 'undefined' ? activePromoDiscount : 0));
-      let totalPayable = finalSubtotal + (typeof activeShippingFee !== 'undefined' ? activeShippingFee : 60);
-
-      const orderId = "GUILTY-" + Date.now().toString().slice(-6);
-      const orderPayload = {
-        action: "createOrder",
-        orderId: orderId,
-        product: cart.map(i => `${i.title} (${i.spec}) x${i.qty}`).join(" ｜ "),
-        price: totalPayable,
-        name: name,
-        phone: phone,
-        email: email,
-        shipping: typeof selectedShippingMethod !== 'undefined' ? selectedShippingMethod : '711',
-        location: finalLocation,
-        payment: (typeof selectedPaymentMethod !== 'undefined' && selectedPaymentMethod === 'cod') ? '超商取貨付款' : '虛擬ATM轉帳',
-        engraving: note,
-        items: cart
-      };
-
-      const btn = event.target.closest("button");
-      if (btn) { btn.disabled = true; btn.textContent = "量子加密傳輸中..."; }
-
-      fetch(CONFIG.API_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(orderPayload)
-      }).then(() => {
-        localStorage.removeItem("guilty_cart");
-        if (typeof cart !== 'undefined') cart = [];
-        if (typeof updateCartUI === 'function') updateCartUI();
-        
-        alert(`✔【訂單派遣成功】\n\n案件編號：${orderId}\n應付總額：NT$ ${totalPayable.toLocaleString()}\n\n已成功將協議同步至總部後台！`);
-        showLandingView();
-      }).catch(() => {
-        if (btn) { btn.disabled = false; btn.innerHTML = '<div class="flex items-center gap-2"><span class="material-symbols-outlined text-lg">bolt</span><span>確認簽署並送出訂單</span></div>'; }
-        alert("❌ 訂單傳送逾時，請檢查連線狀態後重試。");
-      });
-    }
-
-    function toggleCart(isOpen) {
-      const drawer = document.getElementById("cartDrawer");
-      const overlay = document.getElementById("navOverlay");
-      if (!drawer) return;
-      if (isOpen) {
-        drawer.style.transform = "translateX(0)";
-        if (overlay) overlay.classList.remove("hidden");
-        if (typeof updateCartUI === 'function') updateCartUI();
-      } else {
-        drawer.style.transform = "translateX(100%)";
-        if (overlay) overlay.classList.add("hidden");
-      }
-    }
-
-    function toggleAuthModal(isOpen) {
-      const modal = document.getElementById("authModal");
-      if (!modal) return;
-      modal.style.display = isOpen ? "flex" : "none";
-    }
-
-  // ----------------------------------------------------
-    // 初始化狀態與深度連結解析
-    // ----------------------------------------------------
-    if (typeof loadAgentTrackerState === 'function') loadAgentTrackerState();
-    if (typeof renderTrackerApp === 'function') renderTrackerApp();
-    if (typeof renderProfileDossier === 'function') renderProfileDossier();
-    if (typeof updateMemberUI === 'function') updateMemberUI();
-    if (typeof updateCartUI === 'function') updateCartUI();
-
-    // 🔗 統一的深度連結解析函式
-    function handleDeepLinkHash() {
-      const hash = window.location.hash; // 取得類似 #shop-guilty-lighter-white 的雜湊
-      if (hash && hash.startsWith("#shop-")) {
-        const productId = hash.replace("#shop-", "");
-        openShopCatalogView();
-        setTimeout(() => {
-          openProductDetail(productId);
-        }, 150);
-      }
-    }
     // 1. 開啟貨態追蹤視圖
-  function openTrackingAppView() {
-    setActiveView('view-tracking');
-    // 🌟 切換過去時，自動載入當前登入帳號的訂單
-    loadMyAccountOrders();
-    history.pushState({ view: 'tracking' }, '', '#tracking');
-  }
+    function openTrackingAppView() {
+      setActiveView('view-tracking');
+      loadMyAccountOrders();
+      history.pushState({ view: 'tracking' }, '', '#tracking');
+    }
 
-  // 2. 🌐 自動載入當前登入特工的所有調用案件 (你剛剛貼的這段)
-  async function loadMyAccountOrders() {
-    const member = JSON.parse(localStorage.getItem("guilty_member")) || {};
-    const accountKey = member.email || member.phone;
+    // 2. 🌐 自動載入當前登入特工的所有調用案件
+    async function loadMyAccountOrders() {
+      const member = JSON.parse(localStorage.getItem("guilty_member")) || {};
+      const accountKey = member.email || member.phone;
 
-    if (!accountKey) {
+      if (!accountKey) {
+        const container = document.getElementById("myAccountOrdersContainer");
+        if (container) {
+          container.innerHTML = `<div class="text-xs text-yellow-400 p-4 border border-yellow-500/30 rounded bg-yellow-950/20">
+            ⚠️ 您目前尚未進行神經認證登入。請先點擊右上角登入特工身分，以自動同步您的所有調用案件。
+          </div>`;
+        }
+        return;
+      }
+
+      try {
+        const res = await fetch(`${CONFIG.API_URL}?action=getOrdersByAccount&account=${encodeURIComponent(accountKey)}`);
+        const data = await res.json();
+
+        if (data && data.success && data.orders) {
+          renderMyOrdersList(data.orders);
+        }
+      } catch (err) {
+        console.error("載入個人訂單失敗:", err);
+      }
+    }
+
+    // 3. 渲染個人訂單清單
+    function renderMyOrdersList(orders) {
       const container = document.getElementById("myAccountOrdersContainer");
-      if (container) {
-        container.innerHTML = `<div class="text-xs text-yellow-400 p-4 border border-yellow-500/30 rounded bg-yellow-950/20">
-          ⚠️ 您目前尚未進行神經認證登入。請先點擊右上角登入特工身分，以自動同步您的所有調用案件。
-        </div>`;
+      if (!container) return;
+
+      if (orders.length === 0) {
+        container.innerHTML = `<div class="text-xs text-zinc-500 py-6 text-center">您的調用紀錄中目前沒有任何案件。</div>`;
+        return;
       }
-      return;
-    }
 
-    try {
-      const res = await fetch(`${CONFIG.API_URL}?action=getOrdersByAccount&account=${encodeURIComponent(accountKey)}`);
-      const data = await res.json();
-
-      if (data && data.success && data.orders) {
-        renderMyOrdersList(data.orders);
-      }
-    } catch (err) {
-      console.error("載入個人訂單失敗:", err);
-    }
-  }
-
-  // 3. 渲染個人訂單清單 (你剛剛貼的這段)
-  function renderMyOrdersList(orders) {
-    const container = document.getElementById("myAccountOrdersContainer");
-    if (!container) return;
-
-    if (orders.length === 0) {
-      container.innerHTML = `<div class="text-xs text-zinc-500 py-6 text-center">您的調用紀錄中目前沒有任何案件。</div>`;
-      return;
-    }
-
-    container.innerHTML = orders.map(order => {
-      return `
-        <div class="bg-black/40 border border-white/10 rounded-xl p-4 space-y-3 font-mono">
-          <div class="flex justify-between items-center pb-2 border-b border-white/5">
-            <span class="text-xs font-bold text-[#00ff88]">${order.orderId}</span>
-            <span class="text-[10px] bg-[#00ff88]/10 text-[#00ff88] border border-[#00ff88]/30 px-2 py-0.5 rounded font-bold">${order.status}</span>
+      container.innerHTML = orders.map(order => {
+        return `
+          <div class="bg-black/40 border border-white/10 rounded-xl p-4 space-y-3 font-mono">
+            <div class="flex justify-between items-center pb-2 border-b border-white/5">
+              <span class="text-xs font-bold text-[#00ff88]">${order.orderId}</span>
+              <span class="text-[10px] bg-[#00ff88]/10 text-[#00ff88] border border-[#00ff88]/30 px-2 py-0.5 rounded font-bold">${order.status}</span>
+            </div>
+            <div class="text-xs text-white">📦 ${order.product}</div>
+            <div class="text-[11px] text-zinc-400">📍 節點：${order.location}</div>
+            <div class="text-[10px] text-zinc-500">下單時間：${order.createdAt}</div>
           </div>
-          <div class="text-xs text-white">📦 ${order.product}</div>
-          <div class="text-[11px] text-zinc-400">📍 節點：${order.location}</div>
-          <div class="text-[10px] text-zinc-500">下單時間：${order.createdAt}</div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  // 4. 原本的手動查詢單筆訂單的函式
-  async function queryOrderLogistics() { ... }
-
-  // 5. 渲染 5 階段時間軸的函式
-  function renderLogisticsTimeline(currentStatus) { ... }
-
-  // 🌐 連結後台實時查詢貨態
-  async function queryOrderLogistics() {
-    const input = document.getElementById("trackingOrderIdInput");
-    const container = document.getElementById("trackingResultContainer");
-    if (!input || !container) return;
-
-    const orderId = input.value.trim().toUpperCase();
-    if (!orderId) {
-      alert("⚠️ 請輸入有效的案件編號（例如 GUILTY-123456）！");
-      return;
+        `;
+      }).join('');
     }
 
-    // 顯示讀取中狀態
-    container.style.display = "block";
-    document.getElementById("resOrderId").textContent = orderId;
-    document.getElementById("resStatusBadge").textContent = "向總部後台解密中...";
-    document.getElementById("resProductInfo").textContent = "載入中...";
-    document.getElementById("resLocationInfo").textContent = "載入中...";
-    document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-[#00ff88] animate-pulse">✦ 正在調用區塊鏈加密訂單資料...</div>`;
+    // 4. 🌐 連結後台實時查詢貨態（手動查詢）
+    async function queryOrderLogistics() {
+      const input = document.getElementById("trackingOrderIdInput");
+      const container = document.getElementById("trackingResultContainer");
+      if (!input || !container) return;
 
-    try {
-      const res = await fetch(`${CONFIG.API_URL}?action=queryOrder&orderId=${encodeURIComponent(orderId)}`);
-      const data = await res.json();
-
-      if (data && data.success && data.order) {
-        const order = data.order;
-        
-        document.getElementById("resOrderId").textContent = order.orderId;
-        document.getElementById("resStatusBadge").textContent = order.status;
-        document.getElementById("resProductInfo").textContent = order.product;
-        document.getElementById("resLocationInfo").textContent = order.location || "超商無痕取件";
-
-        // 渲染 5 個固定階段的時間軸
-        renderLogisticsTimeline(order.status);
-      } else {
-        document.getElementById("resStatusBadge").textContent = "查無此案件";
-        document.getElementById("resProductInfo").textContent = "無資料";
-        document.getElementById("resLocationInfo").textContent = "無資料";
-        document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-red-400">❌ 找不到案件編號 [${orderId}]，請確認代號是否正確。</div>`;
+      const orderId = input.value.trim().toUpperCase();
+      if (!orderId) {
+        alert("⚠️ 請輸入有效的案件編號（例如 GUILTY-123456）！");
+        return;
       }
-    } catch (err) {
-      console.error("查詢失敗:", err);
-      document.getElementById("resStatusBadge").textContent = "連線異常";
-      document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-red-400">❌ 無法連線至總部後台，請檢查網路。</div>`;
+
+      container.style.display = "block";
+      document.getElementById("resOrderId").textContent = orderId;
+      document.getElementById("resStatusBadge").textContent = "向總部後台解密中...";
+      document.getElementById("resProductInfo").textContent = "載入中...";
+      document.getElementById("resLocationInfo").textContent = "載入中...";
+      document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-[#00ff88] animate-pulse">✦ 正在調用區塊鏈加密訂單資料...</div>`;
+
+      try {
+        const res = await fetch(`${CONFIG.API_URL}?action=queryOrder&orderId=${encodeURIComponent(orderId)}`);
+        const data = await res.json();
+
+        if (data && data.success && data.order) {
+          const order = data.order;
+          
+          document.getElementById("resOrderId").textContent = order.orderId;
+          document.getElementById("resStatusBadge").textContent = order.status;
+          document.getElementById("resProductInfo").textContent = order.product;
+          document.getElementById("resLocationInfo").textContent = order.location || "超商無痕取件";
+
+          renderLogisticsTimeline(order.status);
+        } else {
+          document.getElementById("resStatusBadge").textContent = "查無此案件";
+          document.getElementById("resProductInfo").textContent = "無資料";
+          document.getElementById("resLocationInfo").textContent = "無資料";
+          document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-red-400">❌ 找不到案件編號 [${orderId}]，請確認代號是否正確。</div>`;
+        }
+      } catch (err) {
+        console.error("查詢失敗:", err);
+        document.getElementById("resStatusBadge").textContent = "連線異常";
+        document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-red-400">❌ 無法連線至總部後台，請檢查網路。</div>`;
+      }
     }
-  }
 
-  // 根據試算表下拉選單的 5 個狀態，動態點亮時間軸
-  function renderLogisticsTimeline(currentStatus) {
-    const steps = [
-      { name: "[ 排程調用中 ]", desc: "訂單已成功加密寫入總部後台，等待排程。" },
-      { name: "[ 義體 3D 列印 / 雷雕製作中 ]", desc: "工坊正在進行高精度 3D 列印、組裝或雷雕銘文製作。" },
-      { name: "[ 裝備已封箱交付物流 ]", desc: "外包裝已採用不透明消光黑氣泡袋，品名標示為「高精度五金零件」並交予物流。" },
-      { name: "[ 已抵達取件門市・待特工領取 ]", desc: "包裹已安全送達指定 7-11 / 全家暗樁，簡訊密鑰已發送。" },
-      { name: "[ 調用完成 / 已結案 ]", desc: "特工已完成驗收提領，本次作戰正式結案。" }
-    ];
+    // 5. 渲染 5 階段時間軸
+    function renderLogisticsTimeline(currentStatus) {
+      const steps = [
+        { name: "[ 排程調用中 ]", desc: "訂單已成功加密寫入總部後台，等待排程。" },
+        { name: "[ 義體 3D 列印 / 雷雕製作中 ]", desc: "工坊正在進行高精度 3D 列印、組裝或雷雕銘文製作。" },
+        { name: "[ 裝備已封箱交付物流 ]", desc: "外包裝已採用不透明消光黑氣泡袋，品名標示為「高精度五金零件」並交予物流。" },
+        { name: "[ 已抵達取件門市・待特工領取 ]", desc: "包裹已安全送達指定 7-11 / 全家暗樁，簡訊密鑰已發送。" },
+        { name: "[ 調用完成 / 已結案 ]", desc: "特工已完成驗收提領，本次作戰正式結案。" }
+      ];
 
-    const currentIndex = steps.findIndex(s => s.name.trim() === currentStatus.trim());
-    const activeIdx = currentIndex !== -1 ? currentIndex : 0;
+      const currentIndex = steps.findIndex(s => s.name.trim() === currentStatus.trim());
+      const activeIdx = currentIndex !== -1 ? currentIndex : 0;
 
-    const timelineList = document.getElementById("trackingTimelineList");
-    timelineList.innerHTML = steps.map((step, idx) => {
-      let isDone = idx <= activeIdx;
-      let isCurrent = idx === activeIdx;
+      const timelineList = document.getElementById("trackingTimelineList");
+      timelineList.innerHTML = steps.map((step, idx) => {
+        let isDone = idx <= activeIdx;
+        let isCurrent = idx === activeIdx;
 
-      let dotColor = isDone ? "bg-[#00ff88] shadow-[0_0_10px_#00ff88]" : "bg-zinc-800 border border-zinc-600";
-      if (isCurrent) dotColor += " animate-pulse scale-125";
+        let dotColor = isDone ? "bg-[#00ff88] shadow-[0_0_10px_#00ff88]" : "bg-zinc-800 border border-zinc-600";
+        if (isCurrent) dotColor += " animate-pulse scale-125";
 
-      let textColor = isDone ? "text-white font-bold" : "text-zinc-600";
-      if (isCurrent) textColor = "text-[#00ff88] font-black";
+        let textColor = isDone ? "text-white font-bold" : "text-zinc-600";
+        if (isCurrent) textColor = "text-[#00ff88] font-black";
 
-      return `
-        <div class="relative flex items-start gap-3">
-          <div class="w-3.5 h-3.5 rounded-full ${dotColor} shrink-0 mt-0.5"></div>
-          <div>
-            <div class="text-xs ${textColor}">${step.name}</div>
-            <div class="text-[11px] text-zinc-400 mt-0.5">${step.desc}</div>
+        return `
+          <div class="relative flex items-start gap-3">
+            <div class="w-3.5 h-3.5 rounded-full ${dotColor} shrink-0 mt-0.5"></div>
+            <div>
+              <div class="text-xs ${textColor}">${step.name}</div>
+              <div class="text-[11px] text-zinc-400 mt-0.5">${step.desc}</div>
+            </div>
           </div>
-        </div>
-      `;
-    }).join('');
-  }
+        `;
+      }).join('');
+    }
 
-    // 檢查網址是否帶有商品深度連結，若無則預設回到首頁大廳
-// 🔗 升級版全域深度連結與路由解析函式
+    // 全域深度連結與路由解析
     function handleGlobalDeepLink() {
       const hash = window.location.hash;
       if (!hash) return;
 
       if (hash.startsWith("#shop-")) {
         const productId = hash.replace("#shop-", "");
-        
-        // 1. 強制打開商城視圖
         setActiveView('view-shop');
         if (typeof renderProductCards === 'function') {
           renderProductCards();
         }
-
-        // 2. 延長至 300 毫秒，確保格線與 DOM 完全生成後再呼叫商品詳情
         setTimeout(() => {
           if (typeof openProductDetail === 'function') {
             openProductDetail(productId);
           }
         }, 300);
-
       } else if (hash.startsWith("#dossier-")) {
         const targetAgentId = hash.replace("#dossier-", "").toUpperCase();
         if (typeof lookupAndShowAgentProfile === 'function') {
@@ -2348,7 +1794,25 @@ function addSearchedAgentToNetwork(agentObj) {
       }
     }
 
-    // 監聽網址 Hash 變更
+    // 初始化執行
+    if (typeof loadAgentTrackerState === 'function') loadAgentTrackerState();
+    if (typeof renderTrackerApp === 'function') renderTrackerApp();
+    if (typeof renderProfileDossier === 'function') renderProfileDossier();
+    if (typeof updateMemberUI === 'function') updateMemberUI();
+    if (typeof updateCartUI === 'function') updateCartUI();
+
+    const currentHash = window.location.hash;
+    if (currentHash && (currentHash.startsWith("#shop-") || currentHash.startsWith("#dossier-"))) {
+      handleGlobalDeepLink();
+    } else {
+      history.replaceState({ view: 'landing' }, '', '#landing');
+      showLandingView(false);
+    }
+
+    setTimeout(() => {
+      if (typeof updateDossierQRCode === 'function') updateDossierQRCode();
+    }, 200);
+
     window.addEventListener("hashchange", handleGlobalDeepLink);
   </script>
   <!-- ⚡ 賽博風動態提示橫幅 (Toast Notification) -->
