@@ -376,26 +376,34 @@ function getActivePartner() {
   return trackerState.partners.find(p => p.id === trackerState.activePartnerId) || trackerState.partners[0];
 }
 
-function renderTrackerApp() {
-  const activePartner = getActivePartner();
-  const nameDisplay = document.getElementById("activePartnerNameDisplay");
 
-  const isDom = trackerState.currentMode === "dom";
-  const btnDom = document.getElementById("btnModeDom");
-  const btnSub = document.getElementById("btnModeSub");
-  if (btnDom) btnDom.classList.toggle("active", isDom);
-  if (btnSub) btnSub.classList.toggle("active", !isDom);
 
-  if (activePartner) {
-    if (nameDisplay) nameDisplay.textContent = `[ 當前實踐對象：${activePartner.name} (ID: ${activePartner.agentId || 'N/A'}) ]`;
+// 渲染計數端的互動對象清單（與好友名冊連動）
+  function renderTrackerPartners() {
+    const listContainer = document.getElementById("trackerPartnerList");
+    if (!listContainer) return;
+
+    // 優先讀取好友名冊 (friends)，若無則讀取 partners
+    const partners = (typeof trackerState !== 'undefined') ? (trackerState.friends || trackerState.partners || []) : [];
+
+    if (partners.length === 0) {
+      listContainer.innerHTML = `<div class="text-xs text-zinc-500 py-3 text-center">目前無互動對象，請至「特工名冊」新增或掃碼接入。</div>`;
+      return;
+    }
+
+    listContainer.innerHTML = partners.map(p => `
+      <div class="flex items-center justify-between bg-black/50 p-2.5 rounded border border-white/5 cursor-pointer hover:border-[#00ff88]/40 transition-all" onclick="openAgentProfileModal('${p.agentId}')">
+        <div class="flex items-center gap-2.5">
+          <img src="${p.avatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + p.agentId}" class="w-8 h-8 rounded border border-[#00ff88]/30 object-cover bg-black">
+          <div>
+            <div class="text-xs font-bold text-white">${p.name}</div>
+            <div class="text-[10px] font-mono text-[#00ff88]">${p.agentId}・${p.role || '特工'}</div>
+          </div>
+        </div>
+        <span class="text-xs text-zinc-400 font-mono">→ 檔案</span>
+      </div>
+    `).join('');
   }
-
-  renderPartnerList();
-  renderSessionHUD();
-  renderMainMetricsBoard();
-  renderSessionLogs();
-  renderAnalyticsChart();
-}
 
 function switchTrackerMode(mode) {
   trackerState.currentMode = mode;
