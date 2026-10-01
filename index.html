@@ -377,6 +377,10 @@ html, body {
         <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">實踐計數</span>
         <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">カウンター</span>
       </button>
+      <button id="nav-tracking" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-primary transition-colors rounded" onclick="openTrackingAppView()">
+  <span style="font-size:14px; font-weight:600; letter-spacing:0.25em;">貨態追蹤</span>
+  <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">追跡</span>
+</button>
       <button id="nav-friends" class="px-4 py-1.5 flex flex-col items-center justify-center text-zinc-400 hover:text-white transition-colors rounded" onclick="openFriendsDossierView()">
         <span style="font-size:14px; font-weight:600; letter-spacing:0.025em;">特工名冊</span>
         <span style="font-size:8px; opacity:0.35; line-height:1; margin-top:2px;">名簿</span>
@@ -445,6 +449,75 @@ html, body {
       </div>
     </div>
 
+
+    <!-- VIEW: 戰術貨態追蹤端 (view-tracking) -->
+    <div id="view-tracking" class="view-section hidden w-full">
+      <div class="max-w-3xl mx-auto py-8 font-mono space-y-6">
+        
+        <!-- 頂部標題區 -->
+        <div class="flex justify-between items-center pb-3 border-b border-white/10">
+          <div>
+            <h1 class="text-2xl font-bold text-[#00ff88]">// 戰術貨態追蹤・物流神經中樞</h1>
+            <p class="text-xs text-zinc-400 mt-1">輸入您的案件編號（Order ID）實時監控無痕包裹傳輸進度。</p>
+          </div>
+          <button onclick="showLandingView()" class="px-3.5 py-2 bg-surface-container border border-white/10 text-zinc-300 rounded text-xs hover:border-white cursor-pointer">← 返回大廳</button>
+        </div>
+
+        <!-- 查詢輸入面板 -->
+        <div class="bg-surface-container-low p-6 rounded-xl border border-white/10 space-y-4">
+          <div class="text-xs font-bold text-[#00ff88] uppercase tracking-wider">✦ 案件情報調用 / ORDER QUERY</div>
+          <div class="flex gap-2">
+            <input type="text" id="trackingOrderIdInput" placeholder="輸入案件編號 (例: GUILTY-123456)" class="flex-1 bg-black border border-white/20 px-3.5 py-2.5 rounded text-xs text-white uppercase focus:outline-none focus:border-[#00ff88]">
+            <button onclick="queryOrderLogistics()" class="px-5 py-2.5 bg-[#00ff88] hover:bg-[#60ff99] text-black font-bold text-xs rounded uppercase tracking-wider cursor-pointer shadow-[0_0_15px_rgba(0,255,136,0.25)]">
+              解密追蹤
+            </button>
+          </div>
+          <div class="text-[10px] text-zinc-500">提示：送出訂單時會取得一組「GUILTY-XXXXXX」或「CASE-XXXXXX」的專屬案件編號。</div>
+        </div>
+
+        <!-- 查詢結果與時間軸顯示區 -->
+        <div id="trackingResultContainer" style="display:none;" class="bg-surface-container-low p-6 rounded-xl border border-[#00ff88]/40 space-y-6 shadow-2xl">
+          <div class="flex flex-wrap justify-between items-center pb-4 border-b border-white/10 gap-2">
+            <div>
+              <div class="text-[10px] text-zinc-400 uppercase">案件代號 / TARGET ID</div>
+              <div class="text-base font-bold text-white mt-0.5" id="resOrderId">--</div>
+            </div>
+            <div class="text-right">
+              <div class="text-[10px] text-zinc-400 uppercase">當前物流狀態 / STATUS</div>
+              <div class="text-xs font-bold text-[#00ff88] bg-[#00ff88]/10 border border-[#00ff88]/30 px-2.5 py-1 rounded mt-0.5" id="resStatusBadge">--</div>
+            </div>
+          </div>
+
+          <!-- 訂單明細概要 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs bg-black/40 p-4 rounded-lg border border-white/5">
+            <div>
+              <span class="text-zinc-500 block mb-1">調用裝備項目</span>
+              <span class="text-white font-bold" id="resProductInfo">--</span>
+            </div>
+            <div>
+              <span class="text-zinc-500 block mb-1">目標取件節點</span>
+              <span class="text-zinc-300" id="resLocationInfo">--</span>
+            </div>
+          </div>
+
+          <!-- 戰術時間軸 (Timeline) -->
+          <div class="space-y-4 pt-2">
+            <div class="text-xs font-bold text-[#00ff88] uppercase">✦ 神經物流時間軸 / LOGISTICS TIMELINE</div>
+            
+            <div class="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/15" id="trackingTimelineList">
+              <!-- 動態生成 5 階段時間軸項目 -->
+            </div>
+          </div>
+
+          <div class="p-3 bg-black/60 rounded border border-white/5 text-[10px] text-zinc-400 flex items-start gap-2">
+            <span class="material-symbols-outlined text-[14px] text-[#00ff88] shrink-0 mt-0.5">lock</span>
+            <span>外包裝嚴格採用不透明消光黑氣泡袋，寄件人顯示為「高精度五金零件」，絕不洩漏任何次文化隱私。</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    
     <!-- VIEW: 裝備調用商城 (view-shop) -->
     <div id="view-shop" class="view-section hidden w-full">
       <main class="flex-1 pt-12 pb-20 px-4 sm:px-6 lg:px-8 mx-auto w-full max-w-[1600px]">
@@ -1220,6 +1293,10 @@ html, body {
           <span>特工名冊 (FRIENDS)</span>
           <span class="text-zinc-600">→</span>
         </button>
+        <button class="w-full text-left px-3.5 py-3 rounded bg-surface-container/50 hover:bg-white/5 text-zinc-300 hover:text-[#00ff88] flex items-center justify-between transition-colors cursor-pointer" onclick="switchViewAndCloseNav(openTrackingAppView)">
+  <span>貨態追蹤 (TRACKING)</span>
+  <span class="text-zinc-600">→</span>
+</button>
         
         <!-- 特工主頁入口 -->
         <button class="w-full text-left px-3.5 py-3 rounded bg-[#00ff88]/15 border border-[#00ff88]/40 text-[#00ff88] font-bold flex items-center justify-between transition-all cursor-pointer shadow-[0_0_12px_rgba(0,255,136,0.15)] mt-2" onclick="switchViewAndCloseNav(openProfileDossierView)">
@@ -2079,6 +2156,94 @@ function addSearchedAgentToNetwork(agentObj) {
         }, 150);
       }
     }
+    // 開啟貨態追蹤視圖
+  function openTrackingAppView() {
+    setActiveView('view-tracking');
+    history.pushState({ view: 'tracking' }, '', '#tracking');
+  }
+
+  // 🌐 連結後台實時查詢貨態
+  async function queryOrderLogistics() {
+    const input = document.getElementById("trackingOrderIdInput");
+    const container = document.getElementById("trackingResultContainer");
+    if (!input || !container) return;
+
+    const orderId = input.value.trim().toUpperCase();
+    if (!orderId) {
+      alert("⚠️ 請輸入有效的案件編號（例如 GUILTY-123456）！");
+      return;
+    }
+
+    // 顯示讀取中狀態
+    container.style.display = "block";
+    document.getElementById("resOrderId").textContent = orderId;
+    document.getElementById("resStatusBadge").textContent = "向總部後台解密中...";
+    document.getElementById("resProductInfo").textContent = "載入中...";
+    document.getElementById("resLocationInfo").textContent = "載入中...";
+    document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-[#00ff88] animate-pulse">✦ 正在調用區塊鏈加密訂單資料...</div>`;
+
+    try {
+      const res = await fetch(`${CONFIG.API_URL}?action=queryOrder&orderId=${encodeURIComponent(orderId)}`);
+      const data = await res.json();
+
+      if (data && data.success && data.order) {
+        const order = data.order;
+        
+        document.getElementById("resOrderId").textContent = order.orderId;
+        document.getElementById("resStatusBadge").textContent = order.status;
+        document.getElementById("resProductInfo").textContent = order.product;
+        document.getElementById("resLocationInfo").textContent = order.location || "超商無痕取件";
+
+        // 渲染 5 個固定階段的時間軸
+        renderLogisticsTimeline(order.status);
+      } else {
+        document.getElementById("resStatusBadge").textContent = "查無此案件";
+        document.getElementById("resProductInfo").textContent = "無資料";
+        document.getElementById("resLocationInfo").textContent = "無資料";
+        document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-red-400">❌ 找不到案件編號 [${orderId}]，請確認代號是否正確。</div>`;
+      }
+    } catch (err) {
+      console.error("查詢失敗:", err);
+      document.getElementById("resStatusBadge").textContent = "連線異常";
+      document.getElementById("trackingTimelineList").innerHTML = `<div class="text-xs text-red-400">❌ 無法連線至總部後台，請檢查網路。</div>`;
+    }
+  }
+
+  // 根據試算表下拉選單的 5 個狀態，動態點亮時間軸
+  function renderLogisticsTimeline(currentStatus) {
+    const steps = [
+      { name: "[ 排程調用中 ]", desc: "訂單已成功加密寫入總部後台，等待排程。" },
+      { name: "[ 義體 3D 列印 / 雷雕製作中 ]", desc: "工坊正在進行高精度 3D 列印、組裝或雷雕銘文製作。" },
+      { name: "[ 裝備已封箱交付物流 ]", desc: "外包裝已採用不透明消光黑氣泡袋，品名標示為「高精度五金零件」並交予物流。" },
+      { name: "[ 已抵達取件門市・待特工領取 ]", desc: "包裹已安全送達指定 7-11 / 全家暗樁，簡訊密鑰已發送。" },
+      { name: "[ 調用完成 / 已結案 ]", desc: "特工已完成驗收提領，本次作戰正式結案。" }
+    ];
+
+    const currentIndex = steps.findIndex(s => s.name.trim() === currentStatus.trim());
+    const activeIdx = currentIndex !== -1 ? currentIndex : 0;
+
+    const timelineList = document.getElementById("trackingTimelineList");
+    timelineList.innerHTML = steps.map((step, idx) => {
+      let isDone = idx <= activeIdx;
+      let isCurrent = idx === activeIdx;
+
+      let dotColor = isDone ? "bg-[#00ff88] shadow-[0_0_10px_#00ff88]" : "bg-zinc-800 border border-zinc-600";
+      if (isCurrent) dotColor += " animate-pulse scale-125";
+
+      let textColor = isDone ? "text-white font-bold" : "text-zinc-600";
+      if (isCurrent) textColor = "text-[#00ff88] font-black";
+
+      return `
+        <div class="relative flex items-start gap-3">
+          <div class="w-3.5 h-3.5 rounded-full ${dotColor} shrink-0 mt-0.5"></div>
+          <div>
+            <div class="text-xs ${textColor}">${step.name}</div>
+            <div class="text-[11px] text-zinc-400 mt-0.5">${step.desc}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 
     // 檢查網址是否帶有商品深度連結，若無則預設回到首頁大廳
 // 🔗 升級版全域深度連結與路由解析函式
