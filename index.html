@@ -1812,19 +1812,30 @@ html, body {
       if (hash.startsWith("#shop-")) {
         const productId = hash.replace("#shop-", "");
         setActiveView('view-shop');
-        if (typeof renderProductCards === 'function') {
-          renderProductCards();
-        }
+        if (typeof renderProductCards === 'function') renderProductCards();
         setTimeout(() => {
-          if (typeof openProductDetail === 'function') {
-            openProductDetail(productId);
-          }
+          if (typeof openProductDetail === 'function') openProductDetail(productId);
         }, 300);
       } else if (hash.startsWith("#dossier-")) {
         const targetAgentId = hash.replace("#dossier-", "").toUpperCase();
+        // 自動彈出該特工的雲端名片與追蹤按鈕
         if (typeof lookupAndShowAgentProfile === 'function') {
           lookupAndShowAgentProfile(targetAgentId);
         }
+      }
+    }
+
+  function handleHeaderCartClick() {
+      // 如果目前不在商城頁面，先切換到商城，然後打開調用抽屜
+      const shopView = document.getElementById("view-shop");
+      if (shopView && shopView.classList.contains("hidden")) {
+        openShopCatalogView();
+      }
+      // 電腦版或手機版統一展開調用抽屜
+      if (window.innerWidth < 1024) {
+        toggleMobileCartDrawer(true);
+      } else {
+        toggleCart(true);
       }
     }
 
