@@ -1626,6 +1626,30 @@ html, body {
       }
     }
 
+  // 💳 點擊結算途徑（付款方式）時的單選與樣式切換
+    function selectPayment(method, el) {
+      // 1. 移除所有付款選項卡片的 active 樣式與綠框
+      document.querySelectorAll('#view-checkout .radio-card, #view-checkout [id^="payMethod"]').forEach(card => {
+        card.classList.remove('border-[#00ff88]', 'bg-[#00ff88]/5', 'active');
+        card.classList.add('border-white/10', 'bg-[#16181d]/60');
+      });
+
+      // 2. 僅對當前點擊的卡片加上選中綠框與樣式
+      el.classList.remove('border-white/10', 'bg-[#16181d]/60');
+      el.classList.add('border-[#00ff88]', 'bg-[#00ff88]/5', 'active');
+
+      // 3. 設定全域變數
+      if (typeof selectedPaymentMethod !== 'undefined') {
+        selectedPaymentMethod = method;
+      }
+
+      // 如果有額外提示文字可同步更新
+      const noteElem = document.getElementById("paymentNote");
+      if (noteElem) {
+        noteElem.textContent = (method === 'cod') ? "至指定門市驗收外包裝無誤後再付款" : "完成轉帳後回報後台對帳";
+      }
+    }
+
     // 🌐 升級版視圖切換：自動關閉手機選單並捲動至頂部
     function switchViewAndCloseNav(viewFunction) {
       toggleNav(false);
@@ -1845,37 +1869,45 @@ html, body {
       }
     }
 
-    // 🚀 完整修復後的訂單送出函式（完美支援超商、宅配與面交備註）
+    // 🚀 包含面交隱私優化與金額計算的訂單送出函式
     function submitOrderToDatabase() {
       if (typeof cart !== 'undefined' && cart.length === 0) {
         alert("❌ 錯誤：調用清單目前為空！");
         return;
       }
 
-      const name = document.getElementById("checkoutNameInput").value.trim();
-      const phone = document.getElementById("checkoutPhoneInput").value.trim();
-      const email = document.getElementById("checkoutEmailInput").value.trim();
-      const note = document.getElementById("checkoutNoteInput").value.trim();
+      const nameInput = document.getElementById("checkoutNameInput");
+      const phoneInput = document.getElementById("checkoutPhoneInput");
+      const emailInput = document.getElementById("checkoutEmailInput");
+      const noteInput = document.getElementById("checkoutNoteInput");
+
+      const name = nameInput ? nameInput.value.trim() : "";
+      const phone = phoneInput ? phoneInput.value.trim() : "";
+      const email = emailInput ? emailInput.value.trim() : "";
+      const note = noteInput ? noteInput.value.trim() : "";
+
+      const shippingMethod = typeof selectedShippingMethod !== 'undefined' ? selectedShippingMethod : '711';
 
       if (!name || !phone) {
-        alert("⚠️ 請完整填寫特工真實姓名與行動終端電話！");
+        // 針對面交與超商給予不同的精準提示
+        if (shippingMethod === 'meetup') {
+          alert("⚠️ 請填寫您的特工暱稱與行動終端電話，以便面交聯繫！");
+        } else {
+          alert("⚠️ 請完整填寫真實收件姓名與行動終端電話（需與超商證件核對）！");
+        }
         return;
       }
 
       let finalLocation = "";
-      const shippingMethod = typeof selectedShippingMethod !== 'undefined' ? selectedShippingMethod : '711';
+      const manualInput = document.getElementById("manualLocationInput");
 
       if (shippingMethod === 'home' || shippingMethod === 'meetup') {
-        // 如果是宅配或面交，直接讀取手動輸入框的內容作為地點與時間備註
-        const manualInput = document.getElementById("manualLocationInput");
         finalLocation = manualInput ? manualInput.value.trim() : "";
-        
         if (!finalLocation) {
-          alert(shippingMethod === 'meetup' ? "⚠️ 請填寫面交地點與時間備註！" : "⚠️ 請填寫詳細收件地址！");
+          alert(shippingMethod === 'meetup' ? "⚠️ 請填寫面交地點（例：台中秋紅谷）與約定時間備註！" : "⚠️️ 請填寫詳細收件地址！");
           return;
         }
       } else {
-        // 超商取貨：讀取已鎖定的門市
         finalLocation = document.getElementById("finalShippingLocation").value;
         if (!finalLocation) {
           alert("⚠️ 請透過上方選單鎖定目標 7-11 / 全家超商門市！");
@@ -1889,17 +1921,21 @@ html, body {
       let totalPayable = finalSubtotal + (typeof activeShippingFee !== 'undefined' ? activeShippingFee : 60);
 
       const orderId = "GUILTY-" + Date.now().toString().slice(-6);
+      
+      // 若是面交，註明這筆訂單為暱稱隱密面交
+      const finalName = (shippingMethod === 'meetup') ? `${name} (面交暱稱)` : name;
+
       const orderPayload = {
         action: "createOrder",
         orderId: orderId,
         product: cart.map(i => `${i.title} (${i.spec}) x${i.qty}`).join(" ｜ "),
         price: totalPayable,
-        name: name,
+        name: finalName,
         phone: phone,
         email: email,
         shipping: shippingMethod,
         location: finalLocation,
-        payment: (typeof selectedPaymentMethod !== 'undefined' && selectedPaymentMethod === 'cod') ? '超商取貨付款' : '虛擬ATM轉帳',
+        payment: (typeof selectedPaymentMethod !== 'undefined' && selectedPaymentMethod === 'cod') ? '超商取貨付款 / 面交結算' : '虛擬ATM轉帳',
         engraving: note,
         items: cart
       };
@@ -1924,7 +1960,7 @@ html, body {
         alert("❌ 訂單傳送逾時，請檢查連線狀態後重試。");
       });
     }
-
+  
   // 🚚 點擊配送路徑卡片時的聯動切換邏輯
     function selectShippingCard(method, el) {
       // 1. 移除所有卡片的選中樣式
