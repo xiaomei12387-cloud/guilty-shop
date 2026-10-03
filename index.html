@@ -1876,6 +1876,88 @@ html, body {
       }
     }
 
+  // 💰 全域即時試算與價格更新函式
+    function updateCartUI() {
+      if (typeof cart === 'undefined') return;
+
+      // 1. 計算商品小計
+      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+      // 2. 處理折扣率與特工密鑰折抵
+      let discountRate = (typeof activeDiscountRate !== 'undefined') ? activeDiscountRate : 1.0;
+      let promoDiscount = (typeof activePromoDiscount !== 'undefined') ? activePromoDiscount : 0;
+      let discountedSubtotal = Math.round(subtotal * discountRate);
+      let finalSubtotal = Math.max(0, discountedSubtotal - promoDiscount);
+
+      // 3. 處理運費（若購物車為空則運費歸零）
+      let shippingFee = 0;
+      if (cart.length > 0) {
+        shippingFee = (typeof activeShippingFee !== 'undefined') ? activeShippingFee : 60;
+      }
+
+      // 4. 計算最終總金額
+      let grandTotal = finalSubtotal + shippingFee;
+
+      // 5. 更新各個畫面上的總項目數量與 Badge 標示
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      const countBadge = document.getElementById("cart-item-count");
+      const mobileBadge = document.getElementById("mobileCartCountBadge");
+      if (countBadge) countBadge.textContent = `${totalItems} 項目`;
+      if (mobileBadge) mobileBadge.textContent = totalItems;
+
+      // 6. 更新金額顯示 DOM 元素
+      const subtotalVal = document.getElementById("subtotal-val");
+      const mobileSubtotalVal = document.getElementById("mobile-subtotal-val");
+      const shippingVal = document.getElementById("shipping-val");
+      const mobileShippingVal = document.getElementById("mobile-shipping-val");
+      const grandTotalVal = document.getElementById("grand-total-val");
+      const mobileGrandTotalVal = document.getElementById("mobile-grand-total-val");
+      const headerCartCountText = document.getElementById("headerCartCountText");
+
+      if (subtotalVal) subtotalVal.textContent = `NT$ ${subtotal.toLocaleString()}`;
+      if (mobileSubtotalVal) mobileSubtotalVal.textContent = `NT$ ${subtotal.toLocaleString()}`;
+      if (shippingVal) shippingVal.textContent = `NT$ ${shippingFee.toLocaleString()}`;
+      if (mobileShippingVal) mobileShippingVal.textContent = `NT$ ${shippingFee.toLocaleString()}`;
+      if (grandTotalVal) grandTotalVal.textContent = `NT$ ${grandTotal.toLocaleString()}`;
+      if (mobileGrandTotalVal) mobileGrandTotalVal.textContent = `NT$ ${grandTotal.toLocaleString()}`;
+      if (headerCartCountText) headerCartCountText.textContent = `[${totalItems < 10 ? '0' + totalItems : totalItems}]`;
+
+      // 7. 渲染購物車內的品項清單（含數量加減與刪除按鈕）
+      const htmlContent = cart.length === 0 ? 
+        `<div class="py-6 text-center text-xs text-zinc-500">調用抽屜目前無裝備</div>` :
+        cart.map((item, index) => `
+          <div class="flex items-center justify-between bg-black/40 p-2.5 rounded border border-white/5 gap-2 font-mono text-xs">
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-white truncate">${item.title}</div>
+              <div class="text-[10px] text-[#00ff88]">規格: ${item.spec} | NT$ ${item.price.toLocaleString()}</div>
+            </div>
+            
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="changeCartItemQty(${index}, -1)" class="w-6 h-6 bg-surface-container border border-white/15 rounded text-white flex items-center justify-center hover:border-[#00ff88] cursor-pointer">-</button>
+              <span class="text-white font-bold w-5 text-center">${item.qty}</span>
+              <button onclick="changeCartItemQty(${index}, 1)" class="w-6 h-6 bg-surface-container border border-white/15 rounded text-white flex items-center justify-center hover:border-[#00ff88] cursor-pointer">+</button>
+              <button onclick="removeCartItem(${index})" class="ml-1 text-red-400 hover:text-red-300 p-1 cursor-pointer" title="移除品項">✕</button>
+            </div>
+          </div>
+        `).join('');
+
+      const cartList = document.getElementById("cart-list");
+      const mobileCartList = document.getElementById("mobile-cart-list");
+      const checkoutList = document.getElementById("checkoutOrderItemsList");
+
+      if (cartList) cartList.innerHTML = htmlContent;
+      if (mobileCartList) mobileCartList.innerHTML = htmlContent;
+      if (checkoutList) checkoutList.innerHTML = htmlContent;
+
+      // 8. 同步更新滿額免運進度條
+      if (typeof updateShippingProgressBar === 'function') {
+        updateShippingProgressBar(subtotal);
+      }
+
+      // 9. 永久儲存至 LocalStorage
+      localStorage.setItem("guilty_cart", JSON.stringify(cart));
+    }
+
     // 🚀 包含面交隱私優化與金額計算的訂單送出函式
     function submitOrderToDatabase() {
       if (typeof cart !== 'undefined' && cart.length === 0) {
