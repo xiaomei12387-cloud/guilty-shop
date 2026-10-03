@@ -1804,6 +1804,175 @@ html, body {
       }).join('');
     }
 
+  // 🚚 點擊配送路徑卡片時的聯動切換邏輯
+    function selectShippingCard(method, el) {
+      document.querySelectorAll('.ship-option-card').forEach(card => {
+        card.classList.remove('border-[#00ff88]', 'bg-[#00ff88]/5');
+        card.classList.add('border-white/10', 'bg-[#16181d]/60');
+      });
+      el.classList.remove('border-white/10', 'bg-[#16181d]/60');
+      el.classList.add('border-[#00ff88]', 'bg-[#00ff88]/5');
+
+      if (typeof selectedShippingMethod !== 'undefined') {
+        selectedShippingMethod = method;
+      }
+
+      const cvsContainer = document.getElementById("cvsDropdownContainer");
+      const manualGroup = document.getElementById("manualLocationGroup");
+      const manualInput = document.getElementById("manualLocationInput");
+
+      if (method === '711' || method === 'family') {
+        if (cvsContainer) cvsContainer.style.display = "block";
+        if (manualGroup) manualGroup.style.display = "none";
+        if (typeof loadCvsCities === 'function') loadCvsCities(method);
+      } else if (method === 'home') {
+        if (cvsContainer) cvsContainer.style.display = "none";
+        if (manualGroup) manualGroup.style.display = "block";
+        if (manualInput) manualInput.placeholder = "請輸入黑貓宅配完整收件地址...";
+        const hiddenLoc = document.getElementById("finalShippingLocation");
+        if (hiddenLoc) hiddenLoc.value = "黑貓宅配到府";
+      } else if (method === 'meetup') {
+        // 🌟 暗樁節點面交：隱藏超商選單，改成專屬的面交點與時間備註輸入框
+        if (cvsContainer) cvsContainer.style.display = "none";
+        if (manualGroup) manualGroup.style.display = "block";
+        if (manualInput) manualInput.placeholder = "請填寫面交地點（例：台中秋紅谷 / 台北松菸）與方便的時間...";
+        const hiddenLoc = document.getElementById("finalShippingLocation");
+        if (hiddenLoc) hiddenLoc.value = "暗樁節點面交";
+      }
+
+      if (typeof renderCheckoutSummary === 'function') {
+        renderCheckoutSummary();
+      }
+    }
+
+    // 🚀 完整修復後的訂單送出函式（完美支援超商、宅配與面交備註）
+    function submitOrderToDatabase() {
+      if (typeof cart !== 'undefined' && cart.length === 0) {
+        alert("❌ 錯誤：調用清單目前為空！");
+        return;
+      }
+
+      const name = document.getElementById("checkoutNameInput").value.trim();
+      const phone = document.getElementById("checkoutPhoneInput").value.trim();
+      const email = document.getElementById("checkoutEmailInput").value.trim();
+      const note = document.getElementById("checkoutNoteInput").value.trim();
+
+      if (!name || !phone) {
+        alert("⚠️ 請完整填寫特工真實姓名與行動終端電話！");
+        return;
+      }
+
+      let finalLocation = "";
+      const shippingMethod = typeof selectedShippingMethod !== 'undefined' ? selectedShippingMethod : '711';
+
+      if (shippingMethod === 'home' || shippingMethod === 'meetup') {
+        // 如果是宅配或面交，直接讀取手動輸入框的內容作為地點與時間備註
+        const manualInput = document.getElementById("manualLocationInput");
+        finalLocation = manualInput ? manualInput.value.trim() : "";
+        
+        if (!finalLocation) {
+          alert(shippingMethod === 'meetup' ? "⚠️ 請填寫面交地點與時間備註！" : "⚠️ 請填寫詳細收件地址！");
+          return;
+        }
+      } else {
+        // 超商取貨：讀取已鎖定的門市
+        finalLocation = document.getElementById("finalShippingLocation").value;
+        if (!finalLocation) {
+          alert("⚠️ 請透過上方選單鎖定目標 7-11 / 全家超商門市！");
+          return;
+        }
+      }
+
+      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      let discountedSubtotal = Math.round(subtotal * (typeof activeDiscountRate !== 'undefined' ? activeDiscountRate : 1.0));
+      let finalSubtotal = Math.max(0, discountedSubtotal - (typeof activePromoDiscount !== 'undefined' ? activePromoDiscount : 0));
+      let totalPayable = finalSubtotal + (typeof activeShippingFee !== 'undefined' ? activeShippingFee : 60);
+
+      const orderId = "GUILTY-" + Date.now().toString().slice(-6);
+      const orderPayload = {
+        action: "createOrder",
+        orderId: orderId,
+        product: cart.map(i => `${i.title} (${i.spec}) x${i.qty}`).join(" ｜ "),
+        price: totalPayable,
+        name: name,
+        phone: phone,
+        email: email,
+        shipping: shippingMethod,
+        location: finalLocation,
+        payment: (typeof selectedPaymentMethod !== 'undefined' && selectedPaymentMethod === 'cod') ? '超商取貨付款' : '虛擬ATM轉帳',
+        engraving: note,
+        items: cart
+      };
+
+      const btn = event.target.closest("button");
+      if (btn) { btn.disabled = true; btn.textContent = "量子加密傳輸中..."; }
+
+      fetch(CONFIG.API_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(orderPayload)
+      }).then(() => {
+        localStorage.removeItem("guilty_cart");
+        if (typeof cart !== 'undefined') cart = [];
+        if (typeof updateCartUI === 'function') updateCartUI();
+        
+        alert(`✔【訂單派遣成功】\n\n案件編號：${orderId}\n應付總額：NT$ ${totalPayable.toLocaleString()}\n\n已成功將協議同步至總部後台！`);
+        showLandingView();
+      }).catch(() => {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<div class="flex items-center gap-2"><span class="material-symbols-outlined text-lg">bolt</span><span>確認簽署並送出訂單</span></div>'; }
+        alert("❌ 訂單傳送逾時，請檢查連線狀態後重試。");
+      });
+    }
+
+  // 🚚 點擊配送路徑卡片時的聯動切換邏輯
+    function selectShippingCard(method, el) {
+      // 1. 移除所有卡片的選中樣式
+      document.querySelectorAll('.ship-option-card').forEach(card => {
+        card.classList.remove('border-[#00ff88]', 'bg-[#00ff88]/5');
+        card.classList.add('border-white/10', 'bg-[#16181d]/60');
+      });
+      // 2. 替當前點擊的卡片加上選中綠框
+      el.classList.remove('border-white/10', 'bg-[#16181d]/60');
+      el.classList.add('border-[#00ff88]', 'bg-[#00ff88]/5');
+
+      // 3. 設定全域變數
+      if (typeof selectedShippingMethod !== 'undefined') {
+        selectedShippingMethod = method;
+      }
+
+      // 4. 控制區塊顯示：超商 vs 宅配/面交
+      const cvsContainer = document.getElementById("cvsDropdownContainer");
+      const manualGroup = document.getElementById("manualLocationGroup");
+      const manualInput = document.getElementById("manualLocationInput");
+
+      if (method === '711' || method === 'family') {
+        // 超商取貨：顯示超商選擇器，隱藏手動地址
+        if (cvsContainer) cvsContainer.style.display = "block";
+        if (manualGroup) manualGroup.style.display = "none";
+        if (typeof loadCvsCities === 'function') loadCvsCities(method);
+      } else if (method === 'home') {
+        // 黑貓宅配：隱藏超商選擇器，顯示手動地址
+        if (cvsContainer) cvsContainer.style.display = "none";
+        if (manualGroup) manualGroup.style.display = "block";
+        if (manualInput) manualInput.placeholder = "請輸入黑貓宅配完整收件地址...";
+        const hiddenLoc = document.getElementById("finalShippingLocation");
+        if (hiddenLoc) hiddenLoc.value = "黑貓宅配到府";
+      } else if (method === 'meetup') {
+        // 🌟 暗樁節點面交：隱藏超商選單，改成專屬的面交點與時間備註輸入框！
+        if (cvsContainer) cvsContainer.style.display = "none";
+        if (manualGroup) manualGroup.style.display = "block";
+        if (manualInput) manualInput.placeholder = "請填寫面交地點（例：台中秋紅谷 / 台北松菸）與方便的時間...";
+        const hiddenLoc = document.getElementById("finalShippingLocation");
+        if (hiddenLoc) hiddenLoc.value = "暗樁節點面交";
+      }
+
+      // 5. 即時更新結算金額與運費
+      if (typeof renderCheckoutSummary === 'function') {
+        renderCheckoutSummary();
+      }
+    }
+
     // 🔗 升級版全域深度連結與路由解析（支援原相機與 LINE 掃描器帶參數進入）
     function handleGlobalDeepLink() {
       const urlParams = new URLSearchParams(window.location.search);
