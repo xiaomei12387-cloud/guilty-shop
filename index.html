@@ -2007,6 +2007,32 @@ html, body {
       if (typeof renderCheckoutSummary === 'function') {
         renderCheckoutSummary();
       }
+      // 呼叫自動調整付款方式
+  autoAdjustPaymentMethod(method);
+    }
+
+  // 當切換配送方式時，自動連動調整可用的付款方式
+    function autoAdjustPaymentMethod(shippingMethod) {
+      const codCard = document.getElementById("payMethodCod");
+      const bankCard = document.getElementById("payMethodBank");
+
+      if (shippingMethod === 'home' || shippingMethod === 'meetup') {
+        // 如果是宅配或面交，不支援超商取貨付款，強制切換至虛擬ATM/轉帳
+        if (codCard) {
+          codCard.style.opacity = "0.3";
+          codCard.style.pointerEvents = "none"; // 禁用水泥或超商付款
+        }
+        if (bankCard) {
+          // 自動幫特工勾選轉帳或面交結算
+          selectPayment('bank', bankCard);
+        }
+      } else {
+        // 如果是 7-11 或全家超商，恢復超商取貨付款選項
+        if (codCard) {
+          codCard.style.opacity = "1";
+          codCard.style.pointerEvents = "auto";
+        }
+      }
     }
 
     // 🔗 升級版全域深度連結與路由解析（支援原相機與 LINE 掃描器帶參數進入）
