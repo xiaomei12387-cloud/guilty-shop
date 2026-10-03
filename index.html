@@ -2104,6 +2104,84 @@ html, body {
       }
     }
 
+  // 🛒 渲染購物車 / 調用抽屜清單（支援數量加減與刪除）
+    function updateCartUI() {
+      if (typeof cart === 'undefined') return;
+
+      const cartList = document.getElementById("cart-list");
+      const mobileCartList = document.getElementById("mobile-cart-list");
+      const countBadge = document.getElementById("cart-item-count");
+      const mobileBadge = document.getElementById("mobileCartCountBadge");
+      const subtotalVal = document.getElementById("subtotal-val");
+      const grandTotalVal = document.getElementById("grand-total-val");
+      const mobileGrandTotalVal = document.getElementById("mobileGrandTotalVal");
+
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      if (countBadge) countBadge.textContent = `${totalItems} 項目`;
+      if (mobileBadge) mobileBadge.textContent = totalItems;
+
+      let subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+      if (subtotalVal) subtotalVal.textContent = `NT$ ${subtotal.toLocaleString()}`;
+
+      // 計算運費與總金額
+      let shippingFee = (typeof activeShippingFee !== 'undefined') ? activeShippingFee : 60;
+      let discount = (typeof activePromoDiscount !== 'undefined') ? activePromoDiscount : 0;
+      let grandTotal = Math.max(0, subtotal - discount + (cart.length > 0 ? shippingFee : 0));
+
+      if (grandTotalVal) grandTotalVal.textContent = `NT$ ${grandTotal.toLocaleString()}`;
+      if (mobileGrandTotalVal) mobileGrandTotalVal.textContent = `NT$ ${grandTotal.toLocaleString()}`;
+
+      // 產生清單 HTML（帶有數量加減與刪除按鈕）
+      const htmlContent = cart.length === 0 ? 
+        `<div class="py-6 text-center text-xs text-zinc-500">調用抽屜目前無裝備</div>` :
+        cart.map((item, index) => `
+          <div class="flex items-center justify-between bg-black/40 p-2.5 rounded border border-white/5 gap-2 font-mono text-xs">
+            <div class="flex-1 min-w-0">
+              <div class="font-bold text-white truncate">${item.title}</div>
+              <div class="text-[10px] text-[#00ff88]">規格: ${item.spec} | NT$ ${item.price.toLocaleString()}</div>
+            </div>
+            
+            <!-- 數量調整與刪除按鈕群組 -->
+            <div class="flex items-center gap-1.5 shrink-0">
+              <button onclick="changeCartItemQty(${index}, -1)" class="w-6 h-6 bg-surface-container border border-white/15 rounded text-white flex items-center justify-center hover:border-[#00ff88] cursor-pointer">-</button>
+              <span class="text-white font-bold w-5 text-center">${item.qty}</span>
+              <button onclick="changeCartItemQty(${index}, 1)" class="w-6 h-6 bg-surface-container border border-white/15 rounded text-white flex items-center justify-center hover:border-[#00ff88] cursor-pointer">+</button>
+              <button onclick="removeCartItem(${index})" class="ml-1 text-red-400 hover:text-red-300 p-1 cursor-pointer" title="移除品項">✕</button>
+            </div>
+          </div>
+        `).join('');
+
+      if (cartList) cartList.innerHTML = htmlContent;
+      if (mobileCartList) mobileCartList.innerHTML = htmlContent;
+
+      // 同步更新結帳頁面的清單（如果存在）
+      const checkoutList = document.getElementById("checkoutOrderItemsList");
+      if (checkoutList) {
+        checkoutList.innerHTML = htmlContent;
+      }
+
+      // 儲存至 LocalStorage
+      localStorage.setItem("guilty_cart", JSON.stringify(cart));
+    }
+
+    // ➕ 變更購物車品項數量
+    function changeCartItemQty(index, delta) {
+      if (typeof cart === 'undefined' || !cart[index]) return;
+      cart[index].qty += delta;
+      
+      if (cart[index].qty <= 0) {
+        cart.splice(index, 1);
+      }
+      updateCartUI();
+    }
+
+    // ❌ 移除購物車特定品項
+    function removeCartItem(index) {
+      if (typeof cart === 'undefined') return;
+      cart.splice(index, 1);
+      updateCartUI();
+    }
+
   // 👥 渲染特工名冊好友清單（支援點擊開啟檔案）
   function renderFriendsList() {
     const container = document.getElementById("friendsListContainer");
