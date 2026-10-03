@@ -862,7 +862,7 @@ html, body {
           <input type="hidden" id="finalShippingLocation">
         </section>
 
-        <!-- 5. 特工收件安全憑證 -->
+        <!-- 5. 特工收件安全憑證 (已優化面交與超商雙軌) -->
         <section class="bg-[#121316] border border-white/10 rounded-xl p-4 shadow-lg space-y-3 font-mono">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -875,13 +875,20 @@ html, body {
           </div>
           <div class="space-y-3 text-xs">
             <div>
-              <label class="block text-[10px] text-neutral-300 mb-1">特工真實收件姓名 * <span class="text-[#00ff88]">(需與超商證件核對)</span></label>
+              <label class="block text-[10px] text-neutral-300 mb-1" id="checkoutNameLabel">特工真實收件姓名 * <span class="text-[#00ff88]">(需與超商證件核對)</span></label>
               <input type="text" id="checkoutNameInput" required class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="請輸入證件全名">
             </div>
             <div>
-              <label class="block text-[10px] text-neutral-300 mb-1">行動終端電話 * <span class="text-[#00ff88]">(取件簡訊密鑰通知)</span></label>
+              <label class="block text-[10px] text-neutral-300 mb-1">行動終端電話 * <span class="text-[#00ff88]">(聯絡密鑰通知)</span></label>
               <input type="tel" id="checkoutPhoneInput" required class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="0912345678">
             </div>
+
+            <!-- 🌟 面交與宅配專屬的地點/備註輸入框 -->
+            <div id="manualLocationGroup" style="display:none;">
+              <label class="block text-[10px] text-[#00ff88] mb-1 font-bold" id="manualLocationLabel">面交地點與時間約定 *</label>
+              <input type="text" id="manualLocationInput" class="w-full bg-[#0d0e11] border border-[#00ff88]/40 rounded-lg px-3 py-2.5 text-white" placeholder="例：台中秋紅谷 / 週末下午面交">
+            </div>
+
             <div>
               <label class="block text-[10px] text-neutral-300 mb-1">安全加密電子信箱 <span class="text-neutral-500">(選填)</span></label>
               <input type="email" id="checkoutEmailInput" class="w-full bg-[#0d0e11] border border-white/15 rounded-lg px-3 py-2.5 text-white" placeholder="agent@guilty.net">
@@ -1962,53 +1969,60 @@ html, body {
     }
   
   // 🚚 點擊配送路徑卡片時的聯動切換邏輯
-    function selectShippingCard(method, el) {
-      // 1. 移除所有卡片的選中樣式
+ function selectShippingCard(method, el) {
       document.querySelectorAll('.ship-option-card').forEach(card => {
         card.classList.remove('border-[#00ff88]', 'bg-[#00ff88]/5');
         card.classList.add('border-white/10', 'bg-[#16181d]/60');
       });
-      // 2. 替當前點擊的卡片加上選中綠框
       el.classList.remove('border-white/10', 'bg-[#16181d]/60');
       el.classList.add('border-[#00ff88]', 'bg-[#00ff88]/5');
 
-      // 3. 設定全域變數
       if (typeof selectedShippingMethod !== 'undefined') {
         selectedShippingMethod = method;
       }
 
-      // 4. 控制區塊顯示：超商 vs 宅配/面交
       const cvsContainer = document.getElementById("cvsDropdownContainer");
       const manualGroup = document.getElementById("manualLocationGroup");
       const manualInput = document.getElementById("manualLocationInput");
+      const nameLabel = document.getElementById("checkoutNameLabel");
+      const nameInput = document.getElementById("checkoutNameInput");
 
       if (method === '711' || method === 'family') {
-        // 超商取貨：顯示超商選擇器，隱藏手動地址
         if (cvsContainer) cvsContainer.style.display = "block";
         if (manualGroup) manualGroup.style.display = "none";
+        if (nameLabel) nameLabel.innerHTML = `特工真實收件姓名 * <span class="text-[#00ff88]">(需與超商證件核對)</span>`;
+        if (nameInput) nameInput.placeholder = "請輸入證件全名";
         if (typeof loadCvsCities === 'function') loadCvsCities(method);
       } else if (method === 'home') {
-        // 黑貓宅配：隱藏超商選擇器，顯示手動地址
         if (cvsContainer) cvsContainer.style.display = "none";
         if (manualGroup) manualGroup.style.display = "block";
+        if (nameLabel) nameLabel.innerHTML = `特工真實收件姓名 * <span class="text-[#00ff88]">(宅配收件人)</span>`;
+        if (nameInput) nameInput.placeholder = "請輸入收件人全名";
         if (manualInput) manualInput.placeholder = "請輸入黑貓宅配完整收件地址...";
         const hiddenLoc = document.getElementById("finalShippingLocation");
         if (hiddenLoc) hiddenLoc.value = "黑貓宅配到府";
       } else if (method === 'meetup') {
-        // 🌟 暗樁節點面交：隱藏超商選單，改成專屬的面交點與時間備註輸入框！
+        // 🌟 面交專屬優化：隱藏超商選單，開放暱稱與面交約定輸入
         if (cvsContainer) cvsContainer.style.display = "none";
         if (manualGroup) manualGroup.style.display = "block";
-        if (manualInput) manualInput.placeholder = "請填寫面交地點（例：台中秋紅谷 / 台北松菸）與方便的時間...";
+        
+        // 將姓名欄位切換成「特工暱稱」提示，保護隱私
+        if (nameLabel) nameLabel.innerHTML = `特工代號 / 暱稱 * <span class="text-[#00ff88]">(面交聯絡稱呼，無需本名)</span>`;
+        if (nameInput) nameInput.placeholder = "請輸入您的暱稱或代號（例：夜梟）";
+        if (manualInput) manualInput.placeholder = "請填寫面交地點（例：台中秋紅谷）與約定時間...";
+        
         const hiddenLoc = document.getElementById("finalShippingLocation");
         if (hiddenLoc) hiddenLoc.value = "暗樁節點面交";
       }
 
-      // 5. 即時更新結算金額與運費
+      // 自動連動調整付款方式（面交/宅配不支援超商取貨付款）
+      if (typeof autoAdjustPaymentMethod === 'function') {
+        autoAdjustPaymentMethod(method);
+      }
+
       if (typeof renderCheckoutSummary === 'function') {
         renderCheckoutSummary();
       }
-      // 呼叫自動調整付款方式
-  autoAdjustPaymentMethod(method);
     }
 
   // 當切換配送方式時，自動連動調整可用的付款方式
