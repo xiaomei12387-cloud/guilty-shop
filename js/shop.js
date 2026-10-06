@@ -636,34 +636,34 @@ function applyPromoCode() {
 
   const code = input.value.trim().toUpperCase();
   
+  // 🕒 檢查早鳥排產協議（WANG18X）是否過期（期限至 2026-10-11 23:59:59）
+  const now = new Date();
+  const earlyBirdDeadline = new Date("2026-10-11T23:59:59");
+  
   if (code === "LOVEGUILTY") {
-    let choker = cart.find(i => i.productId === "guilty-choker");
-    if (!choker) {
-      msg.innerHTML = `<span style="color:var(--danger-red);">❌ 密鑰適用失敗：購物車內需包含「貓痕義體項圈」</span>`;
-      return;
-    }
-    const bankCard = document.getElementById("payMethodBank");
-    if (bankCard) selectPayment('bank', bankCard);
-
-    activePromoDiscount = (1990 - 990) * choker.qty;
-    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 盲鳥協議 [LOVEGUILTY] 啟動：項圈折至 NT$ 990（已鎖定 ATM 結算）</span>`;
-    if (removeBtn) removeBtn.style.display = "inline-block";
-    renderCheckoutSummary();
-  } 
-  else if (code === "IAMSUB") {
-    activeDiscountRate = 0.8;
-    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 首購認證 [IAMSUB] 啟動：全單享 8 折優惠</span>`;
-    if (removeBtn) removeBtn.style.display = "inline-block";
-    renderCheckoutSummary();
+    // 盲鳥活動已結束
+    msg.innerHTML = `<span style="color:var(--danger-red);">❌ 密鑰適用失敗：【盲鳥協議】已於先前截止，目前全面開放早鳥排產中。</span>`;
+    return;
   } 
   else if (code === "WANG18X") {
+    if (now > earlyBirdDeadline) {
+      msg.innerHTML = `<span style="color:var(--danger-red);">❌ 密鑰適用失敗：【早鳥排產協議】已於 10/11 期滿截止。</span>`;
+      return;
+    }
+
     let choker = cart.find(i => i.productId === "guilty-choker");
     if (!choker) {
       msg.innerHTML = `<span style="color:var(--danger-red);">❌ 密鑰適用失敗：購物車內需包含「貓痕義體項圈」</span>`;
       return;
     }
     activePromoDiscount = (1990 - 1580) * choker.qty;
-    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 早鳥排產協議 [WANG18X] 啟動：項圈折至 NT$ 1,580</span>`;
+    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 早鳥排產協議 [WANG18X] 啟動：項圈折至 NT$ 1,580（至 10/11 止）</span>`;
+    if (removeBtn) removeBtn.style.display = "inline-block";
+    renderCheckoutSummary();
+  } 
+  else if (code === "IAMSUB") {
+    activeDiscountRate = 0.8;
+    msg.innerHTML = `<span style="color:var(--accent-cyan);">✔ 首購認證 [IAMSUB] 啟動：全單享 8 折優惠</span>`;
     if (removeBtn) removeBtn.style.display = "inline-block";
     renderCheckoutSummary();
   } 
